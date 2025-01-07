@@ -32,14 +32,14 @@ public class RobotState {
 
   static {
     switch (Constants.ROBOT) {
+      case V0_FUNKY:
+      case V0_FUNKY_SIM:
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
-        break;
-      case FUNKY:
-      case FUNKY_SIM:
         break;
     }
 

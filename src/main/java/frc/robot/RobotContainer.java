@@ -46,6 +46,26 @@ public class RobotContainer {
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
+        case V0_FUNKY:
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
+        case V0_FUNKY_SIM:
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
+                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOSim(DriveConstants.BACK_LEFT),
+                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
         case V1_GAMMA:
           drive =
               new Drive(
@@ -86,26 +106,6 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           break;
-        case FUNKY:
-          drive =
-              new Drive(
-                  new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
-          break;
-        case FUNKY_SIM:
-          drive =
-              new Drive(
-                  new GyroIOPigeon2(),
-                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
-                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
-                  new ModuleIOSim(DriveConstants.BACK_LEFT),
-                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
-          break;
       }
     }
 
@@ -124,6 +124,11 @@ public class RobotContainer {
     }
 
     switch (Constants.ROBOT) {
+      case V0_FUNKY:
+      case V0_FUNKY_SIM:
+        funkyConfigureButtonBindings();
+        funkyConfigureAutos();
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         v1_GammaConfigureButtonBindings();
@@ -133,11 +138,6 @@ public class RobotContainer {
       case V2_DELTA_SIM:
         v2_DeltaConfigureButtonBindings();
         v2_DeltaConfigureAutos();
-        break;
-      case FUNKY:
-      case FUNKY_SIM:
-        funkyConfigureButtonBindings();
-        funkyConfigureAutos();
         break;
     }
   }
@@ -194,16 +194,16 @@ public class RobotContainer {
         vision.getCameras());
 
     switch (Constants.ROBOT) {
+      case V0_FUNKY:
+      case V0_FUNKY_SIM:
+        LTNUpdater.updateDrive(drive);
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
-        LTNUpdater.updateDrive(drive);
-        break;
-      case FUNKY:
-      case FUNKY_SIM:
         LTNUpdater.updateDrive(drive);
         break;
     }

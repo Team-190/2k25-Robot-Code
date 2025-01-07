@@ -11,12 +11,12 @@ public final class Constants {
     switch (ROBOT) {
       case V1_GAMMA:
       case V2_DELTA:
-      case FUNKY:
+      case V0_FUNKY:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case V1_GAMMA_SIM:
       case V2_DELTA_SIM:
-      case FUNKY_SIM:
+      case V0_FUNKY_SIM:
         return Mode.SIM;
 
       default:
@@ -31,12 +31,12 @@ public final class Constants {
   }
 
   public static enum RobotType {
+    V0_FUNKY,
+    V0_FUNKY_SIM,
     V1_GAMMA,
-    V2_DELTA,
     V1_GAMMA_SIM,
-    V2_DELTA_SIM,
-    FUNKY,
-    FUNKY_SIM
+    V2_DELTA,
+    V2_DELTA_SIM
   }
 
   public static void main(String... args) {
