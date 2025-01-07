@@ -5,16 +5,18 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.DELTA;
+  public static final RobotType ROBOT = RobotType.V1_GAMMA;
 
   public static Mode getMode() {
     switch (ROBOT) {
-      case DELTA:
-      case GAMMA:
+      case V1_GAMMA:
+      case V2_DELTA:
+      case FUNKY:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
-      case GAMMA_SIM:
-      case DELTA_SIM:
+      case V1_GAMMA_SIM:
+      case V2_DELTA_SIM:
+      case FUNKY_SIM:
         return Mode.SIM;
 
       default:
@@ -29,14 +31,16 @@ public final class Constants {
   }
 
   public static enum RobotType {
-    GAMMA,
-    DELTA,
-    GAMMA_SIM,
-    DELTA_SIM
+    V1_GAMMA,
+    V2_DELTA,
+    V1_GAMMA_SIM,
+    V2_DELTA_SIM,
+    FUNKY,
+    FUNKY_SIM
   }
 
   public static void main(String... args) {
-    if (ROBOT == RobotType.GAMMA_SIM) {
+    if (ROBOT == RobotType.V1_GAMMA_SIM) {
       System.err.println("Cannot deploy, invalid mode selected: " + ROBOT.toString());
       System.exit(1);
     }

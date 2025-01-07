@@ -15,7 +15,6 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -27,9 +26,9 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.util.LTNUpdater;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
@@ -39,11 +38,15 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
 
+  // Auto chooser
+  private final LoggedDashboardChooser<Command> autoChooser =
+      new LoggedDashboardChooser<>("Autonomous Modes");
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case GAMMA:
+        case V1_GAMMA:
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -51,12 +54,19 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision =
-              new Vision(
-                  CameraConstants.RobotCameras.LEFT_CAMERA,
-                  CameraConstants.RobotCameras.RIGHT_CAMERA);
+          vision = new Vision();
           break;
-        case DELTA:
+        case V1_GAMMA_SIM:
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
+                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOSim(DriveConstants.BACK_LEFT),
+                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
+        case V2_DELTA:
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -64,12 +74,9 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision =
-              new Vision(
-                  CameraConstants.RobotCameras.LEFT_CAMERA,
-                  CameraConstants.RobotCameras.RIGHT_CAMERA);
+          vision = new Vision();
           break;
-        case GAMMA_SIM:
+        case V2_DELTA_SIM:
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -77,12 +84,19 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision =
-              new Vision(
-                  CameraConstants.RobotCameras.LEFT_CAMERA,
-                  CameraConstants.RobotCameras.RIGHT_CAMERA);
+          vision = new Vision();
           break;
-        case DELTA_SIM:
+        case FUNKY:
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
+        case FUNKY_SIM:
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -90,10 +104,7 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision =
-              new Vision(
-                  CameraConstants.RobotCameras.LEFT_CAMERA,
-                  CameraConstants.RobotCameras.RIGHT_CAMERA);
+          vision = new Vision();
           break;
       }
     }
@@ -109,36 +120,68 @@ public class RobotContainer {
               new ModuleIO() {});
     }
     if (vision == null) {
-      vision =
-          new Vision(
-              CameraConstants.ReplayCameras.LEFT_CAMERA,
-              CameraConstants.ReplayCameras.RIGHT_CAMERA);
+      vision = new Vision();
     }
 
     switch (Constants.ROBOT) {
-      case GAMMA:
-      case GAMMA_SIM:
-        snapbackConfigureButtonBindings();
+      case V1_GAMMA:
+      case V1_GAMMA_SIM:
+        v1_GammaConfigureButtonBindings();
+        v1_GammaConfigureAutos();
         break;
-      case DELTA:
-      case DELTA_SIM:
-        whiplashConfigureButtonBindings();
+      case V2_DELTA:
+      case V2_DELTA_SIM:
+        v2_DeltaConfigureButtonBindings();
+        v2_DeltaConfigureAutos();
+        break;
+      case FUNKY:
+      case FUNKY_SIM:
+        funkyConfigureButtonBindings();
+        funkyConfigureAutos();
         break;
     }
   }
 
-  private void whiplashConfigureButtonBindings() {
+  private void v1_GammaConfigureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
 
-  private void snapbackConfigureButtonBindings() {
+  private void v2_DeltaConfigureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
+  }
+
+  private void funkyConfigureButtonBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+    driver.y().onTrue(CompositeCommands.resetHeading(drive));
+  }
+
+  private void v1_GammaConfigureAutos() {
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+  }
+
+  private void v2_DeltaConfigureAutos() {
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+  }
+
+  private void funkyConfigureAutos() {
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
   }
 
   public void robotPeriodic() {
@@ -148,24 +191,25 @@ public class RobotContainer {
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
-        vision.getCameras(),
-        false,
-        false,
-        false);
+        vision.getCameras());
+
     switch (Constants.ROBOT) {
-      case DELTA:
-      case DELTA_SIM:
-      default:
+      case V1_GAMMA:
+      case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
         break;
-      case GAMMA:
-      case GAMMA_SIM:
+      case V2_DELTA:
+      case V2_DELTA_SIM:
+        LTNUpdater.updateDrive(drive);
+        break;
+      case FUNKY:
+      case FUNKY_SIM:
         LTNUpdater.updateDrive(drive);
         break;
     }
   }
 
   public Command getAutonomousCommand() {
-    return Commands.none();
+    return autoChooser.get();
   }
 }

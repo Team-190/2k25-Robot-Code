@@ -33,18 +33,18 @@ public class DriveConstants {
 
   static {
     switch (Constants.ROBOT) {
-      case GAMMA:
-      case GAMMA_SIM:
+      case V1_GAMMA:
+      case V1_GAMMA_SIM:
       default:
-        FRONT_LEFT = TunerConstantsGamma.FrontLeft;
-        FRONT_RIGHT = TunerConstantsGamma.FrontRight;
-        BACK_LEFT = TunerConstantsGamma.BackLeft;
-        BACK_RIGHT = TunerConstantsGamma.BackRight;
+        FRONT_LEFT = TunerConstantsV1_Gamma.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV1_Gamma.FrontRight;
+        BACK_LEFT = TunerConstantsV1_Gamma.BackLeft;
+        BACK_RIGHT = TunerConstantsV1_Gamma.BackRight;
 
         DRIVE_CONFIG =
             new DriveConfig(
-                TunerConstantsGamma.DrivetrainConstants.CANBusName,
-                TunerConstantsGamma.DrivetrainConstants.Pigeon2Id,
+                TunerConstantsV1_Gamma.DrivetrainConstants.CANBusName,
+                TunerConstantsV1_Gamma.DrivetrainConstants.Pigeon2Id,
                 3.0,
                 2.0,
                 DCMotor.getKrakenX60Foc(1),
@@ -72,17 +72,54 @@ public class DriveConstants {
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
-      case DELTA:
-      case DELTA_SIM:
-        FRONT_LEFT = TunerConstantsDelta.FrontLeft;
-        FRONT_RIGHT = TunerConstantsDelta.FrontRight;
-        BACK_LEFT = TunerConstantsDelta.BackLeft;
-        BACK_RIGHT = TunerConstantsDelta.BackRight;
+      case V2_DELTA:
+      case V2_DELTA_SIM:
+        FRONT_LEFT = TunerConstantsV2_Delta.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV2_Delta.FrontRight;
+        BACK_LEFT = TunerConstantsV2_Delta.BackLeft;
+        BACK_RIGHT = TunerConstantsV2_Delta.BackRight;
 
         DRIVE_CONFIG =
             new DriveConfig(
-                TunerConstantsDelta.DrivetrainConstants.CANBusName,
-                TunerConstantsDelta.DrivetrainConstants.Pigeon2Id,
+                TunerConstantsV2_Delta.DrivetrainConstants.CANBusName,
+                TunerConstantsV2_Delta.DrivetrainConstants.Pigeon2Id,
+                3.0,
+                2.0,
+                DCMotor.getKrakenX60Foc(1),
+                DCMotor.getKrakenX60Foc(1),
+                FRONT_LEFT,
+                FRONT_RIGHT,
+                BACK_LEFT,
+                BACK_RIGHT);
+
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Drive/Drive KS"),
+                new LoggedTunableNumber("Drive/Drive KV"),
+                new LoggedTunableNumber("Drive/Drive KP"),
+                new LoggedTunableNumber("Drive/Drive KD"),
+                new LoggedTunableNumber("Drive/Turn KP"),
+                new LoggedTunableNumber("Drive/Turn KD"));
+        AUTO_ALIGN_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        ODOMETRY_FREQUENCY = 250.0;
+        DRIVER_DEADBAND = 0.025;
+        break;
+      case FUNKY:
+      case FUNKY_SIM:
+        FRONT_LEFT = TunerConstantsFunky.FrontLeft;
+        FRONT_RIGHT = TunerConstantsFunky.FrontRight;
+        BACK_LEFT = TunerConstantsFunky.BackLeft;
+        BACK_RIGHT = TunerConstantsFunky.BackRight;
+
+        DRIVE_CONFIG =
+            new DriveConfig(
+                TunerConstantsFunky.DrivetrainConstants.CANBusName,
+                TunerConstantsFunky.DrivetrainConstants.Pigeon2Id,
                 3.0,
                 2.0,
                 DCMotor.getKrakenX60Foc(1),
