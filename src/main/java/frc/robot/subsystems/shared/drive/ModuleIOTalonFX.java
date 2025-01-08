@@ -93,7 +93,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnTalon = new TalonFX(constants.SteerMotorId, DriveConstants.DRIVE_CONFIG.canBus());
     cancoder = new CANcoder(constants.EncoderId, DriveConstants.DRIVE_CONFIG.canBus());
 
-    driveConfig = constants.DriveMotorInitialConfigs;
+    driveConfig = new TalonFXConfiguration();
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;

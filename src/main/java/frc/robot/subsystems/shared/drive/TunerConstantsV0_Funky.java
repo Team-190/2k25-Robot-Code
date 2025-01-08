@@ -20,7 +20,7 @@ public class TunerConstantsV0_Funky {
 
   // The steer motor uses any SwerveModule.SteerRequestType control request with the
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
-  private static final Slot0Configs steerGains =
+  public static final Slot0Configs steerGains =
       new Slot0Configs()
           .withKP(100)
           .withKI(0)
@@ -31,7 +31,7 @@ public class TunerConstantsV0_Funky {
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
-  private static final Slot0Configs driveGains =
+  public static final Slot0Configs driveGains =
       new Slot0Configs().withKP(0.1).withKI(0).withKD(0).withKS(0).withKV(0.124);
 
   // The closed-loop output type to use for the steer motors;
@@ -86,7 +86,7 @@ public class TunerConstantsV0_Funky {
 
   private static final double kDriveGearRatio = 7.363636363636365;
   private static final double kSteerGearRatio = 15.42857142857143;
-  private static final Distance kWheelRadius = Inches.of(2.167);
+  public static final Distance kWheelRadius = Inches.of(2.167);
 
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;

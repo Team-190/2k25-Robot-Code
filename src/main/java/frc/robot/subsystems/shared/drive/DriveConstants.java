@@ -1,5 +1,8 @@
 package frc.robot.subsystems.shared.drive;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -44,8 +47,8 @@ public class DriveConstants {
             new DriveConfig(
                 TunerConstantsV0_Funky.DrivetrainConstants.CANBusName,
                 TunerConstantsV0_Funky.DrivetrainConstants.Pigeon2Id,
-                3.0,
-                2.0,
+                TunerConstantsV0_Funky.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV0_Funky.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -55,12 +58,12 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS"),
-                new LoggedTunableNumber("Drive/Drive KV"),
-                new LoggedTunableNumber("Drive/Drive KP"),
-                new LoggedTunableNumber("Drive/Drive KD"),
-                new LoggedTunableNumber("Drive/Turn KP"),
-                new LoggedTunableNumber("Drive/Turn KD"));
+                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV0_Funky.driveGains.kS),
+                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV0_Funky.driveGains.kV),
+                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV0_Funky.driveGains.kP),
+                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV0_Funky.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV0_Funky.steerGains.kP),
+                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV0_Funky.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),
@@ -81,8 +84,8 @@ public class DriveConstants {
             new DriveConfig(
                 TunerConstantsV0_Whiplash.DrivetrainConstants.CANBusName,
                 TunerConstantsV0_Whiplash.DrivetrainConstants.Pigeon2Id,
-                3.0,
-                2.0,
+                TunerConstantsV0_Whiplash.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV0_Whiplash.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -92,12 +95,12 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS"),
-                new LoggedTunableNumber("Drive/Drive KV"),
-                new LoggedTunableNumber("Drive/Drive KP"),
-                new LoggedTunableNumber("Drive/Drive KD"),
-                new LoggedTunableNumber("Drive/Turn KP"),
-                new LoggedTunableNumber("Drive/Turn KD"));
+                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV0_Whiplash.driveGains.kS),
+                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV0_Whiplash.driveGains.kV),
+                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV0_Whiplash.driveGains.kP),
+                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV0_Whiplash.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV0_Whiplash.steerGains.kP),
+                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV0_Whiplash.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),
@@ -119,8 +122,8 @@ public class DriveConstants {
             new DriveConfig(
                 TunerConstantsV1_Gamma.DrivetrainConstants.CANBusName,
                 TunerConstantsV1_Gamma.DrivetrainConstants.Pigeon2Id,
-                3.0,
-                2.0,
+                TunerConstantsV1_Gamma.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV1_Gamma.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -130,12 +133,12 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS", 0.0),
-                new LoggedTunableNumber("Drive/Drive KV", 0.0),
-                new LoggedTunableNumber("Drive/Drive KP", 0.0),
-                new LoggedTunableNumber("Drive/Drive KD", 0.0),
-                new LoggedTunableNumber("Drive/Turn KP", 0.0),
-                new LoggedTunableNumber("Drive/Turn KD", 0.0));
+                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV1_Gamma.driveGains.kS),
+                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV1_Gamma.driveGains.kV),
+                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV1_Gamma.driveGains.kP),
+                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV1_Gamma.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV1_Gamma.steerGains.kP),
+                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV1_Gamma.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),
@@ -157,8 +160,8 @@ public class DriveConstants {
             new DriveConfig(
                 TunerConstantsV2_Delta.DrivetrainConstants.CANBusName,
                 TunerConstantsV2_Delta.DrivetrainConstants.Pigeon2Id,
-                3.0,
-                2.0,
+                TunerConstantsV2_Delta.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV2_Delta.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -168,12 +171,12 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS"),
-                new LoggedTunableNumber("Drive/Drive KV"),
-                new LoggedTunableNumber("Drive/Drive KP"),
-                new LoggedTunableNumber("Drive/Drive KD"),
-                new LoggedTunableNumber("Drive/Turn KP"),
-                new LoggedTunableNumber("Drive/Turn KD"));
+                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV2_Delta.driveGains.kS),
+                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV2_Delta.driveGains.kV),
+                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV2_Delta.driveGains.kP),
+                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV2_Delta.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV2_Delta.steerGains.kP),
+                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV2_Delta.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),
