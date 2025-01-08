@@ -32,6 +32,9 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.v0_funky.kitbot_roller.Roller;
+import frc.robot.subsystems.v0_funky.kitbot_roller.RollerIO;
+import frc.robot.subsystems.v0_funky.kitbot_roller.RollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -39,6 +42,8 @@ public class RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
+
+  private Roller roller;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -60,6 +65,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
+          roller = new Roller(new RollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:
           drive =
@@ -70,6 +76,8 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
+          roller = new Roller(new RollerIO() {});
+
           break;
         case V0_WHIPLASH:
           drive =
@@ -147,6 +155,9 @@ public class RobotContainer {
     if (vision == null) {
       vision = new Vision();
     }
+    if (roller == null) {
+      roller = new Roller(new RollerIO() {});
+    }
 
     switch (Constants.ROBOT) {
       case V0_FUNKY:
@@ -176,6 +187,9 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
+
+    roller.setDefaultCommand(
+        roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
