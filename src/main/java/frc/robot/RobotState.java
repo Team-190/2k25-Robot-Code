@@ -35,6 +35,9 @@ public class RobotState {
       case V0_FUNKY:
       case V0_FUNKY_SIM:
         break;
+      case V0_WHIPLASH:
+      case V0_WHIPLASH_SIM:
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         break;

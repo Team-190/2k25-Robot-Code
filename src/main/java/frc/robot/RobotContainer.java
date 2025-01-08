@@ -13,8 +13,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -59,7 +64,27 @@ public class RobotContainer {
         case V0_FUNKY_SIM:
           drive =
               new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
+                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOSim(DriveConstants.BACK_LEFT),
+                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
+        case V0_WHIPLASH:
+          drive =
+              new Drive(
                   new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+          vision = new Vision();
+          break;
+        case V0_WHIPLASH_SIM:
+          drive =
+              new Drive(
+                  new GyroIO() {},
                   new ModuleIOSim(DriveConstants.FRONT_LEFT),
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
@@ -79,7 +104,7 @@ public class RobotContainer {
         case V1_GAMMA_SIM:
           drive =
               new Drive(
-                  new GyroIOPigeon2(),
+                  new GyroIO() {},
                   new ModuleIOSim(DriveConstants.FRONT_LEFT),
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
@@ -99,7 +124,7 @@ public class RobotContainer {
         case V2_DELTA_SIM:
           drive =
               new Drive(
-                  new GyroIOPigeon2(),
+                  new GyroIO() {},
                   new ModuleIOSim(DriveConstants.FRONT_LEFT),
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
@@ -126,8 +151,12 @@ public class RobotContainer {
     switch (Constants.ROBOT) {
       case V0_FUNKY:
       case V0_FUNKY_SIM:
-        funkyConfigureButtonBindings();
-        funkyConfigureAutos();
+        v0_FunkyConfigureButtonBindings();
+        v0_FunkyConfigureAutos();
+      case V0_WHIPLASH:
+      case V0_WHIPLASH_SIM:
+        v0_WhiplashConfigureButtonBindings();
+        v0_WhiplashConfigureAutos();
         break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
@@ -140,6 +169,20 @@ public class RobotContainer {
         v2_DeltaConfigureAutos();
         break;
     }
+  }
+
+  private void v0_FunkyConfigureButtonBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+    driver.y().onTrue(CompositeCommands.resetHeading(drive));
+  }
+
+  private void v0_WhiplashConfigureButtonBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+    driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
 
   private void v1_GammaConfigureButtonBindings() {
@@ -156,11 +199,18 @@ public class RobotContainer {
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
 
-  private void funkyConfigureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
-    driver.y().onTrue(CompositeCommands.resetHeading(drive));
+  private void v0_FunkyConfigureAutos() {
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+  }
+
+  private void v0_WhiplashConfigureAutos() {
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
   }
 
   private void v1_GammaConfigureAutos() {
@@ -171,13 +221,6 @@ public class RobotContainer {
   }
 
   private void v2_DeltaConfigureAutos() {
-    autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-  }
-
-  private void funkyConfigureAutos() {
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
@@ -198,6 +241,10 @@ public class RobotContainer {
       case V0_FUNKY_SIM:
         LTNUpdater.updateDrive(drive);
         break;
+      case V0_WHIPLASH:
+      case V0_WHIPLASH_SIM:
+        LTNUpdater.updateDrive(drive);
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
@@ -210,6 +257,17 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.run(
+            () ->
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        1,
+                        0,
+                        0,
+                        DriverStation.getAlliance().isPresent()
+                                && DriverStation.getAlliance().get().equals(Alliance.Red)
+                            ? Rotation2d.fromRadians(0.0)
+                            : Rotation2d.fromRadians(Math.PI))))
+        .withTimeout(1);
   }
 }

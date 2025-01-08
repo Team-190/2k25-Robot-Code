@@ -35,15 +35,52 @@ public class DriveConstants {
     switch (Constants.ROBOT) {
       case V0_FUNKY:
       case V0_FUNKY_SIM:
-        FRONT_LEFT = TunerConstantsFunky.FrontLeft;
-        FRONT_RIGHT = TunerConstantsFunky.FrontRight;
-        BACK_LEFT = TunerConstantsFunky.BackLeft;
-        BACK_RIGHT = TunerConstantsFunky.BackRight;
+        FRONT_LEFT = TunerConstantsV0_Funky.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV0_Funky.FrontRight;
+        BACK_LEFT = TunerConstantsV0_Funky.BackLeft;
+        BACK_RIGHT = TunerConstantsV0_Funky.BackRight;
 
         DRIVE_CONFIG =
             new DriveConfig(
-                TunerConstantsFunky.DrivetrainConstants.CANBusName,
-                TunerConstantsFunky.DrivetrainConstants.Pigeon2Id,
+                TunerConstantsV0_Funky.DrivetrainConstants.CANBusName,
+                TunerConstantsV0_Funky.DrivetrainConstants.Pigeon2Id,
+                3.0,
+                2.0,
+                DCMotor.getKrakenX60Foc(1),
+                DCMotor.getKrakenX60Foc(1),
+                FRONT_LEFT,
+                FRONT_RIGHT,
+                BACK_LEFT,
+                BACK_RIGHT);
+
+        GAINS =
+            new Gains(
+                new LoggedTunableNumber("Drive/Drive KS"),
+                new LoggedTunableNumber("Drive/Drive KV"),
+                new LoggedTunableNumber("Drive/Drive KP"),
+                new LoggedTunableNumber("Drive/Drive KD"),
+                new LoggedTunableNumber("Drive/Turn KP"),
+                new LoggedTunableNumber("Drive/Turn KD"));
+        AUTO_ALIGN_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        ODOMETRY_FREQUENCY = 250.0;
+        DRIVER_DEADBAND = 0.025;
+        break;
+      case V0_WHIPLASH:
+      case V0_WHIPLASH_SIM:
+        FRONT_LEFT = TunerConstantsV0_Whiplash.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV0_Whiplash.FrontRight;
+        BACK_LEFT = TunerConstantsV0_Whiplash.BackLeft;
+        BACK_RIGHT = TunerConstantsV0_Whiplash.BackRight;
+
+        DRIVE_CONFIG =
+            new DriveConfig(
+                TunerConstantsV0_Whiplash.DrivetrainConstants.CANBusName,
+                TunerConstantsV0_Whiplash.DrivetrainConstants.Pigeon2Id,
                 3.0,
                 2.0,
                 DCMotor.getKrakenX60Foc(1),
