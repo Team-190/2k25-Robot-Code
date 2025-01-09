@@ -16,7 +16,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
-public class RollerIOTalonFX implements RollerIO {
+public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
   private final TalonFX roller;
 
   private final TalonFXConfiguration rollerConfig;
@@ -30,13 +30,13 @@ public class RollerIOTalonFX implements RollerIO {
 
   private final VoltageOut voltageRequest;
 
-  public RollerIOTalonFX() {
-    roller = new TalonFX(RollerConstants.ROLLER_CAN_ID, "rio");
+  public V0_FunkyRollerIOTalonFX() {
+    roller = new TalonFX(V0_FunkyRollerConstants.ROLLER_CAN_ID);
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit = RollerConstants.SupplyCurrentLimit;
-    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = V0_FunkyRollerConstants.SupplyCurrentLimit;
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> roller.getConfigurator().apply(rollerConfig, 0.25));
 
@@ -48,8 +48,9 @@ public class RollerIOTalonFX implements RollerIO {
     rollerTemperatureCelcius = roller.getDeviceTemp();
 
     voltageRequest = new VoltageOut(0);
+
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50,
+        50.0,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVoltage,

@@ -13,13 +13,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -32,9 +27,9 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v0_funky.kitbot_roller.Roller;
-import frc.robot.subsystems.v0_funky.kitbot_roller.RollerIO;
-import frc.robot.subsystems.v0_funky.kitbot_roller.RollerIOTalonFX;
+import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
+import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
+import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -43,7 +38,7 @@ public class RobotContainer {
   private Drive drive;
   private Vision vision;
 
-  private Roller roller;
+  private V0_FunkyRoller roller;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -65,7 +60,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          roller = new Roller(new RollerIOTalonFX());
+          roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:
           drive =
@@ -76,7 +71,7 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          roller = new Roller(new RollerIO() {});
+          roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
 
           break;
         case V0_WHIPLASH:
@@ -156,7 +151,7 @@ public class RobotContainer {
       vision = new Vision();
     }
     if (roller == null) {
-      roller = new Roller(new RollerIO() {});
+      roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
     }
 
     switch (Constants.ROBOT) {
@@ -271,17 +266,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.run(
-            () ->
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        1,
-                        0,
-                        0,
-                        DriverStation.getAlliance().isPresent()
-                                && DriverStation.getAlliance().get().equals(Alliance.Red)
-                            ? Rotation2d.fromRadians(0.0)
-                            : Rotation2d.fromRadians(Math.PI))))
-        .withTimeout(1);
+    return autoChooser.get();
   }
 }

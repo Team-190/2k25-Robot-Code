@@ -166,9 +166,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         PhoenixOdometryThread.getInstance().registerSignal(driveTalon.getPosition());
     turnPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(turnTalon.getPosition());
 
-    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
-    velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
-    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0);
+    torqueCurrentRequest = new TorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
+    velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
+    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
 
     driveConnectedDebounce = new Debouncer(0.5);
     turnConnectedDebounce = new Debouncer(0.5);
@@ -272,12 +272,12 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveAmps(double currentAmps) {
-    driveTalon.setControl(torqueCurrentRequest.withOutput(currentAmps).withUpdateFreqHz(1000.0));
+    driveTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
   public void setTurnAmps(double currentAmps) {
-    turnTalon.setControl(torqueCurrentRequest.withOutput(currentAmps).withUpdateFreqHz(1000.0));
+    turnTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
@@ -285,16 +285,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.setControl(
         velocityTorqueCurrentRequest
             .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
-            .withFeedForward(currentFeedforward)
-            .withUpdateFreqHz(1000.0));
+            .withFeedForward(currentFeedforward));
   }
 
   @Override
   public void setTurnPosition(Rotation2d rotation) {
-    turnTalon.setControl(
-        positionTorqueCurrentRequest
-            .withPosition(rotation.getRotations())
-            .withUpdateFreqHz(1000.0));
+    turnTalon.setControl(positionTorqueCurrentRequest.withPosition(rotation.getRotations()));
   }
 
   @Override

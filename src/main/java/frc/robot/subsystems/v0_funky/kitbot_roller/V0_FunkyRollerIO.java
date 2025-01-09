@@ -3,7 +3,7 @@ package frc.robot.subsystems.v0_funky.kitbot_roller;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface RollerIO {
+public interface V0_FunkyRollerIO {
   @AutoLog
   public static class RollerIOInputs {
     public Rotation2d position = new Rotation2d();

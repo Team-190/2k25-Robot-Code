@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class Roller extends SubsystemBase {
-  private final RollerIO io;
+public class V0_FunkyRoller extends SubsystemBase {
+  private final V0_FunkyRollerIO io;
   private final RollerIOInputsAutoLogged inputs;
 
-  public Roller(RollerIO io) {
+  public V0_FunkyRoller(V0_FunkyRollerIO io) {
     this.io = io;
     inputs = new RollerIOInputsAutoLogged();
   }
@@ -22,6 +22,7 @@ public class Roller extends SubsystemBase {
   }
 
   public Command runRoller(DoubleSupplier forward, DoubleSupplier reverse) {
-    return Commands.run(() -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble())));
+    return Commands.run(
+        () -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble())), this);
   }
 }
