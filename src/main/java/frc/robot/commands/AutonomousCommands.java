@@ -8,7 +8,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 
 public class AutonomousCommands {
 
-  public static final Command blueLeft2PieceAuto(Drive drive) {
+  public static final Command blueLeft2PieceAuto(Drive drive, V0_FunkyRoller roller) {
     return Commands.sequence(
         Commands.runOnce(
             () ->
@@ -18,7 +18,9 @@ public class AutonomousCommands {
                         .getInitialPose(true)
                         .get())),
         drive.getAutoFactory().trajectoryCmd("LEFT_SCORE_PRELOADED_OPP"),
+        Commands.run(()->roller.runRoller(()->1,()->0)).withTimeout(1),
         drive.getAutoFactory().trajectoryCmd("LEFT_COLLECT_CORAL_OPP"),
-        drive.getAutoFactory().trajectoryCmd("LEFT_SCORE_COLLECTED_OPP"));
+        drive.getAutoFactory().trajectoryCmd("LEFT_SCORE_COLLECTED_OPP"),
+        Commands.run(()->roller.runRoller(()->1,()->0)).withTimeout(1));
   }
 }
