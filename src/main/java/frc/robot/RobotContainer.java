@@ -267,6 +267,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutonomousCommands.blueLeft2PieceAuto(drive);
+    return AutonomousCommands.blueLeft2PieceAuto(drive, roller);
   }
 }

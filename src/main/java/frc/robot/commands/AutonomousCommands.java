@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 
 public class AutonomousCommands {
 
