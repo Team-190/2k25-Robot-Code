@@ -96,7 +96,14 @@ public class Drive extends SubsystemBase {
 
     autoFactory =
         new AutoFactory(
-            RobotState::getRobotPose, RobotState::resetRobotPose, this::choreoDrive, true, this);
+            RobotState::getRobotPose,
+            RobotState::resetRobotPose,
+            this::choreoDrive,
+            false,
+            this,
+            (sample, isStart) -> {
+              Logger.recordOutput("Auto/Choreo Trajectory", sample.getPoses());
+            });
   }
 
   public void periodic() {
