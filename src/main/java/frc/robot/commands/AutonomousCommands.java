@@ -7,17 +7,14 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 
 public class AutonomousCommands {
-  public static final Command blueBarge5PieceAuto(Drive drive) {
+  public static final Command CharlotteTest(Drive drive) {
     return Commands.sequence(
         Commands.runOnce(
             () ->
                 RobotState.resetRobotPose(
-                    Choreo.loadTrajectory("BB1").get().getInitialPose(true).get())),
-        drive.getAutoFactory().trajectoryCmd("BB1"),
-        drive.getAutoFactory().trajectoryCmd("BB2"),
-        drive.getAutoFactory().trajectoryCmd("BB3"),
-        drive.getAutoFactory().trajectoryCmd("BB4"),
-        drive.getAutoFactory().trajectoryCmd("BB5"),
-        drive.getAutoFactory().trajectoryCmd("BB6"));
+                    Choreo.loadTrajectory("MiddleToReef").get().getInitialPose(true).get())),
+        drive.getAutoFactory().trajectoryCmd("MiddleToReef"),
+        drive.getAutoFactory().trajectoryCmd("ReefToCollect"),
+        drive.getAutoFactory().trajectoryCmd("CollectToReef"));
   }
 }

@@ -66,10 +66,10 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV0_Funky.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
-                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KP", 2.0),
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
-                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
-                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+                new LoggedTunableNumber("Drive/Rotation KP", 3.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
