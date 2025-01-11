@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,6 +27,9 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.vision.CameraIOLimelight;
+import frc.robot.subsystems.shared.vision.CameraType;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
@@ -59,7 +63,18 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
+          vision =
+              new Vision(
+                  new Camera(
+                      new CameraIOLimelight("shooter", CameraType.LIMELIGHT_3),
+                      CameraType.LIMELIGHT_3.horizontalFOV,
+                      CameraType.LIMELIGHT_3.verticalFOV,
+                      CameraType.LIMELIGHT_3.primaryXYStandardDeviationCoefficient,
+                      CameraType.LIMELIGHT_3.secondaryXYStandardDeviationCoefficient,
+                      NetworkTableInstance.getDefault()
+                          .getTable("limelight-shooter")
+                          .getDoubleArrayTopic("robot_orientation_set")
+                          .publish()));
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:
@@ -185,6 +200,11 @@ public class RobotContainer {
 
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
+
+    driver
+        .a()
+        .whileTrue(
+            DriveCommands.aprilTagAline(drive, () -> RobotState.getControlData().poseOfInterest()));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {

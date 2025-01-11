@@ -15,12 +15,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -33,7 +36,9 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
   @Getter private static final PIDController xController;
@@ -215,5 +220,76 @@ public final class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  public static Command aprilTagAline(Drive drive, Supplier<Pose3d> targetPose) {
+
+    ProfiledPIDController xController =
+        new ProfiledPIDController(
+            3, 0.0, 0.05, new TrapezoidProfile.Constraints(3, Double.POSITIVE_INFINITY));
+    ProfiledPIDController yController =
+        new ProfiledPIDController(
+            2, 0.0, 0.05, new TrapezoidProfile.Constraints(3, Double.POSITIVE_INFINITY));
+    ProfiledPIDController omegaController =
+        new ProfiledPIDController(
+            Math.PI,
+            0.0,
+            0.05,
+            new TrapezoidProfile.Constraints(Math.PI, Double.POSITIVE_INFINITY));
+    xController.setTolerance(0.005);
+    yController.setTolerance(0.005);
+    omegaController.setTolerance(Units.degreesToRadians(0.5));
+
+    Pose2d setpoint =
+        new Pose2d(new Translation2d(0.15879872585220567, 0.38812383025452923), new Rotation2d());
+    return Commands.run(
+            () -> {
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+              double xSpeed = 0.0;
+              double ySpeed = 0.0;
+              double thetaSpeed = 0.0;
+              if (!xController.atSetpoint())
+                xSpeed =
+                    MathUtil.applyDeadband(
+                        xController.calculate(targetPose.get().getX(), setpoint.getX()),
+                        0.09870152766556013);
+              else xController.reset(targetPose.get().getX());
+              if (!yController.atSetpoint())
+                ySpeed =
+                    MathUtil.applyDeadband(
+                        yController.calculate(targetPose.get().getZ(), setpoint.getY()),
+                        0.042128593183473257);
+              else yController.reset(targetPose.get().getZ());
+              if (!omegaController.atSetpoint())
+                thetaSpeed =
+                    MathUtil.applyDeadband(
+                        omegaController.calculate(
+                            targetPose.get().getRotation().getY(),
+                            setpoint.getRotation().getRadians()),
+                        0.09927912329132032);
+              else omegaController.reset(targetPose.get().getRotation().getY());
+
+              Logger.recordOutput("xSpeed", xSpeed);
+              Logger.recordOutput("ySpeed", ySpeed);
+              Logger.recordOutput("thetaSpeed", thetaSpeed);
+              ChassisSpeeds speeds =
+                  ChassisSpeeds.fromRobotRelativeSpeeds(
+                      ySpeed,
+                      xSpeed,
+                      thetaSpeed,
+                      isFlipped
+                          ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                          : RobotState.getRobotPose().getRotation());
+              drive.runVelocity(speeds);
+            },
+            drive)
+        .finallyDo(
+            () -> {
+              omegaController.reset(targetPose.get().getRotation().getY());
+              xController.reset(targetPose.get().getX());
+              yController.reset(targetPose.get().getZ());
+            });
   }
 }

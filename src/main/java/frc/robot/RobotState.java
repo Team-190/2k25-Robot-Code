@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -14,14 +15,10 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-  @Getter private static ControlData controlData = new ControlData();
-
-  @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
-  @Getter @Setter private static double speakerAngleCompensation = 0.0;
+  @Getter private static ControlData controlData = new ControlData(new Pose3d(), -1.0);
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;
@@ -89,6 +86,10 @@ public class RobotState {
     NetworkTableInstance.getDefault().flush();
     for (Camera camera : cameras) {
 
+      if (camera.getName().equals("limelight-shooter")) {
+        controlData = new ControlData(camera.getPoseOfInterest(), camera.getTagIDOfInterest());
+      }
+
       if (camera.getTargetAquired()
           && !GeometryUtil.isZero(camera.getPrimaryPose())
           && !GeometryUtil.isZero(camera.getSecondaryPose())
@@ -117,8 +118,6 @@ public class RobotState {
       }
     }
 
-    controlData = new ControlData();
-
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
@@ -139,5 +138,5 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
-  public static record ControlData() {}
+  public static record ControlData(Pose3d poseOfInterest, double tagIDOfInterest) {}
 }
