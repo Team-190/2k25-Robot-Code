@@ -1,7 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
@@ -11,35 +9,28 @@ public class FieldConstants {
   public enum AlignmentPoses {
     TAG_6(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
     TAG_7(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
     TAG_8(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0)),
+        new Translation2d(0.14860069499694067, 0.39923846993711837),
+        new Translation2d(-0.14860069499694067, 0.39923846993711837)),
     TAG_9(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
     TAG_10(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
     TAG_11(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0));
+        new Translation2d(-0.15879872585220567, 0.38812383025452923));
 
     private final Translation2d leftTranslation;
     private final Translation2d rightTranslation;
-    private final Rotation2d rotation;
 
-    public Pose2d getPose(boolean left) {
-      return new Pose2d(left ? leftTranslation : rightTranslation, rotation);
+    public Translation2d getPose(boolean left) {
+      return (left ? leftTranslation : rightTranslation);
     }
   }
 

@@ -250,10 +250,11 @@ public final class DriveCommands {
     return Commands.run(
             () -> {
               ChassisSpeeds speeds;
-              if (RobotState.getControlData().totalTargets() == 1 && tagID.getAsDouble() != -1) {
-                if (!FieldConstants.alignmentPoseMap.containsKey((int) tagID.getAsDouble())) return;
+              if (RobotState.getControlData().totalTargets() == 1
+                  && tagID.getAsDouble() != -1
+                  && FieldConstants.alignmentPoseMap.containsKey((int) tagID.getAsDouble())) {
                 int tagIDOfInterest = (int) tagID.getAsDouble();
-                Pose2d setpoint =
+                Translation2d setpoint =
                     FieldConstants.alignmentPoseMap
                         .get(tagIDOfInterest)
                         .getPose(leftSetpoint.getAsBoolean());
