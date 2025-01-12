@@ -8,8 +8,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 
 public class AutonomousCommands {
-
-  public static final Command blueLeft2PieceAuto(Drive drive, V0_FunkyRoller roller) {
+  public static final Command CharlotteTest(Drive drive) {
     return Commands.sequence(
         Commands.runOnce(
             () ->
@@ -23,5 +22,13 @@ public class AutonomousCommands {
         drive.getAutoFactory().trajectoryCmd("LEFT_COLLECT_CORAL_OPP"),
         drive.getAutoFactory().trajectoryCmd("LEFT_SCORE_COLLECTED_OPP"),
         Commands.run(()->roller.runRoller(()->1,()->0)).withTimeout(1));
+  }
+      public static final Command blueLeft2PieceAuto(Drive drive, V0_FunkyRoller roller) {
+                    () ->
+                RobotState.resetRobotPose(
+                    Choreo.loadTrajectory(Choreo.loadTrajectory("MiddleToReef").get().getInitialPose(true).get())),
+        drive.getAutoFactory().trajectoryCmd("MiddleToReef"),
+        drive.getAutoFactory().trajectoryCmd("ReefToCollect"),
+        drive.getAutoFactory().trajectoryCmd("CollectToReef"));
   }
 }
