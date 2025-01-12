@@ -30,11 +30,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
@@ -66,6 +68,7 @@ public final class DriveCommands {
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setTolerance(Units.degreesToRadians(1.0));
   }
+
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -222,7 +225,11 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command aprilTagAline(Drive drive, Supplier<Pose3d> targetPose) {
+  public static Command aprilTagAline(
+      Drive drive,
+      Supplier<Pose3d> targetPose,
+      DoubleSupplier tagID,
+      BooleanSupplier leftSetpoint) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -236,14 +243,18 @@ public final class DriveCommands {
             0.0,
             0.05,
             new TrapezoidProfile.Constraints(Math.PI, Double.POSITIVE_INFINITY));
+
     xController.setTolerance(0.005);
     yController.setTolerance(0.005);
     omegaController.setTolerance(Units.degreesToRadians(0.5));
-
-    Pose2d setpoint =
-        new Pose2d(new Translation2d(0.15879872585220567, 0.38812383025452923), new Rotation2d());
     return Commands.run(
             () -> {
+              int tagIDOfInterest = Integer.parseInt(tagID.getAsDouble() + "");
+              Logger.recordOutput("tagID", tagIDOfInterest);
+              Pose2d setpoint =
+                  FieldConstants.alignmentPoseMap
+                      .get(tagIDOfInterest)
+                      .getPose(leftSetpoint.getAsBoolean());
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
@@ -274,6 +285,7 @@ public final class DriveCommands {
               Logger.recordOutput("xSpeed", xSpeed);
               Logger.recordOutput("ySpeed", ySpeed);
               Logger.recordOutput("thetaSpeed", thetaSpeed);
+              Logger.recordOutput("setpoint", setpoint);
               ChassisSpeeds speeds =
                   ChassisSpeeds.fromRobotRelativeSpeeds(
                       ySpeed,

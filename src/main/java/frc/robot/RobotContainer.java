@@ -204,7 +204,11 @@ public class RobotContainer {
     driver
         .a()
         .whileTrue(
-            DriveCommands.aprilTagAline(drive, () -> RobotState.getControlData().poseOfInterest()));
+            DriveCommands.aprilTagAline(
+                drive,
+                () -> RobotState.getControlData().poseOfInterest(),
+                () -> RobotState.getControlData().tagIDOfInterest(),
+                () -> true));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
