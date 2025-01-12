@@ -225,7 +225,7 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command aprilTagAline(
+  public static Command alignRobotToAprilTag(
       Drive drive,
       Supplier<Pose3d> targetPose,
       DoubleSupplier tagID,
@@ -249,51 +249,54 @@ public final class DriveCommands {
     omegaController.setTolerance(Units.degreesToRadians(0.5));
     return Commands.run(
             () -> {
-              int tagIDOfInterest = Integer.parseInt(tagID.getAsDouble() + "");
-              Logger.recordOutput("tagID", tagIDOfInterest);
-              Pose2d setpoint =
-                  FieldConstants.alignmentPoseMap
-                      .get(tagIDOfInterest)
-                      .getPose(leftSetpoint.getAsBoolean());
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-              double xSpeed = 0.0;
-              double ySpeed = 0.0;
-              double thetaSpeed = 0.0;
-              if (!xController.atSetpoint())
-                xSpeed =
-                    MathUtil.applyDeadband(
-                        xController.calculate(targetPose.get().getX(), setpoint.getX()),
-                        0.09870152766556013);
-              else xController.reset(targetPose.get().getX());
-              if (!yController.atSetpoint())
-                ySpeed =
-                    MathUtil.applyDeadband(
-                        yController.calculate(targetPose.get().getZ(), setpoint.getY()),
-                        0.042128593183473257);
-              else yController.reset(targetPose.get().getZ());
-              if (!omegaController.atSetpoint())
-                thetaSpeed =
-                    MathUtil.applyDeadband(
-                        omegaController.calculate(
-                            targetPose.get().getRotation().getY(),
-                            setpoint.getRotation().getRadians()),
-                        0.09927912329132032);
-              else omegaController.reset(targetPose.get().getRotation().getY());
+              ChassisSpeeds speeds;
+              if (RobotState.getControlData().totalTargets() == 1 && tagID.getAsDouble() != -1) {
+                if (!FieldConstants.alignmentPoseMap.containsKey((int) tagID.getAsDouble())) return;
+                int tagIDOfInterest = (int) tagID.getAsDouble();
+                Pose2d setpoint =
+                    FieldConstants.alignmentPoseMap
+                        .get(tagIDOfInterest)
+                        .getPose(leftSetpoint.getAsBoolean());
+                boolean isFlipped =
+                    DriverStation.getAlliance().isPresent()
+                        && DriverStation.getAlliance().get() == Alliance.Red;
+                double xSpeed = 0.0;
+                double ySpeed = 0.0;
+                double thetaSpeed = 0.0;
+                if (!xController.atSetpoint())
+                  xSpeed =
+                      MathUtil.applyDeadband(
+                          xController.calculate(targetPose.get().getX(), setpoint.getX()),
+                          0.09870152766556013);
+                else xController.reset(targetPose.get().getX());
+                if (!yController.atSetpoint())
+                  ySpeed =
+                      MathUtil.applyDeadband(
+                          yController.calculate(targetPose.get().getZ(), setpoint.getY()),
+                          0.042128593183473257);
+                else yController.reset(targetPose.get().getZ());
+                if (!omegaController.atSetpoint())
+                  thetaSpeed =
+                      MathUtil.applyDeadband(
+                          omegaController.calculate(targetPose.get().getRotation().getY(), 0.0),
+                          0.09927912329132032);
+                else omegaController.reset(targetPose.get().getRotation().getY());
 
-              Logger.recordOutput("xSpeed", xSpeed);
-              Logger.recordOutput("ySpeed", ySpeed);
-              Logger.recordOutput("thetaSpeed", thetaSpeed);
-              Logger.recordOutput("setpoint", setpoint);
-              ChassisSpeeds speeds =
-                  ChassisSpeeds.fromRobotRelativeSpeeds(
-                      ySpeed,
-                      xSpeed,
-                      thetaSpeed,
-                      isFlipped
-                          ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                          : RobotState.getRobotPose().getRotation());
+                Logger.recordOutput("xSpeed", xSpeed);
+                Logger.recordOutput("ySpeed", ySpeed);
+                Logger.recordOutput("thetaSpeed", thetaSpeed);
+                Logger.recordOutput("setpoint", setpoint);
+                speeds =
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        ySpeed,
+                        xSpeed,
+                        thetaSpeed,
+                        isFlipped
+                            ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                            : RobotState.getRobotPose().getRotation());
+              } else {
+                speeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d());
+              }
               drive.runVelocity(speeds);
             },
             drive)

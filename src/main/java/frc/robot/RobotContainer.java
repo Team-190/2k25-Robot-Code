@@ -204,7 +204,7 @@ public class RobotContainer {
     driver
         .a()
         .whileTrue(
-            DriveCommands.aprilTagAline(
+            DriveCommands.alignRobotToAprilTag(
                 drive,
                 () -> RobotState.getControlData().poseOfInterest(),
                 () -> RobotState.getControlData().tagIDOfInterest(),

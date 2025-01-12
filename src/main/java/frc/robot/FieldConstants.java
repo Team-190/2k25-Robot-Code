@@ -12,7 +12,7 @@ public class FieldConstants {
     TAG_6(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(60)),
+        Rotation2d.fromDegrees(0)),
     TAG_7(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
@@ -20,19 +20,19 @@ public class FieldConstants {
     TAG_8(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(300)),
+        Rotation2d.fromDegrees(0)),
     TAG_9(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(240)),
+        Rotation2d.fromDegrees(0)),
     TAG_10(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(180)),
+        Rotation2d.fromDegrees(0)),
     TAG_11(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
         new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(120));
+        Rotation2d.fromDegrees(0));
 
     private final Translation2d leftTranslation;
     private final Translation2d rightTranslation;

@@ -18,7 +18,7 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-  @Getter private static ControlData controlData = new ControlData(new Pose3d(), -1.0);
+  @Getter private static ControlData controlData = new ControlData(new Pose3d(), -1.0, 0);
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;
@@ -87,7 +87,9 @@ public class RobotState {
     for (Camera camera : cameras) {
 
       if (camera.getName().equals("limelight-shooter")) {
-        controlData = new ControlData(camera.getPoseOfInterest(), camera.getTagIDOfInterest());
+        controlData =
+            new ControlData(
+                camera.getPoseOfInterest(), camera.getTagIDOfInterest(), camera.getTotalTargets());
       }
 
       if (camera.getTargetAquired()
@@ -138,5 +140,6 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
-  public static record ControlData(Pose3d poseOfInterest, double tagIDOfInterest) {}
+  public static record ControlData(
+      Pose3d poseOfInterest, double tagIDOfInterest, int totalTargets) {}
 }

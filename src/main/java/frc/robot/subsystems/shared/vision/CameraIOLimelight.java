@@ -33,6 +33,7 @@ public class CameraIOLimelight implements CameraIO {
     inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
     inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
     inputs.poseOfInterest = LimelightHelpers.getTargetPose3d_CameraSpace(name);
+    inputs.tagIDOfInterest = LimelightHelpers.getFiducialID(name);
   }
 
   @Override
