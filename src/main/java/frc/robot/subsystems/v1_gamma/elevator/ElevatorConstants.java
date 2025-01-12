@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_gamma.elevator;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+import lombok.RequiredArgsConstructor;
 
 public class ElevatorConstants {
     public static final int BOTTOM_ELEVATOR_CAN_ID;
@@ -98,4 +99,26 @@ public class ElevatorConstants {
     public record Constraints(
         LoggedTunableNumber maxAcceleration,
         LoggedTunableNumber goalTolerance) {}
+
+
+    @RequiredArgsConstructor
+    public enum ElevatorPositions {
+        STOW(0.0,0.0),
+        INTAKE(0.0,0.0),
+        L1(0.0,0.0),
+        L2(0.0,0.0),
+        L3(0.0,0.0),
+        L4(0.0,0.0);
+
+        private final double topPosition;
+        private final double bottomPosition;
+
+        public double getTopPosition() {
+            return topPosition;
+        }
+
+        public double getBottomPosition() {
+            return bottomPosition;
+        }
+    }
 }
