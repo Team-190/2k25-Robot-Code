@@ -7,7 +7,9 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -17,12 +19,26 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * alliance wall.
  */
 public class AllianceFlipUtil {
+  public static double fieldWidth = Units.feetToMeters(26.0) + Units.inchesToMeters(5.0);
+  public static double fieldLength = Units.feetToMeters(57.0) + Units.inchesToMeters(6.875);
+
   /** Flips a rotation based on the current alliance color. */
   public static Rotation2d apply(Rotation2d rotation) {
     if (shouldFlip()) {
       return new Rotation2d(-rotation.getCos(), rotation.getSin());
     } else {
       return rotation;
+    }
+  }
+
+  public static Pose2d apply(Pose2d pose) {
+    if (shouldFlip()) {
+      return new Pose2d(
+          fieldLength - pose.getX(),
+          fieldWidth - pose.getY(),
+          new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
+    } else {
+      return pose;
     }
   }
 
