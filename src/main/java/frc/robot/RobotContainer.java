@@ -267,6 +267,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutonomousCommands.CharlotteTest(drive);
+    return AutonomousCommands.charlotteTest(drive, roller);
   }
 }
