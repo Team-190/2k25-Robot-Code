@@ -37,6 +37,9 @@ public class FieldConstants {
   public static final HashMap<Integer, AlignmentPoses> alignmentPoseMap =
       new HashMap<Integer, AlignmentPoses>();
 
+  public static final int[] validTags =
+      new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+
   static {
     alignmentPoseMap.put(6, AlignmentPoses.TAG_6);
     alignmentPoseMap.put(7, AlignmentPoses.TAG_7);

@@ -34,6 +34,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.util.LimelightHelpers;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
@@ -247,65 +248,64 @@ public final class DriveCommands {
     xController.setTolerance(0.005);
     yController.setTolerance(0.005);
     omegaController.setTolerance(Units.degreesToRadians(0.5));
-    return Commands.run(
-            () -> {
-              ChassisSpeeds speeds;
-              if (RobotState.getControlData().totalTargets() == 1
-                  && tagID.getAsDouble() != -1
-                  && FieldConstants.alignmentPoseMap.containsKey((int) tagID.getAsDouble())) {
-                int tagIDOfInterest = (int) tagID.getAsDouble();
-                Translation2d setpoint =
-                    FieldConstants.alignmentPoseMap
-                        .get(tagIDOfInterest)
-                        .getPose(leftSetpoint.getAsBoolean());
-                boolean isFlipped =
-                    DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get() == Alliance.Red;
-                double xSpeed = 0.0;
-                double ySpeed = 0.0;
-                double thetaSpeed = 0.0;
-                if (!xController.atSetpoint())
-                  xSpeed =
-                      MathUtil.applyDeadband(
-                          xController.calculate(targetPose.get().getX(), setpoint.getX()),
-                          0.09870152766556013);
-                else xController.reset(targetPose.get().getX());
-                if (!yController.atSetpoint())
-                  ySpeed =
-                      MathUtil.applyDeadband(
-                          yController.calculate(targetPose.get().getZ(), setpoint.getY()),
-                          0.042128593183473257);
-                else yController.reset(targetPose.get().getZ());
-                if (!omegaController.atSetpoint())
-                  thetaSpeed =
-                      MathUtil.applyDeadband(
-                          omegaController.calculate(targetPose.get().getRotation().getY(), 0.0),
-                          0.09927912329132032);
-                else omegaController.reset(targetPose.get().getRotation().getY());
+    return Commands.runOnce(
+            () ->
+                LimelightHelpers.SetFiducialIDFiltersOverride(
+                    "limelight-shooter", new int[] {(int) tagID.getAsDouble()}))
+        .andThen(
+            Commands.run(
+                    () -> {
+                      ChassisSpeeds speeds;
+                      if (RobotState.getControlData().totalTargets() == 1
+                          && tagID.getAsDouble() != -1
+                          && FieldConstants.alignmentPoseMap.containsKey(
+                              (int) tagID.getAsDouble())) {
+                        int tagIDOfInterest = (int) tagID.getAsDouble();
+                        Translation2d setpoint =
+                            FieldConstants.alignmentPoseMap
+                                .get(tagIDOfInterest)
+                                .getPose(leftSetpoint.getAsBoolean());
+                        double xSpeed = 0.0;
+                        double ySpeed = 0.0;
+                        double thetaSpeed = 0.0;
+                        if (!xController.atSetpoint())
+                          xSpeed =
+                              MathUtil.applyDeadband(
+                                  xController.calculate(targetPose.get().getX(), setpoint.getX()),
+                                  0.09870152766556013);
+                        else xController.reset(targetPose.get().getX());
+                        if (!yController.atSetpoint())
+                          ySpeed =
+                              MathUtil.applyDeadband(
+                                  yController.calculate(targetPose.get().getZ(), setpoint.getY()),
+                                  0.042128593183473257);
+                        else yController.reset(targetPose.get().getZ());
+                        if (!omegaController.atSetpoint())
+                          thetaSpeed =
+                              MathUtil.applyDeadband(
+                                  omegaController.calculate(
+                                      targetPose.get().getRotation().getY(), 0.0),
+                                  0.09927912329132032);
+                        else omegaController.reset(targetPose.get().getRotation().getY());
 
-                Logger.recordOutput("xSpeed", xSpeed);
-                Logger.recordOutput("ySpeed", ySpeed);
-                Logger.recordOutput("thetaSpeed", thetaSpeed);
-                Logger.recordOutput("setpoint", setpoint);
-                speeds =
-                    ChassisSpeeds.fromRobotRelativeSpeeds(
-                        ySpeed,
-                        xSpeed,
-                        thetaSpeed,
-                        isFlipped
-                            ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                            : RobotState.getRobotPose().getRotation());
-              } else {
-                speeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, new Rotation2d());
-              }
-              drive.runVelocity(speeds);
-            },
-            drive)
-        .finallyDo(
-            () -> {
-              omegaController.reset(targetPose.get().getRotation().getY());
-              xController.reset(targetPose.get().getX());
-              yController.reset(targetPose.get().getZ());
-            });
+                        Logger.recordOutput("xSpeed", xSpeed);
+                        Logger.recordOutput("ySpeed", ySpeed);
+                        Logger.recordOutput("thetaSpeed", thetaSpeed);
+                        Logger.recordOutput("setpoint", setpoint);
+                        speeds = new ChassisSpeeds(-xSpeed, ySpeed, thetaSpeed);
+                      } else {
+                        speeds = new ChassisSpeeds();
+                      }
+                      drive.runVelocity(speeds);
+                    },
+                    drive)
+                .finallyDo(
+                    () -> {
+                      omegaController.reset(targetPose.get().getRotation().getY());
+                      xController.reset(targetPose.get().getX());
+                      yController.reset(targetPose.get().getZ());
+                      LimelightHelpers.SetFiducialIDFiltersOverride(
+                          "limelight-shooter", FieldConstants.validTags);
+                    }));
   }
 }
