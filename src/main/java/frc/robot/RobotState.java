@@ -23,7 +23,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
   @Getter
-  private static ReefEstimate reefEstimate = new ReefEstimate(new Pose2d(), -1, ReefPost.LEFT);
+  private static ReefEstimate reefEstimate = new ReefEstimate(new Pose2d(), -1);
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;
@@ -155,14 +155,6 @@ public class RobotState {
 
     int tagIDOfInterest = getClosestReefTag();
 
-    reefEstimate =
-        new ReefEstimate(
-            new Pose2d(reefEstimateTranslation, reefEstimateRotation),
-            tagIDOfInterest,
-            RobotState.getRobotPose().getRotation().getRadians() > reefEstimateRotation.getRadians()
-                ? ReefPost.RIGHT
-                : ReefPost.LEFT);
-
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
@@ -171,7 +163,6 @@ public class RobotState {
     Logger.recordOutput("RobotState/Reef Data/Num Average", numAverage);
     Logger.recordOutput("RobotState/Reef Data/Estimated Reef Pose", reefEstimateTranslation);
     Logger.recordOutput("RobotState/Reef Data/Reef Target Tag", reefEstimate.tagIDOfInterest());
-    Logger.recordOutput("RobotState/Reef Data/Reef Target Post", reefEstimate.post());
   }
 
   public static Pose2d getRobotPose() {
@@ -249,5 +240,5 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
-  public static record ReefEstimate(Pose2d poseOfInterest, int tagIDOfInterest, ReefPost post) {}
+  public static record ReefEstimate(Pose2d poseOfInterest, int tagIDOfInterest) {}
 }

@@ -224,7 +224,7 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
+  public static Command alignRobotToAprilTag(Drive drive, FieldConstants.ReefPost post, Camera... cameras) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -260,7 +260,7 @@ public final class DriveCommands {
                         Translation2d setpoint =
                             FieldConstants.alignmentPoseMap
                                 .get(RobotState.getReefEstimate().tagIDOfInterest())
-                                .getPost(RobotState.getReefEstimate().post());
+                                .getPost(post);
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
                         double thetaSpeed = 0.0;

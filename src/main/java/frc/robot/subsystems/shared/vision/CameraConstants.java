@@ -3,6 +3,7 @@ package frc.robot.subsystems.shared.vision;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.List;
+import java.util.Set;
 
 public class CameraConstants {
   public static final double BLINK_TIME = 0.067;
@@ -30,7 +31,7 @@ public class CameraConstants {
   }
 
   public static class RobotCameras {
-    public static final Camera v0_FunkyLeft =
+    private static final Camera v0_FunkyLeft =
         new Camera(
             new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -43,7 +44,7 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
 
-    public static final Camera v0_FunkyRight =
+    private static final Camera v0_FunkyRight =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -55,6 +56,8 @@ public class CameraConstants {
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+
+    public static final Camera[] v0_FunkyCams = {v0_FunkyLeft, v0_FunkyRight};
   }
 
   public static class ReplayCameras {}

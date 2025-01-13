@@ -27,6 +27,8 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
+import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.vision.CameraConstants;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
@@ -60,7 +62,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.v0_FunkyLeft, RobotCameras.v0_FunkyRight);
+          vision = new Vision(CameraConstants.RobotCameras.v0_FunkyCams);
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:
@@ -186,7 +188,9 @@ public class RobotContainer {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive));
+        driver.povLeft().whileTrue(DriveCommands.alignRobotToAprilTag(drive, FieldConstants.ReefPost.LEFT, vision.getCameras()));
+        driver.povRight().whileTrue(DriveCommands.alignRobotToAprilTag(drive, FieldConstants.ReefPost.RIGHT, vision.getCameras()));
+
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
