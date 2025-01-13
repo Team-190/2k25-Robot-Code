@@ -1,28 +1,26 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class ElevatorIOSim implements ElevatorIO {
-    private ElevatorSim topElevatorSim;
-    private ElevatorSim bottomElevatorSim;
+  private ElevatorSim topElevatorSim;
+  private ElevatorSim bottomElevatorSim;
 
-    private double topPositionMeters;
-    private double topVelocityMetersPerSecond;
-    private double topAppliedVolts;
-    private double topSupplyCurrentAmps;
-    private double topTorqueCurrentAmps;
-    private double topTemperatureCelcius;
+  private double topAppliedVolts;
 
-    private double bottomPositionMeters;
-    private double bottomVelocityMetersPerSecond;
-    private double bottomAppliedVolts;
-    private double bottomSupplyCurrentAmps;
-    private double bottomTorqueCurrentAmps;
-    private double bottomTemperatureCelcius;
+  private double bottomAppliedVolts;
 
+  private ProfiledPIDController topController;
+  private ProfiledPIDController bottomController;
+  private SimpleMotorFeedforward topFeedforward;
+  private SimpleMotorFeedforward bottomFeedforward;
 
-    public ElevatorIOSim() {
-        topElevatorSim = new ElevatorSim(
+  public ElevatorIOSim() {
+    topElevatorSim =
+        new ElevatorSim(
             ElevatorConstants.ELEVATOR_MOTOR_CONFIG,
             ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO,
             ElevatorConstants.TOP_CARRIAGE_MASS_KG,
@@ -32,7 +30,8 @@ public class ElevatorIOSim implements ElevatorIO {
             true,
             ElevatorConstants.TOP_MIN_HEIGHT_METERS);
 
-        bottomElevatorSim = new ElevatorSim(
+    bottomElevatorSim =
+        new ElevatorSim(
             ElevatorConstants.ELEVATOR_MOTOR_CONFIG,
             ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO,
             ElevatorConstants.BOTTOM_CARRIAGE_MASS_KG,
@@ -40,51 +39,83 @@ public class ElevatorIOSim implements ElevatorIO {
             ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS,
             ElevatorConstants.BOTTOM_MAX_HEIGHT_METERS,
             true,
-            ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS
-        );
+            ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS);
 
-        topPositionMeters = 0.0;
-        topVelocityMetersPerSecond = 0.0;
-        topAppliedVolts = 0.0;
-        topSupplyCurrentAmps = 0.0;
-        topTorqueCurrentAmps = 0.0;
-        topTemperatureCelcius = 0.0;
+    topController =
+        new ProfiledPIDController(
+            ElevatorConstants.GAINS.kP().get(),
+            0,
+            ElevatorConstants.GAINS.kD().get(),
+            new Constraints(
+                ElevatorConstants.CONSTRAINTS.maxAcceleration().get(), Double.POSITIVE_INFINITY));
+    bottomController =
+        new ProfiledPIDController(
+            ElevatorConstants.GAINS.kP().get(),
+            0,
+            ElevatorConstants.GAINS.kD().get(),
+            new Constraints(
+                ElevatorConstants.CONSTRAINTS.maxAcceleration().get(), Double.POSITIVE_INFINITY));
 
-        bottomPositionMeters = 0.0;
-        bottomVelocityMetersPerSecond = 0.0;
-        bottomAppliedVolts = 0.0;
-        bottomSupplyCurrentAmps = 0.0;
-        bottomTorqueCurrentAmps = 0.0;
-        bottomTemperatureCelcius = 0.0;
-    }
+    topFeedforward =
+        new SimpleMotorFeedforward(
+            ElevatorConstants.GAINS.kS().get(),
+            ElevatorConstants.GAINS.kV().get(),
+            ElevatorConstants.GAINS.kA().get());
 
-    @Override
-    public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.topPositionMeters = topElevatorSim.getPositionMeters();
-        inputs.topVelocityMetersPerSecond = topElevatorSim.getVelocityMetersPerSecond();
-        inputs.topAppliedVolts = topAppliedVolts;
-        inputs.topSupplyCurrentAmps = topElevatorSim.getCurrentDrawAmps();
-        inputs.topTorqueCurrentAmps = topElevatorSim.getCurrentDrawAmps();
-        inputs.topTemperatureCelcius = topTemperatureCelcius;
+    bottomFeedforward =
+        new SimpleMotorFeedforward(
+            ElevatorConstants.GAINS.kS().get(),
+            ElevatorConstants.GAINS.kV().get(),
+            ElevatorConstants.GAINS.kA().get());
 
-        inputs.bottomPositionMeters = bottomElevatorSim.getPositionMeters();
-        inputs.bottomVelocityMetersPerSecond = bottomElevatorSim.getVelocityMetersPerSecond();
-        inputs.bottomAppliedVolts = bottomAppliedVolts;
-        inputs.bottomSupplyCurrentAmps = bottomElevatorSim.getCurrentDrawAmps();
-        inputs.bottomTorqueCurrentAmps = bottomElevatorSim.getCurrentDrawAmps();
-        inputs.bottomTemperatureCelcius = bottomTemperatureCelcius;
-        
+    topAppliedVolts = 0.0;
+    bottomAppliedVolts = 0.0;
+  }
 
-    }
-    @Override
-    public void setBottomVoltage(double volts) {
-        bottomAppliedVolts = volts;
-        bottomElevatorSim.setInputVoltage(volts);
+  @Override
+  public void updateInputs(ElevatorIOInputs inputs) {
+    inputs.topPositionMeters = topElevatorSim.getPositionMeters();
+    inputs.topVelocityMetersPerSecond = topElevatorSim.getVelocityMetersPerSecond();
+    inputs.topAppliedVolts = topAppliedVolts;
+    inputs.topSupplyCurrentAmps = topElevatorSim.getCurrentDrawAmps();
+    inputs.topTorqueCurrentAmps = topElevatorSim.getCurrentDrawAmps();
 
-    }
-    @Override
-    public void setTopVoltage(double volts) {
-        topAppliedVolts = volts;
-        topElevatorSim.setInputVoltage(volts);
-    }
+    inputs.topPositionSetpointMeters = topController.getSetpoint().position;
+    inputs.topPositionErrorMeters = topController.getPositionError();
+
+    inputs.bottomPositionMeters = bottomElevatorSim.getPositionMeters();
+    inputs.bottomVelocityMetersPerSecond = bottomElevatorSim.getVelocityMetersPerSecond();
+    inputs.bottomAppliedVolts = bottomAppliedVolts;
+    inputs.bottomSupplyCurrentAmps = bottomElevatorSim.getCurrentDrawAmps();
+    inputs.bottomTorqueCurrentAmps = bottomElevatorSim.getCurrentDrawAmps();
+
+    inputs.bottomPositionSetpointMeters = bottomController.getSetpoint().position;
+    inputs.bottomPositionErrorMeters = bottomController.getPositionError();
+  }
+
+  @Override
+  public void setBottomVoltage(double volts) {
+    bottomAppliedVolts = volts;
+    bottomElevatorSim.setInputVoltage(volts);
+  }
+
+  @Override
+  public void setTopVoltage(double volts) {
+    topAppliedVolts = volts;
+    topElevatorSim.setInputVoltage(volts);
+  }
+
+  @Override
+  public void setTopPositionGoal(double position) {
+    topElevatorSim.setInput(
+        topController.calculate(position)
+            + topFeedforward.calculate(topController.getSetpoint().position));
+  }
+
+  @Override
+  public void setBottomPositionGoal(double position) {
+    bottomElevatorSim.setInput(
+        bottomController.calculate(position)
+            + bottomFeedforward.calculate(bottomController.getSetpoint().position));
+  }
 }
