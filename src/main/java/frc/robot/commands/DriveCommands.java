@@ -286,11 +286,11 @@ public final class DriveCommands {
                           thetaSpeed =
                               MathUtil.applyDeadband(
                                   omegaController.calculate(
+                                      RobotState.getRobotPose().getRotation().getRadians(),
                                       RobotState.getReefEstimate()
                                           .poseOfInterest()
                                           .getRotation()
-                                          .getRadians(),
-                                      0.0),
+                                          .getRadians()),
                                   0.09927912329132032);
                         else
                           omegaController.reset(

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public class FieldConstants {
@@ -20,28 +21,35 @@ public class FieldConstants {
   public enum AlignmentPoses {
     TAG_6(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923),
+        Rotation2d.fromDegrees(-145.0)),
     TAG_7(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923),
+        Rotation2d.fromDegrees(-90.0)),
     TAG_8(
         new Translation2d(0.14860069499694067, 0.39923846993711837),
-        new Translation2d(-0.14860069499694067, 0.39923846993711837)),
+        new Translation2d(-0.14860069499694067, 0.39923846993711837),
+        Rotation2d.fromDegrees(-25.0)),
     TAG_9(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923),
+        Rotation2d.fromDegrees(30.0)),
     TAG_10(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923)),
+        new Translation2d(-0.15879872585220567, 0.38812383025452923),
+        Rotation2d.fromDegrees(90.0)),
     TAG_11(
         new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923));
+        new Translation2d(-0.15879872585220567, 0.38812383025452923),
+        Rotation2d.fromDegrees(150.0));
 
-    private final Translation2d leftTranslation;
     private final Translation2d rightTranslation;
+    private final Translation2d leftTranslation;
+    @Getter private final Rotation2d gyroRotation;
 
     public final Translation2d getPost(ReefPost post) {
-      return post.equals(ReefPost.LEFT) ? leftTranslation : rightTranslation;
+      return post.equals(ReefPost.RIGHT) ? rightTranslation : leftTranslation;
     }
   }
 
