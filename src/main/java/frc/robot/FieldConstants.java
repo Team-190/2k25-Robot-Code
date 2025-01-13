@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,8 +115,13 @@ public class FieldConstants {
 
     public static final Pose2d[] centerFaces =
         new Pose2d[6]; // Starting facing the driver station in clockwise order
+
     public static final List<Map<ReefHeight, Pose3d>> branchPositions =
-        new ArrayList<>(); // Starting at the right branch facing the driver station in clockwise
+        new ArrayList<Map<ReefHeight, Pose3d>>(
+            Collections.nCopies(
+                24,
+                (Map<ReefHeight, Pose3d>)
+                    null)); // Starting at the right branch facing the driver station in clockwise
 
     static {
       // Initialize faces
@@ -190,8 +196,8 @@ public class FieldConstants {
                       Units.degreesToRadians(level.pitch),
                       poseDirection.getRotation().getRadians())));
         }
-        branchPositions.add((face * 2) + 1, fillRight);
-        branchPositions.add((face * 2) + 2, fillLeft);
+        branchPositions.set((face * 2) + 1, fillRight);
+        branchPositions.set((face * 2) + 2, fillLeft);
       }
     }
   }
