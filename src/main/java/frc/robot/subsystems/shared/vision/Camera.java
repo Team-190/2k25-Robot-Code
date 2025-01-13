@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import java.util.List;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +19,7 @@ public class Camera {
   @Getter private final double primaryXYStandardDeviationCoefficient;
   @Getter private final double secondaryXYStandardDeviationCoefficient;
   @Getter private final DoubleArrayPublisher robotHeadingPublisher;
+  @Getter private final List<CameraDuty> cameraDuties;
 
   public Camera(
       CameraIO io,
@@ -25,7 +27,8 @@ public class Camera {
       double verticalFOV,
       double primaryXYStandardDeviationCoefficient,
       double secondaryXYStandardDeviationCoefficient,
-      DoubleArrayPublisher robotHeadingPublisher) {
+      DoubleArrayPublisher robotHeadingPublisher,
+      List<CameraDuty> cameraDuties) {
     inputs = new CameraIOInputsAutoLogged();
 
     this.io = io;
@@ -36,6 +39,7 @@ public class Camera {
     this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
     this.robotHeadingPublisher = robotHeadingPublisher;
+    this.cameraDuties = cameraDuties;
   }
 
   public Camera(
@@ -45,7 +49,8 @@ public class Camera {
       double verticalFOV,
       double primaryXYStandardDeviationCoefficient,
       double secondaryXYStandardDeviationCoefficient,
-      DoubleArrayPublisher robotHeadingPublisher) {
+      DoubleArrayPublisher robotHeadingPublisher,
+      List<CameraDuty> cameraDuties) {
     inputs = new CameraIOInputsAutoLogged();
 
     this.io = io;
@@ -56,6 +61,7 @@ public class Camera {
     this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
     this.robotHeadingPublisher = robotHeadingPublisher;
+    this.cameraDuties = cameraDuties;
   }
 
   public void periodic() {
@@ -105,5 +111,9 @@ public class Camera {
 
   public void setPipeline(int pipeline) {
     io.setPipeline(pipeline);
+  }
+
+  public void setValidTags(int... validIds) {
+    io.setValidTags(validIds);
   }
 }

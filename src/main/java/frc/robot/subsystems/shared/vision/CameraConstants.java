@@ -1,9 +1,19 @@
 package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.List;
 
 public class CameraConstants {
   public static final double BLINK_TIME = 0.067;
+
+  public static class Limelight2PlusConstants {
+    public static final double HORIZONTAL_FOV = Units.degreesToRadians(62.5);
+    public static final double VERTICAL_FOV = Units.degreesToRadians(48.9);
+    public static final double MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT = 0.1;
+    public static final double MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT = 0.1;
+    public static final double COMPLEMENTARY_FILTER_SIGMA = 0.5;
+  }
 
   public static class Limelight3Constants {
     public static final double HORIZONTAL_FOV = Units.degreesToRadians(62.5);
@@ -19,7 +29,33 @@ public class CameraConstants {
     public static final double MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT = 0.00015;
   }
 
-  public static class RobotCameras {}
+  public static class RobotCameras {
+    public static final Camera v0_FunkyLeft =
+        new Camera(
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
+            Limelight2PlusConstants.HORIZONTAL_FOV,
+            Limelight2PlusConstants.VERTICAL_FOV,
+            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-left")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+
+    public static final Camera v0_FunkyRight =
+        new Camera(
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
+            Limelight2PlusConstants.HORIZONTAL_FOV,
+            Limelight2PlusConstants.VERTICAL_FOV,
+            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-right")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+  }
 
   public static class ReplayCameras {}
 }

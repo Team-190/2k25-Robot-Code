@@ -18,7 +18,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,12 +33,11 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.util.LimelightHelpers;
+import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.vision.CameraDuty;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -226,11 +224,7 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command alignRobotToAprilTag(
-      Drive drive,
-      Supplier<Pose3d> targetPose,
-      DoubleSupplier tagID,
-      BooleanSupplier leftSetpoint) {
+  public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -249,44 +243,61 @@ public final class DriveCommands {
     yController.setTolerance(0.005);
     omegaController.setTolerance(Units.degreesToRadians(0.5));
     return Commands.runOnce(
-            () ->
-                LimelightHelpers.SetFiducialIDFiltersOverride(
-                    "limelight-shooter", new int[] {(int) tagID.getAsDouble()}))
+            () -> {
+              for (Camera camera : cameras) {
+                if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
+                  camera.setValidTags(RobotState.getReefEstimate().tagIDOfInterest());
+                }
+              }
+            })
         .andThen(
             Commands.run(
                     () -> {
                       ChassisSpeeds speeds;
-                      if (RobotState.getControlData().totalTargets() == 1
-                          && tagID.getAsDouble() != -1
+                      if (RobotState.getReefEstimate().tagIDOfInterest() != -1
                           && FieldConstants.alignmentPoseMap.containsKey(
-                              (int) tagID.getAsDouble())) {
-                        int tagIDOfInterest = (int) tagID.getAsDouble();
+                              (int) RobotState.getReefEstimate().tagIDOfInterest())) {
                         Translation2d setpoint =
                             FieldConstants.alignmentPoseMap
-                                .get(tagIDOfInterest)
-                                .getPose(leftSetpoint.getAsBoolean());
+                                .get(RobotState.getReefEstimate().tagIDOfInterest())
+                                .getPost(RobotState.getReefEstimate().post());
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
                         double thetaSpeed = 0.0;
                         if (!xController.atSetpoint())
                           xSpeed =
                               MathUtil.applyDeadband(
-                                  xController.calculate(targetPose.get().getX(), setpoint.getX()),
+                                  xController.calculate(
+                                      RobotState.getReefEstimate().poseOfInterest().getX(),
+                                      setpoint.getX()),
                                   0.09870152766556013);
-                        else xController.reset(targetPose.get().getX());
+                        else
+                          xController.reset(RobotState.getReefEstimate().poseOfInterest().getX());
                         if (!yController.atSetpoint())
                           ySpeed =
                               MathUtil.applyDeadband(
-                                  yController.calculate(targetPose.get().getZ(), setpoint.getY()),
+                                  yController.calculate(
+                                      RobotState.getReefEstimate().poseOfInterest().getY(),
+                                      setpoint.getY()),
                                   0.042128593183473257);
-                        else yController.reset(targetPose.get().getZ());
+                        else
+                          yController.reset(RobotState.getReefEstimate().poseOfInterest().getY());
                         if (!omegaController.atSetpoint())
                           thetaSpeed =
                               MathUtil.applyDeadband(
                                   omegaController.calculate(
-                                      targetPose.get().getRotation().getY(), 0.0),
+                                      RobotState.getReefEstimate()
+                                          .poseOfInterest()
+                                          .getRotation()
+                                          .getRadians(),
+                                      0.0),
                                   0.09927912329132032);
-                        else omegaController.reset(targetPose.get().getRotation().getY());
+                        else
+                          omegaController.reset(
+                              RobotState.getReefEstimate()
+                                  .poseOfInterest()
+                                  .getRotation()
+                                  .getRadians());
 
                         Logger.recordOutput("xSpeed", xSpeed);
                         Logger.recordOutput("ySpeed", ySpeed);
@@ -301,11 +312,13 @@ public final class DriveCommands {
                     drive)
                 .finallyDo(
                     () -> {
-                      omegaController.reset(targetPose.get().getRotation().getY());
-                      xController.reset(targetPose.get().getX());
-                      yController.reset(targetPose.get().getZ());
-                      LimelightHelpers.SetFiducialIDFiltersOverride(
-                          "limelight-shooter", FieldConstants.validTags);
+                      omegaController.reset(
+                          RobotState.getReefEstimate().poseOfInterest().getRotation().getRadians());
+                      xController.reset(RobotState.getReefEstimate().poseOfInterest().getX());
+                      yController.reset(RobotState.getReefEstimate().poseOfInterest().getY());
+                      for (Camera camera : cameras) {
+                        camera.setValidTags(FieldConstants.validTags);
+                      }
                     }));
   }
 }

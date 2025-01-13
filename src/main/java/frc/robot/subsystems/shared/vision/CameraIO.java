@@ -91,4 +91,6 @@ public interface CameraIO {
   }
 
   public default void setPipeline(int pipeline) {}
+
+  public default void setValidTags(int... validIds) {}
 }

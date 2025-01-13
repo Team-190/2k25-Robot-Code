@@ -42,6 +42,11 @@ public class CameraIOLimelight implements CameraIO {
   }
 
   @Override
+  public void setValidTags(int... validIds) {
+    LimelightHelpers.SetFiducialIDFiltersOverride(name, validIds);
+  }
+
+  @Override
   public String getName() {
     return name;
   }
