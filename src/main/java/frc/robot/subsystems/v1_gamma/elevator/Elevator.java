@@ -33,11 +33,12 @@ public class Elevator extends SubsystemBase {
 
   public Command resetPosition() {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
-        .andThen( runOnce(
-            () -> {
-              io.setBottomPosition(ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS);
-              io.setTopPosition(ElevatorConstants.TOP_MIN_HEIGHT_METERS);
-            }));
+        .andThen(
+            runOnce(
+                () -> {
+                  io.setBottomPosition(ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS);
+                  io.setTopPosition(ElevatorConstants.TOP_MIN_HEIGHT_METERS);
+                }));
   }
 
   public ElevatorConstants.ElevatorPositions getPosition() {
