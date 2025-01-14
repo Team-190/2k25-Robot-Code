@@ -4,8 +4,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -36,7 +36,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private VoltageOut voltageControlRequest;
   private MotionMagicVoltage positionControlRequest;
-  private TorqueCurrentFOC currentControlRequest;
+  private MotionMagicTorqueCurrentFOC currentControlRequest;
 
   public ElevatorIOTalonFX() {
     talonFX = new TalonFX(ElevatorConstants.ELEVATOR_CAN_ID);
@@ -50,10 +50,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.Slot0.kS = ElevatorConstants.GAINS.kS().get();
     config.Slot0.kV = ElevatorConstants.GAINS.kV().get();
     config.Slot0.kA = ElevatorConstants.GAINS.kA().get();
+    config.Slot0.kG = ElevatorConstants.GAINS.kG().get();
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
     config.CurrentLimits.SupplyCurrentLimit = ElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
 
@@ -79,14 +82,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         positionSetpointRotations[i] = talonFX.getClosedLoopReference();
         positionErrorRotations[i] = talonFX.getClosedLoopError();
       }
-      positionRotations[i] = followTalonFX[i].getPosition();
-      velocityRotationsPerSecond[i] = followTalonFX[i].getVelocity();
-      appliedVolts[i] = followTalonFX[i].getMotorVoltage();
-      supplyCurrentAmps[i] = followTalonFX[i].getSupplyCurrent();
-      torqueCurrentAmps[i] = followTalonFX[i].getTorqueCurrent();
-      temperatureCelsius[i] = followTalonFX[i].getDeviceTemp();
-      positionSetpointRotations[i] = followTalonFX[i].getClosedLoopReference();
-      positionErrorRotations[i] = followTalonFX[i].getClosedLoopError();
+      positionRotations[i] = followTalonFX[i - 1].getPosition();
+      velocityRotationsPerSecond[i] = followTalonFX[i - 1].getVelocity();
+      appliedVolts[i] = followTalonFX[i - 1].getMotorVoltage();
+      supplyCurrentAmps[i] = followTalonFX[i - 1].getSupplyCurrent();
+      torqueCurrentAmps[i] = followTalonFX[i - 1].getTorqueCurrent();
+      temperatureCelsius[i] = followTalonFX[i - 1].getDeviceTemp();
+      positionSetpointRotations[i] = followTalonFX[i - 1].getClosedLoopReference();
+      positionErrorRotations[i] = followTalonFX[i - 1].getClosedLoopError();
     }
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -215,7 +218,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setCurrent(double amps) {
-    talonFX.setControl(currentControlRequest.withOutput(amps));
+    talonFX.setControl(currentControlRequest.withFeedForward(amps));
   }
 
   @Override
@@ -228,12 +231,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPositionGoal(double meters) {
+    // talonFX.setControl(
+    //     positionControlRequest
+    //         .withPosition(
+    //             meters
+    //                 * ElevatorConstants.ELEVATOR_GEAR_RATIO
+    //                 / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+    //         .withEnableFOC(true));
+
     talonFX.setControl(
-        positionControlRequest
-            .withPosition(
-                meters
-                    * ElevatorConstants.ELEVATOR_GEAR_RATIO
-                    / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
-            .withEnableFOC(true));
+        currentControlRequest.withPosition(
+            meters
+                * ElevatorConstants.ELEVATOR_GEAR_RATIO
+                / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)));
   }
 }

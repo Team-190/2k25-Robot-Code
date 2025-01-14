@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -43,6 +44,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
+    elevatorSim.setInputVoltage(appliedVolts);
     elevatorSim.update(Constants.LOOP_PERIOD_SECONDS);
     for (int i = 0; i < 4; i++) {
       inputs.positionMeters[i] = elevatorSim.getPositionMeters();
@@ -54,7 +56,6 @@ public class ElevatorIOSim implements ElevatorIO {
       inputs.positionSetpointMeters[i] = controller.getSetpoint().position;
       inputs.positionErrorMeters[i] = controller.getPositionError();
     }
-    elevatorSim.setInputVoltage(appliedVolts);
   }
 
   @Override
@@ -69,7 +70,11 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setPositionGoal(double position) {
-    elevatorSim.setInput(
-        controller.calculate(position) + feedforward.calculate(controller.getSetpoint().position));
+    appliedVolts =
+        MathUtil.clamp(
+            controller.calculate(position)
+                + feedforward.calculate(controller.getSetpoint().position),
+            -12,
+            12);
   }
 }

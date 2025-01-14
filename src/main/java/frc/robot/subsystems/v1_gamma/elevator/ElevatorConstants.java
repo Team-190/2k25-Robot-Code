@@ -14,24 +14,11 @@ public class ElevatorConstants {
   public static final ElevatorSimParams ELEVATOR_SIM_PARAMS;
 
   public static final double ELEVATOR_SUPPLY_CURRENT_LIMIT;
+  public static final double ELEVATOR_STATOR_CURRENT_LIMIT;
   public static final Gains GAINS;
   public static final Constraints CONSTRAINTS;
 
   static {
-    GAINS =
-        new Gains(
-            new LoggedTunableNumber("Elevator/Gains/kP", 0.1),
-            new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
-            new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
-            new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
-            new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
-
-    CONSTRAINTS =
-        new Constraints(
-            new LoggedTunableNumber("Elevator/Max Acceleration", 4),
-            new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
-            new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
-
     ELEVATOR_CAN_ID = 0;
     ELEVATOR_GEAR_RATIO = 1.0;
     ELEVATOR_TOP_GEAR_RATIO = 1.0;
@@ -41,12 +28,29 @@ public class ElevatorConstants {
     ELEVATOR_SIM_PARAMS = new ElevatorSimParams(DCMotor.getKrakenX60Foc(4), 1, 1, 0, 0, 1, 1);
 
     ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
+    ELEVATOR_STATOR_CURRENT_LIMIT = 40;
+
+    GAINS =
+        new Gains(
+            new LoggedTunableNumber("Elevator/Gains/kP", 0.1),
+            new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
+            new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
+            new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
+            new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
+            new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
+
+    CONSTRAINTS =
+        new Constraints(
+            new LoggedTunableNumber("Elevator/Max Acceleration", 4),
+            new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
+            new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
   }
 
   public static record Gains(
       LoggedTunableNumber kP,
       LoggedTunableNumber kD,
       LoggedTunableNumber kS,
+      LoggedTunableNumber kG,
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
