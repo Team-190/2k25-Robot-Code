@@ -17,10 +17,7 @@ public class ElevatorConstants {
   public static final Gains GAINS;
   public static final Constraints CONSTRAINTS;
 
-  public static final DCMotor ELEVATOR_MOTOR_CONFIG;
-
   static {
-    ELEVATOR_MOTOR_CONFIG = DCMotor.getKrakenX60Foc(1);
     GAINS =
         new Gains(
             new LoggedTunableNumber("Elevator/Gains/kP", 0.1),
@@ -40,7 +37,7 @@ public class ElevatorConstants {
     TOP_DRUM_RADIUS = 1;
     DRUM_RADIUS = 1;
 
-    ELEVATOR_SIM_PARAMS = new ElevatorSimParams(1, 1, 0, 0, 1, 1);
+    ELEVATOR_SIM_PARAMS = new ElevatorSimParams(DCMotor.getKrakenX60Foc(4), 1, 1, 0, 0, 1, 1);
 
     ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
   }
@@ -56,6 +53,7 @@ public class ElevatorConstants {
       LoggedTunableNumber maxAcceleration, LoggedTunableNumber goalTolerance) {}
 
   public static record ElevatorSimParams(
+      DCMotor ELEVATOR_MOTOR_CONFIG,
       double TOP_CARRIAGE_MASS_KG,
       double CARRIAGE_MASS_KG,
       double TOP_MIN_HEIGHT_METERS,

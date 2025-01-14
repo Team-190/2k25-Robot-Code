@@ -15,7 +15,7 @@ public class ElevatorIOSim implements ElevatorIO {
   public ElevatorIOSim() {
     elevatorSim =
         new ElevatorSim(
-            ElevatorConstants.ELEVATOR_MOTOR_CONFIG,
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.ELEVATOR_MOTOR_CONFIG(),
             ElevatorConstants.ELEVATOR_GEAR_RATIO,
             ElevatorConstants.ELEVATOR_SIM_PARAMS.CARRIAGE_MASS_KG(),
             ElevatorConstants.DRUM_RADIUS,
@@ -42,15 +42,16 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
+    for (int i = 0; i < 4; i++) {
+      inputs.positionMeters[i] = elevatorSim.getPositionMeters();
+      inputs.velocityMetersPerSecond[i] = elevatorSim.getVelocityMetersPerSecond();
+      inputs.appliedVolts[i] = appliedVolts;
+      inputs.supplyCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
+      inputs.torqueCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
 
-    inputs.positionMeters = elevatorSim.getPositionMeters();
-    inputs.velocityMetersPerSecond = elevatorSim.getVelocityMetersPerSecond();
-    inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = elevatorSim.getCurrentDrawAmps();
-    inputs.torqueCurrentAmps = elevatorSim.getCurrentDrawAmps();
-
-    inputs.positionSetpointMeters = controller.getSetpoint().position;
-    inputs.positionErrorMeters = controller.getPositionError();
+      inputs.positionSetpointMeters[i] = controller.getSetpoint().position;
+      inputs.positionErrorMeters[i] = controller.getPositionError();
+    }
   }
 
   @Override
