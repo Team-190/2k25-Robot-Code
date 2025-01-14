@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -35,6 +36,7 @@ public class RobotState {
 
   private static final LinearFilter reefXEstimator;
   private static final LinearFilter reefYEstimator;
+  private static final LinearFilter reefThetaEstimator;
 
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
@@ -74,6 +76,7 @@ public class RobotState {
 
     reefXEstimator = LinearFilter.movingAverage(10);
     reefYEstimator = LinearFilter.movingAverage(10);
+    reefThetaEstimator = LinearFilter.movingAverage(10);
 
     headingOffset = new Rotation2d();
   }
@@ -104,6 +107,7 @@ public class RobotState {
 
     double reefXAvg = 0;
     double reefYAvg = 0;
+    double reefThetaAvg = 0;
 
     double numAverage = 0;
 
@@ -113,6 +117,7 @@ public class RobotState {
         Pose3d pose = camera.getPoseOfInterest();
         reefXAvg += pose.getZ();
         reefYAvg += pose.getX();
+        reefThetaAvg += pose.getRotation().getY();
         numAverage++;
       }
 
@@ -145,24 +150,17 @@ public class RobotState {
       }
     }
 
-    Translation2d reefEstimateTranslation =
-        new Translation2d(
+    Pose2d reefEstimatorPose =
+        new Pose2d(
             reefXEstimator.calculate(reefXAvg / numAverage),
-            reefYEstimator.calculate(reefYAvg / numAverage));
-
-    Rotation2d reefEstimateRotation;
-    try {
-      reefEstimateRotation =
-          FieldConstants.alignmentPoseMap.get(getClosestReefTag()).getGyroRotation();
-    } catch (Exception e) {
-      reefEstimateRotation = new Rotation2d();
-    }
+            reefYEstimator.calculate(reefYAvg / numAverage),
+            Rotation2d.fromRadians(
+                reefThetaEstimator.calculate(
+                    MathUtil.inputModulus(reefThetaAvg / numAverage, -Math.PI, Math.PI))));
 
     int tagIDOfInterest = getClosestReefTag();
 
-    reefEstimate =
-        new ReefEstimate(
-            new Pose2d(reefEstimateTranslation, reefEstimateRotation), tagIDOfInterest);
+    reefEstimate = new ReefEstimate(reefEstimatorPose, tagIDOfInterest);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
@@ -170,7 +168,7 @@ public class RobotState {
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
 
     Logger.recordOutput("RobotState/Reef Data/Num Average", numAverage);
-    Logger.recordOutput("RobotState/Reef Data/Estimated Reef Pose", reefEstimateTranslation);
+    Logger.recordOutput("RobotState/Reef Data/Estimated Reef Pose", reefEstimatorPose);
     Logger.recordOutput("RobotState/Reef Data/Reef Target Tag", reefEstimate.tagIDOfInterest());
   }
 
@@ -203,7 +201,7 @@ public class RobotState {
           minDistanceTag = 7;
           break;
         case 1:
-          minDistance = 6;
+          minDistanceTag = 6;
           break;
         case 2:
           minDistanceTag = 11;
@@ -224,7 +222,7 @@ public class RobotState {
           minDistanceTag = 18;
           break;
         case 1:
-          minDistance = 19;
+          minDistanceTag = 19;
           break;
         case 2:
           minDistanceTag = 20;
