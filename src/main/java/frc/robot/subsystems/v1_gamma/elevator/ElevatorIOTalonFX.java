@@ -17,38 +17,25 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
-  private final TalonFX topTalonFX;
-  private final TalonFX bottomTalonFX;
+  private final TalonFX talonFX;
 
-  private StatusSignal<Angle> topPositionRotations;
-  private StatusSignal<AngularVelocity> topVelocityRotationsPerSecond;
-  private StatusSignal<Voltage> topAppliedVolts;
-  private StatusSignal<Current> topSupplyCurrentAmps;
-  private StatusSignal<Current> topTorqueCurrentAmps;
-  private StatusSignal<Temperature> topTemperatureCelcius;
-  private StatusSignal<Double> topPositionSetpointRotations;
-  private StatusSignal<Double> topPositionErrorRotations;
+  private StatusSignal<Angle> positionRotations;
+  private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  private StatusSignal<Voltage> appliedVolts;
+  private StatusSignal<Current> supplyCurrentAmps;
+  private StatusSignal<Current> torqueCurrentAmps;
+  private StatusSignal<Temperature> temperatureCelsius;
+  private StatusSignal<Double> positionSetpointRotations;
+  private StatusSignal<Double> positionErrorRotations;
 
-  private StatusSignal<Angle> bottomPositionRotations;
-  private StatusSignal<AngularVelocity> bottomVelocityRotationsPerSecond;
-  private StatusSignal<Voltage> bottomAppliedVolts;
-  private StatusSignal<Current> bottomSupplyCurrentAmps;
-  private StatusSignal<Current> bottomTorqueCurrentAmps;
-  private StatusSignal<Temperature> bottomTemperatureCelcius;
-  private StatusSignal<Double> bottomPositionSetpointRotations;
-  private StatusSignal<Double> bottomPositionErrorRotations;
-
-  private final Alert topDisconnectedAlert =
-      new Alert("Top Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
-  private final Alert bottomDisconnectedAlert =
-      new Alert("Bottom Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
+  private final Alert disconnectedAlert =
+      new Alert("Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
 
   private VoltageOut voltageControlRequest;
   private MotionMagicVoltage positionControlRequest;
 
   public ElevatorIOTalonFX() {
-    topTalonFX = new TalonFX(ElevatorConstants.TOP_ELEVATOR_CAN_ID);
-    bottomTalonFX = new TalonFX(ElevatorConstants.BOTTOM_ELEVATOR_CAN_ID);
+    talonFX = new TalonFX(ElevatorConstants.ELEVATOR_CAN_ID);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kP = ElevatorConstants.GAINS.kP().get();
@@ -67,48 +54,29 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         ElevatorConstants.CONSTRAINTS.maxAcceleration().get();
     config.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.GAINS.kV().get();
 
-    topTalonFX.getConfigurator().apply(config);
-    bottomTalonFX.getConfigurator().apply(config);
+    talonFX.getConfigurator().apply(config);
 
-    topPositionRotations = topTalonFX.getPosition();
-    topVelocityRotationsPerSecond = topTalonFX.getVelocity();
-    topAppliedVolts = topTalonFX.getMotorVoltage();
-    topSupplyCurrentAmps = topTalonFX.getSupplyCurrent();
-    topTorqueCurrentAmps = topTalonFX.getTorqueCurrent();
-    topTemperatureCelcius = topTalonFX.getDeviceTemp();
-    topPositionSetpointRotations = topTalonFX.getClosedLoopReference();
-    topPositionErrorRotations = topTalonFX.getClosedLoopError();
-
-    bottomPositionRotations = bottomTalonFX.getPosition();
-    bottomVelocityRotationsPerSecond = bottomTalonFX.getVelocity();
-    bottomAppliedVolts = bottomTalonFX.getMotorVoltage();
-    bottomSupplyCurrentAmps = bottomTalonFX.getSupplyCurrent();
-    bottomTorqueCurrentAmps = bottomTalonFX.getTorqueCurrent();
-    bottomTemperatureCelcius = bottomTalonFX.getDeviceTemp();
-    bottomPositionSetpointRotations = bottomTalonFX.getClosedLoopReference();
-    bottomPositionErrorRotations = bottomTalonFX.getClosedLoopError();
+    positionRotations = talonFX.getPosition();
+    velocityRotationsPerSecond = talonFX.getVelocity();
+    appliedVolts = talonFX.getMotorVoltage();
+    supplyCurrentAmps = talonFX.getSupplyCurrent();
+    torqueCurrentAmps = talonFX.getTorqueCurrent();
+    temperatureCelsius = talonFX.getDeviceTemp();
+    positionSetpointRotations = talonFX.getClosedLoopReference();
+    positionErrorRotations = talonFX.getClosedLoopError();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         100,
-        topPositionRotations,
-        topVelocityRotationsPerSecond,
-        topAppliedVolts,
-        topSupplyCurrentAmps,
-        topTorqueCurrentAmps,
-        topTemperatureCelcius,
-        topPositionSetpointRotations,
-        topPositionErrorRotations,
-        bottomPositionRotations,
-        bottomVelocityRotationsPerSecond,
-        bottomAppliedVolts,
-        bottomSupplyCurrentAmps,
-        bottomTorqueCurrentAmps,
-        bottomTemperatureCelcius,
-        bottomPositionSetpointRotations,
-        bottomPositionErrorRotations);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVolts,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelsius,
+        positionSetpointRotations,
+        positionErrorRotations);
 
-    topTalonFX.optimizeBusUtilization(50, 1.0);
-    bottomTalonFX.optimizeBusUtilization(50, 1.0);
+    talonFX.optimizeBusUtilization(50, 1.0);
 
     voltageControlRequest = new VoltageOut(0.0);
     positionControlRequest = new MotionMagicVoltage(0.0);
@@ -116,141 +84,74 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    boolean topConnected =
+    boolean connected =
         BaseStatusSignal.refreshAll(
-                topPositionRotations,
-                topVelocityRotationsPerSecond,
-                topAppliedVolts,
-                topSupplyCurrentAmps,
-                topTorqueCurrentAmps,
-                topTemperatureCelcius,
-                topPositionSetpointRotations,
-                topPositionErrorRotations)
-            .isOK();
-    boolean bottomConnected =
-        BaseStatusSignal.refreshAll(
-                bottomPositionRotations,
-                bottomVelocityRotationsPerSecond,
-                bottomAppliedVolts,
-                bottomSupplyCurrentAmps,
-                bottomTorqueCurrentAmps,
-                bottomTemperatureCelcius,
-                bottomPositionSetpointRotations,
-                bottomPositionErrorRotations)
+                positionRotations,
+                velocityRotationsPerSecond,
+                appliedVolts,
+                supplyCurrentAmps,
+                torqueCurrentAmps,
+                temperatureCelsius,
+                positionSetpointRotations,
+                positionErrorRotations)
             .isOK();
 
-    topPositionSetpointRotations.refresh();
-    topPositionErrorRotations.refresh();
-    bottomPositionSetpointRotations.refresh();
-    bottomPositionErrorRotations.refresh();
+    positionSetpointRotations.refresh();
+    positionErrorRotations.refresh();
 
-    topDisconnectedAlert.set(!topConnected);
-    bottomDisconnectedAlert.set(!bottomConnected);
+    disconnectedAlert.set(!connected);
 
-    inputs.topPositionMeters =
-        topPositionRotations.getValueAsDouble()
+    inputs.positionMeters =
+        positionRotations.getValueAsDouble()
             * Math.PI
-            * ElevatorConstants.TOP_DRUM_RADIUS
+            * ElevatorConstants.DRUM_RADIUS
             * 2
-            / ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
-    inputs.topVelocityMetersPerSecond =
-        topVelocityRotationsPerSecond.getValueAsDouble()
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    inputs.velocityMetersPerSecond =
+        velocityRotationsPerSecond.getValueAsDouble()
             * Math.PI
-            * ElevatorConstants.TOP_DRUM_RADIUS
+            * ElevatorConstants.DRUM_RADIUS
             * 2
-            / ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
-    inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
-    inputs.topSupplyCurrentAmps = topSupplyCurrentAmps.getValueAsDouble();
-    inputs.topTorqueCurrentAmps = topTorqueCurrentAmps.getValueAsDouble();
-    inputs.topTemperatureCelcius = topTemperatureCelcius.getValueAsDouble();
-    inputs.topPositionSetpointMeters =
-        topPositionSetpointRotations.getValueAsDouble()
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+    inputs.positionSetpointMeters =
+        positionSetpointRotations.getValueAsDouble()
             * Math.PI
-            * ElevatorConstants.TOP_DRUM_RADIUS
+            * ElevatorConstants.DRUM_RADIUS
             * 2
-            / ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
-    inputs.topPositionErrorMeters =
-        topPositionErrorRotations.getValueAsDouble()
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    inputs.positionErrorMeters =
+        positionErrorRotations.getValueAsDouble()
             * Math.PI
-            * ElevatorConstants.TOP_DRUM_RADIUS
+            * ElevatorConstants.DRUM_RADIUS
             * 2
-            / ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
-
-    inputs.bottomPositionMeters =
-        bottomPositionRotations.getValueAsDouble()
-            * Math.PI
-            * ElevatorConstants.BOTTOM_DRUM_RADIUS
-            * 2
-            / ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO;
-    inputs.bottomVelocityMetersPerSecond =
-        bottomVelocityRotationsPerSecond.getValueAsDouble()
-            * Math.PI
-            * ElevatorConstants.BOTTOM_DRUM_RADIUS
-            * 2
-            / ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO;
-    inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
-    inputs.bottomSupplyCurrentAmps = bottomSupplyCurrentAmps.getValueAsDouble();
-    inputs.bottomTorqueCurrentAmps = bottomTorqueCurrentAmps.getValueAsDouble();
-    inputs.bottomTemperatureCelcius = bottomTemperatureCelcius.getValueAsDouble();
-    inputs.bottomPositionSetpointMeters =
-        bottomPositionSetpointRotations.getValueAsDouble()
-            * Math.PI
-            * ElevatorConstants.BOTTOM_DRUM_RADIUS
-            * 2
-            / ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO;
-    inputs.bottomPositionErrorMeters =
-        bottomPositionErrorRotations.getValueAsDouble()
-            * Math.PI
-            * ElevatorConstants.BOTTOM_DRUM_RADIUS
-            * 2
-            / ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO;
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
   }
 
   @Override
-  public void setBottomVoltage(double volts) {
-    bottomTalonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+  public void setVoltage(double volts) {
+    talonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
-  public void setTopVoltage(double volts) {
-    topTalonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
-  }
-
-  @Override
-  public void setTopPosition(double meters) {
-    topTalonFX.setPosition(
+  public void setPosition(double meters) {
+    talonFX.setPosition(
         meters
-            * ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO
-            / (2 * Math.PI * ElevatorConstants.TOP_DRUM_RADIUS));
+            * ElevatorConstants.ELEVATOR_GEAR_RATIO
+            / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS));
   }
 
   @Override
-  public void setBottomPosition(double meters) {
-    bottomTalonFX.setPosition(
-        meters
-            * ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO
-            / (2 * Math.PI * ElevatorConstants.BOTTOM_DRUM_RADIUS));
-  }
-
-  @Override
-  public void setTopPositionGoal(double meters) {
-    topTalonFX.setControl(
+  public void setPositionGoal(double meters) {
+    talonFX.setControl(
         positionControlRequest
             .withPosition(
                 meters
-                    * ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO
-                    / (2 * Math.PI * ElevatorConstants.TOP_DRUM_RADIUS))
-            .withEnableFOC(true));
-  }
-
-  @Override
-  public void setBottomPositionGoal(double meters) {
-    bottomTalonFX.setControl(
-        positionControlRequest
-            .withPosition(
-                meters
-                    * ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO
-                    / (2 * Math.PI * ElevatorConstants.BOTTOM_DRUM_RADIUS))
+                    * ElevatorConstants.ELEVATOR_GEAR_RATIO
+                    / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
             .withEnableFOC(true));
   }
 }

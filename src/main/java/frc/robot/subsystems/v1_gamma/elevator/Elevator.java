@@ -23,8 +23,7 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
 
     Logger.recordOutput("Elevator/Position", position.name());
-    io.setBottomPositionGoal(position.getBottomPosition());
-    io.setTopPositionGoal(position.getTopPosition());
+    io.setPositionGoal(position.getPosition());
   }
 
   public Command setPosition(ElevatorConstants.ElevatorPositions position) {
@@ -35,11 +34,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () -> {
-                  io.setBottomPosition(
-                      ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_MIN_HEIGHT_METERS());
-                  io.setTopPosition(ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_MIN_HEIGHT_METERS());
-                }));
+                () -> io.setPosition(ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS())));
   }
 
   public ElevatorConstants.ElevatorPositions getPosition() {
