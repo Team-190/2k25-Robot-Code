@@ -19,14 +19,15 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
   @Getter private static ReefEstimate reefEstimate = new ReefEstimate(new Pose2d(), -1);
 
-  @Setter @Getter @AutoLogOutput(key = "RobotState/Reef Data/Current Reef Post")
+  @Setter
+  @Getter
+  @AutoLogOutput(key = "RobotState/Reef Data/Current Reef Post")
   private static FieldConstants.ReefPost currentReefPost = FieldConstants.ReefPost.LEFT;
 
   private static final SwerveDrivePoseEstimator poseEstimator;
@@ -110,8 +111,8 @@ public class RobotState {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
           && camera.getTagIDOfInterest() != -1) {
         Pose3d pose = camera.getPoseOfInterest();
-        reefXAvg += pose.getX();
-        reefYAvg += pose.getZ();
+        reefXAvg += pose.getZ();
+        reefYAvg += pose.getX();
         numAverage++;
       }
 

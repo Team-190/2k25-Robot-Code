@@ -224,7 +224,8 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
+  public static Command alignRobotToAprilTag(
+      Drive drive, FieldConstants.ReefPost post, Camera... cameras) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -256,7 +257,7 @@ public final class DriveCommands {
                       ChassisSpeeds speeds;
                       if (RobotState.getReefEstimate().tagIDOfInterest() != -1
                           && FieldConstants.alignmentPoseMap.containsKey(
-                              (int) RobotState.getReefEstimate().tagIDOfInterest())) {
+                              RobotState.getReefEstimate().tagIDOfInterest())) {
                         Translation2d setpoint =
                             FieldConstants.alignmentPoseMap
                                 .get(RobotState.getReefEstimate().tagIDOfInterest())

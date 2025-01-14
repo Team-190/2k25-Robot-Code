@@ -187,7 +187,11 @@ public class RobotContainer {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
+    driver
+        .a()
+        .whileTrue(
+            DriveCommands.alignRobotToAprilTag(
+                drive, RobotState.getCurrentReefPost(), vision.getCameras()));
 
     driver
         .povLeft()
