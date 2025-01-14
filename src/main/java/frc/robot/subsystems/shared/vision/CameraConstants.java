@@ -3,7 +3,6 @@ package frc.robot.subsystems.shared.vision;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.List;
-import java.util.Set;
 
 public class CameraConstants {
   public static final double BLINK_TIME = 0.067;

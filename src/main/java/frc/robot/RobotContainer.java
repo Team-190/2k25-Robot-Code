@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CompositeCommands;
@@ -26,8 +27,6 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraConstants;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
@@ -188,9 +187,16 @@ public class RobotContainer {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-        driver.povLeft().whileTrue(DriveCommands.alignRobotToAprilTag(drive, FieldConstants.ReefPost.LEFT, vision.getCameras()));
-        driver.povRight().whileTrue(DriveCommands.alignRobotToAprilTag(drive, FieldConstants.ReefPost.RIGHT, vision.getCameras()));
+    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
 
+    driver
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setCurrentReefPost(FieldConstants.ReefPost.LEFT)));
+    driver
+        .povRight()
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setCurrentReefPost(FieldConstants.ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {

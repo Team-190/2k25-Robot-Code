@@ -12,18 +12,22 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.FieldConstants.ReefPost;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
+import lombok.Setter;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-  @Getter
-  private static ReefEstimate reefEstimate = new ReefEstimate(new Pose2d(), -1);
+  @Getter private static ReefEstimate reefEstimate = new ReefEstimate(new Pose2d(), -1);
+
+  @Setter @Getter @AutoLogOutput(key = "RobotState/Reef Data/Current Reef Post")
+  private static FieldConstants.ReefPost currentReefPost = FieldConstants.ReefPost.LEFT;
 
   private static final SwerveDrivePoseEstimator poseEstimator;
   private static final SwerveDriveOdometry odometry;
@@ -154,6 +158,10 @@ public class RobotState {
     }
 
     int tagIDOfInterest = getClosestReefTag();
+
+    reefEstimate =
+        new ReefEstimate(
+            new Pose2d(reefEstimateTranslation, reefEstimateRotation), tagIDOfInterest);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
