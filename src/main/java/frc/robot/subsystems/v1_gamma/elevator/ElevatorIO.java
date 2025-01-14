@@ -19,6 +19,8 @@ public interface ElevatorIO {
 
   public default void setVoltage(double volts) {}
 
+  public default void setCurrent(double amps) {}
+
   public default void setPosition(double meters) {}
 
   public default void setPositionGoal(double meters) {}

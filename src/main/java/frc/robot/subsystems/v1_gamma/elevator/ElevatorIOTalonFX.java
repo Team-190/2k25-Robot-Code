@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -35,6 +36,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private VoltageOut voltageControlRequest;
   private MotionMagicVoltage positionControlRequest;
+  private TorqueCurrentFOC currentControlRequest;
 
   public ElevatorIOTalonFX() {
     talonFX = new TalonFX(ElevatorConstants.ELEVATOR_CAN_ID);
@@ -57,7 +59,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotionMagic.MotionMagicAcceleration =
         ElevatorConstants.CONSTRAINTS.maxAcceleration().get();
-    config.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.GAINS.kV().get();
+    config.MotionMagic.MotionMagicCruiseVelocity =
+        ElevatorConstants.CONSTRAINTS.cruisingVelocity().get();
 
     talonFX.getConfigurator().apply(config);
     for (TalonFX follow : followTalonFX) {
@@ -208,6 +211,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setVoltage(double volts) {
     talonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  @Override
+  public void setCurrent(double amps) {
+    talonFX.setControl(currentControlRequest.withOutput(amps));
   }
 
   @Override

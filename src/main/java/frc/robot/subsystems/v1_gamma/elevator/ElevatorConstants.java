@@ -29,6 +29,7 @@ public class ElevatorConstants {
     CONSTRAINTS =
         new Constraints(
             new LoggedTunableNumber("Elevator/Max Acceleration", 4),
+            new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
             new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
 
     ELEVATOR_CAN_ID = 0;
@@ -50,7 +51,9 @@ public class ElevatorConstants {
       LoggedTunableNumber kA) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAcceleration, LoggedTunableNumber goalTolerance) {}
+      LoggedTunableNumber maxAcceleration,
+      LoggedTunableNumber cruisingVelocity,
+      LoggedTunableNumber goalTolerance) {}
 
   public static record ElevatorSimParams(
       DCMotor ELEVATOR_MOTOR_CONFIG,
@@ -63,22 +66,17 @@ public class ElevatorConstants {
 
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
-    STOW(0.0, 0.0),
-    INTAKE(0.0, 0.0),
-    L1(0.0, 0.0),
-    L2(0.0, 0.0),
-    L3(0.0, 0.0),
-    L4(0.0, 0.0);
+    STOW(0.0),
+    INTAKE(0.0),
+    L1(0.0),
+    L2(0.0),
+    L3(0.0),
+    L4(0.0);
 
-    private final double topPosition;
-    private final double Position;
-
-    public double getTopPosition() {
-      return topPosition;
-    }
+    private final double position;
 
     public double getPosition() {
-      return Position;
+      return position;
     }
   }
 }

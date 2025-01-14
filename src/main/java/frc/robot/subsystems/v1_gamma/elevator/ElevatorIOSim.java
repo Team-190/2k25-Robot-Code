@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.robot.Constants;
 
 public class ElevatorIOSim implements ElevatorIO {
   private ElevatorSim elevatorSim;
@@ -42,6 +43,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
+    elevatorSim.update(Constants.LOOP_PERIOD_SECONDS);
     for (int i = 0; i < 4; i++) {
       inputs.positionMeters[i] = elevatorSim.getPositionMeters();
       inputs.velocityMetersPerSecond[i] = elevatorSim.getVelocityMetersPerSecond();
@@ -52,12 +54,12 @@ public class ElevatorIOSim implements ElevatorIO {
       inputs.positionSetpointMeters[i] = controller.getSetpoint().position;
       inputs.positionErrorMeters[i] = controller.getPositionError();
     }
+    elevatorSim.setInputVoltage(appliedVolts);
   }
 
   @Override
   public void setVoltage(double volts) {
     appliedVolts = volts;
-    elevatorSim.setInputVoltage(volts);
   }
 
   @Override
