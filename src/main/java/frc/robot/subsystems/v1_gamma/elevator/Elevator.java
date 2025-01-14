@@ -36,8 +36,9 @@ public class Elevator extends SubsystemBase {
         .andThen(
             runOnce(
                 () -> {
-                  io.setBottomPosition(ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS);
-                  io.setTopPosition(ElevatorConstants.TOP_MIN_HEIGHT_METERS);
+                  io.setBottomPosition(
+                      ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_MIN_HEIGHT_METERS());
+                  io.setTopPosition(ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_MIN_HEIGHT_METERS());
                 }));
   }
 

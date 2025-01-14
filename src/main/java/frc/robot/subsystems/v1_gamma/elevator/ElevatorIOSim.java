@@ -23,23 +23,23 @@ public class ElevatorIOSim implements ElevatorIO {
         new ElevatorSim(
             ElevatorConstants.ELEVATOR_MOTOR_CONFIG,
             ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO,
-            ElevatorConstants.TOP_CARRIAGE_MASS_KG,
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_CARRIAGE_MASS_KG(),
             ElevatorConstants.TOP_DRUM_RADIUS,
-            ElevatorConstants.TOP_MIN_HEIGHT_METERS,
-            ElevatorConstants.TOP_MAX_HEIGHT_METERS,
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_MIN_HEIGHT_METERS(),
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_MAX_HEIGHT_METERS(),
             true,
-            ElevatorConstants.TOP_MIN_HEIGHT_METERS);
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.TOP_MIN_HEIGHT_METERS());
 
     bottomElevatorSim =
         new ElevatorSim(
             ElevatorConstants.ELEVATOR_MOTOR_CONFIG,
             ElevatorConstants.ELEVATOR_BOTTOM_GEAR_RATIO,
-            ElevatorConstants.BOTTOM_CARRIAGE_MASS_KG,
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_CARRIAGE_MASS_KG(),
             ElevatorConstants.BOTTOM_DRUM_RADIUS,
-            ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS,
-            ElevatorConstants.BOTTOM_MAX_HEIGHT_METERS,
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_MIN_HEIGHT_METERS(),
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_MAX_HEIGHT_METERS(),
             true,
-            ElevatorConstants.BOTTOM_MIN_HEIGHT_METERS);
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.BOTTOM_MIN_HEIGHT_METERS());
 
     topController =
         new ProfiledPIDController(

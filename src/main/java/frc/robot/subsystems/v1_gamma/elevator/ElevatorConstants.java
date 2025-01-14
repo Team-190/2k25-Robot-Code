@@ -1,7 +1,6 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -12,12 +11,8 @@ public class ElevatorConstants {
   public static final double ELEVATOR_TOP_GEAR_RATIO;
   public static final double TOP_DRUM_RADIUS;
   public static final double BOTTOM_DRUM_RADIUS;
-  public static final double TOP_CARRIAGE_MASS_KG;
-  public static final double BOTTOM_CARRIAGE_MASS_KG;
-  public static final double TOP_MIN_HEIGHT_METERS;
-  public static final double BOTTOM_MIN_HEIGHT_METERS;
-  public static final double TOP_MAX_HEIGHT_METERS;
-  public static final double BOTTOM_MAX_HEIGHT_METERS;
+
+  public static final ElevatorSimParams ELEVATOR_SIM_PARAMS;
 
   public static final double ELEVATOR_SUPPLY_CURRENT_LIMIT;
   public static final Gains GAINS;
@@ -39,72 +34,39 @@ public class ElevatorConstants {
         new Constraints(
             new LoggedTunableNumber("Elevator/Max Acceleration", 4),
             new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
-    switch (Constants.ROBOT) {
-      case V1_GAMMA:
-        BOTTOM_ELEVATOR_CAN_ID = 0;
-        TOP_ELEVATOR_CAN_ID = 1;
-        ELEVATOR_BOTTOM_GEAR_RATIO = 1.0;
-        ELEVATOR_TOP_GEAR_RATIO = 1.0;
-        TOP_DRUM_RADIUS = 1;
-        BOTTOM_DRUM_RADIUS = 1;
-        TOP_CARRIAGE_MASS_KG = 1;
-        BOTTOM_CARRIAGE_MASS_KG = 1;
-        TOP_MIN_HEIGHT_METERS = 0;
-        BOTTOM_MIN_HEIGHT_METERS = 0;
-        TOP_MAX_HEIGHT_METERS = 1;
-        BOTTOM_MAX_HEIGHT_METERS = 1;
 
-        ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
-        break;
+    BOTTOM_ELEVATOR_CAN_ID = 0;
+    TOP_ELEVATOR_CAN_ID = 0;
+    ELEVATOR_BOTTOM_GEAR_RATIO = 1.0;
+    ELEVATOR_TOP_GEAR_RATIO = 1.0;
+    TOP_DRUM_RADIUS = 1;
+    BOTTOM_DRUM_RADIUS = 1;
 
-      case V1_GAMMA_SIM:
-        BOTTOM_ELEVATOR_CAN_ID = 0;
-        TOP_ELEVATOR_CAN_ID = 1;
-        ELEVATOR_BOTTOM_GEAR_RATIO = 1.0;
-        ELEVATOR_TOP_GEAR_RATIO = 1.0;
-        TOP_DRUM_RADIUS = 1;
-        BOTTOM_DRUM_RADIUS = 1;
-        TOP_CARRIAGE_MASS_KG = 1;
-        BOTTOM_CARRIAGE_MASS_KG = 1;
-        TOP_MIN_HEIGHT_METERS = 0;
-        BOTTOM_MIN_HEIGHT_METERS = 0;
-        TOP_MAX_HEIGHT_METERS = 1;
-        BOTTOM_MAX_HEIGHT_METERS = 1;
+    ELEVATOR_SIM_PARAMS = new ElevatorSimParams(1, 1, 0, 0, 1, 1);
 
-        ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
-        break;
-
-      default:
-        BOTTOM_ELEVATOR_CAN_ID = 0;
-        TOP_ELEVATOR_CAN_ID = 0;
-        ELEVATOR_BOTTOM_GEAR_RATIO = 1.0;
-        ELEVATOR_TOP_GEAR_RATIO = 1.0;
-        TOP_DRUM_RADIUS = 1;
-        BOTTOM_DRUM_RADIUS = 1;
-        TOP_CARRIAGE_MASS_KG = 1;
-        BOTTOM_CARRIAGE_MASS_KG = 1;
-        TOP_MIN_HEIGHT_METERS = 0;
-        BOTTOM_MIN_HEIGHT_METERS = 0;
-        TOP_MAX_HEIGHT_METERS = 1;
-        BOTTOM_MAX_HEIGHT_METERS = 1;
-
-        ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
-        break;
-    }
+    ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
   }
 
-  public record Gains(
+  public static record Gains(
       LoggedTunableNumber kP,
       LoggedTunableNumber kD,
       LoggedTunableNumber kS,
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public record Constraints(
+  public static record Constraints(
       LoggedTunableNumber maxAcceleration, LoggedTunableNumber goalTolerance) {}
 
+  public static record ElevatorSimParams(
+      double TOP_CARRIAGE_MASS_KG,
+      double BOTTOM_CARRIAGE_MASS_KG,
+      double TOP_MIN_HEIGHT_METERS,
+      double BOTTOM_MIN_HEIGHT_METERS,
+      double TOP_MAX_HEIGHT_METERS,
+      double BOTTOM_MAX_HEIGHT_METERS) {}
+
   @RequiredArgsConstructor
-  public enum ElevatorPositions {
+  public static enum ElevatorPositions {
     STOW(0.0, 0.0),
     INTAKE(0.0, 0.0),
     L1(0.0, 0.0),
