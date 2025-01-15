@@ -5,8 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,9 +33,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final Alert disconnectedAlert =
       new Alert("Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
 
-  private VoltageOut voltageControlRequest;
-  private MotionMagicVoltage positionControlRequest;
-  private MotionMagicTorqueCurrentFOC currentControlRequest;
+  private MotionMagicTorqueCurrentFOC currentPositionControlRequest;
+  private TorqueCurrentFOC torqueCurrentControlRequest;
 
   public ElevatorIOTalonFX() {
     talonFX = new TalonFX(ElevatorConstants.ELEVATOR_CAN_ID);
@@ -129,8 +127,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     talonFX.optimizeBusUtilization(50, 1.0);
 
-    voltageControlRequest = new VoltageOut(0.0);
-    positionControlRequest = new MotionMagicVoltage(0.0);
+    torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
+    currentPositionControlRequest = new MotionMagicTorqueCurrentFOC(0.0);
   }
 
   @Override
@@ -212,13 +210,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   @Override
-  public void setVoltage(double volts) {
-    talonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
-  }
-
-  @Override
   public void setCurrent(double amps) {
-    talonFX.setControl(currentControlRequest.withFeedForward(amps));
+    talonFX.setControl(torqueCurrentControlRequest.withOutput(amps));
   }
 
   @Override
@@ -231,16 +224,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPositionGoal(double meters) {
-    // talonFX.setControl(
-    //     positionControlRequest
-    //         .withPosition(
-    //             meters
-    //                 * ElevatorConstants.ELEVATOR_GEAR_RATIO
-    //                 / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
-    //         .withEnableFOC(true));
-
     talonFX.setControl(
-        currentControlRequest.withPosition(
+        currentPositionControlRequest.withPosition(
             meters
                 * ElevatorConstants.ELEVATOR_GEAR_RATIO
                 / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)));
