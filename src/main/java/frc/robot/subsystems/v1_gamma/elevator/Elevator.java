@@ -1,6 +1,7 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
 import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,10 +47,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setPosition(ElevatorConstants.ElevatorPositions position) {
-    return runOnce(() -> {
-      isClosedLoop = true;
-      this.position = position;
-    });
+    return runOnce(
+        () -> {
+          isClosedLoop = true;
+          this.position = position;
+        });
   }
 
   public Command resetPosition() {
@@ -61,15 +63,14 @@ public class Elevator extends SubsystemBase {
 
   public Command runSysId() {
     return Commands.sequence(
-      runOnce(()->isClosedLoop = false),
-      sysIdRoutine.quasistatic(Direction.kForward),
-      Commands.waitSeconds(2),
-      sysIdRoutine.quasistatic(Direction.kReverse),
-      Commands.waitSeconds(2),
-      sysIdRoutine.dynamic(Direction.kForward),
-      Commands.waitSeconds(2),
-      sysIdRoutine.dynamic(Direction.kReverse)
-    );
+        runOnce(() -> isClosedLoop = false),
+        sysIdRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(2),
+        sysIdRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(2),
+        sysIdRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(2),
+        sysIdRoutine.dynamic(Direction.kReverse));
   }
 
   public ElevatorConstants.ElevatorPositions getPosition() {
