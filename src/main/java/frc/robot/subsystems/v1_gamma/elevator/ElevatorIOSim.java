@@ -1,8 +1,8 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
@@ -12,7 +12,7 @@ public class ElevatorIOSim implements ElevatorIO {
   private double appliedVolts;
 
   private ProfiledPIDController controller;
-  private SimpleMotorFeedforward feedforward;
+  private ElevatorFeedforward feedforward;
 
   public ElevatorIOSim() {
     elevatorSim =
@@ -31,13 +31,14 @@ public class ElevatorIOSim implements ElevatorIO {
             0,
             ElevatorConstants.GAINS.kD().get(),
             new Constraints(
-                ElevatorConstants.CONSTRAINTS.maxAcceleration().get(), Double.POSITIVE_INFINITY));
+                ElevatorConstants.CONSTRAINTS.cruisingVelocity().get(),
+                ElevatorConstants.CONSTRAINTS.maxAcceleration().get()));
 
     feedforward =
-        new SimpleMotorFeedforward(
+        new ElevatorFeedforward(
             ElevatorConstants.GAINS.kS().get(),
-            ElevatorConstants.GAINS.kV().get(),
-            ElevatorConstants.GAINS.kA().get());
+            ElevatorConstants.GAINS.kG().get(),
+            ElevatorConstants.GAINS.kV().get());
 
     appliedVolts = 0.0;
   }
@@ -53,7 +54,8 @@ public class ElevatorIOSim implements ElevatorIO {
       inputs.supplyCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
 
-      inputs.positionSetpointMeters[i] = controller.getSetpoint().position;
+      inputs.positionGoalMeters[i] = controller.getSetpoint().position;
+      inputs.velocitySetpointMetersPerSecond[i] = controller.getSetpoint().velocity;
       inputs.positionErrorMeters[i] = controller.getPositionError();
     }
   }

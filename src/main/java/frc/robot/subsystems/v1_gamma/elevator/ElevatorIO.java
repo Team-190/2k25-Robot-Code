@@ -11,7 +11,8 @@ public interface ElevatorIO {
     public double[] supplyCurrentAmps = {0.0, 0.0, 0.0, 0.0};
     public double[] torqueCurrentAmps = {0.0, 0.0, 0.0, 0.0};
     public double[] temperatureCelsius = {0.0, 0.0, 0.0, 0.0};
-    public double[] positionSetpointMeters = {0.0, 0.0, 0.0, 0.0};
+    public double[] positionGoalMeters = {0.0, 0.0, 0.0, 0.0};
+    public double[] velocitySetpointMetersPerSecond = {0.0, 0.0, 0.0, 0.0};
     public double[] positionErrorMeters = {0.0, 0.0, 0.0, 0.0};
   }
 

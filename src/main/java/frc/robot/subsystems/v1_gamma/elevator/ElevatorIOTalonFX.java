@@ -4,7 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -27,13 +27,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private StatusSignal<Current>[] supplyCurrentAmps;
   private StatusSignal<Current>[] torqueCurrentAmps;
   private StatusSignal<Temperature>[] temperatureCelsius;
-  private StatusSignal<Double>[] positionSetpointRotations;
+  private StatusSignal<Double>[] positionGoalRotations;
+  private StatusSignal<Double>[] velocitySetpointRotationsPerSecond;
   private StatusSignal<Double>[] positionErrorRotations;
 
   private final Alert disconnectedAlert =
       new Alert("Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
 
-  private MotionMagicTorqueCurrentFOC currentPositionControlRequest;
+  private MotionMagicExpoTorqueCurrentFOC currentPositionControlRequest;
   private TorqueCurrentFOC torqueCurrentControlRequest;
 
   public ElevatorIOTalonFX() {
@@ -77,7 +78,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         supplyCurrentAmps[i] = talonFX.getSupplyCurrent();
         torqueCurrentAmps[i] = talonFX.getTorqueCurrent();
         temperatureCelsius[i] = talonFX.getDeviceTemp();
-        positionSetpointRotations[i] = talonFX.getClosedLoopReference();
+        positionGoalRotations[i] = talonFX.getClosedLoopReference();
+        velocitySetpointRotationsPerSecond[i] = talonFX.getClosedLoopReferenceSlope();
         positionErrorRotations[i] = talonFX.getClosedLoopError();
       }
       positionRotations[i] = followTalonFX[i - 1].getPosition();
@@ -86,7 +88,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       supplyCurrentAmps[i] = followTalonFX[i - 1].getSupplyCurrent();
       torqueCurrentAmps[i] = followTalonFX[i - 1].getTorqueCurrent();
       temperatureCelsius[i] = followTalonFX[i - 1].getDeviceTemp();
-      positionSetpointRotations[i] = followTalonFX[i - 1].getClosedLoopReference();
+      positionGoalRotations[i] = followTalonFX[i - 1].getClosedLoopReference();
+      velocitySetpointRotationsPerSecond[i] = followTalonFX[i - 1].getClosedLoopReferenceSlope();
       positionErrorRotations[i] = followTalonFX[i - 1].getClosedLoopError();
     }
 
@@ -98,7 +101,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         supplyCurrentAmps[0],
         torqueCurrentAmps[0],
         temperatureCelsius[0],
-        positionSetpointRotations[0],
+        positionGoalRotations[0],
+        velocitySetpointRotationsPerSecond[0],
         positionErrorRotations[0],
         positionRotations[1],
         velocityRotationsPerSecond[1],
@@ -106,7 +110,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         supplyCurrentAmps[1],
         torqueCurrentAmps[1],
         temperatureCelsius[1],
-        positionSetpointRotations[1],
+        positionGoalRotations[1],
+        velocitySetpointRotationsPerSecond[1],
         positionErrorRotations[1],
         positionRotations[2],
         velocityRotationsPerSecond[2],
@@ -114,7 +119,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         supplyCurrentAmps[2],
         torqueCurrentAmps[2],
         temperatureCelsius[2],
-        positionSetpointRotations[2],
+        positionGoalRotations[2],
+        velocitySetpointRotationsPerSecond[2],
         positionErrorRotations[2],
         positionRotations[3],
         velocityRotationsPerSecond[3],
@@ -122,13 +128,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         supplyCurrentAmps[3],
         torqueCurrentAmps[3],
         temperatureCelsius[3],
-        positionSetpointRotations[3],
+        positionGoalRotations[3],
+        velocitySetpointRotationsPerSecond[3],
         positionErrorRotations[3]);
 
     talonFX.optimizeBusUtilization(50, 1.0);
 
     torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
-    currentPositionControlRequest = new MotionMagicTorqueCurrentFOC(0.0);
+    currentPositionControlRequest =
+        new MotionMagicExpoTorqueCurrentFOC(
+            ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS()
+                * ElevatorConstants.ELEVATOR_GEAR_RATIO
+                / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS));
   }
 
   @Override
@@ -141,7 +152,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 supplyCurrentAmps[0],
                 torqueCurrentAmps[0],
                 temperatureCelsius[0],
-                positionSetpointRotations[0],
+                positionGoalRotations[0],
+                velocitySetpointRotationsPerSecond[0],
                 positionErrorRotations[0],
                 positionRotations[1],
                 velocityRotationsPerSecond[1],
@@ -149,7 +161,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 supplyCurrentAmps[1],
                 torqueCurrentAmps[1],
                 temperatureCelsius[1],
-                positionSetpointRotations[1],
+                positionGoalRotations[1],
+                velocitySetpointRotationsPerSecond[1],
                 positionErrorRotations[1],
                 positionRotations[2],
                 velocityRotationsPerSecond[2],
@@ -157,7 +170,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 supplyCurrentAmps[2],
                 torqueCurrentAmps[2],
                 temperatureCelsius[2],
-                positionSetpointRotations[2],
+                positionGoalRotations[2],
+                velocitySetpointRotationsPerSecond[2],
                 positionErrorRotations[2],
                 positionRotations[3],
                 velocityRotationsPerSecond[3],
@@ -165,13 +179,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                 supplyCurrentAmps[3],
                 torqueCurrentAmps[3],
                 temperatureCelsius[3],
-                positionSetpointRotations[3],
+                positionGoalRotations[3],
+                velocitySetpointRotationsPerSecond[3],
                 positionErrorRotations[3])
             .isOK();
 
     for (int i = 0; i < positionRotations.length; i++) {
-
-      positionSetpointRotations[i].refresh();
+      positionGoalRotations[i].refresh();
+      velocitySetpointRotationsPerSecond[i].refresh();
       positionErrorRotations[i].refresh();
     }
 
@@ -194,8 +209,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps[i].getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps[i].getValueAsDouble();
       inputs.temperatureCelsius[i] = temperatureCelsius[i].getValueAsDouble();
-      inputs.positionSetpointMeters[i] =
-          positionSetpointRotations[i].getValueAsDouble()
+      inputs.positionGoalMeters[i] =
+          positionGoalRotations[i].getValueAsDouble()
+              * Math.PI
+              * ElevatorConstants.DRUM_RADIUS
+              * 2
+              / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+      inputs.velocitySetpointMetersPerSecond[i] =
+          velocitySetpointRotationsPerSecond[i].getValueAsDouble()
               * Math.PI
               * ElevatorConstants.DRUM_RADIUS
               * 2
