@@ -30,7 +30,6 @@ public class Camera {
       DoubleArrayPublisher robotHeadingPublisher,
       List<CameraDuty> cameraDuties) {
     inputs = new CameraIOInputsAutoLogged();
-
     this.io = io;
     this.name = io.getName();
     this.cameraType = io.getCameraType();
@@ -52,7 +51,6 @@ public class Camera {
       DoubleArrayPublisher robotHeadingPublisher,
       List<CameraDuty> cameraDuties) {
     inputs = new CameraIOInputsAutoLogged();
-
     this.io = io;
     this.name = name;
     this.cameraType = io.getCameraType();
@@ -115,5 +113,9 @@ public class Camera {
 
   public void setValidTags(int... validIds) {
     io.setValidTags(validIds);
+  }
+
+  public void setCameraPose(Pose3d robotRelativePose) {
+    io.setCameraPose(robotRelativePose);
   }
 }

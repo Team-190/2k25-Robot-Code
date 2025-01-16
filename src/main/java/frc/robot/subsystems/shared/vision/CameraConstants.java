@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shared.vision;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.List;
@@ -30,9 +32,33 @@ public class CameraConstants {
   }
 
   public static class RobotCameras {
+    private static final Camera v0_FunkyCenter =
+        new Camera(
+            new CameraIOLimelight(
+                "center",
+                CameraType.LIMELIGHT_3G,
+                new Transform3d(
+                    0.0,
+                    Units.inchesToMeters(-9.5),
+                    Units.inchesToMeters(6.0),
+                    new Rotation3d(Math.PI, 0.0, Math.PI / 2.0))),
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-center")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+
     private static final Camera v0_FunkyLeft =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight(
+                "left",
+                CameraType.LIMELIGHT_2_PLUS,
+                new Transform3d(
+                    0.284, -0.1884, 0.22, new Rotation3d(Math.PI, 0.0, -3.0 * Math.PI / 4.0))),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -45,7 +71,11 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyRight =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight(
+                "right",
+                CameraType.LIMELIGHT_2_PLUS,
+                new Transform3d(
+                    -0.284, -0.1884, 0.22, new Rotation3d(Math.PI, 0.0, -Math.PI / 4.0))),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -56,7 +86,7 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
 
-    public static final Camera[] v0_FunkyCams = {v0_FunkyLeft, v0_FunkyRight};
+    public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
   }
 
   public static class ReplayCameras {}

@@ -158,9 +158,9 @@ public class RobotState {
                 reefThetaEstimator.calculate(
                     MathUtil.inputModulus(reefThetaAvg / numAverage, -Math.PI, Math.PI))));
 
-    int tagIDOfInterest = getClosestReefTag();
+    // int tagIDOfInterest = getClosestReefTag();
 
-    reefEstimate = new ReefEstimate(reefEstimatorPose, tagIDOfInterest);
+    reefEstimate = new ReefEstimate(reefEstimatorPose, 7);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());

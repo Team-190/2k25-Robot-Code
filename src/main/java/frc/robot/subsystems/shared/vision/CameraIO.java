@@ -93,4 +93,6 @@ public interface CameraIO {
   public default void setPipeline(int pipeline) {}
 
   public default void setValidTags(int... validIds) {}
+
+  public default void setCameraPose(Pose3d pose) {}
 }

@@ -1,6 +1,9 @@
 package frc.robot.subsystems.shared.vision;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
 
@@ -11,8 +14,9 @@ public class CameraIOLimelight implements CameraIO {
   @Getter private final double verticalFOV;
   @Getter private final double primaryXYStandardDeviationCoefficient;
   @Getter private final double secondaryXYStandardDeviationCoefficient;
+  private final Transform3d robotToCameraTransform;
 
-  public CameraIOLimelight(String name, CameraType cameraType) {
+  public CameraIOLimelight(String name, CameraType cameraType, Transform3d robotToCameraTransform) {
     this.name = "limelight-" + name;
     this.cameraType = cameraType;
     this.horizontalFOV = cameraType.horizontalFOV;
@@ -20,6 +24,8 @@ public class CameraIOLimelight implements CameraIO {
     this.primaryXYStandardDeviationCoefficient = cameraType.primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient =
         cameraType.secondaryXYStandardDeviationCoefficient;
+
+    this.robotToCameraTransform = robotToCameraTransform;
   }
 
   @Override
@@ -32,7 +38,8 @@ public class CameraIOLimelight implements CameraIO {
     inputs.primaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
     inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
     inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
-    inputs.poseOfInterest = LimelightHelpers.getTargetPose3d_RobotSpace(name);
+    inputs.poseOfInterest =
+        LimelightHelpers.getTargetPose3d_CameraSpace(name).plus(robotToCameraTransform);
     inputs.tagIDOfInterest = LimelightHelpers.getFiducialID(name);
   }
 
@@ -54,5 +61,17 @@ public class CameraIOLimelight implements CameraIO {
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public void setCameraPose(Pose3d robotRelativePose) {
+    LimelightHelpers.setCameraPose_RobotSpace(
+        name,
+        robotRelativePose.getX(),
+        -robotRelativePose.getY(),
+        robotRelativePose.getZ(),
+        Units.radiansToDegrees(robotRelativePose.getRotation().getX()),
+        Units.radiansToDegrees(robotRelativePose.getRotation().getY()),
+        Units.radiansToDegrees(robotRelativePose.getRotation().getZ()));
   }
 }
