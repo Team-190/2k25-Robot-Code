@@ -10,6 +10,7 @@ import frc.robot.Constants;
 public class ElevatorIOSim implements ElevatorIO {
   private ElevatorSim elevatorSim;
   private double appliedVolts;
+  private double positionGoalMeters;
 
   private ProfiledPIDController controller;
   private ElevatorFeedforward feedforward;
@@ -41,6 +42,7 @@ public class ElevatorIOSim implements ElevatorIO {
             ElevatorConstants.GAINS.kV().get());
 
     appliedVolts = 0.0;
+    positionGoalMeters = 0.0;
   }
 
   @Override
@@ -54,10 +56,10 @@ public class ElevatorIOSim implements ElevatorIO {
       inputs.supplyCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
 
-      inputs.positionGoalMeters[i] = controller.getSetpoint().position;
-      inputs.velocitySetpointMetersPerSecond[i] = controller.getSetpoint().velocity;
+      inputs.positionSetpointMeters[i] = controller.getSetpoint().position;
       inputs.positionErrorMeters[i] = controller.getPositionError();
     }
+    inputs.positionGoalMeters = positionGoalMeters;
   }
 
   @Override
@@ -72,6 +74,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setPositionGoal(double position) {
+    positionGoalMeters = position;
     appliedVolts =
         MathUtil.clamp(
             controller.calculate(position)
