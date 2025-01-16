@@ -32,8 +32,8 @@ public class ElevatorIOSim implements ElevatorIO {
             0,
             ElevatorConstants.GAINS.kD().get(),
             new Constraints(
-                ElevatorConstants.CONSTRAINTS.cruisingVelocity().get(),
-                ElevatorConstants.CONSTRAINTS.maxAcceleration().get()));
+                ElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get(),
+                ElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get()));
 
     feedforward =
         new ElevatorFeedforward(

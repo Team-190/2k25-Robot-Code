@@ -1,12 +1,9 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.KSCharacterization;
 import frc.robot.subsystems.v1_gamma.elevator.ElevatorConstants.ElevatorPositions;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,7 +12,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs;
   private ElevatorConstants.ElevatorPositions position;
   private boolean isClosedLoop;
-  private final SysIdRoutine sysIdRoutine;
+  private final KSCharacterization ksRoutine;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -24,14 +21,7 @@ public class Elevator extends SubsystemBase {
     position = ElevatorPositions.STOW;
 
     isClosedLoop = true;
-    sysIdRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(10.0),
-                (state) -> Logger.recordOutput("Elevator", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setCurrent(volts.in(Volts)), null, this));
+    ksRoutine = new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
   }
 
   @Override
@@ -62,18 +52,22 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command runSysId() {
-    return Commands.sequence(
-        runOnce(() -> isClosedLoop = false),
-        sysIdRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(2),
-        sysIdRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(2),
-        sysIdRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(2),
-        sysIdRoutine.dynamic(Direction.kReverse));
+    return Commands.sequence(runOnce(() -> isClosedLoop = false), ksRoutine);
   }
 
   public ElevatorConstants.ElevatorPositions getPosition() {
     return position;
+  }
+
+  public double getFFCharacterizationVelocity() {
+    double output = 0.0;
+    for (double meters : inputs.positionMeters) {
+      output +=
+          (meters
+                  * ElevatorConstants.ELEVATOR_GEAR_RATIO
+                  / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
+              / 4.0;
+    }
+    return output;
   }
 }

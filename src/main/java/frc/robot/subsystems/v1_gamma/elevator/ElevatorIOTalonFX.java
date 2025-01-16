@@ -57,12 +57,22 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.CurrentLimits.StatorCurrentLimit = ElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Feedback.SensorToMechanismRatio = ElevatorConstants.ELEVATOR_TOP_GEAR_RATIO;
+    config.Feedback.SensorToMechanismRatio = ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        ElevatorConstants.ELEVATOR_SIM_PARAMS.MAX_HEIGHT_METERS()
+            * ElevatorConstants.ELEVATOR_GEAR_RATIO
+            / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS()
+            * ElevatorConstants.ELEVATOR_GEAR_RATIO
+            / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
 
     config.MotionMagic.MotionMagicAcceleration =
-        ElevatorConstants.CONSTRAINTS.maxAcceleration().get();
+        ElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get();
     config.MotionMagic.MotionMagicCruiseVelocity =
-        ElevatorConstants.CONSTRAINTS.cruisingVelocity().get();
+        ElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get();
 
     talonFX.getConfigurator().apply(config);
     for (TalonFX follow : followTalonFX) {
@@ -126,7 +136,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         positionSetpointRotations[3],
         positionErrorRotations[3]);
 
-    talonFX.optimizeBusUtilization(50, 1.0);
+    talonFX.optimizeBusUtilization();
 
     torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
     currentPositionControlRequest =
