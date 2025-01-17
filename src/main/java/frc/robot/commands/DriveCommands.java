@@ -291,7 +291,7 @@ public final class DriveCommands {
                                           .poseOfInterest()
                                           .getRotation()
                                           .getRadians(),
-                                      Math.PI / 2.0),
+                                      -Math.PI / 2.0),
                                   0.09927912329132032);
                         else
                           omegaController.reset(
@@ -304,7 +304,7 @@ public final class DriveCommands {
                         Logger.recordOutput("ySpeed", ySpeed);
                         Logger.recordOutput("thetaSpeed", thetaSpeed);
                         Logger.recordOutput("setpoint", setpoint);
-                        speeds = new ChassisSpeeds(-xSpeed, ySpeed, thetaSpeed);
+                        speeds = new ChassisSpeeds(xSpeed, -ySpeed, thetaSpeed);
                       } else {
                         speeds = new ChassisSpeeds();
                       }

@@ -115,9 +115,9 @@ public class RobotState {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
           && camera.getTagIDOfInterest() != -1) {
         Pose3d pose = camera.getPoseOfInterest();
-        reefXAvg += pose.getZ();
-        reefYAvg += pose.getX();
-        reefThetaAvg += pose.getRotation().getY();
+        reefXAvg += pose.getX();
+        reefYAvg += pose.getY();
+        reefThetaAvg += pose.getRotation().getZ();
         numAverage++;
       }
 
