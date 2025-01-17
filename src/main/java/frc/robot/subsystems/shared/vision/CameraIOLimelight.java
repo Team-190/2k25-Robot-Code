@@ -1,8 +1,6 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
 
@@ -56,17 +54,5 @@ public class CameraIOLimelight implements CameraIO {
   @Override
   public String toString() {
     return name;
-  }
-
-  @Override
-  public void setCameraPose(Pose3d robotRelativePose) {
-    LimelightHelpers.setCameraPose_RobotSpace(
-        name,
-        robotRelativePose.getX(),
-        -robotRelativePose.getY(),
-        robotRelativePose.getZ(),
-        Units.radiansToDegrees(robotRelativePose.getRotation().getX()),
-        Units.radiansToDegrees(robotRelativePose.getRotation().getY()),
-        Units.radiansToDegrees(robotRelativePose.getRotation().getZ()));
   }
 }

@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -36,7 +35,6 @@ public class RobotState {
 
   private static final LinearFilter reefXEstimator;
   private static final LinearFilter reefYEstimator;
-  private static final LinearFilter reefThetaEstimator;
 
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
@@ -76,7 +74,6 @@ public class RobotState {
 
     reefXEstimator = LinearFilter.movingAverage(10);
     reefYEstimator = LinearFilter.movingAverage(10);
-    reefThetaEstimator = LinearFilter.movingAverage(10);
 
     headingOffset = new Rotation2d();
   }
@@ -107,17 +104,16 @@ public class RobotState {
 
     double reefXAvg = 0;
     double reefYAvg = 0;
-    double reefThetaAvg = 0;
 
     double numAverage = 0;
 
     for (Camera camera : cameras) {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
-          && camera.getTagIDOfInterest() != -1) {
+          && camera.getTagIDOfInterest() != -1
+          && camera.getTargetAquired()) {
         Pose3d pose = camera.getPoseOfInterest();
-        reefXAvg += pose.getX();
-        reefYAvg += pose.getY();
-        reefThetaAvg += pose.getRotation().getZ();
+        reefXAvg += pose.getZ();
+        reefYAvg += pose.getX();
         numAverage++;
       }
 
@@ -150,15 +146,14 @@ public class RobotState {
       }
     }
 
+    int tagIDOfInterest = getClosestReefTag();
+    tagIDOfInterest = 7;
+
     Pose2d reefEstimatorPose =
         new Pose2d(
             reefXEstimator.calculate(reefXAvg / numAverage),
             reefYEstimator.calculate(reefYAvg / numAverage),
-            Rotation2d.fromRadians(
-                reefThetaEstimator.calculate(
-                    MathUtil.inputModulus(reefThetaAvg / numAverage, -Math.PI, Math.PI))));
-
-    // int tagIDOfInterest = getClosestReefTag();
+            FieldConstants.alignmentPoseMap.get(tagIDOfInterest).getRotation());
 
     reefEstimate = new ReefEstimate(reefEstimatorPose, 7);
 

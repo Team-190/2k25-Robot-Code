@@ -114,8 +114,4 @@ public class Camera {
   public void setValidTags(int... validIds) {
     io.setValidTags(validIds);
   }
-
-  public void setCameraPose(Pose3d robotRelativePose) {
-    io.setCameraPose(robotRelativePose);
-  }
 }

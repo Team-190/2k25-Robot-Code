@@ -32,9 +32,7 @@ public class CameraConstants {
   public static class RobotCameras {
     private static final Camera v0_FunkyCenter =
         new Camera(
-            new CameraIOLimelight(
-                "center",
-                CameraType.LIMELIGHT_3G),
+            new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -47,9 +45,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyLeft =
         new Camera(
-            new CameraIOLimelight(
-                "left",
-                CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -62,9 +58,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyRight =
         new Camera(
-            new CameraIOLimelight(
-                "right",
-                CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
