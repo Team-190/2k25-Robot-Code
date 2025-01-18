@@ -25,11 +25,11 @@ public class Manipulator extends SubsystemBase {
   }
 
   public Command intakeCoral() {
-    return runManipulator(12);
+    return runManipulator(ManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get());
   }
 
   public Command scoreCoral() {
-    return runManipulator(-12);
+    return runManipulator(ManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
   public boolean hasCoral() {
