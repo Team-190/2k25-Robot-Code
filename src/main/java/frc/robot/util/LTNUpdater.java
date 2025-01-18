@@ -5,7 +5,6 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.v1_gamma.manipulator.Manipulator;
 import frc.robot.subsystems.v1_gamma.manipulator.ManipulatorConstants;
-import frc.robot.subsystems.v1_gamma.manipulator.ManipulatorIO;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
