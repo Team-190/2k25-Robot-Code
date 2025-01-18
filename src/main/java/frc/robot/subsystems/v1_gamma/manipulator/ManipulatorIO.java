@@ -1,7 +1,6 @@
 package frc.robot.subsystems.v1_gamma.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.util.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.AutoLog;
 

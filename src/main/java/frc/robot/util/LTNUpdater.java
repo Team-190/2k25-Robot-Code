@@ -42,17 +42,4 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
-  public static final void updateManipulator(Manipulator manipulator) {
-    LoggedTunableNumber.ifChanged(
-      manipulator.hashCode(), 
-    () -> {
-      manipulator.setManipulatorVolts(
-        ManipulatorConstants.VOLTAGES.INTAKE_VOLTS());
-      manipulator.setManipulatorVolts(
-        ManipulatorConstants.VOLTAGES.SCORE_VOLTS());
-    }, 
-    ManipulatorConstants.VOLTAGES.INTAKE_VOLTS(), 
-    ManipulatorConstants.VOLTAGES.SCORE_VOLTS());
-  }
-
 }

@@ -2,7 +2,6 @@ package frc.robot.subsystems.v1_gamma.manipulator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.LoggedTunableNumber;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -24,10 +23,6 @@ public class Manipulator extends SubsystemBase {
   public Command runManipulator(double volts) {
     return this.run(
         () -> io.setVoltage(volts));
-  }
-
-  public void setManipulatorVolts(LoggedTunableNumber volts) {
-    io.setVoltage(volts.get());
   }
 
   public Command intakeCoral() {
