@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.FieldConstants.Reef;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -119,8 +121,8 @@ public final class DriveCommands {
                   fieldRelativeYVel,
                   angular,
                   isFlipped
-                      ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
-                      : RobotState.getRobotPose().getRotation());
+                      ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
+                      : RobotState.getRobotPoseField().getRotation());
 
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);
@@ -224,8 +226,7 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command alignRobotToAprilTag(
-      Drive drive, FieldConstants.ReefPost post, Camera... cameras) {
+  public static Command alignRobotToAprilTag(Drive drive, ReefPost post, Camera... cameras) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -247,20 +248,21 @@ public final class DriveCommands {
             () -> {
               for (Camera camera : cameras) {
                 if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-                  camera.setValidTags(RobotState.getReefEstimate().tagIDOfInterest());
+                  camera.setValidTags(RobotState.getClosestReefTag());
                 }
               }
             })
         .andThen(
             Commands.run(
                     () -> {
+                      boolean isFlipped =
+                          DriverStation.getAlliance().isPresent()
+                              && DriverStation.getAlliance().get() == Alliance.Red;
                       ChassisSpeeds speeds;
-                      if (RobotState.getReefEstimate().tagIDOfInterest() != -1
-                          && FieldConstants.alignmentPoseMap.containsKey(
-                              RobotState.getReefEstimate().tagIDOfInterest())) {
-                        Translation2d setpoint =
-                            FieldConstants.alignmentPoseMap
-                                .get(RobotState.getReefEstimate().tagIDOfInterest())
+                      if (RobotState.getClosestReefTag() != -1) {
+                        Pose2d setpoint =
+                            Reef.reefMap
+                                .get(RobotState.getClosestReefTag())
                                 .getPost(RobotState.getCurrentReefPost());
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
@@ -269,43 +271,44 @@ public final class DriveCommands {
                           xSpeed =
                               MathUtil.applyDeadband(
                                   xController.calculate(
-                                      RobotState.getReefEstimate().poseOfInterest().getX(),
-                                      setpoint.getX()),
+                                      RobotState.getRobotPoseReef().getX(), setpoint.getX()),
                                   0.09870152766556013);
-                        else
-                          xController.reset(RobotState.getReefEstimate().poseOfInterest().getX());
+                        else xController.reset(RobotState.getRobotPoseReef().getX());
                         if (!yController.atSetpoint())
                           ySpeed =
                               MathUtil.applyDeadband(
                                   yController.calculate(
-                                      RobotState.getReefEstimate().poseOfInterest().getY(),
-                                      setpoint.getY()),
+                                      RobotState.getRobotPoseReef().getY(), setpoint.getY()),
                                   0.042128593183473257);
-                        else
-                          yController.reset(RobotState.getReefEstimate().poseOfInterest().getY());
+                        else yController.reset(RobotState.getRobotPoseReef().getY());
                         if (!omegaController.atSetpoint())
                           thetaSpeed =
                               MathUtil.applyDeadband(
                                   omegaController.calculate(
-                                      RobotState.getRobotPose().getRotation().getRadians(),
-                                      RobotState.getReefEstimate()
-                                          .poseOfInterest()
+                                      RobotState.getRobotPoseReef().getRotation().getRadians(),
+                                      setpoint
                                           .getRotation()
-                                          .plus(Rotation2d.fromDegrees(90.0))
+                                          .plus(Rotation2d.fromDegrees(-90.0))
                                           .getRadians()),
                                   0.09927912329132032);
                         else
                           omegaController.reset(
-                              RobotState.getReefEstimate()
-                                  .poseOfInterest()
-                                  .getRotation()
-                                  .getRadians());
+                              RobotState.getRobotPoseReef().getRotation().getRadians());
 
-                        Logger.recordOutput("xSpeed", xSpeed);
-                        Logger.recordOutput("ySpeed", ySpeed);
+                        Logger.recordOutput("xSpeed", -xSpeed);
+                        Logger.recordOutput("ySpeed", -ySpeed);
                         Logger.recordOutput("thetaSpeed", thetaSpeed);
                         Logger.recordOutput("setpoint", setpoint);
-                        speeds = new ChassisSpeeds(-xSpeed, ySpeed, thetaSpeed);
+                        speeds =
+                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                -xSpeed,
+                                -ySpeed,
+                                thetaSpeed,
+                                isFlipped
+                                    ? RobotState.getRobotPoseReef()
+                                        .getRotation()
+                                        .plus(new Rotation2d(Math.PI))
+                                    : RobotState.getRobotPoseReef().getRotation());
                       } else {
                         speeds = new ChassisSpeeds();
                       }
@@ -315,9 +318,9 @@ public final class DriveCommands {
                 .finallyDo(
                     () -> {
                       omegaController.reset(
-                          RobotState.getReefEstimate().poseOfInterest().getRotation().getRadians());
-                      xController.reset(RobotState.getReefEstimate().poseOfInterest().getX());
-                      yController.reset(RobotState.getReefEstimate().poseOfInterest().getY());
+                          RobotState.getRobotPoseReef().getRotation().getRadians());
+                      xController.reset(RobotState.getRobotPoseReef().getX());
+                      yController.reset(RobotState.getRobotPoseReef().getY());
                       for (Camera camera : cameras) {
                         camera.setValidTags(FieldConstants.validTags);
                       }

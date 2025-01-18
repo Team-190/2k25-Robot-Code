@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import java.util.List;
@@ -97,10 +96,6 @@ public class Camera {
 
   public Pose2d getSecondaryPose() {
     return inputs.secondaryPose;
-  }
-
-  public Pose3d getPoseOfInterest() {
-    return inputs.poseOfInterest;
   }
 
   public double getTagIDOfInterest() {

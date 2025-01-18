@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -193,14 +194,8 @@ public class RobotContainer {
             DriveCommands.alignRobotToAprilTag(
                 drive, RobotState.getCurrentReefPost(), vision.getCameras()));
 
-    driver
-        .povLeft()
-        .onTrue(
-            Commands.runOnce(() -> RobotState.setCurrentReefPost(FieldConstants.ReefPost.LEFT)));
-    driver
-        .povRight()
-        .onTrue(
-            Commands.runOnce(() -> RobotState.setCurrentReefPost(FieldConstants.ReefPost.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {

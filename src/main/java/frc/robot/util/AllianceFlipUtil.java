@@ -27,9 +27,28 @@ public class AllianceFlipUtil {
   }
 
   public static Pose2d apply(Pose2d pose) {
-    return shouldFlip()
-        ? new Pose2d(apply(pose.getTranslation()), apply(pose.getRotation()))
-        : pose;
+    return new Pose2d(apply(pose.getTranslation()), apply(pose.getRotation()));
+  }
+
+  public static double overrideApplyX(double x) {
+    return fieldLength - x;
+  }
+
+  public static double overrideApplyY(double y) {
+    return fieldWidth - y;
+  }
+
+  public static Translation2d overrideApply(Translation2d translation) {
+    return new Translation2d(
+        overrideApplyX(translation.getX()), overrideApplyY(translation.getY()));
+  }
+
+  public static Rotation2d overrideApply(Rotation2d rotation) {
+    return rotation.rotateBy(Rotation2d.kPi);
+  }
+
+  public static Pose2d overrideApply(Pose2d pose) {
+    return new Pose2d(overrideApply(pose.getTranslation()), overrideApply(pose.getRotation()));
   }
 
   public static boolean shouldFlip() {

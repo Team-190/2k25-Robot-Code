@@ -1,85 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import java.util.ArrayList;
-import java.util.Collections;
+import frc.robot.util.AllianceFlipUtil;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 public class FieldConstants {
-  @RequiredArgsConstructor
-  public enum AlignmentPoses {
-    TAG_6(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(120.0)),
-    TAG_7(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(180.0)),
-
-    TAG_8(
-        new Translation2d(0.14860069499694067, 0.39923846993711837),
-        new Translation2d(-0.14860069499694067, 0.39923846993711837),
-        Rotation2d.fromDegrees(-120.0)),
-    TAG_9(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(-60.0)),
-    TAG_10(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(0.0)),
-    TAG_11(
-        new Translation2d(0.15879872585220567, 0.38812383025452923),
-        new Translation2d(-0.15879872585220567, 0.38812383025452923),
-        Rotation2d.fromDegrees(60.0));
-
-    private final Translation2d rightTranslation;
-    private final Translation2d leftTranslation;
-    @Getter private final Rotation2d rotation;
-
-    public final Translation2d getPost(ReefPost post) {
-      return post.equals(ReefPost.RIGHT) ? rightTranslation : leftTranslation;
-    }
-  }
-
-  public enum ReefPost {
-    LEFT,
-    RIGHT
-  }
-
-  public static final HashMap<Integer, AlignmentPoses> alignmentPoseMap =
-      new HashMap<Integer, AlignmentPoses>();
-
-  public static final int[] validTags =
-      new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
-
-  static {
-    alignmentPoseMap.put(6, AlignmentPoses.TAG_6);
-    alignmentPoseMap.put(7, AlignmentPoses.TAG_7);
-    alignmentPoseMap.put(8, AlignmentPoses.TAG_8);
-    alignmentPoseMap.put(9, AlignmentPoses.TAG_9);
-    alignmentPoseMap.put(10, AlignmentPoses.TAG_10);
-    alignmentPoseMap.put(11, AlignmentPoses.TAG_11);
-    alignmentPoseMap.put(17, AlignmentPoses.TAG_6);
-    alignmentPoseMap.put(18, AlignmentPoses.TAG_7);
-    alignmentPoseMap.put(19, AlignmentPoses.TAG_8);
-    alignmentPoseMap.put(20, AlignmentPoses.TAG_9);
-    alignmentPoseMap.put(21, AlignmentPoses.TAG_10);
-    alignmentPoseMap.put(22, AlignmentPoses.TAG_11);
-  }
-
   public static final double fieldLength = Units.inchesToMeters(690.876);
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
@@ -117,6 +47,17 @@ public class FieldConstants {
   }
 
   public static class Reef {
+    public static enum ReefPost {
+      LEFT,
+      RIGHT
+    }
+
+    public static record PostPair(Pose2d right, Pose2d left) {
+      public Pose2d getPost(ReefPost post) {
+        return post == ReefPost.LEFT ? left : right;
+      }
+    }
+
     public static final Translation2d center =
         new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501));
     public static final double faceToZoneLine =
@@ -125,12 +66,7 @@ public class FieldConstants {
     public static final Pose2d[] centerFaces =
         new Pose2d[6]; // Starting facing the driver station in clockwise order
 
-    public static final List<Map<ReefHeight, Pose3d>> branchPositions =
-        new ArrayList<Map<ReefHeight, Pose3d>>(
-            Collections.nCopies(
-                24,
-                (Map<ReefHeight, Pose3d>)
-                    null)); // Starting at the right branch facing the driver station in clockwise
+    public static final Map<Integer, PostPair> reefMap = new HashMap<Integer, PostPair>();
 
     static {
       // Initialize faces
@@ -165,49 +101,68 @@ public class FieldConstants {
               Units.inchesToMeters(130.144),
               Rotation2d.fromDegrees(-120));
 
-      // Initialize branch positions
-      for (int face = 0; face < 6; face++) {
-        Map<ReefHeight, Pose3d> fillRight = new HashMap<>();
-        Map<ReefHeight, Pose3d> fillLeft = new HashMap<>();
-        for (var level : ReefHeight.values()) {
-          Pose2d poseDirection = new Pose2d(center, Rotation2d.fromDegrees(180 - (60 * face)));
-          double adjustX = Units.inchesToMeters(30.738);
-          double adjustY = Units.inchesToMeters(6.469);
+      double adjustY = Units.inchesToMeters(6.469);
 
-          fillRight.put(
-              level,
-              new Pose3d(
-                  new Translation3d(
-                      poseDirection
-                          .transformBy(new Transform2d(adjustX, adjustY, new Rotation2d()))
-                          .getX(),
-                      poseDirection
-                          .transformBy(new Transform2d(adjustX, adjustY, new Rotation2d()))
-                          .getY(),
-                      level.height),
-                  new Rotation3d(
-                      0,
-                      Units.degreesToRadians(level.pitch),
-                      poseDirection.getRotation().getRadians())));
-          fillLeft.put(
-              level,
-              new Pose3d(
-                  new Translation3d(
-                      poseDirection
-                          .transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))
-                          .getX(),
-                      poseDirection
-                          .transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))
-                          .getY(),
-                      level.height),
-                  new Rotation3d(
-                      0,
-                      Units.degreesToRadians(level.pitch),
-                      poseDirection.getRotation().getRadians())));
-        }
-        branchPositions.set((face * 2) + 1, fillRight);
-        branchPositions.set((face * 2) + 2, fillLeft);
-      }
+      reefMap.put(
+          18,
+          new PostPair(
+              centerFaces[0].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[0].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          19,
+          new PostPair(
+              centerFaces[1].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[1].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          20,
+          new PostPair(
+              centerFaces[2].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[2].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          21,
+          new PostPair(
+              centerFaces[3].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[3].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          22,
+          new PostPair(
+              centerFaces[4].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[4].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          17,
+          new PostPair(
+              centerFaces[5].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
+              centerFaces[5].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+      reefMap.put(
+          7,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(18).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(18).left)));
+      reefMap.put(
+          6,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(19).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(19).left)));
+      reefMap.put(
+          11,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(20).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(20).left)));
+      reefMap.put(
+          10,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(21).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(21).left)));
+      reefMap.put(
+          9,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(22).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(22).left)));
+      reefMap.put(
+          8,
+          new PostPair(
+              AllianceFlipUtil.overrideApply(reefMap.get(17).right),
+              AllianceFlipUtil.overrideApply(reefMap.get(17).left)));
     }
   }
 
@@ -235,4 +190,8 @@ public class FieldConstants {
     public final double height;
     public final double pitch;
   }
+
+  public static final int[] validTags = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22
+  };
 }

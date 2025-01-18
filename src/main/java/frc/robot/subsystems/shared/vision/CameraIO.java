@@ -16,7 +16,6 @@ public interface CameraIO {
     public double frameTimestamp = 0.0;
     public Pose2d primaryPose = new Pose2d();
     public Pose2d secondaryPose = new Pose2d();
-    public Pose3d poseOfInterest = new Pose3d();
     public double tagIDOfInterest = -1;
   }
 
