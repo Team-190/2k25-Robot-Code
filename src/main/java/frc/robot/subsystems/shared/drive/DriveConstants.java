@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -54,7 +55,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -91,7 +94,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -129,7 +134,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -167,7 +174,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -203,7 +212,9 @@ public class DriveConstants {
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           backLeft,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-          backRight) {
+          backRight,
+      double bumperWidth,
+      double bumperLength) {
     public double driveBaseRadius() {
       return Math.hypot(
           (Math.abs(frontLeft.LocationX) + Math.abs(frontRight.LocationX)) / 2.0,

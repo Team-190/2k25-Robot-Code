@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,38 +102,42 @@ public class FieldConstants {
               Units.inchesToMeters(130.144),
               Rotation2d.fromDegrees(-120));
 
-      double adjustY = Units.inchesToMeters(6.469);
+      double adjustY =
+          Units.inchesToMeters(6.469); // Offset Y setpoint by center of tag to reef post
+      double adjustX =
+          DriveConstants.DRIVE_CONFIG.bumperWidth()
+              / 2.0; // Offset X setpoint by center of robot to bumper
 
       reefMap.put(
           18,
           new PostPair(
-              centerFaces[0].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[0].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[0].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[0].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           19,
           new PostPair(
-              centerFaces[1].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[1].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[1].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[1].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           20,
           new PostPair(
-              centerFaces[2].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[2].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[2].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[2].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           21,
           new PostPair(
-              centerFaces[3].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[3].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[3].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[3].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           22,
           new PostPair(
-              centerFaces[4].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[4].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[4].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[4].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           17,
           new PostPair(
-              centerFaces[5].transformBy(new Transform2d(0.0, adjustY, new Rotation2d())),
-              centerFaces[5].transformBy(new Transform2d(0.0, -adjustY, new Rotation2d()))));
+              centerFaces[5].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
+              centerFaces[5].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
       reefMap.put(
           7,
           new PostPair(
