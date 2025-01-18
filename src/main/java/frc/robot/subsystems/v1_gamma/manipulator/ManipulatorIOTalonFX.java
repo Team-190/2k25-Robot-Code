@@ -15,11 +15,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ManipulatorIOTalonFX implements ManipulatorIO {
   private final TalonFX manipulator;
 
   private final TalonFXConfiguration manipulatorConfig;
+  private final DigitalInput coralSensor;
 
   private final StatusSignal<Angle> manipulatorPositionRotations;
   private final StatusSignal<AngularVelocity> manipulatorVelocityRotationsPerSecond;
@@ -39,6 +41,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     manipulatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> manipulator.getConfigurator().apply(manipulatorConfig, 0.25));
+
+    coralSensor = new DigitalInput(ManipulatorConstants.CORAL_SENSOR_ID);
 
     manipulatorPositionRotations = manipulator.getPosition();
     manipulatorVelocityRotationsPerSecond = manipulator.getVelocity();
@@ -78,10 +82,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.supplyCurrentAmps = manipulatorSupplyCurrentAmps.getValueAsDouble();
     inputs.torqueCurrentAmps = manipulatorTorqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = manipulatorTemperatureCelsius.getValueAsDouble();
+
+    inputs.coralHasLeft = coralSensor.get();
+
   }
 
   @Override
   public void setVoltage(double volts) {
     manipulator.setControl(voltageRequest.withOutput(volts));
   }
+
 }

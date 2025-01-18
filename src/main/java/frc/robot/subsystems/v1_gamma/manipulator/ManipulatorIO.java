@@ -12,9 +12,11 @@ public interface ManipulatorIO {
     public double supplyCurrentAmps = 0.0;
     public double torqueCurrentAmps = 0.0;
     public double temperatureCelsius = 0.0;
+    public boolean coralHasLeft = true;
   }
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
+  
 }

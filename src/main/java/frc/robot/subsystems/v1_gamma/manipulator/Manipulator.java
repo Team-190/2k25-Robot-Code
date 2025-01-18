@@ -25,4 +25,8 @@ public class Manipulator extends SubsystemBase {
     return Commands.run(
         () -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble())), this);
   }
+
+  public boolean hasLeft() {
+    return inputs.coralHasLeft;
+  }
 }
