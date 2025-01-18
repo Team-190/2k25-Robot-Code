@@ -21,15 +21,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final TalonFX talonFX;
   private final TalonFX[] followTalonFX = new TalonFX[3];
 
-  private StatusSignal<Angle>[] positionRotations;
-  private StatusSignal<AngularVelocity>[] velocityRotationsPerSecond;
+  private StatusSignal<Angle> positionRotations;
+  private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
   private StatusSignal<Voltage>[] appliedVolts;
   private StatusSignal<Current>[] supplyCurrentAmps;
   private StatusSignal<Current>[] torqueCurrentAmps;
   private StatusSignal<Temperature>[] temperatureCelsius;
   private double positionGoalMeters;
-  private StatusSignal<Double>[] positionSetpointRotations;
-  private StatusSignal<Double>[] positionErrorRotations;
+  private StatusSignal<Double> positionSetpointRotations;
+  private StatusSignal<Double> positionErrorRotations;
 
   private final Alert disconnectedAlert =
       new Alert("Elevator Talon is disconnected, check CAN bus!", AlertType.ERROR);
@@ -80,61 +80,45 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       follow.setControl(new Follower(talonFX.getDeviceID(), false));
     }
 
-    for (int i = 0; i < positionRotations.length; i++) {
+    for (int i = 0; i < appliedVolts.length; i++) {
       if (i == 0) {
-        positionRotations[i] = talonFX.getPosition();
-        velocityRotationsPerSecond[i] = talonFX.getVelocity();
+        positionRotations = talonFX.getPosition();
+        velocityRotationsPerSecond = talonFX.getVelocity();
         appliedVolts[i] = talonFX.getMotorVoltage();
         supplyCurrentAmps[i] = talonFX.getSupplyCurrent();
         torqueCurrentAmps[i] = talonFX.getTorqueCurrent();
         temperatureCelsius[i] = talonFX.getDeviceTemp();
-        positionSetpointRotations[i] = talonFX.getClosedLoopReference();
-        positionErrorRotations[i] = talonFX.getClosedLoopError();
+        positionSetpointRotations = talonFX.getClosedLoopReference();
+        positionErrorRotations = talonFX.getClosedLoopError();
       }
-      positionRotations[i] = followTalonFX[i - 1].getPosition();
-      velocityRotationsPerSecond[i] = followTalonFX[i - 1].getVelocity();
       appliedVolts[i] = followTalonFX[i - 1].getMotorVoltage();
       supplyCurrentAmps[i] = followTalonFX[i - 1].getSupplyCurrent();
       torqueCurrentAmps[i] = followTalonFX[i - 1].getTorqueCurrent();
       temperatureCelsius[i] = followTalonFX[i - 1].getDeviceTemp();
-      positionSetpointRotations[i] = followTalonFX[i - 1].getClosedLoopReference();
-      positionErrorRotations[i] = followTalonFX[i - 1].getClosedLoopError();
     }
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         100,
-        positionRotations[0],
-        velocityRotationsPerSecond[0],
+        positionRotations,
+        velocityRotationsPerSecond,
         appliedVolts[0],
         supplyCurrentAmps[0],
         torqueCurrentAmps[0],
         temperatureCelsius[0],
-        positionSetpointRotations[0],
-        positionErrorRotations[0],
-        positionRotations[1],
-        velocityRotationsPerSecond[1],
+        positionSetpointRotations,
+        positionErrorRotations,
         appliedVolts[1],
         supplyCurrentAmps[1],
         torqueCurrentAmps[1],
         temperatureCelsius[1],
-        positionSetpointRotations[1],
-        positionErrorRotations[1],
-        positionRotations[2],
-        velocityRotationsPerSecond[2],
         appliedVolts[2],
         supplyCurrentAmps[2],
         torqueCurrentAmps[2],
         temperatureCelsius[2],
-        positionSetpointRotations[2],
-        positionErrorRotations[2],
-        positionRotations[3],
-        velocityRotationsPerSecond[3],
         appliedVolts[3],
         supplyCurrentAmps[3],
         torqueCurrentAmps[3],
-        temperatureCelsius[3],
-        positionSetpointRotations[3],
-        positionErrorRotations[3]);
+        temperatureCelsius[3]);
 
     talonFX.optimizeBusUtilization();
 
@@ -150,71 +134,58 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     boolean connected =
         BaseStatusSignal.refreshAll(
-                positionRotations[0],
-                velocityRotationsPerSecond[0],
+                positionRotations,
+                velocityRotationsPerSecond,
                 appliedVolts[0],
                 supplyCurrentAmps[0],
                 torqueCurrentAmps[0],
                 temperatureCelsius[0],
-                positionSetpointRotations[0],
-                positionErrorRotations[0],
-                positionRotations[1],
-                velocityRotationsPerSecond[1],
+                positionSetpointRotations,
+                positionErrorRotations,
                 appliedVolts[1],
                 supplyCurrentAmps[1],
                 torqueCurrentAmps[1],
                 temperatureCelsius[1],
-                positionSetpointRotations[1],
-                positionErrorRotations[1],
-                positionRotations[2],
-                velocityRotationsPerSecond[2],
                 appliedVolts[2],
                 supplyCurrentAmps[2],
                 torqueCurrentAmps[2],
                 temperatureCelsius[2],
-                positionSetpointRotations[2],
-                positionErrorRotations[2],
-                positionRotations[3],
-                velocityRotationsPerSecond[3],
                 appliedVolts[3],
                 supplyCurrentAmps[3],
                 torqueCurrentAmps[3],
-                temperatureCelsius[3],
-                positionSetpointRotations[3],
-                positionErrorRotations[3])
+                temperatureCelsius[3])
             .isOK();
 
-    for (int i = 0; i < positionRotations.length; i++) {
-      positionSetpointRotations[i].refresh();
-      positionErrorRotations[i].refresh();
-    }
+    positionSetpointRotations.refresh();
+    positionErrorRotations.refresh();
 
     disconnectedAlert.set(!connected);
 
-    for (int i = 0; i < positionRotations.length; i++) {
-      inputs.positionMeters[i] =
-          positionRotations[i].getValueAsDouble()
-              * Math.PI
-              * ElevatorConstants.DRUM_RADIUS
-              * 2
-              / ElevatorConstants.ELEVATOR_GEAR_RATIO;
-      inputs.velocityMetersPerSecond[i] =
-          velocityRotationsPerSecond[i].getValueAsDouble()
-              * Math.PI
-              * ElevatorConstants.DRUM_RADIUS
-              * 2
-              / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    for (int i = 0; i < appliedVolts.length; i++) {
       inputs.appliedVolts[i] = appliedVolts[i].getValueAsDouble();
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps[i].getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps[i].getValueAsDouble();
       inputs.temperatureCelsius[i] = temperatureCelsius[i].getValueAsDouble();
-      inputs.positionErrorMeters[i] =
-          positionErrorRotations[i].getValueAsDouble()
-              * Math.PI
-              * ElevatorConstants.DRUM_RADIUS
-              * 2
-              / ElevatorConstants.ELEVATOR_GEAR_RATIO;
     }
+
+    inputs.positionMeters =
+        positionRotations.getValueAsDouble()
+            * Math.PI
+            * ElevatorConstants.DRUM_RADIUS
+            * 2
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    inputs.velocityMetersPerSecond =
+        velocityRotationsPerSecond.getValueAsDouble()
+            * Math.PI
+            * ElevatorConstants.DRUM_RADIUS
+            * 2
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
+    inputs.positionErrorMeters =
+        positionErrorRotations.getValueAsDouble()
+            * Math.PI
+            * ElevatorConstants.DRUM_RADIUS
+            * 2
+            / ElevatorConstants.ELEVATOR_GEAR_RATIO;
 
     inputs.positionGoalMeters = positionGoalMeters;
   }

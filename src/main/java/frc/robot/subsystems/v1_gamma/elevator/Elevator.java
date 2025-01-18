@@ -60,14 +60,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getFFCharacterizationVelocity() {
-    double output = 0.0;
-    for (double meters : inputs.positionMeters) {
-      output +=
-          (meters
-                  * ElevatorConstants.ELEVATOR_GEAR_RATIO
-                  / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS))
-              / 4.0;
-    }
-    return output;
+    return inputs.positionMeters
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
   }
 }
