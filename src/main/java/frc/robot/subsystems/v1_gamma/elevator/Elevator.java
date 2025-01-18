@@ -48,7 +48,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () -> io.setPosition(ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS())));
+                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS())));
   }
 
   public Command runSysId() {

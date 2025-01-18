@@ -9,7 +9,7 @@ public class ElevatorConstants {
   public static final double ELEVATOR_GEAR_RATIO;
   public static final double DRUM_RADIUS;
 
-  public static final ElevatorSimParams ELEVATOR_SIM_PARAMS;
+  public static final ElevatorParams ELEVATOR_PARAMS;
 
   public static final double ELEVATOR_SUPPLY_CURRENT_LIMIT;
   public static final double ELEVATOR_STATOR_CURRENT_LIMIT;
@@ -21,7 +21,7 @@ public class ElevatorConstants {
     ELEVATOR_GEAR_RATIO = 1.0;
     DRUM_RADIUS = 1;
 
-    ELEVATOR_SIM_PARAMS = new ElevatorSimParams(DCMotor.getKrakenX60Foc(4), 1, 1, 0, 0, 1, 1);
+    ELEVATOR_PARAMS = new ElevatorParams(DCMotor.getKrakenX60Foc(4), 1, 1, 0, 0, 1, 1, 4);
 
     ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
     ELEVATOR_STATOR_CURRENT_LIMIT = 40;
@@ -55,14 +55,15 @@ public class ElevatorConstants {
       LoggedTunableNumber cruisingVelocityRotsPerSec,
       LoggedTunableNumber goalToleranceMeters) {}
 
-  public static record ElevatorSimParams(
+  public static record ElevatorParams(
       DCMotor ELEVATOR_MOTOR_CONFIG,
       double TOP_CARRIAGE_MASS_KG,
       double CARRIAGE_MASS_KG,
       double TOP_MIN_HEIGHT_METERS,
       double MIN_HEIGHT_METERS,
       double TOP_MAX_HEIGHT_METERS,
-      double MAX_HEIGHT_METERS) {}
+      double MAX_HEIGHT_METERS,
+      int NUM_MOTORS) {}
 
   @RequiredArgsConstructor
   public static enum ElevatorPositions {

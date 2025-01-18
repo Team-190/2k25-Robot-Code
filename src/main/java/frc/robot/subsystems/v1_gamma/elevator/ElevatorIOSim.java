@@ -18,14 +18,14 @@ public class ElevatorIOSim implements ElevatorIO {
   public ElevatorIOSim() {
     elevatorSim =
         new ElevatorSim(
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.ELEVATOR_MOTOR_CONFIG(),
+            ElevatorConstants.ELEVATOR_PARAMS.ELEVATOR_MOTOR_CONFIG(),
             ElevatorConstants.ELEVATOR_GEAR_RATIO,
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.CARRIAGE_MASS_KG(),
+            ElevatorConstants.ELEVATOR_PARAMS.CARRIAGE_MASS_KG(),
             ElevatorConstants.DRUM_RADIUS,
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS(),
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.MAX_HEIGHT_METERS(),
+            ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS(),
+            ElevatorConstants.ELEVATOR_PARAMS.MAX_HEIGHT_METERS(),
             true,
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS());
+            ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS());
     controller =
         new ProfiledPIDController(
             ElevatorConstants.GAINS.kP().get(),

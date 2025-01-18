@@ -60,12 +60,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.Feedback.SensorToMechanismRatio = ElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        ElevatorConstants.ELEVATOR_SIM_PARAMS.MAX_HEIGHT_METERS()
+        ElevatorConstants.ELEVATOR_PARAMS.MAX_HEIGHT_METERS()
             * ElevatorConstants.ELEVATOR_GEAR_RATIO
             / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS()
+        ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS()
             * ElevatorConstants.ELEVATOR_GEAR_RATIO
             / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
 
@@ -101,12 +101,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         100,
         positionRotations,
         velocityRotationsPerSecond,
+        positionSetpointRotations,
+        positionErrorRotations,
         appliedVolts[0],
         supplyCurrentAmps[0],
         torqueCurrentAmps[0],
         temperatureCelsius[0],
-        positionSetpointRotations,
-        positionErrorRotations,
         appliedVolts[1],
         supplyCurrentAmps[1],
         torqueCurrentAmps[1],
@@ -125,7 +125,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
     currentPositionControlRequest =
         new MotionMagicExpoTorqueCurrentFOC(
-            ElevatorConstants.ELEVATOR_SIM_PARAMS.MIN_HEIGHT_METERS()
+            ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS()
                 * ElevatorConstants.ELEVATOR_GEAR_RATIO
                 / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS));
   }
@@ -136,12 +136,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         BaseStatusSignal.refreshAll(
                 positionRotations,
                 velocityRotationsPerSecond,
+                positionSetpointRotations,
+                positionErrorRotations,
                 appliedVolts[0],
                 supplyCurrentAmps[0],
                 torqueCurrentAmps[0],
                 temperatureCelsius[0],
-                positionSetpointRotations,
-                positionErrorRotations,
                 appliedVolts[1],
                 supplyCurrentAmps[1],
                 torqueCurrentAmps[1],
@@ -161,7 +161,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     disconnectedAlert.set(!connected);
 
-    for (int i = 0; i < appliedVolts.length; i++) {
+    for (int i = 0; i < ElevatorConstants.ELEVATOR_PARAMS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts[i].getValueAsDouble();
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps[i].getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps[i].getValueAsDouble();
