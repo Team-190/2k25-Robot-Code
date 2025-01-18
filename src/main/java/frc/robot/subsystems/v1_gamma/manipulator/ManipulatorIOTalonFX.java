@@ -37,7 +37,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     manipulatorConfig = new TalonFXConfiguration();
     manipulatorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    manipulatorConfig.CurrentLimits.SupplyCurrentLimit = ManipulatorConstants.SupplyCurrentLimit;
+    manipulatorConfig.CurrentLimits.SupplyCurrentLimit = ManipulatorConstants.SUPPLY_CURRENT_LIMIT;
     manipulatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> manipulator.getConfigurator().apply(manipulatorConfig, 0.25));
@@ -84,7 +84,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.temperatureCelsius = manipulatorTemperatureCelsius.getValueAsDouble();
 
     inputs.manipulatorHasCoral = inputs.manipulatorHasCoral ? coralSensor.get() 
-    : manipulatorTorqueCurrentAmps.getValueAsDouble() >= ManipulatorConstants.ManipulatorCurrentThreshold;
+    : manipulatorTorqueCurrentAmps.getValueAsDouble() >= ManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
 
   }
 
