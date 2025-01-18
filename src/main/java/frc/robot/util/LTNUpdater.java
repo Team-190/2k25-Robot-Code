@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ManipulatorCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.v1_gamma.manipulator.Manipulator;
@@ -45,7 +46,14 @@ public class LTNUpdater {
   public static final void updateManipulator(Manipulator manipulator) {
     LoggedTunableNumber.ifChanged(
       manipulator.hashCode(), 
-    () -> {}, 
+    () -> {
+      ManipulatorCommands.setManipulatorVoltage(
+        manipulator,
+        ManipulatorConstants.VOLTAGES.INTAKE_VOLTS());
+      ManipulatorCommands.setManipulatorVoltage(
+        manipulator,
+        ManipulatorConstants.VOLTAGES.SCORE_VOLTS());
+    }, 
     ManipulatorConstants.VOLTAGES.INTAKE_VOLTS(), 
     ManipulatorConstants.VOLTAGES.SCORE_VOLTS());
   }
