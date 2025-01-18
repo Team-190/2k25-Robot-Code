@@ -79,7 +79,7 @@ public class FunnelIOSim implements FunnelIO {
     intakeMotorSim.setInputVoltage(intakeAppliedVolts);
     crabMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     intakeMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
-    
+
     inputs.crabPositionRadians = crabMotorSim.getAngularPositionRad();
     inputs.crabVelocityRadiansPerSecond = crabMotorSim.getAngularVelocityRadPerSec();
     inputs.crabGoalRadians = crabPositionGoal;
@@ -99,33 +99,38 @@ public class FunnelIOSim implements FunnelIO {
     inputs.intakeVelocityErrorRadiansPerSecond = intakeController.getVelocityError();
   }
 
-    @Override
-    public void setCrabVoltage(double volts) {
-        crabAppliedVolts = volts;
-    }
+  @Override
+  public void setCrabVoltage(double volts) {
+    crabAppliedVolts = volts;
+  }
 
-    @Override
-    public void setIntakeVoltage(double volts) {
-        intakeAppliedVolts = volts;
-    }
+  @Override
+  public void setIntakeVoltage(double volts) {
+    intakeAppliedVolts = volts;
+  }
 
-    @Override
-    public void setCrabPosition(double radians) {
-        crabPositionGoal = radians;
-        crabAppliedVolts = MathUtil.clamp(crabController.calculate(radians) + crabFeedforward.calculate(radians), -12, 12);
-    }
+  @Override
+  public void setCrabPosition(double radians) {
+    crabPositionGoal = radians;
+    crabAppliedVolts =
+        MathUtil.clamp(
+            crabController.calculate(radians) + crabFeedforward.calculate(radians), -12, 12);
+  }
 
-    @Override
-    public void setIntakeVelocity(double radiansPerSecond) {
-        intakeVelocityGoal = radiansPerSecond;
-        intakeAppliedVolts = MathUtil.clamp(intakeController.calculate(radiansPerSecond) + intakeFeedforward.calculate(radiansPerSecond), -12, 12);
-    }
+  @Override
+  public void setIntakeVelocity(double radiansPerSecond) {
+    intakeVelocityGoal = radiansPerSecond;
+    intakeAppliedVolts =
+        MathUtil.clamp(
+            intakeController.calculate(radiansPerSecond)
+                + intakeFeedforward.calculate(radiansPerSecond),
+            -12,
+            12);
+  }
 
-    @Override
-    public void stopIntake() {
-        intakeVelocityGoal = 0.0;
-        intakeAppliedVolts = 0.0;
-    }
-
+  @Override
+  public void stopIntake() {
+    intakeVelocityGoal = 0.0;
+    intakeAppliedVolts = 0.0;
+  }
 }
-

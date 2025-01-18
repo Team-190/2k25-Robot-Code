@@ -35,13 +35,17 @@ public interface FunnelIO {
 
   public default void setIntakeVoltage(double volts) {}
 
-    public default void setCrabPosition(double radians) {}
+  public default void setCrabPosition(double radians) {}
 
-    public default void setIntakeVelocity(double radiansPerSecond) {}
+  public default void setIntakeVelocity(double radiansPerSecond) {}
 
-    public default void stopIntake() {}
+  public default void stopIntake() {}
 
-    public default boolean atCrabGoal() { return false; }
+  public default boolean atCrabGoal() {
+    return false;
+  }
 
-    public default boolean atIntakeGoal() { return false; }
+  public default boolean atIntakeGoal() {
+    return false;
+  }
 }
