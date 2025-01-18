@@ -3,6 +3,8 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_gamma.manipulator.Manipulator;
+import frc.robot.subsystems.v1_gamma.manipulator.ManipulatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -39,4 +41,13 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
+
+  public static final void updateManipulator(Manipulator manipulator) {
+    LoggedTunableNumber.ifChanged(
+      manipulator.hashCode(), 
+    () -> {}, 
+    ManipulatorConstants.VOLTAGES.INTAKE_VOLTS(), 
+    ManipulatorConstants.VOLTAGES.SCORE_VOLTS());
+  }
+
 }
