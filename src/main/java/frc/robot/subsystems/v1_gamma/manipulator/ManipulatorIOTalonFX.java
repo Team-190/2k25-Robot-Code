@@ -83,7 +83,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.torqueCurrentAmps = manipulatorTorqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = manipulatorTemperatureCelsius.getValueAsDouble();
 
-    inputs.coralHasLeft = coralSensor.get();
+    inputs.manipulatorHasCoral = inputs.manipulatorHasCoral ? coralSensor.get() 
+    : manipulatorTorqueCurrentAmps.getValueAsDouble() >= ManipulatorConstants.ManipulatorCurrentThreshold;
 
   }
 

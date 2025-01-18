@@ -1,7 +1,6 @@
 package frc.robot.subsystems.v1_gamma.manipulator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -21,12 +20,12 @@ public class Manipulator extends SubsystemBase {
     Logger.processInputs("Manipulators", inputs);
   }
 
-  public Command runManipulator(DoubleSupplier forward, DoubleSupplier reverse) {
-    return Commands.run(
-        () -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble())), this);
+  public Command runManipulator(DoubleSupplier volts) {
+    return this.run(
+        () -> io.setVoltage(volts.getAsDouble()));
   }
 
-  public boolean hasLeft() {
-    return inputs.coralHasLeft;
+  public boolean hasCoral() {
+    return inputs.manipulatorHasCoral;
   }
 }
