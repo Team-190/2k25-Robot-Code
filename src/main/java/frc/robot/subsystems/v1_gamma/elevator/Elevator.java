@@ -47,8 +47,7 @@ public class Elevator extends SubsystemBase {
   public Command resetPosition() {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
-            runOnce(
-                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS())));
+            runOnce(() -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS())));
   }
 
   public Command runSysId() {
@@ -71,5 +70,10 @@ public class Elevator extends SubsystemBase {
 
   public void setConstraints(double maxAcceleration, double cruisingVelocity) {
     io.setConstraints(maxAcceleration, cruisingVelocity);
+  }
+
+  public boolean atGoal() {
+    return Math.abs(inputs.positionErrorMeters)
+        < ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -19,9 +20,11 @@ public class ElevatorConstants {
   static {
     ELEVATOR_CAN_ID = 0;
     ELEVATOR_GEAR_RATIO = 1.0;
-    DRUM_RADIUS = 1;
+    DRUM_RADIUS = Units.inchesToMeters(2.256);
 
-    ELEVATOR_PARAMS = new ElevatorParams(DCMotor.getKrakenX60Foc(4), 1, 1, 0, 0, 1, 1, 4);
+    ELEVATOR_PARAMS =
+        new ElevatorParams(
+            DCMotor.getKrakenX60Foc(4), 1, 0, Units.inchesToMeters(58), 4); // Will change
 
     ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
     ELEVATOR_STATOR_CURRENT_LIMIT = 40;
@@ -57,22 +60,19 @@ public class ElevatorConstants {
 
   public static record ElevatorParams(
       DCMotor ELEVATOR_MOTOR_CONFIG,
-      double TOP_CARRIAGE_MASS_KG,
       double CARRIAGE_MASS_KG,
-      double TOP_MIN_HEIGHT_METERS,
       double MIN_HEIGHT_METERS,
-      double TOP_MAX_HEIGHT_METERS,
       double MAX_HEIGHT_METERS,
       int NUM_MOTORS) {}
 
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(0.0),
-    INTAKE(0.0),
-    L1(0.0),
-    L2(0.0),
-    L3(0.0),
-    L4(0.0);
+    INTAKE(15.0),
+    L1(10.0),
+    L2(25.0),
+    L3(50.0),
+    L4(75.0);
 
     private final double position;
 
