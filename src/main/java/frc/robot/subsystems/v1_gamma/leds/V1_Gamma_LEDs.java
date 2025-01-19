@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-
+import lombok.RequiredArgsConstructor;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import lombok.RequiredArgsConstructor;
-
 public class V1_Gamma_LEDs extends Leds {
+  private static Leds instance;
 
   // Robot state tracking
   public int loopCycleCount = 0;
@@ -23,7 +22,8 @@ public class V1_Gamma_LEDs extends Leds {
   public boolean autoFinished = false;
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
-  @AutoLogOutput (key = "LEDs/Led States")
+
+  @AutoLogOutput(key = "LEDs/Led States")
   public static ArrayList<LED_STATE> ledStates = new ArrayList<>();
 
   private Optional<Alliance> alliance = Optional.empty();
@@ -37,17 +37,14 @@ public class V1_Gamma_LEDs extends Leds {
   private static final int PORT = 0;
 
   public V1_Gamma_LEDs() {
-    super();
+    super(LENGTH, PORT);
   }
 
-  @Override
-  protected int getPort() {
-    return PORT;
-  }
-
-  @Override
-  protected int getLength() {
-    return LENGTH;
+  public static Leds getInstance() {
+    if (instance == null) {
+      instance = new V1_Gamma_LEDs();
+    }
+    return instance;
   }
 
   public synchronized void periodic() {

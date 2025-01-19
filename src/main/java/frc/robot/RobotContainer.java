@@ -31,6 +31,7 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -52,7 +53,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
-      leds = Leds.getInstance();
       switch (Constants.ROBOT) {
         case V0_FUNKY:
           drive =
@@ -106,6 +106,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
+          leds = V1_Gamma_LEDs.getInstance();
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -155,6 +156,9 @@ public class RobotContainer {
     }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+    }
+    if (leds == null) {
+      leds = Leds.getInstance();
     }
 
     switch (Constants.ROBOT) {

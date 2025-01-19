@@ -8,27 +8,24 @@
 package frc.robot.subsystems.shared.leds;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.Constants;
-import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.util.VirtualSubsystem;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
 public abstract class Leds extends VirtualSubsystem {
   public static class DefaultLeds extends Leds {
-    @Override
-    protected int getPort() {
-      return 0;
+    public DefaultLeds() {
+      super(0, 0);
     }
 
-    @Override
-    protected int getLength() {
-      return 0;
+    public static Leds getInstance() {
+      return new DefaultLeds();
     }
   }
 
@@ -57,24 +54,9 @@ public abstract class Leds extends VirtualSubsystem {
 
   public static Leds getInstance() {
     if (instance == null) {
-      instance =
-          switch (Constants.ROBOT) {
-            case V1_GAMMA -> new V1_Gamma_LEDs();
-            default -> new DefaultLeds();
-          };
-
-      PORT = instance.getPort();
-      LENGTH = instance.getLength();
+      instance = new DefaultLeds();
     }
     return instance;
-  }
-
-  protected int getPort() {
-    return PORT;
-  }
-
-  protected int getLength() {
-    return LENGTH;
   }
 
   // LED IO
@@ -82,7 +64,9 @@ public abstract class Leds extends VirtualSubsystem {
   protected final AddressableLEDBuffer buffer;
   protected final Notifier loadingNotifier;
 
-  protected Leds() {
+  protected Leds(int LENGTH, int PORT) {
+    this.LENGTH = LENGTH;
+    this.PORT = PORT;
     leds = new AddressableLED(PORT);
     buffer = new AddressableLEDBuffer(LENGTH);
     leds.setLength(LENGTH);
@@ -158,34 +142,22 @@ public abstract class Leds extends VirtualSubsystem {
     }
   }
 
-  public void stripes(List<Color> colors, int LENGTH, double duration) {
-    int offset = (int) (Timer.getFPGATimestamp() % duration / duration * LENGTH * colors.size());
-    for (int i = 0; i < LENGTH; i++) {
+  public void stripes(List<Color> colors, int length, double duration) {
+    int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
+    for (int i = 0; i < length; i++) {
       int colorIndex =
-          (int) (Math.floor((double) (i - offset) / LENGTH) + colors.size()) % colors.size();
+          (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
       colorIndex = colors.size() - 1 - colorIndex;
       buffer.setLED(i, colors.get(colorIndex));
     }
   }
 
   public void elevatorPattern(DoubleSupplier position, Color c1, Color c2) {
-    int litLength = (int) MathUtil.clamp(LENGTH * position.getAsDouble(), 0, LENGTH);
-    for (int i = 0; i < LENGTH; i++) {
-      if (i < litLength) {
-        double wave = Math.sin((i + System.currentTimeMillis() / 100.0) * 0.1);
-        Color waveColor =
-            new Color((int) (c2.red * wave), (int) (c2.green * wave), (int) (c2.blue * wave));
-        buffer.setLED(i, waveColor);
-      } else {
-        buffer.setLED(i, c1);
-      }
-    }
-
+    int litLength =
+        (int) MathUtil.clamp(Units.metersToInches(position.getAsDouble()) / 0.5, 0, LENGTH);
+    wave(c1, c2, litLength, 0.1);
     if (litLength > 0) {
-      double breath = (Math.sin(System.currentTimeMillis() / 500.0) + 1) / 2;
-      Color breathColor =
-          new Color((int) (c1.red * breath), (int) (c1.green * breath), (int) (c1.blue * breath));
-      buffer.setLED(litLength - 1, breathColor);
+      breath(c1, c2, System.currentTimeMillis() / 1000.0);
     }
   }
 }
