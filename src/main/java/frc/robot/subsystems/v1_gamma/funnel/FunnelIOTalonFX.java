@@ -4,7 +4,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -40,17 +39,13 @@ public class FunnelIOTalonFX implements FunnelIO {
   private final StatusSignal<Current> rollerSupplyCurrentAmps;
   private final StatusSignal<Current> rollerTorqueCurrentAmps;
   private final StatusSignal<Temperature> rollerTemperatureCelsius;
-  private final StatusSignal<Double> rollerVelocitySetpointRotationsPerSecond;
-  private final StatusSignal<Double> rollerVelocityErrorRotationsPerSecond;
 
   private final StatusSignal<Angle> encoderPositionRotations;
 
   private double serializerGoalRadians;
-  private double rollerGoalRadiansPerSecond;
 
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
-  private MotionMagicVelocityVoltage velocityControlRequest;
   private MotionMagicVoltage positionControlRequest;
 
   private final Alert serializerDisconnectedAlert =
@@ -83,9 +78,9 @@ public class FunnelIOTalonFX implements FunnelIO {
     serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         FunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
     serializerConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+        FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+        FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
@@ -94,19 +89,10 @@ public class FunnelIOTalonFX implements FunnelIO {
         FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
-    rollerConfig.Slot0.kP = FunnelConstants.ROLLER_MOTOR_GAINS.kP().get();
-    rollerConfig.Slot0.kD = FunnelConstants.ROLLER_MOTOR_GAINS.kD().get();
-    rollerConfig.Slot0.kS = FunnelConstants.ROLLER_MOTOR_GAINS.kS().get();
-    rollerConfig.Slot0.kV = FunnelConstants.ROLLER_MOTOR_GAINS.kV().get();
-    rollerConfig.Slot0.kA = FunnelConstants.ROLLER_MOTOR_GAINS.kA().get();
-    rollerConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
-    rollerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.MagnetOffset =
-        FunnelConstants.CANCODER_ABSOLUTE_OFFSET_ROTATIONS.get();
+        Units.radiansToRotations(FunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.get());
     canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
@@ -129,8 +115,6 @@ public class FunnelIOTalonFX implements FunnelIO {
     rollerSupplyCurrentAmps = rollerMotor.getSupplyCurrent();
     rollerTorqueCurrentAmps = rollerMotor.getTorqueCurrent();
     rollerTemperatureCelsius = rollerMotor.getDeviceTemp();
-    rollerVelocitySetpointRotationsPerSecond = rollerMotor.getClosedLoopReference();
-    rollerVelocityErrorRotationsPerSecond = rollerMotor.getClosedLoopError();
 
     encoderPositionRotations = serializerEncoder.getPosition();
 
@@ -154,7 +138,6 @@ public class FunnelIOTalonFX implements FunnelIO {
 
     voltageRequest = new VoltageOut(0.0);
     neutralRequest = new NeutralOut();
-    velocityControlRequest = new MotionMagicVelocityVoltage(0.0);
     positionControlRequest = new MotionMagicVoltage(0.0);
   }
 
@@ -179,9 +162,7 @@ public class FunnelIOTalonFX implements FunnelIO {
                 rollerAppliedVolts,
                 rollerSupplyCurrentAmps,
                 rollerTorqueCurrentAmps,
-                rollerTemperatureCelsius,
-                rollerVelocitySetpointRotationsPerSecond,
-                rollerVelocityErrorRotationsPerSecond)
+                rollerTemperatureCelsius)
             .isOK();
 
     serializerDisconnectedAlert.set(!serializerConnected);
@@ -208,15 +189,10 @@ public class FunnelIOTalonFX implements FunnelIO {
         Units.rotationsToRadians(rollerPositionRotations.getValueAsDouble());
     inputs.rollerVelocityRadiansPerSecond =
         Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.rollerGoalRadiansPerSecond = rollerGoalRadiansPerSecond;
     inputs.rollerAppliedVolts = rollerAppliedVolts.getValueAsDouble();
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
-    inputs.rollerVelocitySetpointRadiansPerSecond =
-        rollerVelocitySetpointRotationsPerSecond.getValueAsDouble();
-    inputs.rollerVelocityErrorRadiansPerSecond =
-        rollerVelocityErrorRotationsPerSecond.getValueAsDouble();
 
     inputs.hasCoral = coralSensor.get();
   }
@@ -239,15 +215,6 @@ public class FunnelIOTalonFX implements FunnelIO {
   }
 
   @Override
-  public void setRollerVelocity(double radiansPerSecond) {
-    rollerGoalRadiansPerSecond = radiansPerSecond;
-    rollerMotor.setControl(
-        velocityControlRequest
-            .withVelocity(Units.radiansToRotations(radiansPerSecond))
-            .withEnableFOC(true));
-  }
-
-  @Override
   public void stopRoller() {
     rollerMotor.setControl(neutralRequest);
   }
@@ -257,14 +224,6 @@ public class FunnelIOTalonFX implements FunnelIO {
     return Math.abs(
             serializerGoalRadians
                 - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
-        < FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
-  }
-
-  @Override
-  public boolean atRollerGoal() {
-    return Math.abs(
-            rollerGoalRadiansPerSecond
-                - Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble()))
-        < FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+        < FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 }

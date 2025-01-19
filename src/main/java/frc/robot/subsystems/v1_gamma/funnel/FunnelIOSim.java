@@ -13,24 +13,21 @@ public class FunnelIOSim implements FunnelIO {
   public final DCMotorSim rollerMotorSim;
 
   private final ProfiledPIDController serializerController;
-  private final ProfiledPIDController rollerController;
   private final SimpleMotorFeedforward serializerFeedforward;
-  private final SimpleMotorFeedforward rollerFeedforward;
 
   private double serializerAppliedVolts = 0.0;
   private double serializerPositionGoal = 0.0;
 
   private double rollerAppliedVolts = 0.0;
-  private double rollerVelocityGoal = 0.0;
 
   public FunnelIOSim() {
     serializerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.CLAPDADDY_PARAMS.motor(),
-                FunnelConstants.CLAPDADDY_PARAMS.momentOfInertia(),
+                FunnelConstants.SERIALIZER_PARAMS.motor(),
+                FunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
                 FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
-            FunnelConstants.CLAPDADDY_PARAMS.motor());
+            FunnelConstants.SERIALIZER_PARAMS.motor());
 
     rollerMotorSim =
         new DCMotorSim(
@@ -46,29 +43,15 @@ public class FunnelIOSim implements FunnelIO {
             0.0,
             FunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
-    rollerController =
-        new ProfiledPIDController(
-            FunnelConstants.ROLLER_MOTOR_GAINS.kP().get(),
-            0.0,
-            FunnelConstants.ROLLER_MOTOR_GAINS.kD().get(),
-            new TrapezoidProfile.Constraints(
-                FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
-
+    
     serializerFeedforward =
         new SimpleMotorFeedforward(
             FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
             FunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
             FunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
-
-    rollerFeedforward =
-        new SimpleMotorFeedforward(
-            FunnelConstants.ROLLER_MOTOR_GAINS.kS().get(),
-            FunnelConstants.ROLLER_MOTOR_GAINS.kV().get(),
-            FunnelConstants.ROLLER_MOTOR_GAINS.kA().get());
   }
 
   @Override
@@ -90,12 +73,9 @@ public class FunnelIOSim implements FunnelIO {
 
     inputs.rollerPositionRadians = rollerMotorSim.getAngularPositionRad();
     inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
-    inputs.rollerGoalRadiansPerSecond = rollerVelocityGoal;
     inputs.rollerAppliedVolts = rollerAppliedVolts;
     inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
     inputs.rollerTorqueCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
-    inputs.rollerVelocitySetpointRadiansPerSecond = rollerController.getSetpoint().velocity;
-    inputs.rollerVelocityErrorRadiansPerSecond = rollerController.getVelocityError();
   }
 
   @Override
@@ -119,19 +99,7 @@ public class FunnelIOSim implements FunnelIO {
   }
 
   @Override
-  public void setRollerVelocity(double radiansPerSecond) {
-    rollerVelocityGoal = radiansPerSecond;
-    rollerAppliedVolts =
-        MathUtil.clamp(
-            rollerController.calculate(radiansPerSecond)
-                + rollerFeedforward.calculate(rollerController.getSetpoint().position),
-            -12,
-            12);
-  }
-
-  @Override
   public void stopRoller() {
-    rollerVelocityGoal = 0.0;
     rollerAppliedVolts = 0.0;
   }
 }

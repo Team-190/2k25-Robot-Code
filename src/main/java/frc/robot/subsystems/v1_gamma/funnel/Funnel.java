@@ -15,7 +15,6 @@ public class Funnel extends SubsystemBase {
   private final FunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
-  private final SysIdRoutine rollerCharacterizationRoutine;
   private final SysIdRoutine serializerCharacterizationRoutine;
   private FunnelState goal;
   private boolean climbing;
@@ -25,15 +24,6 @@ public class Funnel extends SubsystemBase {
     inputs = new FunnelIOInputsAutoLogged();
 
     isClosedLoop = true;
-    rollerCharacterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(10),
-                (state) -> Logger.recordOutput("Funnel/rollerSysIDState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) -> io.setRollerVoltage(volts.in(Volts)), null, this));
 
     serializerCharacterizationRoutine =
         new SysIdRoutine(
@@ -92,10 +82,6 @@ public class Funnel extends SubsystemBase {
     return run(() -> io.setSerializerPosition(radians));
   }
 
-  public Command setRollerVelocity(double radiansPerSecond) {
-    return run(() -> io.setRollerVelocity(radiansPerSecond));
-  }
-
   public Command stopRoller() {
     return runOnce(io::stopRoller);
   }
@@ -107,30 +93,17 @@ public class Funnel extends SubsystemBase {
   public Command sysIdRoutine() {
     return Commands.sequence(
         runOnce(() -> isClosedLoop = false),
-        Commands.parallel(
-            serializerCharacterizationRoutine.quasistatic(Direction.kForward),
-            rollerCharacterizationRoutine.quasistatic(Direction.kForward)),
+        serializerCharacterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(4),
-        Commands.parallel(
-            serializerCharacterizationRoutine.quasistatic(Direction.kReverse),
-            rollerCharacterizationRoutine.quasistatic(Direction.kReverse)),
-        Commands.waitSeconds(4),
-        Commands.parallel(
-            serializerCharacterizationRoutine.dynamic(Direction.kForward),
-            rollerCharacterizationRoutine.dynamic(Direction.kForward)),
-        Commands.waitSeconds(4),
-        Commands.parallel(
-            serializerCharacterizationRoutine.dynamic(Direction.kReverse),
-            rollerCharacterizationRoutine.dynamic(Direction.kReverse)));
+        serializerCharacterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(4), 
+        serializerCharacterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(4), 
+        serializerCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
   @AutoLogOutput(key = "Funnel/Serializer Motor At Goal")
   public boolean serializerMotorAtGoal() {
     return io.atSerializerGoal();
-  }
-
-  @AutoLogOutput(key = "Funnel/Roller Motor At Goal")
-  public boolean rollerMotorAtGoal() {
-    return io.atRollerGoal();
   }
 }

@@ -18,13 +18,10 @@ public interface FunnelIO {
 
     public double rollerPositionRadians = 0.0;
     public double rollerVelocityRadiansPerSecond = 0.0;
-    public double rollerGoalRadiansPerSecond = 0.0;
     public double rollerAppliedVolts = 0.0;
     public double rollerSupplyCurrentAmps = 0.0;
     public double rollerTorqueCurrentAmps = 0.0;
     public double rollerTemperatureCelsius = 0.0;
-    public double rollerVelocitySetpointRadiansPerSecond = 0.0;
-    public double rollerVelocityErrorRadiansPerSecond = 0.0;
 
     public boolean hasCoral = false;
   }
@@ -37,15 +34,10 @@ public interface FunnelIO {
 
   public default void setSerializerPosition(double radians) {}
 
-  public default void setRollerVelocity(double radiansPerSecond) {}
-
   public default void stopRoller() {}
 
   public default boolean atSerializerGoal() {
     return false;
   }
 
-  public default boolean atRollerGoal() {
-    return false;
-  }
 }

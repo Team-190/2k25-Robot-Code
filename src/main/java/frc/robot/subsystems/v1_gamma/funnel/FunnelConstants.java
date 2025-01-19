@@ -10,15 +10,13 @@ public class FunnelConstants {
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
   public static final Gains SERIALIZER_MOTOR_GAINS;
-  public static final Gains ROLLER_MOTOR_GAINS;
   public static final FunnelCurrentLimits CURRENT_LIMITS;
   public static final double SERIALIZER_MOTOR_GEAR_RATIO;
   public static final double ROLLER_MOTOR_GEAR_RATIO;
   public static final Thresholds ANGLE_THRESHOLDS;
-  public static final Constraints CLAPDADDY_MOTOR_CONSTRAINTS;
-  public static final Constraints ROLLER_MOTOR_CONSTRAINTS;
-  public static final LoggedTunableNumber CANCODER_ABSOLUTE_OFFSET_ROTATIONS;
-  public static final FunnelParams CLAPDADDY_PARAMS =
+  public static final Constraints SERIALIZER_MOTOR_CONSTRAINTS;
+  public static final LoggedTunableNumber CANCODER_ABSOLUTE_OFFSET_RADIANS;
+  public static final FunnelParams SERIALIZER_PARAMS =
       new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
   public static final FunnelParams ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
 
@@ -33,13 +31,6 @@ public class FunnelConstants {
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kS", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kV", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kA", 0.0));
-    ROLLER_MOTOR_GAINS =
-        new Gains(
-            new LoggedTunableNumber("Funnel/Roller Motor Gains/kP", 0.0),
-            new LoggedTunableNumber("Funnel/Roller Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Roller Motor Gains/kS", 0.0),
-            new LoggedTunableNumber("Funnel/Roller Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Roller Motor Gains/kA", 0.0));
 
     CURRENT_LIMITS = new FunnelCurrentLimits(0.0, 0.0, 0.0, 0.0);
 
@@ -50,18 +41,13 @@ public class FunnelConstants {
         new Thresholds(
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Angle", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor/Min Angle", 0.0));
-    CLAPDADDY_MOTOR_CONSTRAINTS =
+    SERIALIZER_MOTOR_CONSTRAINTS =
         new Constraints(
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
-    ROLLER_MOTOR_CONSTRAINTS =
-        new Constraints(
-            new LoggedTunableNumber("Funnel/Roller Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Roller Motor/Max Velocity", 0.0),
-            new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
 
-    CANCODER_ABSOLUTE_OFFSET_ROTATIONS =
+    CANCODER_ABSOLUTE_OFFSET_RADIANS =
         new LoggedTunableNumber("Funnel/CanCoder Absolute Offset", 0.0);
   }
 
