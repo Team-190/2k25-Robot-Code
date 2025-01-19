@@ -6,58 +6,59 @@ import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
 public class FunnelConstants {
-  public static final int CRAB_MOTOR_ID;
-  public static final int INTAKE_MOTOR_ID;
+  public static final int CLAPPER_MOTOR_ID;
+  public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
-  public static final Gains CRAB_MOTOR_GAINS;
-  public static final Gains INTAKE_MOTOR_GAINS;
+  public static final Gains CLAPPER_MOTOR_GAINS;
+  public static final Gains ROLLER_MOTOR_GAINS;
   public static final FunnelCurrentLimits CURRENT_LIMITS;
-  public static final double CRAB_MOTOR_GEAR_RATIO;
-  public static final double INTAKE_MOTOR_GEAR_RATIO;
+  public static final double CLAPPER_MOTOR_GEAR_RATIO;
+  public static final double ROLLER_MOTOR_GEAR_RATIO;
   public static final Thresholds ANGLE_THRESHOLDS;
-  public static final Constraints CRAB_MOTOR_CONSTRAINTS;
-  public static final Constraints INTAKE_MOTOR_CONSTRAINTS;
+  public static final Constraints CLAPPER_MOTOR_CONSTRAINTS;
+  public static final Constraints ROLLER_MOTOR_CONSTRAINTS;
   public static final LoggedTunableNumber CANCODER_ABSOLUTE_OFFSET_ROTATIONS;
-  public static final FunnelParams CRAB_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
-  public static final FunnelParams INTAKE_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
+  public static final FunnelParams CLAPPER_PARAMS =
+      new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
+  public static final FunnelParams ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
 
   static {
-    CRAB_MOTOR_ID = 0;
-    INTAKE_MOTOR_ID = 0;
+    CLAPPER_MOTOR_ID = 0;
+    ROLLER_MOTOR_ID = 0;
     CORAL_SENSOR_ID = 0;
-    CRAB_MOTOR_GAINS =
+    CLAPPER_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Crab Motor Gains/kP", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor Gains/kS", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor Gains/kA", 0.0));
-    INTAKE_MOTOR_GAINS =
+            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kP", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kD", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kS", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kV", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kA", 0.0));
+    ROLLER_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Intake Motor Gains/kP", 0.0),
-            new LoggedTunableNumber("Funnel/Intake Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Intake Motor Gains/kS", 0.0),
-            new LoggedTunableNumber("Funnel/Intake Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Intake Motor Gains/kA", 0.0));
+            new LoggedTunableNumber("Funnel/Roller Motor Gains/kP", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor Gains/kD", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor Gains/kS", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor Gains/kV", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor Gains/kA", 0.0));
 
     CURRENT_LIMITS = new FunnelCurrentLimits(0.0, 0.0, 0.0, 0.0);
 
-    CRAB_MOTOR_GEAR_RATIO = 0.0;
-    INTAKE_MOTOR_GEAR_RATIO = 0.0;
+    CLAPPER_MOTOR_GEAR_RATIO = 0.0;
+    ROLLER_MOTOR_GEAR_RATIO = 0.0;
 
     ANGLE_THRESHOLDS =
         new Thresholds(
-            new LoggedTunableNumber("Funnel/Crab Motor/Max Angle", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor/Min Angle", 0.0));
-    CRAB_MOTOR_CONSTRAINTS =
+            new LoggedTunableNumber("Funnel/Clapper Motor/Max Angle", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor/Min Angle", 0.0));
+    CLAPPER_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Crab Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Crab Motor/Max Velocity", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor/Max Acceleration", 0.0),
+            new LoggedTunableNumber("Funnel/Clapper Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
-    INTAKE_MOTOR_CONSTRAINTS =
+    ROLLER_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Intake Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Intake Motor/Max Velocity", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor/Max Acceleration", 0.0),
+            new LoggedTunableNumber("Funnel/Roller Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
 
     CANCODER_ABSOLUTE_OFFSET_ROTATIONS =
@@ -65,10 +66,10 @@ public class FunnelConstants {
   }
 
   public static final record FunnelCurrentLimits(
-      double CRAB_SUPPLY_CURRENT_LIMIT,
-      double INTAKE_SUPPLY_CURRENT_LIMIT,
-      double CRAB_STATOR_CURRENT_LIMIT,
-      double INTAKE_STATOR_CURRENT_LIMIT) {}
+      double CLAPPER_SUPPLY_CURRENT_LIMIT,
+      double ROLLER_SUPPLY_CURRENT_LIMIT,
+      double CLAPPER_STATOR_CURRENT_LIMIT,
+      double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static final record Gains(
       LoggedTunableNumber kP,

@@ -15,8 +15,8 @@ public class Funnel extends SubsystemBase {
   private final FunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
-  private final SysIdRoutine intakeCharacterizationRoutine;
-  private final SysIdRoutine crabCharacterizationRoutine;
+  private final SysIdRoutine rollerCharacterizationRoutine;
+  private final SysIdRoutine clapperCharacterizationRoutine;
   private FunnelState goal;
   private boolean climbing;
 
@@ -25,24 +25,25 @@ public class Funnel extends SubsystemBase {
     inputs = new FunnelIOInputsAutoLogged();
 
     isClosedLoop = true;
-    intakeCharacterizationRoutine =
+    rollerCharacterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
                 Seconds.of(10),
-                (state) -> Logger.recordOutput("Funnel/intakeSysIDState", state.toString())),
+                (state) -> Logger.recordOutput("Funnel/rollerSysIDState", state.toString())),
             new SysIdRoutine.Mechanism(
-                (volts) -> io.setIntakeVoltage(volts.in(Volts)), null, this));
+                (volts) -> io.setRollerVoltage(volts.in(Volts)), null, this));
 
-    crabCharacterizationRoutine =
+    clapperCharacterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
                 Seconds.of(10),
-                (state) -> Logger.recordOutput("Funnel/crabSysIDState", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setCrabVoltage(volts.in(Volts)), null, this));
+                (state) -> Logger.recordOutput("Funnel/clapperSysIDState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setClapperVoltage(volts.in(Volts)), null, this));
   }
 
   @Override
@@ -51,16 +52,16 @@ public class Funnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      setCrabPosition(goal.getAngle());
+      setClapperPosition(goal.getAngle());
     }
 
     if (climbing) {
-      setCrabGoal(FunnelState.CLIMB);
+      setClapperGoal(FunnelState.CLIMB);
     } else {
       if (hasCoral()) {
-        setCrabGoal(FunnelState.CLOSED);
+        setClapperGoal(FunnelState.CLOSED);
       } else {
-        setCrabGoal(FunnelState.OPENED);
+        setClapperGoal(FunnelState.OPENED);
       }
     }
   }
@@ -69,7 +70,7 @@ public class Funnel extends SubsystemBase {
     return runOnce(() -> this.climbing = climbing);
   }
 
-  public Command setCrabGoal(FunnelState goal) {
+  public Command setClapperGoal(FunnelState goal) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -77,26 +78,26 @@ public class Funnel extends SubsystemBase {
         });
   }
 
-  public Command setIntakeVoltage(double volts) {
-    return run(() -> io.setIntakeVoltage(volts));
+  public Command setRollerVoltage(double volts) {
+    return run(() -> io.setRollerVoltage(volts));
   }
 
-  public Command setCrabVoltage(double volts) {
+  public Command setClapperVoltage(double volts) {
     isClosedLoop = false;
-    return run(() -> io.setCrabVoltage(volts));
+    return run(() -> io.setClapperVoltage(volts));
   }
 
-  public Command setCrabPosition(double radians) {
+  public Command setClapperPosition(double radians) {
     isClosedLoop = true;
-    return run(() -> io.setCrabPosition(radians));
+    return run(() -> io.setClapperPosition(radians));
   }
 
-  public Command setIntakeVelocity(double radiansPerSecond) {
-    return run(() -> io.setIntakeVelocity(radiansPerSecond));
+  public Command setRollerVelocity(double radiansPerSecond) {
+    return run(() -> io.setRollerVelocity(radiansPerSecond));
   }
 
-  public Command stopIntake() {
-    return runOnce(io::stopIntake);
+  public Command stopRoller() {
+    return runOnce(io::stopRoller);
   }
 
   public boolean hasCoral() {
@@ -107,29 +108,29 @@ public class Funnel extends SubsystemBase {
     return Commands.sequence(
         runOnce(() -> isClosedLoop = false),
         Commands.parallel(
-            crabCharacterizationRoutine.quasistatic(Direction.kForward),
-            intakeCharacterizationRoutine.quasistatic(Direction.kForward)),
+            clapperCharacterizationRoutine.quasistatic(Direction.kForward),
+            rollerCharacterizationRoutine.quasistatic(Direction.kForward)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            crabCharacterizationRoutine.quasistatic(Direction.kReverse),
-            intakeCharacterizationRoutine.quasistatic(Direction.kReverse)),
+            clapperCharacterizationRoutine.quasistatic(Direction.kReverse),
+            rollerCharacterizationRoutine.quasistatic(Direction.kReverse)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            crabCharacterizationRoutine.dynamic(Direction.kForward),
-            intakeCharacterizationRoutine.dynamic(Direction.kForward)),
+            clapperCharacterizationRoutine.dynamic(Direction.kForward),
+            rollerCharacterizationRoutine.dynamic(Direction.kForward)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            crabCharacterizationRoutine.dynamic(Direction.kReverse),
-            intakeCharacterizationRoutine.dynamic(Direction.kReverse)));
+            clapperCharacterizationRoutine.dynamic(Direction.kReverse),
+            rollerCharacterizationRoutine.dynamic(Direction.kReverse)));
   }
 
-  @AutoLogOutput(key = "Funnel/Crab Motor At Goal")
-  public boolean crabMotorAtGoal() {
-    return io.atCrabGoal();
+  @AutoLogOutput(key = "Funnel/Clapper Motor At Goal")
+  public boolean clapperMotorAtGoal() {
+    return io.atClapperGoal();
   }
 
-  @AutoLogOutput(key = "Funnel/Intake Motor At Goal")
-  public boolean intakeMotorAtGoal() {
-    return io.atIntakeGoal();
+  @AutoLogOutput(key = "Funnel/Roller Motor At Goal")
+  public boolean rollerMotorAtGoal() {
+    return io.atRollerGoal();
   }
 }

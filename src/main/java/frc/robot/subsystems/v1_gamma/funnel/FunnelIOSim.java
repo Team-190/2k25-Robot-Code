@@ -9,128 +9,127 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class FunnelIOSim implements FunnelIO {
-  public final DCMotorSim crabMotorSim;
-  public final DCMotorSim intakeMotorSim;
+  public final DCMotorSim clapperMotorSim;
+  public final DCMotorSim rollerMotorSim;
 
-  private final ProfiledPIDController crabController;
-  private final ProfiledPIDController intakeController;
-  private final SimpleMotorFeedforward crabFeedforward;
-  private final SimpleMotorFeedforward intakeFeedforward;
+  private final ProfiledPIDController clapperController;
+  private final ProfiledPIDController rollerController;
+  private final SimpleMotorFeedforward clapperFeedforward;
+  private final SimpleMotorFeedforward rollerFeedforward;
 
-  private double crabPositionRadians = 0.0;
-  private double crabAppliedVolts = 0.0;
-  private double crabPositionGoal = 0.0;
+  private double clapperAppliedVolts = 0.0;
+  private double clapperPositionGoal = 0.0;
 
-  private double intakeVelocityRadiansPerSecond = 0.0;
-  private double intakeAppliedVolts = 0.0;
-  private double intakeVelocityGoal = 0.0;
+  private double rollerAppliedVolts = 0.0;
+  private double rollerVelocityGoal = 0.0;
 
   public FunnelIOSim() {
-    crabMotorSim =
+    clapperMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.CRAB_PARAMS.motor(),
-                FunnelConstants.CRAB_PARAMS.momentOfInertia(),
-                FunnelConstants.CRAB_MOTOR_GEAR_RATIO),
-            FunnelConstants.CRAB_PARAMS.motor());
+                FunnelConstants.CLAPPER_PARAMS.motor(),
+                FunnelConstants.CLAPPER_PARAMS.momentOfInertia(),
+                FunnelConstants.CLAPPER_MOTOR_GEAR_RATIO),
+            FunnelConstants.CLAPPER_PARAMS.motor());
 
-    intakeMotorSim =
+    rollerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.INTAKE_PARAMS.motor(),
-                FunnelConstants.INTAKE_PARAMS.momentOfInertia(),
-                FunnelConstants.INTAKE_MOTOR_GEAR_RATIO),
-            FunnelConstants.INTAKE_PARAMS.motor());
+                FunnelConstants.ROLLER_PARAMS.motor(),
+                FunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
+            FunnelConstants.ROLLER_PARAMS.motor());
 
-    crabController =
+    clapperController =
         new ProfiledPIDController(
-            FunnelConstants.CRAB_MOTOR_GAINS.kP().get(),
+            FunnelConstants.CLAPPER_MOTOR_GAINS.kP().get(),
             0.0,
-            FunnelConstants.CRAB_MOTOR_GAINS.kD().get(),
+            FunnelConstants.CLAPPER_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.CRAB_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.CRAB_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
-    intakeController =
+    rollerController =
         new ProfiledPIDController(
-            FunnelConstants.INTAKE_MOTOR_GAINS.kP().get(),
+            FunnelConstants.ROLLER_MOTOR_GAINS.kP().get(),
             0.0,
-            FunnelConstants.INTAKE_MOTOR_GAINS.kD().get(),
+            FunnelConstants.ROLLER_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.INTAKE_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.INTAKE_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
-    crabFeedforward =
+    clapperFeedforward =
         new SimpleMotorFeedforward(
-            FunnelConstants.CRAB_MOTOR_GAINS.kS().get(),
-            FunnelConstants.CRAB_MOTOR_GAINS.kV().get(),
-            FunnelConstants.CRAB_MOTOR_GAINS.kA().get());
+            FunnelConstants.CLAPPER_MOTOR_GAINS.kS().get(),
+            FunnelConstants.CLAPPER_MOTOR_GAINS.kV().get(),
+            FunnelConstants.CLAPPER_MOTOR_GAINS.kA().get());
 
-    intakeFeedforward =
+    rollerFeedforward =
         new SimpleMotorFeedforward(
-            FunnelConstants.INTAKE_MOTOR_GAINS.kS().get(),
-            FunnelConstants.INTAKE_MOTOR_GAINS.kV().get(),
-            FunnelConstants.INTAKE_MOTOR_GAINS.kA().get());
+            FunnelConstants.ROLLER_MOTOR_GAINS.kS().get(),
+            FunnelConstants.ROLLER_MOTOR_GAINS.kV().get(),
+            FunnelConstants.ROLLER_MOTOR_GAINS.kA().get());
   }
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    crabMotorSim.setInputVoltage(crabAppliedVolts);
-    intakeMotorSim.setInputVoltage(intakeAppliedVolts);
-    crabMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
-    intakeMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    clapperMotorSim.setInputVoltage(clapperAppliedVolts);
+    rollerMotorSim.setInputVoltage(rollerAppliedVolts);
+    clapperMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    rollerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.crabPositionRadians = crabMotorSim.getAngularPositionRad();
-    inputs.crabVelocityRadiansPerSecond = crabMotorSim.getAngularVelocityRadPerSec();
-    inputs.crabGoalRadians = crabPositionGoal;
-    inputs.crabAppliedVolts = crabAppliedVolts;
-    inputs.crabGoalRadians = inputs.crabSupplyCurrentAmps = crabMotorSim.getCurrentDrawAmps();
-    inputs.crabTorqueCurrentAmps = crabMotorSim.getCurrentDrawAmps();
-    inputs.crabPositionSetpointRadians = crabController.getSetpoint().position;
-    inputs.crabPositionErrorRadians = crabController.getPositionError();
+    inputs.clapperPositionRadians = clapperMotorSim.getAngularPositionRad();
+    inputs.clapperVelocityRadiansPerSecond = clapperMotorSim.getAngularVelocityRadPerSec();
+    inputs.clapperGoalRadians = clapperPositionGoal;
+    inputs.clapperAppliedVolts = clapperAppliedVolts;
+    inputs.clapperGoalRadians =
+        inputs.clapperSupplyCurrentAmps = clapperMotorSim.getCurrentDrawAmps();
+    inputs.clapperTorqueCurrentAmps = clapperMotorSim.getCurrentDrawAmps();
+    inputs.clapperPositionSetpointRadians = clapperController.getSetpoint().position;
+    inputs.clapperPositionErrorRadians = clapperController.getPositionError();
 
-    inputs.intakePositionRadians = intakeMotorSim.getAngularPositionRad();
-    inputs.intakeVelocityRadiansPerSecond = intakeMotorSim.getAngularVelocityRadPerSec();
-    inputs.intakeGoalRadiansPerSecond = intakeVelocityGoal;
-    inputs.intakeAppliedVolts = intakeAppliedVolts;
-    inputs.intakeSupplyCurrentAmps = intakeMotorSim.getCurrentDrawAmps();
-    inputs.intakeTorqueCurrentAmps = intakeMotorSim.getCurrentDrawAmps();
-    inputs.intakeVelocitySetpointRadiansPerSecond = intakeController.getSetpoint().velocity;
-    inputs.intakeVelocityErrorRadiansPerSecond = intakeController.getVelocityError();
+    inputs.rollerPositionRadians = rollerMotorSim.getAngularPositionRad();
+    inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
+    inputs.rollerGoalRadiansPerSecond = rollerVelocityGoal;
+    inputs.rollerAppliedVolts = rollerAppliedVolts;
+    inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
+    inputs.rollerTorqueCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
+    inputs.rollerVelocitySetpointRadiansPerSecond = rollerController.getSetpoint().velocity;
+    inputs.rollerVelocityErrorRadiansPerSecond = rollerController.getVelocityError();
   }
 
   @Override
-  public void setCrabVoltage(double volts) {
-    crabAppliedVolts = volts;
+  public void setClapperVoltage(double volts) {
+    clapperAppliedVolts = volts;
   }
 
   @Override
-  public void setIntakeVoltage(double volts) {
-    intakeAppliedVolts = volts;
+  public void setRollerVoltage(double volts) {
+    rollerAppliedVolts = volts;
   }
 
   @Override
-  public void setCrabPosition(double radians) {
-    crabPositionGoal = radians;
-    crabAppliedVolts =
+  public void setClapperPosition(double radians) {
+    clapperPositionGoal = radians;
+    clapperAppliedVolts =
         MathUtil.clamp(
-            crabController.calculate(radians) + crabFeedforward.calculate(radians), -12, 12);
+            clapperController.calculate(radians) + clapperFeedforward.calculate(radians), -12, 12);
   }
 
   @Override
-  public void setIntakeVelocity(double radiansPerSecond) {
-    intakeVelocityGoal = radiansPerSecond;
-    intakeAppliedVolts =
+  public void setRollerVelocity(double radiansPerSecond) {
+    rollerVelocityGoal = radiansPerSecond;
+    rollerAppliedVolts =
         MathUtil.clamp(
-            intakeController.calculate(radiansPerSecond)
-                + intakeFeedforward.calculate(radiansPerSecond),
+            rollerController.calculate(radiansPerSecond)
+                + rollerFeedforward.calculate(rollerController.getSetpoint().position),
             -12,
             12);
   }
 
   @Override
-  public void stopIntake() {
-    intakeVelocityGoal = 0.0;
-    intakeAppliedVolts = 0.0;
+  public void stopRoller() {
+    rollerVelocityGoal = 0.0;
+    rollerAppliedVolts = 0.0;
   }
 }

@@ -20,89 +20,89 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class FunnelIOTalonFX implements FunnelIO {
-  private final TalonFX crabMotor;
-  private final TalonFX intakeMotor;
+  private final TalonFX clapperMotor;
+  private final TalonFX rollerMotor;
   private final DigitalInput coralSensor;
-  private final CANcoder crabEncoder;
+  private final CANcoder clapperEncoder;
 
-  private final StatusSignal<Angle> crabPositionRotations;
-  private final StatusSignal<AngularVelocity> crabVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> crabAppliedVolts;
-  private final StatusSignal<Current> crabSupplyCurrentAmps;
-  private final StatusSignal<Current> crabTorqueCurrentAmps;
-  private final StatusSignal<Temperature> crabTemperatureCelsius;
-  private final StatusSignal<Double> crabPositionSetpointRotations;
-  private final StatusSignal<Double> crabPositionErrorRotations;
+  private final StatusSignal<Angle> clapperPositionRotations;
+  private final StatusSignal<AngularVelocity> clapperVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> clapperAppliedVolts;
+  private final StatusSignal<Current> clapperSupplyCurrentAmps;
+  private final StatusSignal<Current> clapperTorqueCurrentAmps;
+  private final StatusSignal<Temperature> clapperTemperatureCelsius;
+  private final StatusSignal<Double> clapperPositionSetpointRotations;
+  private final StatusSignal<Double> clapperPositionErrorRotations;
 
-  private final StatusSignal<Angle> intakePositionRotations;
-  private final StatusSignal<AngularVelocity> intakeVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> intakeAppliedVolts;
-  private final StatusSignal<Current> intakeSupplyCurrentAmps;
-  private final StatusSignal<Current> intakeTorqueCurrentAmps;
-  private final StatusSignal<Temperature> intakeTemperatureCelsius;
-  private final StatusSignal<Double> intakeVelocitySetpointRotationsPerSecond;
-  private final StatusSignal<Double> intakeVelocityErrorRotationsPerSecond;
+  private final StatusSignal<Angle> rollerPositionRotations;
+  private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> rollerAppliedVolts;
+  private final StatusSignal<Current> rollerSupplyCurrentAmps;
+  private final StatusSignal<Current> rollerTorqueCurrentAmps;
+  private final StatusSignal<Temperature> rollerTemperatureCelsius;
+  private final StatusSignal<Double> rollerVelocitySetpointRotationsPerSecond;
+  private final StatusSignal<Double> rollerVelocityErrorRotationsPerSecond;
 
   private final StatusSignal<Angle> encoderPositionRotations;
 
-  private double crabGoalRadians;
-  private double intakeGoalRadiansPerSecond;
+  private double clapperGoalRadians;
+  private double rollerGoalRadiansPerSecond;
 
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
   private MotionMagicVelocityVoltage velocityControlRequest;
   private MotionMagicVoltage positionControlRequest;
 
-  private final Alert crabDisconnectedAlert =
-      new Alert("Funnel Crab Motor Disconnected. Check CAN bus!", AlertType.ERROR);
-  private final Alert intakeDisconnectedAlert =
-      new Alert("Funnel Intake Motor Disconnected. Check CAN bus!", AlertType.ERROR);
+  private final Alert clapperDisconnectedAlert =
+      new Alert("Funnel Clapper Motor Disconnected. Check CAN bus!", AlertType.ERROR);
+  private final Alert rollerDisconnectedAlert =
+      new Alert("Funnel Roller Motor Disconnected. Check CAN bus!", AlertType.ERROR);
 
   public FunnelIOTalonFX() {
-    this.crabMotor = new TalonFX(FunnelConstants.CRAB_MOTOR_ID);
-    this.intakeMotor = new TalonFX(FunnelConstants.INTAKE_MOTOR_ID);
+    this.clapperMotor = new TalonFX(FunnelConstants.CLAPPER_MOTOR_ID);
+    this.rollerMotor = new TalonFX(FunnelConstants.ROLLER_MOTOR_ID);
     this.coralSensor = new DigitalInput(FunnelConstants.CORAL_SENSOR_ID);
-    this.crabEncoder = new CANcoder(FunnelConstants.CRAB_MOTOR_ID);
+    this.clapperEncoder = new CANcoder(FunnelConstants.CLAPPER_MOTOR_ID);
 
-    TalonFXConfiguration crabConfig = new TalonFXConfiguration();
-    crabConfig.Feedback.FeedbackRemoteSensorID = crabEncoder.getDeviceID();
-    crabConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    crabConfig.Feedback.SensorToMechanismRatio = FunnelConstants.CRAB_MOTOR_GEAR_RATIO;
-    crabConfig.CurrentLimits.withSupplyCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.CRAB_SUPPLY_CURRENT_LIMIT());
-    crabConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.CRAB_STATOR_CURRENT_LIMIT());
-    crabConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    crabConfig.Slot0.kP = FunnelConstants.CRAB_MOTOR_GAINS.kP().get();
-    crabConfig.Slot0.kD = FunnelConstants.CRAB_MOTOR_GAINS.kD().get();
-    crabConfig.Slot0.kS = FunnelConstants.CRAB_MOTOR_GAINS.kS().get();
-    crabConfig.Slot0.kV = FunnelConstants.CRAB_MOTOR_GAINS.kV().get();
-    crabConfig.Slot0.kA = FunnelConstants.CRAB_MOTOR_GAINS.kA().get();
-    crabConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+    TalonFXConfiguration clapperConfig = new TalonFXConfiguration();
+    clapperConfig.Feedback.FeedbackRemoteSensorID = clapperEncoder.getDeviceID();
+    clapperConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    clapperConfig.Feedback.SensorToMechanismRatio = FunnelConstants.CLAPPER_MOTOR_GEAR_RATIO;
+    clapperConfig.CurrentLimits.withSupplyCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.CLAPPER_SUPPLY_CURRENT_LIMIT());
+    clapperConfig.CurrentLimits.withStatorCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.CLAPPER_STATOR_CURRENT_LIMIT());
+    clapperConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    clapperConfig.Slot0.kP = FunnelConstants.CLAPPER_MOTOR_GAINS.kP().get();
+    clapperConfig.Slot0.kD = FunnelConstants.CLAPPER_MOTOR_GAINS.kD().get();
+    clapperConfig.Slot0.kS = FunnelConstants.CLAPPER_MOTOR_GAINS.kS().get();
+    clapperConfig.Slot0.kV = FunnelConstants.CLAPPER_MOTOR_GAINS.kV().get();
+    clapperConfig.Slot0.kA = FunnelConstants.CLAPPER_MOTOR_GAINS.kA().get();
+    clapperConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         FunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
-    crabConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+    clapperConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         FunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
-    crabConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.CRAB_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
-    crabConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.CRAB_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+    clapperConfig.MotionMagic.MotionMagicAcceleration =
+        FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+    clapperConfig.MotionMagic.MotionMagicCruiseVelocity =
+        FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
-    TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-    intakeConfig.CurrentLimits.withSupplyCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.INTAKE_SUPPLY_CURRENT_LIMIT());
-    intakeConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.INTAKE_STATOR_CURRENT_LIMIT());
-    intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    intakeConfig.Feedback.SensorToMechanismRatio = FunnelConstants.INTAKE_MOTOR_GEAR_RATIO;
-    intakeConfig.Slot0.kP = FunnelConstants.INTAKE_MOTOR_GAINS.kP().get();
-    intakeConfig.Slot0.kD = FunnelConstants.INTAKE_MOTOR_GAINS.kD().get();
-    intakeConfig.Slot0.kS = FunnelConstants.INTAKE_MOTOR_GAINS.kS().get();
-    intakeConfig.Slot0.kV = FunnelConstants.INTAKE_MOTOR_GAINS.kV().get();
-    intakeConfig.Slot0.kA = FunnelConstants.INTAKE_MOTOR_GAINS.kA().get();
-    intakeConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.INTAKE_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
-    intakeConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.INTAKE_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+    TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
+    rollerConfig.CurrentLimits.withSupplyCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
+    rollerConfig.CurrentLimits.withStatorCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
+    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.Slot0.kP = FunnelConstants.ROLLER_MOTOR_GAINS.kP().get();
+    rollerConfig.Slot0.kD = FunnelConstants.ROLLER_MOTOR_GAINS.kD().get();
+    rollerConfig.Slot0.kS = FunnelConstants.ROLLER_MOTOR_GAINS.kS().get();
+    rollerConfig.Slot0.kV = FunnelConstants.ROLLER_MOTOR_GAINS.kV().get();
+    rollerConfig.Slot0.kA = FunnelConstants.ROLLER_MOTOR_GAINS.kA().get();
+    rollerConfig.MotionMagic.MotionMagicAcceleration =
+        FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+    rollerConfig.MotionMagic.MotionMagicCruiseVelocity =
+        FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.MagnetOffset =
@@ -110,47 +110,47 @@ public class FunnelIOTalonFX implements FunnelIO {
     canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
-    crabMotor.getConfigurator().apply(crabConfig);
-    intakeMotor.getConfigurator().apply(intakeConfig);
-    crabEncoder.getConfigurator().apply(canCoderConfig);
+    clapperMotor.getConfigurator().apply(clapperConfig);
+    rollerMotor.getConfigurator().apply(rollerConfig);
+    clapperEncoder.getConfigurator().apply(canCoderConfig);
 
-    crabPositionRotations = crabMotor.getPosition();
-    crabVelocityRotationsPerSecond = crabMotor.getVelocity();
-    crabAppliedVolts = crabMotor.getMotorVoltage();
-    crabSupplyCurrentAmps = crabMotor.getSupplyCurrent();
-    crabTorqueCurrentAmps = crabMotor.getTorqueCurrent();
-    crabTemperatureCelsius = crabMotor.getDeviceTemp();
-    crabPositionSetpointRotations = crabMotor.getClosedLoopReference();
-    crabPositionErrorRotations = crabMotor.getClosedLoopError();
+    clapperPositionRotations = clapperMotor.getPosition();
+    clapperVelocityRotationsPerSecond = clapperMotor.getVelocity();
+    clapperAppliedVolts = clapperMotor.getMotorVoltage();
+    clapperSupplyCurrentAmps = clapperMotor.getSupplyCurrent();
+    clapperTorqueCurrentAmps = clapperMotor.getTorqueCurrent();
+    clapperTemperatureCelsius = clapperMotor.getDeviceTemp();
+    clapperPositionSetpointRotations = clapperMotor.getClosedLoopReference();
+    clapperPositionErrorRotations = clapperMotor.getClosedLoopError();
 
-    intakePositionRotations = intakeMotor.getPosition();
-    intakeVelocityRotationsPerSecond = intakeMotor.getVelocity();
-    intakeAppliedVolts = intakeMotor.getMotorVoltage();
-    intakeSupplyCurrentAmps = intakeMotor.getSupplyCurrent();
-    intakeTorqueCurrentAmps = intakeMotor.getTorqueCurrent();
-    intakeTemperatureCelsius = intakeMotor.getDeviceTemp();
-    intakeVelocitySetpointRotationsPerSecond = intakeMotor.getClosedLoopReference();
-    intakeVelocityErrorRotationsPerSecond = intakeMotor.getClosedLoopError();
+    rollerPositionRotations = rollerMotor.getPosition();
+    rollerVelocityRotationsPerSecond = rollerMotor.getVelocity();
+    rollerAppliedVolts = rollerMotor.getMotorVoltage();
+    rollerSupplyCurrentAmps = rollerMotor.getSupplyCurrent();
+    rollerTorqueCurrentAmps = rollerMotor.getTorqueCurrent();
+    rollerTemperatureCelsius = rollerMotor.getDeviceTemp();
+    rollerVelocitySetpointRotationsPerSecond = rollerMotor.getClosedLoopReference();
+    rollerVelocityErrorRotationsPerSecond = rollerMotor.getClosedLoopError();
 
-    encoderPositionRotations = crabEncoder.getPosition();
+    encoderPositionRotations = clapperEncoder.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        crabPositionRotations,
-        crabVelocityRotationsPerSecond,
-        crabAppliedVolts,
-        crabSupplyCurrentAmps,
-        crabTorqueCurrentAmps,
-        crabTemperatureCelsius,
-        intakePositionRotations,
-        intakeVelocityRotationsPerSecond,
-        intakeAppliedVolts,
-        intakeSupplyCurrentAmps,
-        intakeTorqueCurrentAmps,
-        intakeTemperatureCelsius);
+        clapperPositionRotations,
+        clapperVelocityRotationsPerSecond,
+        clapperAppliedVolts,
+        clapperSupplyCurrentAmps,
+        clapperTorqueCurrentAmps,
+        clapperTemperatureCelsius,
+        rollerPositionRotations,
+        rollerVelocityRotationsPerSecond,
+        rollerAppliedVolts,
+        rollerSupplyCurrentAmps,
+        rollerTorqueCurrentAmps,
+        rollerTemperatureCelsius);
 
-    crabMotor.optimizeBusUtilization();
-    intakeMotor.optimizeBusUtilization();
+    clapperMotor.optimizeBusUtilization();
+    rollerMotor.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
     neutralRequest = new NeutralOut();
@@ -160,108 +160,110 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    boolean crabConnected =
+    boolean clapperConnected =
         BaseStatusSignal.refreshAll(
-                crabPositionRotations,
-                crabVelocityRotationsPerSecond,
-                crabAppliedVolts,
-                crabSupplyCurrentAmps,
-                crabTorqueCurrentAmps,
-                crabTemperatureCelsius,
-                crabPositionSetpointRotations,
-                crabPositionErrorRotations)
+                clapperPositionRotations,
+                clapperVelocityRotationsPerSecond,
+                clapperAppliedVolts,
+                clapperSupplyCurrentAmps,
+                clapperTorqueCurrentAmps,
+                clapperTemperatureCelsius,
+                clapperPositionSetpointRotations,
+                clapperPositionErrorRotations)
             .isOK();
 
-    boolean intakeConnected =
+    boolean rollerConnected =
         BaseStatusSignal.refreshAll(
-                intakePositionRotations,
-                intakeVelocityRotationsPerSecond,
-                intakeAppliedVolts,
-                intakeSupplyCurrentAmps,
-                intakeTorqueCurrentAmps,
-                intakeTemperatureCelsius,
-                intakeVelocitySetpointRotationsPerSecond,
-                intakeVelocityErrorRotationsPerSecond)
+                rollerPositionRotations,
+                rollerVelocityRotationsPerSecond,
+                rollerAppliedVolts,
+                rollerSupplyCurrentAmps,
+                rollerTorqueCurrentAmps,
+                rollerTemperatureCelsius,
+                rollerVelocitySetpointRotationsPerSecond,
+                rollerVelocityErrorRotationsPerSecond)
             .isOK();
 
-    crabDisconnectedAlert.set(!crabConnected);
-    intakeDisconnectedAlert.set(!intakeConnected);
+    clapperDisconnectedAlert.set(!clapperConnected);
+    rollerDisconnectedAlert.set(!rollerConnected);
 
     encoderPositionRotations.refresh();
 
-    inputs.crabPositionRadians = Units.rotationsToRadians(crabPositionRotations.getValueAsDouble());
-    inputs.crabVelocityRadiansPerSecond =
-        Units.rotationsToRadians(crabVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.crabGoalRadians = crabGoalRadians;
-    inputs.crabAppliedVolts = crabAppliedVolts.getValueAsDouble();
-    inputs.crabSupplyCurrentAmps = crabSupplyCurrentAmps.getValueAsDouble();
-    inputs.crabTorqueCurrentAmps = crabTorqueCurrentAmps.getValueAsDouble();
-    inputs.crabTemperatureCelsius = crabTemperatureCelsius.getValueAsDouble();
-    inputs.crabPositionSetpointRadians = crabPositionSetpointRotations.getValueAsDouble();
-    inputs.crabPositionErrorRadians = crabPositionErrorRotations.getValueAsDouble();
+    inputs.clapperPositionRadians =
+        Units.rotationsToRadians(clapperPositionRotations.getValueAsDouble());
+    inputs.clapperVelocityRadiansPerSecond =
+        Units.rotationsToRadians(clapperVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.clapperGoalRadians = clapperGoalRadians;
+    inputs.clapperAppliedVolts = clapperAppliedVolts.getValueAsDouble();
+    inputs.clapperSupplyCurrentAmps = clapperSupplyCurrentAmps.getValueAsDouble();
+    inputs.clapperTorqueCurrentAmps = clapperTorqueCurrentAmps.getValueAsDouble();
+    inputs.clapperTemperatureCelsius = clapperTemperatureCelsius.getValueAsDouble();
+    inputs.clapperPositionSetpointRadians = clapperPositionSetpointRotations.getValueAsDouble();
+    inputs.clapperPositionErrorRadians = clapperPositionErrorRotations.getValueAsDouble();
     inputs.encoderPositionRadians =
         Units.rotationsToRadians(encoderPositionRotations.getValueAsDouble());
 
-    inputs.intakePositionRadians =
-        Units.rotationsToRadians(intakePositionRotations.getValueAsDouble());
-    inputs.intakeVelocityRadiansPerSecond =
-        Units.rotationsToRadians(intakeVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.intakeGoalRadiansPerSecond = intakeGoalRadiansPerSecond;
-    inputs.intakeAppliedVolts = intakeAppliedVolts.getValueAsDouble();
-    inputs.intakeSupplyCurrentAmps = intakeSupplyCurrentAmps.getValueAsDouble();
-    inputs.intakeTorqueCurrentAmps = intakeTorqueCurrentAmps.getValueAsDouble();
-    inputs.intakeTemperatureCelsius = intakeTemperatureCelsius.getValueAsDouble();
-    inputs.intakeVelocitySetpointRadiansPerSecond =
-        intakeVelocitySetpointRotationsPerSecond.getValueAsDouble();
-    inputs.intakeVelocityErrorRadiansPerSecond =
-        intakeVelocityErrorRotationsPerSecond.getValueAsDouble();
+    inputs.rollerPositionRadians =
+        Units.rotationsToRadians(rollerPositionRotations.getValueAsDouble());
+    inputs.rollerVelocityRadiansPerSecond =
+        Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.rollerGoalRadiansPerSecond = rollerGoalRadiansPerSecond;
+    inputs.rollerAppliedVolts = rollerAppliedVolts.getValueAsDouble();
+    inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
+    inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
+    inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+    inputs.rollerVelocitySetpointRadiansPerSecond =
+        rollerVelocitySetpointRotationsPerSecond.getValueAsDouble();
+    inputs.rollerVelocityErrorRadiansPerSecond =
+        rollerVelocityErrorRotationsPerSecond.getValueAsDouble();
 
     inputs.hasCoral = coralSensor.get();
   }
 
   @Override
-  public void setCrabVoltage(double volts) {
-    crabMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setClapperVoltage(double volts) {
+    clapperMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
-  public void setIntakeVoltage(double volts) {
-    intakeMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setRollerVoltage(double volts) {
+    rollerMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
-  public void setCrabPosition(double radians) {
-    crabGoalRadians = radians;
-    crabMotor.setControl(
+  public void setClapperPosition(double radians) {
+    clapperGoalRadians = radians;
+    clapperMotor.setControl(
         positionControlRequest.withPosition(Units.radiansToRotations(radians)).withEnableFOC(true));
   }
 
   @Override
-  public void setIntakeVelocity(double radiansPerSecond) {
-    intakeGoalRadiansPerSecond = radiansPerSecond;
-    intakeMotor.setControl(
+  public void setRollerVelocity(double radiansPerSecond) {
+    rollerGoalRadiansPerSecond = radiansPerSecond;
+    rollerMotor.setControl(
         velocityControlRequest
             .withVelocity(Units.radiansToRotations(radiansPerSecond))
             .withEnableFOC(true));
   }
 
   @Override
-  public void stopIntake() {
-    intakeMotor.setControl(neutralRequest);
+  public void stopRoller() {
+    rollerMotor.setControl(neutralRequest);
   }
 
   @Override
-  public boolean atCrabGoal() {
+  public boolean atClapperGoal() {
     return Math.abs(
-            crabGoalRadians - Units.rotationsToRadians(crabPositionRotations.getValueAsDouble()))
-        < FunnelConstants.CRAB_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+            clapperGoalRadians
+                - Units.rotationsToRadians(clapperPositionRotations.getValueAsDouble()))
+        < FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override
-  public boolean atIntakeGoal() {
+  public boolean atRollerGoal() {
     return Math.abs(
-            intakeGoalRadiansPerSecond
-                - Units.rotationsToRadians(intakeVelocityRotationsPerSecond.getValueAsDouble()))
-        < FunnelConstants.INTAKE_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+            rollerGoalRadiansPerSecond
+                - Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble()))
+        < FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 }
