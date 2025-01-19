@@ -1,8 +1,7 @@
 package frc.robot.subsystems.v1_gamma.funnel;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface FunnelIO {
   @AutoLog
@@ -34,7 +33,7 @@ public interface FunnelIO {
 
   public default void setRollerVoltage(double volts) {}
 
-  public default void setSerializerPosition(double radians) {}
+  public default void setSerializerPosition(Rotation2d position) {}
 
   public default void stopRoller() {}
 

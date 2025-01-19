@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
@@ -44,7 +43,7 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   private final StatusSignal<Angle> encoderPositionRotations;
 
-  private double serializerGoalRadians;
+  private Rotation2d serializerGoal;
 
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
@@ -174,7 +173,7 @@ public class FunnelIOTalonFX implements FunnelIO {
 
     inputs.serializerPosition =
         Rotation2d.fromRotations(serializerPositionRotations.getValueAsDouble());
-        inputs.serializerAbsolutePosition =
+    inputs.serializerAbsolutePosition =
         Rotation2d.fromRotations(encoderPositionRotations.getValueAsDouble());
     inputs.serializerVelocityRadiansPerSecond =
         Units.rotationsToRadians(serializerVelocityRotationsPerSecond.getValueAsDouble());
@@ -182,13 +181,13 @@ public class FunnelIOTalonFX implements FunnelIO {
     inputs.serializerSupplyCurrentAmps = serializerSupplyCurrentAmps.getValueAsDouble();
     inputs.serializerTorqueCurrentAmps = serializerTorqueCurrentAmps.getValueAsDouble();
     inputs.serializerTemperatureCelsius = serializerTemperatureCelsius.getValueAsDouble();
-    inputs.serializerGoal = Rotation2d.fromRadians(serializerGoalRadians);
+    inputs.serializerGoal = serializerGoal;
     inputs.serializerPositionSetpoint =
-    Rotation2d.fromRotations(serializerPositionSetpointRotations.getValueAsDouble());
-    inputs.serializerPositionError = Rotation2d.fromRotations(serializerPositionErrorRotations.getValueAsDouble());
+        Rotation2d.fromRotations(serializerPositionSetpointRotations.getValueAsDouble());
+    inputs.serializerPositionError =
+        Rotation2d.fromRotations(serializerPositionErrorRotations.getValueAsDouble());
 
-    inputs.rollerPosition =
-    Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
+    inputs.rollerPosition = Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
     inputs.rollerVelocityRadiansPerSecond =
         Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
     inputs.rollerAppliedVolts = rollerAppliedVolts.getValueAsDouble();
@@ -210,10 +209,10 @@ public class FunnelIOTalonFX implements FunnelIO {
   }
 
   @Override
-  public void setSerializerPosition(double radians) {
-    serializerGoalRadians = radians;
+  public void setSerializerPosition(Rotation2d position) {
+    serializerGoal = position;
     serializerMotor.setControl(
-        positionControlRequest.withPosition(Units.radiansToRotations(radians)).withEnableFOC(true));
+        positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
   }
 
   @Override
@@ -224,7 +223,7 @@ public class FunnelIOTalonFX implements FunnelIO {
   @Override
   public boolean atSerializerGoal() {
     return Math.abs(
-            serializerGoalRadians
+            serializerGoal.getRadians()
                 - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
         < FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }

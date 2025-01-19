@@ -16,8 +16,8 @@ public class FunnelIOSim implements FunnelIO {
   private final ProfiledPIDController serializerController;
   private final SimpleMotorFeedforward serializerFeedforward;
 
+  private Rotation2d serializerPositionGoal = new Rotation2d();
   private double serializerAppliedVolts = 0.0;
-  private double serializerPositionGoal = 0.0;
 
   private double rollerAppliedVolts = 0.0;
 
@@ -66,16 +66,16 @@ public class FunnelIOSim implements FunnelIO {
     inputs.serializerVelocityRadiansPerSecond = serializerMotorSim.getAngularVelocityRadPerSec();
     inputs.serializerAppliedVolts = serializerAppliedVolts;
     inputs.serializerSupplyCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
-    inputs.serializerTorqueCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
-    inputs.serializerGoal = Rotation2d.fromRadians(serializerPositionGoal);
-    inputs.serializerPositionSetpoint = Rotation2d.fromRadians(serializerController.getSetpoint().position);
-    inputs.serializerPositionError = Rotation2d.fromRadians(serializerController.getPositionError());
+    inputs.serializerGoal = (serializerPositionGoal);
+    inputs.serializerPositionSetpoint =
+        Rotation2d.fromRadians(serializerController.getSetpoint().position);
+    inputs.serializerPositionError =
+        Rotation2d.fromRadians(serializerController.getPositionError());
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerMotorSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
     inputs.rollerAppliedVolts = rollerAppliedVolts;
     inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
-    inputs.rollerTorqueCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
   }
 
   @Override
@@ -89,11 +89,12 @@ public class FunnelIOSim implements FunnelIO {
   }
 
   @Override
-  public void setSerializerPosition(double radians) {
-    serializerPositionGoal = radians;
+  public void setSerializerPosition(Rotation2d position) {
+    serializerPositionGoal = position;
     serializerAppliedVolts =
         MathUtil.clamp(
-            serializerController.calculate(radians) + serializerFeedforward.calculate(radians),
+            serializerController.calculate(position.getRadians())
+                + serializerFeedforward.calculate(position.getRadians()),
             -12,
             12);
   }

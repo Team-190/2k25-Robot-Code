@@ -2,6 +2,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,7 +32,7 @@ public class Funnel extends SubsystemBase {
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
                 Seconds.of(10),
-                (state) -> Logger.recordOutput("Funnel/serializerSysIDState", state.toString())),
+                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setSerializerVoltage(volts.in(Volts)), null, this));
   }
@@ -79,7 +80,7 @@ public class Funnel extends SubsystemBase {
 
   public Command setSerializerPosition(double radians) {
     isClosedLoop = true;
-    return run(() -> io.setSerializerPosition(radians));
+    return run(() -> io.setSerializerPosition(Rotation2d.fromRadians(radians)));
   }
 
   public Command stopRoller() {
