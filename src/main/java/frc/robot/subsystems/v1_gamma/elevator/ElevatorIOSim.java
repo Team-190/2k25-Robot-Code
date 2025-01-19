@@ -91,7 +91,6 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setConstraints(double maxAcceleration, double cruisingVelocity) {
-    controller.setConstraints(
-        new Constraints(cruisingVelocity, maxAcceleration));
+    controller.setConstraints(new Constraints(cruisingVelocity, maxAcceleration));
   }
 }

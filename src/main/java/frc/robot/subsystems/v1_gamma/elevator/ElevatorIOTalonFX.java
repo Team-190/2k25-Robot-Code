@@ -216,35 +216,35 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
-    TalonFXConfiguration newGains = new TalonFXConfiguration() {
-      {
-        Slot0.kP = kP;
-        Slot0.kD = kD;
-        Slot0.kS = kS;
-        Slot0.kV = kV;
-        Slot0.kA = kA;
-        Slot0.kG = kG;
-      }
-    };
-    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(
-      newGains));
-      for (TalonFX follow : followTalonFX) {
-        PhoenixUtil.tryUntilOk(5, ()->follow.getConfigurator().apply(
-          newGains));
-      }
+    TalonFXConfiguration newGains =
+        new TalonFXConfiguration() {
+          {
+            Slot0.kP = kP;
+            Slot0.kD = kD;
+            Slot0.kS = kS;
+            Slot0.kV = kV;
+            Slot0.kA = kA;
+            Slot0.kG = kG;
+          }
+        };
+    PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(newGains));
+    for (TalonFX follow : followTalonFX) {
+      PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(newGains));
+    }
   }
 
   @Override
   public void setConstraints(double maxAcceleration, double cruisingVelocity) {
-    TalonFXConfiguration newConstraints = new TalonFXConfiguration() {
-      {
-        MotionMagic.MotionMagicAcceleration = maxAcceleration;
-        MotionMagic.MotionMagicCruiseVelocity = cruisingVelocity;
-      }
-    };
-    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(newConstraints));
+    TalonFXConfiguration newConstraints =
+        new TalonFXConfiguration() {
+          {
+            MotionMagic.MotionMagicAcceleration = maxAcceleration;
+            MotionMagic.MotionMagicCruiseVelocity = cruisingVelocity;
+          }
+        };
+    PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(newConstraints));
     for (TalonFX follow : followTalonFX) {
-      PhoenixUtil.tryUntilOk(5, ()->follow.getConfigurator().apply(newConstraints));
+      PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(newConstraints));
     }
   }
 }
