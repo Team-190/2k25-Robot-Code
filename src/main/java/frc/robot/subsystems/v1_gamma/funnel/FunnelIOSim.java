@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -46,7 +47,6 @@ public class FunnelIOSim implements FunnelIO {
                 FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
                 FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
-    
     serializerFeedforward =
         new SimpleMotorFeedforward(
             FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
@@ -61,17 +61,17 @@ public class FunnelIOSim implements FunnelIO {
     serializerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.serializerPositionRadians = serializerMotorSim.getAngularPositionRad();
+    inputs.serializerPosition =
+        Rotation2d.fromRotations(serializerMotorSim.getAngularPositionRotations());
     inputs.serializerVelocityRadiansPerSecond = serializerMotorSim.getAngularVelocityRadPerSec();
-    inputs.serializerGoalRadians = serializerPositionGoal;
     inputs.serializerAppliedVolts = serializerAppliedVolts;
-    inputs.serializerGoalRadians =
-        inputs.serializerSupplyCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
+    inputs.serializerSupplyCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
     inputs.serializerTorqueCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
-    inputs.serializerPositionSetpointRadians = serializerController.getSetpoint().position;
-    inputs.serializerPositionErrorRadians = serializerController.getPositionError();
+    inputs.serializerGoal = Rotation2d.fromRadians(serializerPositionGoal);
+    inputs.serializerPositionSetpoint = Rotation2d.fromRadians(serializerController.getSetpoint().position);
+    inputs.serializerPositionError = Rotation2d.fromRadians(serializerController.getPositionError());
 
-    inputs.rollerPositionRadians = rollerMotorSim.getAngularPositionRad();
+    inputs.rollerPosition = Rotation2d.fromRadians(rollerMotorSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
     inputs.rollerAppliedVolts = rollerAppliedVolts;
     inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();

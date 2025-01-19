@@ -2,21 +2,23 @@ package frc.robot.subsystems.v1_gamma.funnel;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface FunnelIO {
   @AutoLog
   public static class FunnelIOInputs {
-    public double serializerPositionRadians = 0.0;
+    public Rotation2d serializerPosition = new Rotation2d();
+    public Rotation2d serializerAbsolutePosition = new Rotation2d();
     public double serializerVelocityRadiansPerSecond = 0.0;
-    public double serializerGoalRadians = 0.0;
     public double serializerAppliedVolts = 0.0;
     public double serializerSupplyCurrentAmps = 0.0;
     public double serializerTorqueCurrentAmps = 0.0;
     public double serializerTemperatureCelsius = 0.0;
-    public double serializerPositionSetpointRadians = 0.0;
-    public double serializerPositionErrorRadians = 0.0;
-    public double encoderPositionRadians = 0.0;
+    public Rotation2d serializerGoal = new Rotation2d();
+    public Rotation2d serializerPositionSetpoint = new Rotation2d();
+    public Rotation2d serializerPositionError = new Rotation2d();
 
-    public double rollerPositionRadians = 0.0;
+    public Rotation2d rollerPosition = new Rotation2d();
     public double rollerVelocityRadiansPerSecond = 0.0;
     public double rollerAppliedVolts = 0.0;
     public double rollerSupplyCurrentAmps = 0.0;
@@ -39,5 +41,4 @@ public interface FunnelIO {
   public default boolean atSerializerGoal() {
     return false;
   }
-
 }

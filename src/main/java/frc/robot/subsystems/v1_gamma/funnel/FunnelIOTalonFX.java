@@ -12,6 +12,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -170,23 +172,23 @@ public class FunnelIOTalonFX implements FunnelIO {
 
     encoderPositionRotations.refresh();
 
-    inputs.serializerPositionRadians =
-        Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble());
+    inputs.serializerPosition =
+        Rotation2d.fromRotations(serializerPositionRotations.getValueAsDouble());
+        inputs.serializerAbsolutePosition =
+        Rotation2d.fromRotations(encoderPositionRotations.getValueAsDouble());
     inputs.serializerVelocityRadiansPerSecond =
         Units.rotationsToRadians(serializerVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.serializerGoalRadians = serializerGoalRadians;
     inputs.serializerAppliedVolts = serializerAppliedVolts.getValueAsDouble();
     inputs.serializerSupplyCurrentAmps = serializerSupplyCurrentAmps.getValueAsDouble();
     inputs.serializerTorqueCurrentAmps = serializerTorqueCurrentAmps.getValueAsDouble();
     inputs.serializerTemperatureCelsius = serializerTemperatureCelsius.getValueAsDouble();
-    inputs.serializerPositionSetpointRadians =
-        serializerPositionSetpointRotations.getValueAsDouble();
-    inputs.serializerPositionErrorRadians = serializerPositionErrorRotations.getValueAsDouble();
-    inputs.encoderPositionRadians =
-        Units.rotationsToRadians(encoderPositionRotations.getValueAsDouble());
+    inputs.serializerGoal = Rotation2d.fromRadians(serializerGoalRadians);
+    inputs.serializerPositionSetpoint =
+    Rotation2d.fromRotations(serializerPositionSetpointRotations.getValueAsDouble());
+    inputs.serializerPositionError = Rotation2d.fromRotations(serializerPositionErrorRotations.getValueAsDouble());
 
-    inputs.rollerPositionRadians =
-        Units.rotationsToRadians(rollerPositionRotations.getValueAsDouble());
+    inputs.rollerPosition =
+    Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
     inputs.rollerVelocityRadiansPerSecond =
         Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
     inputs.rollerAppliedVolts = rollerAppliedVolts.getValueAsDouble();

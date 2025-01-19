@@ -96,9 +96,9 @@ public class Funnel extends SubsystemBase {
         serializerCharacterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(4),
         serializerCharacterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(4), 
+        Commands.waitSeconds(4),
         serializerCharacterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(4), 
+        Commands.waitSeconds(4),
         serializerCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
