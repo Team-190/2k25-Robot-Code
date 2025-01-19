@@ -9,28 +9,28 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class FunnelIOSim implements FunnelIO {
-  public final DCMotorSim clapperMotorSim;
+  public final DCMotorSim serializerMotorSim;
   public final DCMotorSim rollerMotorSim;
 
-  private final ProfiledPIDController clapperController;
+  private final ProfiledPIDController serializerController;
   private final ProfiledPIDController rollerController;
-  private final SimpleMotorFeedforward clapperFeedforward;
+  private final SimpleMotorFeedforward serializerFeedforward;
   private final SimpleMotorFeedforward rollerFeedforward;
 
-  private double clapperAppliedVolts = 0.0;
-  private double clapperPositionGoal = 0.0;
+  private double serializerAppliedVolts = 0.0;
+  private double serializerPositionGoal = 0.0;
 
   private double rollerAppliedVolts = 0.0;
   private double rollerVelocityGoal = 0.0;
 
   public FunnelIOSim() {
-    clapperMotorSim =
+    serializerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.CLAPPER_PARAMS.motor(),
-                FunnelConstants.CLAPPER_PARAMS.momentOfInertia(),
-                FunnelConstants.CLAPPER_MOTOR_GEAR_RATIO),
-            FunnelConstants.CLAPPER_PARAMS.motor());
+                FunnelConstants.CLAPDADDY_PARAMS.motor(),
+                FunnelConstants.CLAPDADDY_PARAMS.momentOfInertia(),
+                FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
+            FunnelConstants.CLAPDADDY_PARAMS.motor());
 
     rollerMotorSim =
         new DCMotorSim(
@@ -40,14 +40,14 @@ public class FunnelIOSim implements FunnelIO {
                 FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
             FunnelConstants.ROLLER_PARAMS.motor());
 
-    clapperController =
+    serializerController =
         new ProfiledPIDController(
-            FunnelConstants.CLAPPER_MOTOR_GAINS.kP().get(),
+            FunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
             0.0,
-            FunnelConstants.CLAPPER_MOTOR_GAINS.kD().get(),
+            FunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
     rollerController =
         new ProfiledPIDController(
@@ -58,11 +58,11 @@ public class FunnelIOSim implements FunnelIO {
                 FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
                 FunnelConstants.ROLLER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
-    clapperFeedforward =
+    serializerFeedforward =
         new SimpleMotorFeedforward(
-            FunnelConstants.CLAPPER_MOTOR_GAINS.kS().get(),
-            FunnelConstants.CLAPPER_MOTOR_GAINS.kV().get(),
-            FunnelConstants.CLAPPER_MOTOR_GAINS.kA().get());
+            FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
+            FunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
+            FunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
 
     rollerFeedforward =
         new SimpleMotorFeedforward(
@@ -73,20 +73,20 @@ public class FunnelIOSim implements FunnelIO {
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    clapperMotorSim.setInputVoltage(clapperAppliedVolts);
+    serializerMotorSim.setInputVoltage(serializerAppliedVolts);
     rollerMotorSim.setInputVoltage(rollerAppliedVolts);
-    clapperMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    serializerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.clapperPositionRadians = clapperMotorSim.getAngularPositionRad();
-    inputs.clapperVelocityRadiansPerSecond = clapperMotorSim.getAngularVelocityRadPerSec();
-    inputs.clapperGoalRadians = clapperPositionGoal;
-    inputs.clapperAppliedVolts = clapperAppliedVolts;
-    inputs.clapperGoalRadians =
-        inputs.clapperSupplyCurrentAmps = clapperMotorSim.getCurrentDrawAmps();
-    inputs.clapperTorqueCurrentAmps = clapperMotorSim.getCurrentDrawAmps();
-    inputs.clapperPositionSetpointRadians = clapperController.getSetpoint().position;
-    inputs.clapperPositionErrorRadians = clapperController.getPositionError();
+    inputs.serializerPositionRadians = serializerMotorSim.getAngularPositionRad();
+    inputs.serializerVelocityRadiansPerSecond = serializerMotorSim.getAngularVelocityRadPerSec();
+    inputs.serializerGoalRadians = serializerPositionGoal;
+    inputs.serializerAppliedVolts = serializerAppliedVolts;
+    inputs.serializerGoalRadians =
+        inputs.serializerSupplyCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
+    inputs.serializerTorqueCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
+    inputs.serializerPositionSetpointRadians = serializerController.getSetpoint().position;
+    inputs.serializerPositionErrorRadians = serializerController.getPositionError();
 
     inputs.rollerPositionRadians = rollerMotorSim.getAngularPositionRad();
     inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
@@ -99,8 +99,8 @@ public class FunnelIOSim implements FunnelIO {
   }
 
   @Override
-  public void setClapperVoltage(double volts) {
-    clapperAppliedVolts = volts;
+  public void setSerializerVoltage(double volts) {
+    serializerAppliedVolts = volts;
   }
 
   @Override
@@ -109,11 +109,13 @@ public class FunnelIOSim implements FunnelIO {
   }
 
   @Override
-  public void setClapperPosition(double radians) {
-    clapperPositionGoal = radians;
-    clapperAppliedVolts =
+  public void setSerializerPosition(double radians) {
+    serializerPositionGoal = radians;
+    serializerAppliedVolts =
         MathUtil.clamp(
-            clapperController.calculate(radians) + clapperFeedforward.calculate(radians), -12, 12);
+            serializerController.calculate(radians) + serializerFeedforward.calculate(radians),
+            -12,
+            12);
   }
 
   @Override

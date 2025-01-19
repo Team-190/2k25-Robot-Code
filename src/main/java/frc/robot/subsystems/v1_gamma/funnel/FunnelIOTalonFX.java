@@ -20,19 +20,19 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
 public class FunnelIOTalonFX implements FunnelIO {
-  private final TalonFX clapperMotor;
+  private final TalonFX serializerMotor;
   private final TalonFX rollerMotor;
   private final DigitalInput coralSensor;
-  private final CANcoder clapperEncoder;
+  private final CANcoder serializerEncoder;
 
-  private final StatusSignal<Angle> clapperPositionRotations;
-  private final StatusSignal<AngularVelocity> clapperVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> clapperAppliedVolts;
-  private final StatusSignal<Current> clapperSupplyCurrentAmps;
-  private final StatusSignal<Current> clapperTorqueCurrentAmps;
-  private final StatusSignal<Temperature> clapperTemperatureCelsius;
-  private final StatusSignal<Double> clapperPositionSetpointRotations;
-  private final StatusSignal<Double> clapperPositionErrorRotations;
+  private final StatusSignal<Angle> serializerPositionRotations;
+  private final StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> serializerAppliedVolts;
+  private final StatusSignal<Current> serializerSupplyCurrentAmps;
+  private final StatusSignal<Current> serializerTorqueCurrentAmps;
+  private final StatusSignal<Temperature> serializerTemperatureCelsius;
+  private final StatusSignal<Double> serializerPositionSetpointRotations;
+  private final StatusSignal<Double> serializerPositionErrorRotations;
 
   private final StatusSignal<Angle> rollerPositionRotations;
   private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
@@ -45,7 +45,7 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   private final StatusSignal<Angle> encoderPositionRotations;
 
-  private double clapperGoalRadians;
+  private double serializerGoalRadians;
   private double rollerGoalRadiansPerSecond;
 
   private VoltageOut voltageRequest;
@@ -53,39 +53,39 @@ public class FunnelIOTalonFX implements FunnelIO {
   private MotionMagicVelocityVoltage velocityControlRequest;
   private MotionMagicVoltage positionControlRequest;
 
-  private final Alert clapperDisconnectedAlert =
-      new Alert("Funnel Clapper Motor Disconnected. Check CAN bus!", AlertType.ERROR);
+  private final Alert serializerDisconnectedAlert =
+      new Alert("Funnel Serializer Motor Disconnected. Check CAN bus!", AlertType.ERROR);
   private final Alert rollerDisconnectedAlert =
       new Alert("Funnel Roller Motor Disconnected. Check CAN bus!", AlertType.ERROR);
 
   public FunnelIOTalonFX() {
-    this.clapperMotor = new TalonFX(FunnelConstants.CLAPPER_MOTOR_ID);
+    this.serializerMotor = new TalonFX(FunnelConstants.SERIALIZER_MOTOR_ID);
     this.rollerMotor = new TalonFX(FunnelConstants.ROLLER_MOTOR_ID);
     this.coralSensor = new DigitalInput(FunnelConstants.CORAL_SENSOR_ID);
-    this.clapperEncoder = new CANcoder(FunnelConstants.CLAPPER_MOTOR_ID);
+    this.serializerEncoder = new CANcoder(FunnelConstants.SERIALIZER_MOTOR_ID);
 
-    TalonFXConfiguration clapperConfig = new TalonFXConfiguration();
-    clapperConfig.Feedback.FeedbackRemoteSensorID = clapperEncoder.getDeviceID();
-    clapperConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    clapperConfig.Feedback.SensorToMechanismRatio = FunnelConstants.CLAPPER_MOTOR_GEAR_RATIO;
-    clapperConfig.CurrentLimits.withSupplyCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.CLAPPER_SUPPLY_CURRENT_LIMIT());
-    clapperConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.CLAPPER_STATOR_CURRENT_LIMIT());
-    clapperConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    clapperConfig.Slot0.kP = FunnelConstants.CLAPPER_MOTOR_GAINS.kP().get();
-    clapperConfig.Slot0.kD = FunnelConstants.CLAPPER_MOTOR_GAINS.kD().get();
-    clapperConfig.Slot0.kS = FunnelConstants.CLAPPER_MOTOR_GAINS.kS().get();
-    clapperConfig.Slot0.kV = FunnelConstants.CLAPPER_MOTOR_GAINS.kV().get();
-    clapperConfig.Slot0.kA = FunnelConstants.CLAPPER_MOTOR_GAINS.kA().get();
-    clapperConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
+    serializerConfig.Feedback.FeedbackRemoteSensorID = serializerEncoder.getDeviceID();
+    serializerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    serializerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
+    serializerConfig.CurrentLimits.withSupplyCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
+    serializerConfig.CurrentLimits.withStatorCurrentLimit(
+        FunnelConstants.CURRENT_LIMITS.SERIALIZER_STATOR_CURRENT_LIMIT());
+    serializerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    serializerConfig.Slot0.kP = FunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get();
+    serializerConfig.Slot0.kD = FunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get();
+    serializerConfig.Slot0.kS = FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get();
+    serializerConfig.Slot0.kV = FunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get();
+    serializerConfig.Slot0.kA = FunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get();
+    serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         FunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
-    clapperConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+    serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         FunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
-    clapperConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
-    clapperConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+    serializerConfig.MotionMagic.MotionMagicAcceleration =
+        FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+    serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
+        FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
@@ -110,18 +110,18 @@ public class FunnelIOTalonFX implements FunnelIO {
     canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
-    clapperMotor.getConfigurator().apply(clapperConfig);
+    serializerMotor.getConfigurator().apply(serializerConfig);
     rollerMotor.getConfigurator().apply(rollerConfig);
-    clapperEncoder.getConfigurator().apply(canCoderConfig);
+    serializerEncoder.getConfigurator().apply(canCoderConfig);
 
-    clapperPositionRotations = clapperMotor.getPosition();
-    clapperVelocityRotationsPerSecond = clapperMotor.getVelocity();
-    clapperAppliedVolts = clapperMotor.getMotorVoltage();
-    clapperSupplyCurrentAmps = clapperMotor.getSupplyCurrent();
-    clapperTorqueCurrentAmps = clapperMotor.getTorqueCurrent();
-    clapperTemperatureCelsius = clapperMotor.getDeviceTemp();
-    clapperPositionSetpointRotations = clapperMotor.getClosedLoopReference();
-    clapperPositionErrorRotations = clapperMotor.getClosedLoopError();
+    serializerPositionRotations = serializerMotor.getPosition();
+    serializerVelocityRotationsPerSecond = serializerMotor.getVelocity();
+    serializerAppliedVolts = serializerMotor.getMotorVoltage();
+    serializerSupplyCurrentAmps = serializerMotor.getSupplyCurrent();
+    serializerTorqueCurrentAmps = serializerMotor.getTorqueCurrent();
+    serializerTemperatureCelsius = serializerMotor.getDeviceTemp();
+    serializerPositionSetpointRotations = serializerMotor.getClosedLoopReference();
+    serializerPositionErrorRotations = serializerMotor.getClosedLoopError();
 
     rollerPositionRotations = rollerMotor.getPosition();
     rollerVelocityRotationsPerSecond = rollerMotor.getVelocity();
@@ -132,16 +132,16 @@ public class FunnelIOTalonFX implements FunnelIO {
     rollerVelocitySetpointRotationsPerSecond = rollerMotor.getClosedLoopReference();
     rollerVelocityErrorRotationsPerSecond = rollerMotor.getClosedLoopError();
 
-    encoderPositionRotations = clapperEncoder.getPosition();
+    encoderPositionRotations = serializerEncoder.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        clapperPositionRotations,
-        clapperVelocityRotationsPerSecond,
-        clapperAppliedVolts,
-        clapperSupplyCurrentAmps,
-        clapperTorqueCurrentAmps,
-        clapperTemperatureCelsius,
+        serializerPositionRotations,
+        serializerVelocityRotationsPerSecond,
+        serializerAppliedVolts,
+        serializerSupplyCurrentAmps,
+        serializerTorqueCurrentAmps,
+        serializerTemperatureCelsius,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVolts,
@@ -149,7 +149,7 @@ public class FunnelIOTalonFX implements FunnelIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
-    clapperMotor.optimizeBusUtilization();
+    serializerMotor.optimizeBusUtilization();
     rollerMotor.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
@@ -160,16 +160,16 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    boolean clapperConnected =
+    boolean serializerConnected =
         BaseStatusSignal.refreshAll(
-                clapperPositionRotations,
-                clapperVelocityRotationsPerSecond,
-                clapperAppliedVolts,
-                clapperSupplyCurrentAmps,
-                clapperTorqueCurrentAmps,
-                clapperTemperatureCelsius,
-                clapperPositionSetpointRotations,
-                clapperPositionErrorRotations)
+                serializerPositionRotations,
+                serializerVelocityRotationsPerSecond,
+                serializerAppliedVolts,
+                serializerSupplyCurrentAmps,
+                serializerTorqueCurrentAmps,
+                serializerTemperatureCelsius,
+                serializerPositionSetpointRotations,
+                serializerPositionErrorRotations)
             .isOK();
 
     boolean rollerConnected =
@@ -184,22 +184,23 @@ public class FunnelIOTalonFX implements FunnelIO {
                 rollerVelocityErrorRotationsPerSecond)
             .isOK();
 
-    clapperDisconnectedAlert.set(!clapperConnected);
+    serializerDisconnectedAlert.set(!serializerConnected);
     rollerDisconnectedAlert.set(!rollerConnected);
 
     encoderPositionRotations.refresh();
 
-    inputs.clapperPositionRadians =
-        Units.rotationsToRadians(clapperPositionRotations.getValueAsDouble());
-    inputs.clapperVelocityRadiansPerSecond =
-        Units.rotationsToRadians(clapperVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.clapperGoalRadians = clapperGoalRadians;
-    inputs.clapperAppliedVolts = clapperAppliedVolts.getValueAsDouble();
-    inputs.clapperSupplyCurrentAmps = clapperSupplyCurrentAmps.getValueAsDouble();
-    inputs.clapperTorqueCurrentAmps = clapperTorqueCurrentAmps.getValueAsDouble();
-    inputs.clapperTemperatureCelsius = clapperTemperatureCelsius.getValueAsDouble();
-    inputs.clapperPositionSetpointRadians = clapperPositionSetpointRotations.getValueAsDouble();
-    inputs.clapperPositionErrorRadians = clapperPositionErrorRotations.getValueAsDouble();
+    inputs.serializerPositionRadians =
+        Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble());
+    inputs.serializerVelocityRadiansPerSecond =
+        Units.rotationsToRadians(serializerVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.serializerGoalRadians = serializerGoalRadians;
+    inputs.serializerAppliedVolts = serializerAppliedVolts.getValueAsDouble();
+    inputs.serializerSupplyCurrentAmps = serializerSupplyCurrentAmps.getValueAsDouble();
+    inputs.serializerTorqueCurrentAmps = serializerTorqueCurrentAmps.getValueAsDouble();
+    inputs.serializerTemperatureCelsius = serializerTemperatureCelsius.getValueAsDouble();
+    inputs.serializerPositionSetpointRadians =
+        serializerPositionSetpointRotations.getValueAsDouble();
+    inputs.serializerPositionErrorRadians = serializerPositionErrorRotations.getValueAsDouble();
     inputs.encoderPositionRadians =
         Units.rotationsToRadians(encoderPositionRotations.getValueAsDouble());
 
@@ -221,8 +222,8 @@ public class FunnelIOTalonFX implements FunnelIO {
   }
 
   @Override
-  public void setClapperVoltage(double volts) {
-    clapperMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setSerializerVoltage(double volts) {
+    serializerMotor.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
@@ -231,9 +232,9 @@ public class FunnelIOTalonFX implements FunnelIO {
   }
 
   @Override
-  public void setClapperPosition(double radians) {
-    clapperGoalRadians = radians;
-    clapperMotor.setControl(
+  public void setSerializerPosition(double radians) {
+    serializerGoalRadians = radians;
+    serializerMotor.setControl(
         positionControlRequest.withPosition(Units.radiansToRotations(radians)).withEnableFOC(true));
   }
 
@@ -252,11 +253,11 @@ public class FunnelIOTalonFX implements FunnelIO {
   }
 
   @Override
-  public boolean atClapperGoal() {
+  public boolean atSerializerGoal() {
     return Math.abs(
-            clapperGoalRadians
-                - Units.rotationsToRadians(clapperPositionRotations.getValueAsDouble()))
-        < FunnelConstants.CLAPPER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+            serializerGoalRadians
+                - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
+        < FunnelConstants.CLAPDADDY_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override

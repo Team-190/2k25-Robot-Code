@@ -16,7 +16,7 @@ public class Funnel extends SubsystemBase {
   private final FunnelIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine rollerCharacterizationRoutine;
-  private final SysIdRoutine clapperCharacterizationRoutine;
+  private final SysIdRoutine serializerCharacterizationRoutine;
   private FunnelState goal;
   private boolean climbing;
 
@@ -35,15 +35,15 @@ public class Funnel extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setRollerVoltage(volts.in(Volts)), null, this));
 
-    clapperCharacterizationRoutine =
+    serializerCharacterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
                 Seconds.of(10),
-                (state) -> Logger.recordOutput("Funnel/clapperSysIDState", state.toString())),
+                (state) -> Logger.recordOutput("Funnel/serializerSysIDState", state.toString())),
             new SysIdRoutine.Mechanism(
-                (volts) -> io.setClapperVoltage(volts.in(Volts)), null, this));
+                (volts) -> io.setSerializerVoltage(volts.in(Volts)), null, this));
   }
 
   @Override
@@ -52,16 +52,16 @@ public class Funnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      setClapperPosition(goal.getAngle());
+      setSerializerPosition(goal.getAngle());
     }
 
     if (climbing) {
-      setClapperGoal(FunnelState.CLIMB);
+      setSerializerGoal(FunnelState.CLIMB);
     } else {
       if (hasCoral()) {
-        setClapperGoal(FunnelState.CLOSED);
+        setSerializerGoal(FunnelState.CLOSED);
       } else {
-        setClapperGoal(FunnelState.OPENED);
+        setSerializerGoal(FunnelState.OPENED);
       }
     }
   }
@@ -70,7 +70,7 @@ public class Funnel extends SubsystemBase {
     return runOnce(() -> this.climbing = climbing);
   }
 
-  public Command setClapperGoal(FunnelState goal) {
+  public Command setSerializerGoal(FunnelState goal) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -82,14 +82,14 @@ public class Funnel extends SubsystemBase {
     return run(() -> io.setRollerVoltage(volts));
   }
 
-  public Command setClapperVoltage(double volts) {
+  public Command setSerializerVoltage(double volts) {
     isClosedLoop = false;
-    return run(() -> io.setClapperVoltage(volts));
+    return run(() -> io.setSerializerVoltage(volts));
   }
 
-  public Command setClapperPosition(double radians) {
+  public Command setSerializerPosition(double radians) {
     isClosedLoop = true;
-    return run(() -> io.setClapperPosition(radians));
+    return run(() -> io.setSerializerPosition(radians));
   }
 
   public Command setRollerVelocity(double radiansPerSecond) {
@@ -108,25 +108,25 @@ public class Funnel extends SubsystemBase {
     return Commands.sequence(
         runOnce(() -> isClosedLoop = false),
         Commands.parallel(
-            clapperCharacterizationRoutine.quasistatic(Direction.kForward),
+            serializerCharacterizationRoutine.quasistatic(Direction.kForward),
             rollerCharacterizationRoutine.quasistatic(Direction.kForward)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            clapperCharacterizationRoutine.quasistatic(Direction.kReverse),
+            serializerCharacterizationRoutine.quasistatic(Direction.kReverse),
             rollerCharacterizationRoutine.quasistatic(Direction.kReverse)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            clapperCharacterizationRoutine.dynamic(Direction.kForward),
+            serializerCharacterizationRoutine.dynamic(Direction.kForward),
             rollerCharacterizationRoutine.dynamic(Direction.kForward)),
         Commands.waitSeconds(4),
         Commands.parallel(
-            clapperCharacterizationRoutine.dynamic(Direction.kReverse),
+            serializerCharacterizationRoutine.dynamic(Direction.kReverse),
             rollerCharacterizationRoutine.dynamic(Direction.kReverse)));
   }
 
-  @AutoLogOutput(key = "Funnel/Clapper Motor At Goal")
-  public boolean clapperMotorAtGoal() {
-    return io.atClapperGoal();
+  @AutoLogOutput(key = "Funnel/Serializer Motor At Goal")
+  public boolean serializerMotorAtGoal() {
+    return io.atSerializerGoal();
   }
 
   @AutoLogOutput(key = "Funnel/Roller Motor At Goal")

@@ -6,33 +6,33 @@ import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
 public class FunnelConstants {
-  public static final int CLAPPER_MOTOR_ID;
+  public static final int SERIALIZER_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
-  public static final Gains CLAPPER_MOTOR_GAINS;
+  public static final Gains SERIALIZER_MOTOR_GAINS;
   public static final Gains ROLLER_MOTOR_GAINS;
   public static final FunnelCurrentLimits CURRENT_LIMITS;
-  public static final double CLAPPER_MOTOR_GEAR_RATIO;
+  public static final double SERIALIZER_MOTOR_GEAR_RATIO;
   public static final double ROLLER_MOTOR_GEAR_RATIO;
   public static final Thresholds ANGLE_THRESHOLDS;
-  public static final Constraints CLAPPER_MOTOR_CONSTRAINTS;
+  public static final Constraints CLAPDADDY_MOTOR_CONSTRAINTS;
   public static final Constraints ROLLER_MOTOR_CONSTRAINTS;
   public static final LoggedTunableNumber CANCODER_ABSOLUTE_OFFSET_ROTATIONS;
-  public static final FunnelParams CLAPPER_PARAMS =
+  public static final FunnelParams CLAPDADDY_PARAMS =
       new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
   public static final FunnelParams ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
 
   static {
-    CLAPPER_MOTOR_ID = 0;
+    SERIALIZER_MOTOR_ID = 0;
     ROLLER_MOTOR_ID = 0;
     CORAL_SENSOR_ID = 0;
-    CLAPPER_MOTOR_GAINS =
+    SERIALIZER_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kP", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kS", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor Gains/kA", 0.0));
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kP", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kD", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kS", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kV", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kA", 0.0));
     ROLLER_MOTOR_GAINS =
         new Gains(
             new LoggedTunableNumber("Funnel/Roller Motor Gains/kP", 0.0),
@@ -43,17 +43,17 @@ public class FunnelConstants {
 
     CURRENT_LIMITS = new FunnelCurrentLimits(0.0, 0.0, 0.0, 0.0);
 
-    CLAPPER_MOTOR_GEAR_RATIO = 0.0;
+    SERIALIZER_MOTOR_GEAR_RATIO = 0.0;
     ROLLER_MOTOR_GEAR_RATIO = 0.0;
 
     ANGLE_THRESHOLDS =
         new Thresholds(
-            new LoggedTunableNumber("Funnel/Clapper Motor/Max Angle", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor/Min Angle", 0.0));
-    CLAPPER_MOTOR_CONSTRAINTS =
+            new LoggedTunableNumber("Funnel/Serializer Motor/Max Angle", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor/Min Angle", 0.0));
+    CLAPDADDY_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Clapper Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Clapper Motor/Max Velocity", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
     ROLLER_MOTOR_CONSTRAINTS =
         new Constraints(
@@ -66,9 +66,9 @@ public class FunnelConstants {
   }
 
   public static final record FunnelCurrentLimits(
-      double CLAPPER_SUPPLY_CURRENT_LIMIT,
+      double SERIALIZER_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
-      double CLAPPER_STATOR_CURRENT_LIMIT,
+      double SERIALIZER_STATOR_CURRENT_LIMIT,
       double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static final record Gains(
