@@ -82,4 +82,16 @@ public class ElevatorIOSim implements ElevatorIO {
             -12,
             12);
   }
+
+  @Override
+  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+    controller.setPID(kP, 0, kD);
+    feedforward = new ElevatorFeedforward(kS, kG, kV);
+  }
+
+  @Override
+  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+    controller.setConstraints(
+        new Constraints(cruisingVelocity, maxAcceleration));
+  }
 }

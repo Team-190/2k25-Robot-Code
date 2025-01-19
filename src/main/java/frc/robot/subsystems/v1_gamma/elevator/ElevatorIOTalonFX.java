@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.PhoenixUtil;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
   private final TalonFX talonFX;
@@ -211,5 +212,36 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             meters
                 * ElevatorConstants.ELEVATOR_GEAR_RATIO
                 / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)));
+  }
+
+  @Override
+  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+    TalonFXConfiguration newGains = new TalonFXConfiguration() {
+      {
+        Slot0.kP = kP;
+        Slot0.kD = kD;
+        Slot0.kS = kS;
+        Slot0.kV = kV;
+        Slot0.kA = kA;
+        Slot0.kG = kG;
+      }
+    };
+    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(
+      newGains));
+      for (TalonFX follow : followTalonFX) {
+        PhoenixUtil.tryUntilOk(5, ()->follow.getConfigurator().apply(
+          newGains));
+      }
+  }
+
+  @Override
+  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(
+      new TalonFXConfiguration() {
+        {
+          MotionMagic.MotionMagicAcceleration = maxAcceleration;
+          MotionMagic.MotionMagicCruiseVelocity = cruisingVelocity;
+        }
+      }));
   }
 }

@@ -25,4 +25,8 @@ public interface ElevatorIO {
   public default void setPosition(double meters) {}
 
   public default void setPositionGoal(double meters) {}
+
+  public default void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {}
+
+  public default void setConstraints(double maxAcceleration, double cruisingVelocity) {}
 }

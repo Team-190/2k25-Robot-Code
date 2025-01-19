@@ -64,4 +64,12 @@ public class Elevator extends SubsystemBase {
         * ElevatorConstants.ELEVATOR_GEAR_RATIO
         / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
   }
+
+  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+    io.setGains(kP, kD, kS, kV, kA, kG);
+  }
+
+  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+    io.setConstraints(maxAcceleration, cruisingVelocity);
+  }
 }
