@@ -236,12 +236,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setConstraints(double maxAcceleration, double cruisingVelocity) {
-    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(
-      new TalonFXConfiguration() {
-        {
-          MotionMagic.MotionMagicAcceleration = maxAcceleration;
-          MotionMagic.MotionMagicCruiseVelocity = cruisingVelocity;
-        }
-      }));
+    TalonFXConfiguration newConstraints = new TalonFXConfiguration() {
+      {
+        MotionMagic.MotionMagicAcceleration = maxAcceleration;
+        MotionMagic.MotionMagicCruiseVelocity = cruisingVelocity;
+      }
+    };
+    PhoenixUtil.tryUntilOk(5, ()->talonFX.getConfigurator().apply(newConstraints));
+    for (TalonFX follow : followTalonFX) {
+      PhoenixUtil.tryUntilOk(5, ()->follow.getConfigurator().apply(newConstraints));
+    }
   }
 }
