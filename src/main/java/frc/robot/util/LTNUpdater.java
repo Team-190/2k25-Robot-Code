@@ -3,6 +3,8 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_gamma.elevator.Elevator;
+import frc.robot.subsystems.v1_gamma.elevator.ElevatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -38,5 +40,30 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+  }
+
+  public static final void updateElevator(Elevator elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              ElevatorConstants.GAINS.kP().get(),
+              ElevatorConstants.GAINS.kD().get(),
+              ElevatorConstants.GAINS.kS().get(),
+              ElevatorConstants.GAINS.kV().get(),
+              ElevatorConstants.GAINS.kA().get(),
+              ElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              ElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get(),
+              ElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get());
+        },
+        ElevatorConstants.GAINS.kP(),
+        ElevatorConstants.GAINS.kD(),
+        ElevatorConstants.GAINS.kS(),
+        ElevatorConstants.GAINS.kV(),
+        ElevatorConstants.GAINS.kA(),
+        ElevatorConstants.GAINS.kG(),
+        ElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq(),
+        ElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec());
   }
 }
