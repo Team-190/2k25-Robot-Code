@@ -39,4 +39,10 @@ public interface FunnelIO {
   public default boolean atSerializerGoal() {
     return false;
   }
+
+  public default void updateGains(double kP, double kD, double kS, double kV, double kA) {}
+
+  public default void updateThresholds(double maxAngle, double minAngle) {}
+
+  public default void updateConstraints(double maxAcceleration, double maxVelocity) {}
 }

@@ -107,4 +107,16 @@ public class Funnel extends SubsystemBase {
   public boolean serializerMotorAtGoal() {
     return io.atSerializerGoal();
   }
+
+  public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    io.updateGains(kP, kD, kS, kV, kA);
+  }
+
+  public void updateThresholds(double maxAngle, double minAngle) {
+    io.updateThresholds(maxAngle, minAngle);
+  }
+
+  public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    io.updateConstraints(maxAcceleration, maxVelocity);
+  }
 }
