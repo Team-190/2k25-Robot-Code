@@ -2,16 +2,12 @@ package frc.robot.subsystems.v1_gamma.funnel;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
@@ -23,7 +19,6 @@ public class FunnelIOTalonFX implements FunnelIO {
   private final TalonFX serializerMotor;
   private final TalonFX rollerMotor;
   private final DigitalInput coralSensor;
-  private final CANcoder serializerEncoder;
 
   private final StatusSignal<Angle> serializerPositionRotations;
   private final StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
@@ -41,8 +36,6 @@ public class FunnelIOTalonFX implements FunnelIO {
   private final StatusSignal<Current> rollerTorqueCurrentAmps;
   private final StatusSignal<Temperature> rollerTemperatureCelsius;
 
-  private final StatusSignal<Angle> encoderPositionRotations;
-
   private Rotation2d serializerGoal;
 
   private VoltageOut voltageRequest;
@@ -58,11 +51,8 @@ public class FunnelIOTalonFX implements FunnelIO {
     this.serializerMotor = new TalonFX(FunnelConstants.SERIALIZER_MOTOR_ID);
     this.rollerMotor = new TalonFX(FunnelConstants.ROLLER_MOTOR_ID);
     this.coralSensor = new DigitalInput(FunnelConstants.CORAL_SENSOR_ID);
-    this.serializerEncoder = new CANcoder(FunnelConstants.SERIALIZER_MOTOR_ID);
 
     TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
-    serializerConfig.Feedback.FeedbackRemoteSensorID = serializerEncoder.getDeviceID();
-    serializerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     serializerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
     serializerConfig.CurrentLimits.withSupplyCurrentLimit(
         FunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
@@ -82,6 +72,7 @@ public class FunnelIOTalonFX implements FunnelIO {
         FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
         FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+    serializerConfig.Feedback.FeedbackRotorOffset = FunnelConstants.SERIALIZER_OFFSET_RADIANS.get();
 
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
@@ -91,15 +82,8 @@ public class FunnelIOTalonFX implements FunnelIO {
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
 
-    CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
-    canCoderConfig.MagnetSensor.MagnetOffset =
-        Units.radiansToRotations(FunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.get());
-    canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-    canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
-
     serializerMotor.getConfigurator().apply(serializerConfig);
     rollerMotor.getConfigurator().apply(rollerConfig);
-    serializerEncoder.getConfigurator().apply(canCoderConfig);
 
     serializerPositionRotations = serializerMotor.getPosition();
     serializerVelocityRotationsPerSecond = serializerMotor.getVelocity();
@@ -116,8 +100,6 @@ public class FunnelIOTalonFX implements FunnelIO {
     rollerSupplyCurrentAmps = rollerMotor.getSupplyCurrent();
     rollerTorqueCurrentAmps = rollerMotor.getTorqueCurrent();
     rollerTemperatureCelsius = rollerMotor.getDeviceTemp();
-
-    encoderPositionRotations = serializerEncoder.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -169,12 +151,8 @@ public class FunnelIOTalonFX implements FunnelIO {
     serializerDisconnectedAlert.set(!serializerConnected);
     rollerDisconnectedAlert.set(!rollerConnected);
 
-    encoderPositionRotations.refresh();
-
     inputs.serializerPosition =
         Rotation2d.fromRotations(serializerPositionRotations.getValueAsDouble());
-    inputs.serializerAbsolutePosition =
-        Rotation2d.fromRotations(encoderPositionRotations.getValueAsDouble());
     inputs.serializerVelocityRadiansPerSecond =
         Units.rotationsToRadians(serializerVelocityRotationsPerSecond.getValueAsDouble());
     inputs.serializerAppliedVolts = serializerAppliedVolts.getValueAsDouble();

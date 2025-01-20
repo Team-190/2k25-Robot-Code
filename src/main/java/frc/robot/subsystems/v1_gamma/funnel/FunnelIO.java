@@ -7,7 +7,6 @@ public interface FunnelIO {
   @AutoLog
   public static class FunnelIOInputs {
     public Rotation2d serializerPosition = new Rotation2d();
-    public Rotation2d serializerAbsolutePosition = new Rotation2d();
     public double serializerVelocityRadiansPerSecond = 0.0;
     public double serializerAppliedVolts = 0.0;
     public double serializerSupplyCurrentAmps = 0.0;

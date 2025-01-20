@@ -15,7 +15,7 @@ public class FunnelConstants {
   public static final double ROLLER_MOTOR_GEAR_RATIO;
   public static final Thresholds ANGLE_THRESHOLDS;
   public static final Constraints SERIALIZER_MOTOR_CONSTRAINTS;
-  public static final LoggedTunableNumber CANCODER_ABSOLUTE_OFFSET_RADIANS;
+  public static final LoggedTunableNumber SERIALIZER_OFFSET_RADIANS;
   public static final FunnelParams SERIALIZER_PARAMS =
       new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
   public static final FunnelParams ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
@@ -47,8 +47,8 @@ public class FunnelConstants {
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
 
-    CANCODER_ABSOLUTE_OFFSET_RADIANS =
-        new LoggedTunableNumber("Funnel/CanCoder Absolute Offset", 0.0);
+            SERIALIZER_OFFSET_RADIANS =
+        new LoggedTunableNumber("Funnel/Serializer Absolute Offset", 0.0);
   }
 
   public static final record FunnelCurrentLimits(
