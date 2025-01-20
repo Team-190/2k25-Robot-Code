@@ -30,12 +30,16 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.subsystems.v1_gamma.funnel.Funnel;
+import frc.robot.subsystems.v1_gamma.funnel.FunnelIO;
+import frc.robot.subsystems.v1_gamma.funnel.FunnelIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
   private Drive drive;
+  private Funnel funnel;
   private Vision vision;
 
   private V0_FunkyRoller roller;
@@ -103,6 +107,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
+          funnel = new Funnel(new FunnelIOTalonFX());
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -149,6 +154,9 @@ public class RobotContainer {
     }
     if (vision == null) {
       vision = new Vision();
+    }
+    if (funnel == null) {
+      funnel = new Funnel(new FunnelIO() {});
     }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
@@ -257,6 +265,7 @@ public class RobotContainer {
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
+        LTNUpdater.updateFunnel(funnel);
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
