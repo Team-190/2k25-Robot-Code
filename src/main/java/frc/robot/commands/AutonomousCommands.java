@@ -34,4 +34,25 @@ public class AutonomousCommands {
         drive.getAutoFactory().trajectoryCmd("ReefToCollect"),
         drive.getAutoFactory().trajectoryCmd("CollectToReef"));
   }
+
+  public static final Command blueLeft3PieceWithRightSource(Drive drive, V0_FunkyRoller roller) {
+    return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    Choreo.loadTrajectory("LEFT_3_CORALS_RIGHT_STATION_Part1")
+                        .get()
+                        .getInitialPose(true)
+                        .get())),
+        drive.getAutoFactory().trajectoryCmd("LEFT_3_CORALS_RIGHT_STATION_Part1"),
+        roller.runRoller(() -> 1, () -> 0).withTimeout(2),
+        drive.getAutoFactory().trajectoryCmd("LEFT_3_CORALS_RIGHT_STATION_Part2"),
+        Commands.waitSeconds(3),
+        drive.getAutoFactory().trajectoryCmd("LEFT_3_CORALS_RIGHT_STATION_Part3"),
+        roller.runRoller(() -> 1, () -> 0).withTimeout(1),
+        drive.getAutoFactory().trajectoryCmd("LEFT_3_CORALS_RIGHT_STATION_Part4"),
+        Commands.waitSeconds(3),
+        drive.getAutoFactory().trajectoryCmd("LEFT_3_CORALS_RIGHT_STATION_Part5"),
+        roller.runRoller(() -> 1, () -> 0).withTimeout(1));
+  }
 }

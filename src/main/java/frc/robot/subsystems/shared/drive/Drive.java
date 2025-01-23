@@ -99,7 +99,7 @@ public class Drive extends SubsystemBase {
             RobotState::getRobotPose,
             RobotState::resetRobotPose,
             this::choreoDrive,
-            false,
+            true,
             this,
             (sample, isStart) -> {
               Logger.recordOutput("Auto/Choreo Trajectory", sample.getPoses());

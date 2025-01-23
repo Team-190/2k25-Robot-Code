@@ -3,7 +3,15 @@
  "version":1,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "MAX_VELO":{
+    "dimension":"Number",
+    "var":{
+     "exp":"0.35",
+     "val":0.35
+    }
+   }
+  },
   "poses":{}
  },
  "config":{
