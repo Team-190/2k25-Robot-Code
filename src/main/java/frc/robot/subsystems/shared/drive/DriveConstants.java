@@ -35,6 +35,8 @@ public class DriveConstants {
   public static final double ODOMETRY_FREQUENCY;
   public static final double DRIVER_DEADBAND;
 
+  public static final AlignRobotToAprilTagConstants ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
+
   static {
     switch (Constants.ROBOT) {
       case V0_FUNKY:
@@ -196,6 +198,33 @@ public class DriveConstants {
         DRIVER_DEADBAND = 0.025;
         break;
     }
+    ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
+        new AlignRobotToAprilTagConstants(
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kP", 3),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/tolerance", 0.005),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 2.0),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.005),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/kP", Math.PI),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/tolerance",
+                    Units.degreesToRadians(0.5)),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+            new LoggedTunableNumber("Drive/Align Robot To April Tag/positionThresholdMeters", .075),
+            new LoggedTunableNumber("Drive/Align Robot To April Tag/minSpeed", 0.6));
   }
 
   public record DriveConfig(
@@ -252,4 +281,17 @@ public class DriveConstants {
       LoggedTunableNumber translation_Kd,
       LoggedTunableNumber rotation_Kp,
       LoggedTunableNumber rotation_Kd) {}
+
+  public record PIDControllerConstants(
+      LoggedTunableNumber kP,
+      LoggedTunableNumber kD,
+      LoggedTunableNumber tolerance,
+      LoggedTunableNumber maxVelocity) {}
+
+  public static record AlignRobotToAprilTagConstants(
+      PIDControllerConstants xPIDConstants,
+      PIDControllerConstants yPIDConstants,
+      PIDControllerConstants omegaPIDConstants,
+      LoggedTunableNumber positionThresholdMeters,
+      LoggedTunableNumber minSpeedMetersPerSecond) {}
 }

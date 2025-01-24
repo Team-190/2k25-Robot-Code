@@ -230,20 +230,44 @@ public final class DriveCommands {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
-            3, 0.0, 0.05, new TrapezoidProfile.Constraints(3, Double.POSITIVE_INFINITY));
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kP().get(),
+            0.0,
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .xPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
     ProfiledPIDController yController =
         new ProfiledPIDController(
-            2, 0.0, 0.05, new TrapezoidProfile.Constraints(3, Double.POSITIVE_INFINITY));
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kP().get(),
+            0.0,
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .yPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
     ProfiledPIDController omegaController =
         new ProfiledPIDController(
-            Math.PI,
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
             0.0,
-            0.05,
-            new TrapezoidProfile.Constraints(Math.PI, Double.POSITIVE_INFINITY));
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
 
-    xController.setTolerance(0.005);
-    yController.setTolerance(0.005);
-    omegaController.setTolerance(Units.degreesToRadians(0.5));
+    xController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
+    yController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
+    omegaController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
     return Commands.runOnce(
             () -> {
               for (Camera camera : cameras) {
@@ -264,33 +288,106 @@ public final class DriveCommands {
                             Reef.reefMap
                                 .get(RobotState.getClosestReefTag())
                                 .getPost(RobotState.getCurrentReefPost());
+
+                        Logger.recordOutput(
+                            "dist to tag",
+                            RobotState.getRobotPoseReef()
+                                .getTranslation()
+                                .getDistance(setpoint.getTranslation()));
+                        boolean crossedThreshold =
+                            Math.abs(
+                                    RobotState.getRobotPoseReef()
+                                        .getTranslation()
+                                        .getDistance(setpoint.getTranslation()))
+                                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                                    .positionThresholdMeters()
+                                    .get();
+
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
                         double thetaSpeed = 0.0;
                         if (!xController.atSetpoint())
                           xSpeed =
-                              MathUtil.applyDeadband(
-                                  xController.calculate(
-                                      RobotState.getRobotPoseReef().getX(), setpoint.getX()),
-                                  0.09870152766556013);
+                              crossedThreshold
+                                  ? absMax(
+                                      Math.copySign(
+                                          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                                              .minSpeedMetersPerSecond()
+                                              .get(),
+                                          MathUtil.applyDeadband(
+                                              xController.calculate(
+                                                  RobotState.getRobotPoseReef().getX(),
+                                                  setpoint.getX()),
+                                              0.09870152766556013)),
+                                      MathUtil.applyDeadband(
+                                          xController.calculate(
+                                              RobotState.getRobotPoseReef().getX(),
+                                              setpoint.getX()),
+                                          0.09870152766556013))
+                                  : MathUtil.applyDeadband(
+                                      xController.calculate(
+                                          RobotState.getRobotPoseReef().getX(), setpoint.getX()),
+                                      0.09870152766556013);
                         else xController.reset(RobotState.getRobotPoseReef().getX());
                         if (!yController.atSetpoint())
                           ySpeed =
-                              MathUtil.applyDeadband(
-                                  yController.calculate(
-                                      RobotState.getRobotPoseReef().getY(), setpoint.getY()),
-                                  0.042128593183473257);
+                              crossedThreshold
+                                  ? absMax(
+                                      Math.copySign(
+                                          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                                              .minSpeedMetersPerSecond()
+                                              .get(),
+                                          MathUtil.applyDeadband(
+                                              yController.calculate(
+                                                  RobotState.getRobotPoseReef().getY(),
+                                                  setpoint.getY()),
+                                              0.042128593183473257)),
+                                      MathUtil.applyDeadband(
+                                          yController.calculate(
+                                              RobotState.getRobotPoseReef().getY(),
+                                              setpoint.getY()),
+                                          0.042128593183473257))
+                                  : MathUtil.applyDeadband(
+                                      yController.calculate(
+                                          RobotState.getRobotPoseReef().getY(), setpoint.getY()),
+                                      0.042128593183473257);
                         else yController.reset(RobotState.getRobotPoseReef().getY());
                         if (!omegaController.atSetpoint())
                           thetaSpeed =
-                              MathUtil.applyDeadband(
-                                  omegaController.calculate(
-                                      RobotState.getRobotPoseReef().getRotation().getRadians(),
-                                      setpoint
-                                          .getRotation()
-                                          .plus(Rotation2d.fromDegrees(-90.0))
-                                          .getRadians()),
-                                  0.09927912329132032);
+                              crossedThreshold
+                                  ? absMax(
+                                      Math.copySign(
+                                          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                                              .minSpeedMetersPerSecond()
+                                              .get(),
+                                          MathUtil.applyDeadband(
+                                              omegaController.calculate(
+                                                  RobotState.getRobotPoseReef()
+                                                      .getRotation()
+                                                      .getRadians(),
+                                                  setpoint
+                                                      .getRotation()
+                                                      .plus(Rotation2d.fromDegrees(-90.0))
+                                                      .getRadians()),
+                                              0.09927912329132032)),
+                                      MathUtil.applyDeadband(
+                                          omegaController.calculate(
+                                              RobotState.getRobotPoseReef()
+                                                  .getRotation()
+                                                  .getRadians(),
+                                              setpoint
+                                                  .getRotation()
+                                                  .plus(Rotation2d.fromDegrees(-90.0))
+                                                  .getRadians()),
+                                          0.09927912329132032))
+                                  : MathUtil.applyDeadband(
+                                      omegaController.calculate(
+                                          RobotState.getRobotPoseReef().getRotation().getRadians(),
+                                          setpoint
+                                              .getRotation()
+                                              .plus(Rotation2d.fromDegrees(-90.0))
+                                              .getRadians()),
+                                      0.09927912329132032);
                         else
                           omegaController.reset(
                               RobotState.getRobotPoseReef().getRotation().getRadians());
@@ -299,6 +396,7 @@ public final class DriveCommands {
                         Logger.recordOutput("ySpeed", -ySpeed);
                         Logger.recordOutput("thetaSpeed", thetaSpeed);
                         Logger.recordOutput("setpoint", setpoint);
+                        Logger.recordOutput("atThreshold", crossedThreshold);
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -xSpeed,
@@ -325,5 +423,10 @@ public final class DriveCommands {
                         camera.setValidTags(FieldConstants.validTags);
                       }
                     }));
+  }
+
+  public static double absMax(double a, double b) {
+    double ans = Math.max(Math.abs(a), Math.abs(b));
+    return Math.copySign(ans, a);
   }
 }
