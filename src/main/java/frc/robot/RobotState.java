@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -28,6 +29,9 @@ public class RobotState {
   private static ReefPost currentReefPost = ReefPost.LEFT;
 
   @Getter private static int closestReefTag = -1;
+  @Getter private static Pose2d setpoint = new Pose2d();
+  @Getter private static double distanceToPost = Double.POSITIVE_INFINITY;
+  @Getter private static Boolean atThreshold = false;
 
   private static final SwerveDrivePoseEstimator fieldLocalizer;
   private static final SwerveDrivePoseEstimator reefLocalizer;
@@ -150,6 +154,13 @@ public class RobotState {
       }
     }
 
+    setpoint = Reef.reefMap.get(getClosestReefTag()).getPost(getCurrentReefPost());
+    distanceToPost =
+        RobotState.getRobotPoseReef().getTranslation().getDistance(setpoint.getTranslation());
+    atThreshold =
+        Math.abs(distanceToPost)
+            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
     Logger.recordOutput(
@@ -157,6 +168,9 @@ public class RobotState {
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput("RobotState/Pose Data/Closest Reef Tag", closestReefTag);
+    Logger.recordOutput("RobotState/Pose Data/Reef Setpoint", setpoint);
+    Logger.recordOutput("RobotState/Pose Data/Distance to Post", distanceToPost);
+    Logger.recordOutput("RobotState/Pose Data/At Threshold", atThreshold);
   }
 
   public static Pose2d getRobotPoseField() {

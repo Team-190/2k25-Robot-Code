@@ -223,8 +223,8 @@ public class DriveConstants {
                     Units.degreesToRadians(0.5)),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
-            new LoggedTunableNumber("Drive/Align Robot To April Tag/positionThresholdMeters", .075),
-            new LoggedTunableNumber("Drive/Align Robot To April Tag/minSpeed", 0.6));
+            new LoggedTunableNumber(
+                "Drive/Align Robot To April Tag/positionThresholdMeters", .045));
   }
 
   public record DriveConfig(
@@ -292,6 +292,5 @@ public class DriveConstants {
       PIDControllerConstants xPIDConstants,
       PIDControllerConstants yPIDConstants,
       PIDControllerConstants omegaPIDConstants,
-      LoggedTunableNumber positionThresholdMeters,
-      LoggedTunableNumber minSpeedMetersPerSecond) {}
+      LoggedTunableNumber positionThresholdMeters) {}
 }
