@@ -78,7 +78,7 @@ public class RobotState {
     RobotState.modulePositions = modulePositions;
 
     odometry.update(robotHeading, modulePositions);
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    poseEstimator.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
       double[] limelightHeadingData = {
