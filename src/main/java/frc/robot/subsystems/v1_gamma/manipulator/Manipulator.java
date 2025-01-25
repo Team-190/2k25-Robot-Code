@@ -17,7 +17,7 @@ public class Manipulator extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Manipulators", inputs);
+    Logger.processInputs("Manipulator", inputs);
   }
 
   public Command runManipulator(double volts) {
