@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
-import org.littletonrobotics.junction.Logger;
 
 public class CameraIOLimelight implements CameraIO {
   private final String name;
@@ -68,6 +67,5 @@ public class CameraIOLimelight implements CameraIO {
         Units.radiansToDegrees(cameraOffset.getRotation().getX()),
         Units.radiansToDegrees(cameraOffset.getRotation().getY()),
         Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
-    Logger.recordOutput(name + "/CameraOffset", cameraOffset);
   }
 }
