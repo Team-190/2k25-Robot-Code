@@ -1,8 +1,11 @@
 package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 public class CameraIOLimelight implements CameraIO {
   private final String name;
@@ -53,5 +56,18 @@ public class CameraIOLimelight implements CameraIO {
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public void setCameraOffset(Transform3d cameraOffset) {
+    LimelightHelpers.setCameraPose_RobotSpace(
+        name,
+        cameraOffset.getX(),
+        cameraOffset.getY(),
+        cameraOffset.getZ(),
+        Units.radiansToDegrees(cameraOffset.getRotation().getX()),
+        Units.radiansToDegrees(cameraOffset.getRotation().getY()),
+        Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
+    Logger.recordOutput(name + "/CameraOffset", cameraOffset);
   }
 }

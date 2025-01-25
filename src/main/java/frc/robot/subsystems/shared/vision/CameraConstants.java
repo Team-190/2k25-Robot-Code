@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shared.vision;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.List;
@@ -41,7 +43,12 @@ public class CameraConstants {
                 .getTable("limelight-center")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
-            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                0,
+                .241,
+                .2,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-90))));
 
     private static final Camera v0_FunkyLeft =
         new Camera(
@@ -54,7 +61,12 @@ public class CameraConstants {
                 .getTable("limelight-left")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
-            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                .284,
+                0.1884,
+                .22,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-135))));
 
     private static final Camera v0_FunkyRight =
         new Camera(
@@ -67,7 +79,12 @@ public class CameraConstants {
                 .getTable("limelight-right")
                 .getDoubleArrayTopic("robot_orientation_set")
                 .publish(),
-            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION));
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                -.284,
+                0.1883,
+                .22,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
 
     public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
   }

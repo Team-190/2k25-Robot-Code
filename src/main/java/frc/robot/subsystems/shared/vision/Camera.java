@@ -2,6 +2,7 @@ package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import java.util.List;
 import lombok.Getter;
@@ -27,9 +28,11 @@ public class Camera {
       double primaryXYStandardDeviationCoefficient,
       double secondaryXYStandardDeviationCoefficient,
       DoubleArrayPublisher robotHeadingPublisher,
-      List<CameraDuty> cameraDuties) {
+      List<CameraDuty> cameraDuties,
+      Transform3d offset) {
     inputs = new CameraIOInputsAutoLogged();
     this.io = io;
+    io.setCameraOffset(offset);
     this.name = io.getName();
     this.cameraType = io.getCameraType();
     this.horizontalFOV = horizontalFOV;
