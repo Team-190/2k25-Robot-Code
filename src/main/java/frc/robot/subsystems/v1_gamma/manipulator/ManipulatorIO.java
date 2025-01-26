@@ -1,7 +1,6 @@
 package frc.robot.subsystems.v1_gamma.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ManipulatorIO {
@@ -19,5 +18,4 @@ public interface ManipulatorIO {
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
-
 }

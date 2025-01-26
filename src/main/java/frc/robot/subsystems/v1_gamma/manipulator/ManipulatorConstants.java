@@ -10,11 +10,12 @@ public class ManipulatorConstants {
   public static final VoltageTunableNumbers VOLTAGES;
 
   static {
-    VOLTAGES = new VoltageTunableNumbers(new LoggedTunableNumber("Manipulator/IntakeVolts", 12.0), 
-    new LoggedTunableNumber("Manipulator/ScoreVolts", -12.0));
+    VOLTAGES =
+        new VoltageTunableNumbers(
+            new LoggedTunableNumber("Manipulator/IntakeVolts", 12.0),
+            new LoggedTunableNumber("Manipulator/ScoreVolts", -12.0));
   }
 
-  public static final record VoltageTunableNumbers(LoggedTunableNumber INTAKE_VOLTS,
-  LoggedTunableNumber SCORE_VOLTS) {
-  }
+  public static final record VoltageTunableNumbers(
+      LoggedTunableNumber INTAKE_VOLTS, LoggedTunableNumber SCORE_VOLTS) {}
 }
