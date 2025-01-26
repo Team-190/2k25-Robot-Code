@@ -51,17 +51,6 @@ public class AllianceFlipUtil {
     return new Pose2d(overrideApply(pose.getTranslation()), overrideApply(pose.getRotation()));
   }
 
-  public static Pose2d apply(Pose2d pose) {
-    if (shouldFlip()) {
-      return new Pose2d(
-          fieldLength - pose.getX(),
-          fieldWidth - pose.getY(),
-          new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
-    } else {
-      return pose;
-    }
-  }
-
   public static boolean shouldFlip() {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
