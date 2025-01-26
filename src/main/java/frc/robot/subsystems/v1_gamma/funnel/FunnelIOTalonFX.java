@@ -227,4 +227,31 @@ public class FunnelIOTalonFX implements FunnelIO {
                 - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
         < FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
+
+  @Override
+  public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
+    serializerConfig.Slot0.kP = kP;
+    serializerConfig.Slot0.kD = kD;
+    serializerConfig.Slot0.kS = kS;
+    serializerConfig.Slot0.kV = kV;
+    serializerConfig.Slot0.kA = kA;
+    serializerMotor.getConfigurator().apply(serializerConfig);
+  }
+
+  @Override
+  public void updateThresholds(double maxAngle, double minAngle) {
+    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
+    serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = maxAngle;
+    serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = minAngle;
+    serializerMotor.getConfigurator().apply(serializerConfig);
+  }
+
+  @Override
+  public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
+    serializerConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
+    serializerConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+    serializerMotor.getConfigurator().apply(serializerConfig);
+  }
 }

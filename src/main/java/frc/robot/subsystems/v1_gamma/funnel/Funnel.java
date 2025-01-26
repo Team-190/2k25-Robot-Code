@@ -57,10 +57,22 @@ public class Funnel extends SubsystemBase {
     }
   }
 
+  /**
+   * Sets the climbing state of the funnel.
+   *
+   * @param climbing True if the funnel is climbing, false otherwise.
+   * @return A command to set the climbing state.
+   */
   public Command setClimbing(boolean climbing) {
     return runOnce(() -> this.climbing = climbing);
   }
 
+  /**
+   * Sets the goal state of the serializer.
+   *
+   * @param goal The desired FunnelState.
+   * @return A command to set the serializer goal.
+   */
   public Command setSerializerGoal(FunnelState goal) {
     return runOnce(
         () -> {
@@ -69,28 +81,61 @@ public class Funnel extends SubsystemBase {
         });
   }
 
+  /**
+   * Sets the voltage of the roller.
+   *
+   * @param volts The desired voltage.
+   * @return A command to set the roller voltage.
+   */
   public Command setRollerVoltage(double volts) {
     return run(() -> io.setRollerVoltage(volts));
   }
 
+  /**
+   * Sets the voltage of the serializer.
+   *
+   * @param volts The desired voltage.
+   * @return A command to set the serializer voltage.
+   */
   public Command setSerializerVoltage(double volts) {
     isClosedLoop = false;
     return run(() -> io.setSerializerVoltage(volts));
   }
 
+  /**
+   * Sets the position of the serializer.
+   *
+   * @param radians The desired position in radians.
+   * @return A command to set the serializer position.
+   */
   public Command setSerializerPosition(double radians) {
     isClosedLoop = true;
     return run(() -> io.setSerializerPosition(Rotation2d.fromRadians(radians)));
   }
 
+  /**
+   * Stops the roller.
+   *
+   * @return A command to stop the roller.
+   */
   public Command stopRoller() {
     return runOnce(io::stopRoller);
   }
 
+  /**
+   * Checks if the funnel has coral.
+   *
+   * @return True if the funnel has coral, false otherwise.
+   */
   public boolean hasCoral() {
     return inputs.hasCoral;
   }
 
+  /**
+   * Runs the SysId routine for the serializer.
+   *
+   * @return A command to run the SysId routine.
+   */
   public Command sysIdRoutine() {
     return Commands.sequence(
         runOnce(() -> isClosedLoop = false),
@@ -103,8 +148,46 @@ public class Funnel extends SubsystemBase {
         serializerCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
+  /**
+   * Checks if the serializer motor is at the goal position.
+   *
+   * @return True if the serializer motor is at the goal, false otherwise.
+   */
   @AutoLogOutput(key = "Funnel/Serializer Motor At Goal")
   public boolean serializerMotorAtGoal() {
     return io.atSerializerGoal();
+  }
+
+  /**
+   * Updates the PID gains for the serializer.
+   *
+   * @param kP The proportional gain.
+   * @param kD The derivative gain.
+   * @param kS The static gain.
+   * @param kV The velocity gain.
+   * @param kA The acceleration gain.
+   */
+  public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    io.updateGains(kP, kD, kS, kV, kA);
+  }
+
+  /**
+   * Updates the angle thresholds for the serializer.
+   *
+   * @param maxAngle The maximum angle.
+   * @param minAngle The minimum angle.
+   */
+  public void updateThresholds(double maxAngle, double minAngle) {
+    io.updateThresholds(maxAngle, minAngle);
+  }
+
+  /**
+   * Updates the motion constraints for the serializer.
+   *
+   * @param maxAcceleration The maximum acceleration.
+   * @param maxVelocity The maximum velocity.
+   */
+  public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    io.updateConstraints(maxAcceleration, maxVelocity);
   }
 }

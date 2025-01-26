@@ -14,7 +14,7 @@ public class FunnelIOSim implements FunnelIO {
   public final DCMotorSim rollerMotorSim;
 
   private final ProfiledPIDController serializerController;
-  private final SimpleMotorFeedforward serializerFeedforward;
+  private SimpleMotorFeedforward serializerFeedforward;
 
   private Rotation2d serializerPositionGoal = new Rotation2d();
   private double serializerAppliedVolts = 0.0;
@@ -102,5 +102,28 @@ public class FunnelIOSim implements FunnelIO {
   @Override
   public void stopRoller() {
     rollerAppliedVolts = 0.0;
+  }
+
+  @Override
+  public boolean atSerializerGoal() {
+    return serializerController.atGoal();
+  }
+
+  @Override
+  public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    serializerController.setP(kP);
+    serializerController.setD(kD);
+    serializerFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
+  }
+
+  @Override
+  public void updateThresholds(double maxAngle, double minAngle) {
+    serializerController.enableContinuousInput(minAngle, maxAngle);
+  }
+
+  @Override
+  public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    serializerController.setConstraints(
+        new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
   }
 }
