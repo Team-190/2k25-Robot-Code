@@ -35,6 +35,9 @@ public class RobotState {
       case V0_FUNKY:
       case V0_FUNKY_SIM:
         break;
+      case V0_WHIPLASH:
+      case V0_WHIPLASH_SIM:
+        break;
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         break;
@@ -75,7 +78,7 @@ public class RobotState {
     RobotState.modulePositions = modulePositions;
 
     odometry.update(robotHeading, modulePositions);
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    poseEstimator.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
       double[] limelightHeadingData = {

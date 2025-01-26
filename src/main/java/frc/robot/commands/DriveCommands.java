@@ -47,7 +47,6 @@ public final class DriveCommands {
             0,
             DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get(),
             Constants.LOOP_PERIOD_SECONDS);
-
     xController =
         new PIDController(
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),

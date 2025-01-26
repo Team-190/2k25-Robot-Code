@@ -93,7 +93,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnTalon = new TalonFX(constants.SteerMotorId, DriveConstants.DRIVE_CONFIG.canBus());
     cancoder = new CANcoder(constants.EncoderId, DriveConstants.DRIVE_CONFIG.canBus());
 
-    driveConfig = constants.DriveMotorInitialConfigs;
+    driveConfig = new TalonFXConfiguration();
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0 = constants.DriveMotorGains;
     driveConfig.Feedback.SensorToMechanismRatio = constants.DriveMotorGearRatio;
@@ -272,12 +272,12 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveAmps(double currentAmps) {
-    driveTalon.setControl(torqueCurrentRequest.withOutput(currentAmps).withUpdateFreqHz(1000.0));
+    driveTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
   public void setTurnAmps(double currentAmps) {
-    turnTalon.setControl(torqueCurrentRequest.withOutput(currentAmps).withUpdateFreqHz(1000.0));
+    turnTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
@@ -285,16 +285,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalon.setControl(
         velocityTorqueCurrentRequest
             .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
-            .withFeedForward(currentFeedforward)
-            .withUpdateFreqHz(1000.0));
+            .withFeedForward(currentFeedforward));
   }
 
   @Override
   public void setTurnPosition(Rotation2d rotation) {
-    turnTalon.setControl(
-        positionTorqueCurrentRequest
-            .withPosition(rotation.getRotations())
-            .withUpdateFreqHz(1000.0));
+    turnTalon.setControl(positionTorqueCurrentRequest.withPosition(rotation.getRotations()));
   }
 
   @Override

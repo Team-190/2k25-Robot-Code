@@ -5,18 +5,20 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V1_GAMMA;
+  public static final RobotType ROBOT = RobotType.V0_WHIPLASH_SIM;
 
   public static Mode getMode() {
     switch (ROBOT) {
+      case V0_FUNKY:
+      case V0_WHIPLASH:
       case V1_GAMMA:
       case V2_DELTA:
-      case V0_FUNKY:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
+      case V0_FUNKY_SIM:
+      case V0_WHIPLASH_SIM:
       case V1_GAMMA_SIM:
       case V2_DELTA_SIM:
-      case V0_FUNKY_SIM:
         return Mode.SIM;
 
       default:
@@ -33,6 +35,8 @@ public final class Constants {
   public static enum RobotType {
     V0_FUNKY,
     V0_FUNKY_SIM,
+    V0_WHIPLASH,
+    V0_WHIPLASH_SIM,
     V1_GAMMA,
     V1_GAMMA_SIM,
     V2_DELTA,
