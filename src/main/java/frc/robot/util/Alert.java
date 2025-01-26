@@ -65,7 +65,7 @@ public class Alert {
    */
   public void set(boolean active) {
     if (active && !this.active) {
-      activeStartTime = Timer.getFPGATimestamp();
+      activeStartTime = Timer.getTimestamp();
       switch (type) {
         case ERROR:
           DriverStation.reportError(text, false);
