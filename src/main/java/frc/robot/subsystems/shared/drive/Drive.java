@@ -99,7 +99,7 @@ public class Drive extends SubsystemBase {
 
     autoFactory =
         new AutoFactory(
-            RobotState::getRobotPose,
+            RobotState::getRobotPoseField,
             RobotState::resetRobotPose,
             this::choreoDrive,
             true,
@@ -334,7 +334,7 @@ public class Drive extends SubsystemBase {
 
   /** Runs a choreo path from swerve samples */
   public void choreoDrive(SwerveSample sample) {
-    Pose2d pose = RobotState.getRobotPose();
+    Pose2d pose = RobotState.getRobotPoseField();
     double xFF = sample.vx;
     double yFF = sample.vy;
     double rotationFF = sample.omega;

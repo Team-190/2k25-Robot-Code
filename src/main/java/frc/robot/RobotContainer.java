@@ -15,8 +15,10 @@ package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
@@ -27,6 +29,7 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.vision.CameraConstants;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
@@ -60,7 +63,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
+          vision = new Vision(CameraConstants.RobotCameras.v0_FunkyCams);
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:
@@ -73,7 +76,6 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
-
           break;
         case V0_WHIPLASH:
           drive =
@@ -186,6 +188,15 @@ public class RobotContainer {
 
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
+
+    driver
+        .a()
+        .whileTrue(
+            DriveCommands.alignRobotToAprilTag(
+                drive, RobotState.getCurrentReefPost(), vision.getCameras()));
+
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
