@@ -344,7 +344,10 @@ public class Drive extends SubsystemBase {
 
     ChassisSpeeds velocity =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, pose.getRotation());
+            xFF + xFeedback,
+            yFF + yFeedback,
+            rotationFF + rotationFeedback,
+            Rotation2d.fromRadians(sample.heading));
 
     List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 
