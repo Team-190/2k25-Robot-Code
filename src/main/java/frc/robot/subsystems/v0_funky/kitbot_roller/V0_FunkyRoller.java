@@ -23,6 +23,6 @@ public class V0_FunkyRoller extends SubsystemBase {
 
   public Command runRoller(DoubleSupplier forward, DoubleSupplier reverse) {
     return Commands.run(
-        () -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble())), this);
+        () -> io.setVoltage(12 * (forward.getAsDouble() - reverse.getAsDouble()) * 0.25), this);
   }
 }
