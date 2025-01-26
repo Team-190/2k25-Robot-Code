@@ -279,7 +279,6 @@ public class RobotContainer {
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
-        LTNUpdater.updateElevator(elevator);
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
