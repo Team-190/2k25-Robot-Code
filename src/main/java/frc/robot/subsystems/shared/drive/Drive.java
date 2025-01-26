@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -57,6 +58,8 @@ public class Drive extends SubsystemBase {
   private SwerveModulePosition[] lastModulePositions;
 
   @Getter private final AutoFactory autoFactory;
+
+  @Setter private boolean useTwerkDrive = true;
 
   static {
     odometryLock = new ReentrantLock();
@@ -100,7 +103,10 @@ public class Drive extends SubsystemBase {
             RobotState::resetRobotPose,
             this::choreoDrive,
             true,
-            this);
+            this,
+            (sample, isStart) -> {
+              Logger.recordOutput("Auto/Choreo Trajectory", sample.getPoses());
+            });
   }
 
   public void periodic() {
@@ -341,7 +347,15 @@ public class Drive extends SubsystemBase {
 
     ChassisSpeeds velocity =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, pose.getRotation());
+            xFF + xFeedback,
+            yFF + yFeedback,
+            rotationFF + rotationFeedback,
+            Rotation2d.fromRadians(sample.heading));
+
+    if (!useTwerkDrive) {
+      runVelocity(velocity);
+      return;
+    }
 
     List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 

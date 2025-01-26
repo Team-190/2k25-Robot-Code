@@ -3,7 +3,15 @@
  "version":1,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "MAX_VELO":{
+    "dimension":"Number",
+    "var":{
+     "exp":"5.763493039050549",
+     "val":5.763493039050549
+    }
+   }
+  },
   "poses":{}
  },
  "config":{
@@ -32,8 +40,8 @@
    "val":68.0388555
   },
   "inertia":{
-   "exp":"6 kg m ^ 2",
-   "val":6.0
+   "exp":"5.7477890909 kg m ^ 2",
+   "val":5.7477890909
   },
   "gearing":{
    "exp":"5.9",
