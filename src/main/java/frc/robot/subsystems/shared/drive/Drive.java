@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -57,6 +58,8 @@ public class Drive extends SubsystemBase {
   private SwerveModulePosition[] lastModulePositions;
 
   @Getter private final AutoFactory autoFactory;
+
+  @Setter private boolean useTwerkDrive = true;
 
   static {
     odometryLock = new ReentrantLock();
@@ -348,6 +351,11 @@ public class Drive extends SubsystemBase {
             yFF + yFeedback,
             rotationFF + rotationFeedback,
             Rotation2d.fromRadians(sample.heading));
+
+    if (!useTwerkDrive) {
+      runVelocity(velocity);
+      return;
+    }
 
     List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 
