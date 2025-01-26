@@ -128,7 +128,7 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnConnected = true;
     inputs.turnEncoderConnected = true;
 
-    inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
+    inputs.odometryTimestamps = new double[] {Timer.getTimestamp()};
     inputs.odometryDrivePositionsRadians = new double[] {inputs.drivePositionRadians};
     inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
   }

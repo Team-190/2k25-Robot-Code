@@ -168,9 +168,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         PhoenixOdometryThread.getInstance().registerSignal(driveTalon.getPosition());
     turnPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(turnTalon.getPosition());
 
-    torqueCurrentRequest = new TorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
-    velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
-    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0).withUpdateFreqHz(50.0);
+    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
+    velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
+    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0);
 
     driveConnectedDebounce = new Debouncer(0.5);
     turnConnectedDebounce = new Debouncer(0.5);
