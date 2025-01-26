@@ -33,6 +33,10 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -40,6 +44,8 @@ public class RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
+
+  private V1_GammaElevator elevator;
 
   private V0_FunkyRoller roller;
 
@@ -104,6 +110,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           vision = new Vision();
           break;
         case V1_GAMMA_SIM:
@@ -114,6 +121,7 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
+          elevator = new V1_GammaElevator(new V1_GammaElevatorIOSim());
           vision = new Vision();
           break;
         case V2_DELTA:
@@ -151,6 +159,9 @@ public class RobotContainer {
     }
     if (vision == null) {
       vision = new Vision();
+    }
+    if (elevator == null) {
+      elevator = new V1_GammaElevator(new V1_GammaElevatorIO() {});
     }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});

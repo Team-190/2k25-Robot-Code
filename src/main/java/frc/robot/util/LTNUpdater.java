@@ -3,6 +3,8 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -38,5 +40,30 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+  }
+
+  public static final void updateElevator(V1_GammaElevator elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              V1_GammaElevatorConstants.GAINS.kP().get(),
+              V1_GammaElevatorConstants.GAINS.kD().get(),
+              V1_GammaElevatorConstants.GAINS.kS().get(),
+              V1_GammaElevatorConstants.GAINS.kV().get(),
+              V1_GammaElevatorConstants.GAINS.kA().get(),
+              V1_GammaElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get(),
+              V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get());
+        },
+        V1_GammaElevatorConstants.GAINS.kP(),
+        V1_GammaElevatorConstants.GAINS.kD(),
+        V1_GammaElevatorConstants.GAINS.kS(),
+        V1_GammaElevatorConstants.GAINS.kV(),
+        V1_GammaElevatorConstants.GAINS.kA(),
+        V1_GammaElevatorConstants.GAINS.kG(),
+        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq(),
+        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec());
   }
 }
