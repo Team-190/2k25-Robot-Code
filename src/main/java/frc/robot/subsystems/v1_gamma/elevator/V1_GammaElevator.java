@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.KSCharacterization;
-import frc.robot.subsystems.v1_gamma.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends SubsystemBase {
-  private final ElevatorIO io;
+public class V1_GammaElevator extends SubsystemBase {
+  private final V1_GammaElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
-  private ElevatorConstants.ElevatorPositions position;
+  private V1_GammaElevatorConstants.ElevatorPositions position;
   private boolean isClosedLoop;
   private final KSCharacterization ksRoutine;
 
-  public Elevator(ElevatorIO io) {
+  public V1_GammaElevator(V1_GammaElevatorIO io) {
     this.io = io;
     inputs = new ElevatorIOInputsAutoLogged();
 
@@ -42,7 +42,7 @@ public class Elevator extends SubsystemBase {
    * @param position The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(ElevatorConstants.ElevatorPositions position) {
+  public Command setPosition(V1_GammaElevatorConstants.ElevatorPositions position) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -58,7 +58,8 @@ public class Elevator extends SubsystemBase {
   public Command resetPosition() {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
-            runOnce(() -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMS.MIN_HEIGHT_METERS())));
+            runOnce(
+                () -> io.setPosition(V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -75,7 +76,7 @@ public class Elevator extends SubsystemBase {
    *
    * @return The current elevator position.
    */
-  public ElevatorConstants.ElevatorPositions getPosition() {
+  public V1_GammaElevatorConstants.ElevatorPositions getPosition() {
     return position;
   }
 
@@ -86,8 +87,8 @@ public class Elevator extends SubsystemBase {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.positionMeters
-        * ElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
+        * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -121,6 +122,6 @@ public class Elevator extends SubsystemBase {
    */
   public boolean atGoal() {
     return Math.abs(inputs.positionErrorMeters)
-        < ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        < V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 }
