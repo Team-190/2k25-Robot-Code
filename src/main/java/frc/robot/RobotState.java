@@ -10,20 +10,31 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.FieldConstants.Reef;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.vision.CameraDuty;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-  @Getter private static ControlData controlData = new ControlData();
+  @Setter
+  @Getter
+  @AutoLogOutput(key = "RobotState/Reef Data/Current Reef Post")
+  private static ReefPost currentReefPost = ReefPost.LEFT;
 
-  @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
-  @Getter @Setter private static double speakerAngleCompensation = 0.0;
+  @Getter private static int closestReefTag = -1;
+  @Getter private static Pose2d setpoint = new Pose2d();
+  @Getter private static double distanceToPost = Double.POSITIVE_INFINITY;
+  @Getter private static Boolean atThreshold = false;
 
-  private static final SwerveDrivePoseEstimator poseEstimator;
+  private static final SwerveDrivePoseEstimator fieldLocalizer;
+  private static final SwerveDrivePoseEstimator reefLocalizer;
   private static final SwerveDriveOdometry odometry;
 
   private static Rotation2d robotHeading;
@@ -52,7 +63,13 @@ public class RobotState {
       modulePositions[i] = new SwerveModulePosition();
     }
 
-    poseEstimator =
+    fieldLocalizer =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.DRIVE_CONFIG.kinematics(),
+            new Rotation2d(),
+            modulePositions,
+            new Pose2d());
+    reefLocalizer =
         new SwerveDrivePoseEstimator(
             DriveConstants.DRIVE_CONFIG.kinematics(),
             new Rotation2d(),
@@ -61,6 +78,7 @@ public class RobotState {
     odometry =
         new SwerveDriveOdometry(
             DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
+
     headingOffset = new Rotation2d();
   }
 
@@ -77,8 +95,9 @@ public class RobotState {
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
+    fieldLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    reefLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
-    poseEstimator.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
       double[] limelightHeadingData = {
@@ -87,9 +106,10 @@ public class RobotState {
       camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
     }
     NetworkTableInstance.getDefault().flush();
-    for (Camera camera : cameras) {
 
-      if (camera.getTargetAquired()
+    for (Camera camera : cameras) {
+      if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+          && camera.getTargetAquired()
           && !GeometryUtil.isZero(camera.getPrimaryPose())
           && !GeometryUtil.isZero(camera.getSecondaryPose())
           && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
@@ -99,7 +119,7 @@ public class RobotState {
                 * Math.pow(camera.getAverageDistance(), 2.0)
                 / camera.getTotalTargets()
                 * camera.getHorizontalFOV();
-        poseEstimator.addVisionMeasurement(
+        fieldLocalizer.addVisionMeasurement(
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
@@ -109,7 +129,7 @@ public class RobotState {
                   * Math.pow(camera.getAverageDistance(), 2.0)
                   / camera.getTotalTargets()
                   * camera.getHorizontalFOV();
-          poseEstimator.addVisionMeasurement(
+          fieldLocalizer.addVisionMeasurement(
               camera.getSecondaryPose(),
               camera.getFrameTimestamp(),
               VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
@@ -117,27 +137,119 @@ public class RobotState {
       }
     }
 
-    controlData = new ControlData();
+    closestReefTag = getMinDistanceReefTag();
+
+    for (Camera camera : cameras) {
+      if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
+          && !GeometryUtil.isZero(camera.getPrimaryPose())) {
+        double xyStddevPrimary =
+            camera.getPrimaryXYStandardDeviationCoefficient()
+                * Math.pow(camera.getAverageDistance(), 2.0)
+                / camera.getTotalTargets()
+                * camera.getHorizontalFOV();
+        reefLocalizer.addVisionMeasurement(
+            camera.getPrimaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+      }
+    }
+
+    setpoint = Reef.reefMap.get(getClosestReefTag()).getPost(getCurrentReefPost());
+    distanceToPost =
+        RobotState.getRobotPoseReef().getTranslation().getDistance(setpoint.getTranslation());
+    atThreshold =
+        Math.abs(distanceToPost)
+            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
     Logger.recordOutput(
-        "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
+        "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
+    Logger.recordOutput(
+        "RobotState/Pose Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
+    Logger.recordOutput("RobotState/Pose Data/Closest Reef Tag", closestReefTag);
+    Logger.recordOutput("RobotState/Pose Data/Reef Setpoint", setpoint);
+    Logger.recordOutput("RobotState/Pose Data/Distance to Post", distanceToPost);
+    Logger.recordOutput("RobotState/Pose Data/At Threshold", atThreshold);
   }
 
-  public static Pose2d getRobotPose() {
-    return poseEstimator.getEstimatedPosition();
+  public static Pose2d getRobotPoseField() {
+    return fieldLocalizer.getEstimatedPosition();
   }
 
-  public static Pose2d getOdometryPose() {
+  public static Pose2d getRobotPoseReef() {
+    return reefLocalizer.getEstimatedPosition();
+  }
+
+  public static Pose2d getRobotPoseOdometry() {
     return odometry.getPoseMeters();
+  }
+
+  private static int getMinDistanceReefTag() {
+    int minDistanceTag = 1;
+    double minDistance = Double.POSITIVE_INFINITY;
+    for (int i = 0; i < 6; i++) {
+      double currentDistance =
+          RobotState.getRobotPoseReef()
+              .getTranslation()
+              .getDistance(
+                  AllianceFlipUtil.apply(FieldConstants.Reef.centerFaces[i]).getTranslation());
+      if (currentDistance < minDistance) {
+        minDistance = currentDistance;
+        minDistanceTag = i;
+      }
+    }
+
+    if (AllianceFlipUtil.shouldFlip()) {
+      switch (minDistanceTag) {
+        case 0:
+          minDistanceTag = 7;
+          break;
+        case 1:
+          minDistanceTag = 6;
+          break;
+        case 2:
+          minDistanceTag = 11;
+          break;
+        case 3:
+          minDistanceTag = 10;
+          break;
+        case 4:
+          minDistanceTag = 9;
+          break;
+        case 5:
+          minDistanceTag = 8;
+          break;
+      }
+    } else {
+      switch (minDistanceTag) {
+        case 0:
+          minDistanceTag = 18;
+          break;
+        case 1:
+          minDistanceTag = 19;
+          break;
+        case 2:
+          minDistanceTag = 20;
+          break;
+        case 3:
+          minDistanceTag = 21;
+          break;
+        case 4:
+          minDistanceTag = 22;
+          break;
+        case 5:
+          minDistanceTag = 17;
+          break;
+      }
+    }
+    return minDistanceTag;
   }
 
   public static void resetRobotPose(Pose2d pose) {
     headingOffset = robotHeading.minus(pose.getRotation());
-    poseEstimator.resetPosition(robotHeading, modulePositions, pose);
+    fieldLocalizer.resetPosition(robotHeading, modulePositions, pose);
+    reefLocalizer.resetPosition(robotHeading, modulePositions, pose);
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
-
-  public static record ControlData() {}
 }
