@@ -64,6 +64,7 @@ public class FunnelIOTalonFX implements FunnelIO {
     serializerConfig.Feedback.FeedbackRemoteSensorID = serializerEncoder.getDeviceID();
     serializerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     serializerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
+    serializerConfig.Feedback.RotorToSensorRatio = FunnelConstants.SERIALIZER_CANCODER_GEAR_RATIO;
     serializerConfig.CurrentLimits.withSupplyCurrentLimit(
         FunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
     serializerConfig.CurrentLimits.withStatorCurrentLimit(

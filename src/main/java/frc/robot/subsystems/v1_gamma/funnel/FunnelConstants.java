@@ -12,6 +12,7 @@ public class FunnelConstants {
   public static final Gains SERIALIZER_MOTOR_GAINS;
   public static final FunnelCurrentLimits CURRENT_LIMITS;
   public static final double SERIALIZER_MOTOR_GEAR_RATIO;
+  public static final double SERIALIZER_CANCODER_GEAR_RATIO;
   public static final double ROLLER_MOTOR_GEAR_RATIO;
   public static final Thresholds ANGLE_THRESHOLDS;
   public static final Constraints SERIALIZER_MOTOR_CONSTRAINTS;
@@ -35,6 +36,7 @@ public class FunnelConstants {
     CURRENT_LIMITS = new FunnelCurrentLimits(0.0, 0.0, 0.0, 0.0);
 
     SERIALIZER_MOTOR_GEAR_RATIO = 0.0;
+    SERIALIZER_CANCODER_GEAR_RATIO = 0.0;
     ROLLER_MOTOR_GEAR_RATIO = 0.0;
 
     ANGLE_THRESHOLDS =
