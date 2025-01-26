@@ -189,11 +189,7 @@ public class RobotContainer {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.alignRobotToAprilTag(
-                drive, RobotState.getCurrentReefPost(), vision.getCameras()));
+    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
 
     driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
     driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
@@ -221,10 +217,12 @@ public class RobotContainer {
   }
 
   private void v0_FunkyConfigureAutos() {
+    Command test = AutonomousCommands.test(drive).cmd();
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption("Test", test);
   }
 
   private void v0_WhiplashConfigureAutos() {
@@ -278,6 +276,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutonomousCommands.testDrive(drive);
+    return autoChooser.get();
   }
 }
