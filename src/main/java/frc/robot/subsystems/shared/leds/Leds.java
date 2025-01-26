@@ -65,8 +65,8 @@ public abstract class Leds extends VirtualSubsystem {
   protected final Notifier loadingNotifier;
 
   protected Leds(int LENGTH, int PORT) {
-    this.LENGTH = LENGTH;
-    this.PORT = PORT;
+    Leds.LENGTH = LENGTH;
+    Leds.PORT = PORT;
     leds = new AddressableLED(PORT);
     buffer = new AddressableLEDBuffer(LENGTH);
     leds.setLength(LENGTH);
