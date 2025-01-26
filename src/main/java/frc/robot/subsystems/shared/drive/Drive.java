@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.util.AllianceFlipUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -59,7 +60,7 @@ public class Drive extends SubsystemBase {
 
   @Getter private final AutoFactory autoFactory;
 
-  @Setter private boolean useTwerkDrive = true;
+  @Setter private boolean useTwerkDrive = false;
 
   static {
     odometryLock = new ReentrantLock();
@@ -105,7 +106,13 @@ public class Drive extends SubsystemBase {
             true,
             this,
             (sample, isStart) -> {
-              Logger.recordOutput("Auto/Choreo Trajectory", sample.getPoses());
+              Pose2d[] poses = sample.getPoses();
+              if (AllianceFlipUtil.shouldFlip()) {
+                for (int i = 0; i < sample.getPoses().length; i++) {
+                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
+                }
+              }
+              Logger.recordOutput("Auto/Choreo Trajectory", poses);
             });
   }
 
@@ -339,10 +346,10 @@ public class Drive extends SubsystemBase {
     double yFF = sample.vy;
     double rotationFF = sample.omega;
 
-    double xFeedback = DriveCommands.getXController().calculate(pose.getX(), sample.x);
-    double yFeedback = DriveCommands.getYController().calculate(pose.getY(), sample.y);
+    double xFeedback = DriveCommands.getAutoXController().calculate(pose.getX(), sample.x);
+    double yFeedback = DriveCommands.getAutoYController().calculate(pose.getY(), sample.y);
     double rotationFeedback =
-        DriveCommands.getHeadingController()
+        DriveCommands.getAutoHeadingController()
             .calculate(pose.getRotation().getRadians(), sample.heading);
 
     ChassisSpeeds velocity =

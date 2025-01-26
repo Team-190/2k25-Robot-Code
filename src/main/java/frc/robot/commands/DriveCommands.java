@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -43,30 +42,41 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
-  @Getter private static final PIDController xController;
-  @Getter private static final PIDController yController;
-  @Getter private static final PIDController headingController;
+  @Getter private static final PIDController alignXController;
+  @Getter private static final PIDController alignYController;
+  @Getter private static final PIDController alignHeadingController;
+
+  @Getter private static final PIDController autoXController;
+  @Getter private static final PIDController autoYController;
+  @Getter private static final PIDController autoHeadingController;
 
   static {
-    headingController =
+    alignHeadingController =
         new PIDController(
             DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
             0,
             DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get(),
             Constants.LOOP_PERIOD_SECONDS);
-    xController =
+    alignXController =
         new PIDController(
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
             0.0,
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
-    yController =
+    alignYController =
         new PIDController(
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
             0.0,
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
 
-    headingController.enableContinuousInput(-Math.PI, Math.PI);
-    headingController.setTolerance(Units.degreesToRadians(1.0));
+    autoHeadingController = new PIDController(5.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
+    autoXController = new PIDController(10.0, 0.0, 0.0);
+    autoYController = new PIDController(10.0, 0.0, 0.0);
+
+    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    alignHeadingController.setTolerance(Units.degreesToRadians(1.0));
+
+    autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    autoHeadingController.setTolerance(Units.degreesToRadians(1.0));
   }
 
   /**
@@ -134,12 +144,12 @@ public final class DriveCommands {
   }
 
   public static final void setRotationPID(double kp, double kd) {
-    headingController.setPID(kp, 0.0, kd);
+    alignHeadingController.setPID(kp, 0.0, kd);
   }
 
   public static final void setTranslationPID(double kp, double kd) {
-    xController.setPID(kp, 0.0, kd);
-    yController.setPID(kp, 0.0, kd);
+    alignXController.setPID(kp, 0.0, kd);
+    alignYController.setPID(kp, 0.0, kd);
   }
 
   public static Command feedforwardCharacterization(Drive drive) {
@@ -225,7 +235,7 @@ public final class DriveCommands {
     double gyroDelta = 0.0;
   }
 
-  public static Command alignRobotToAprilTag(Drive drive, ReefPost post, Camera... cameras) {
+  public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
 
     ProfiledPIDController xController =
         new ProfiledPIDController(
@@ -272,7 +282,7 @@ public final class DriveCommands {
             () -> {
               for (Camera camera : cameras) {
                 if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-                  camera.setValidTags(RobotState.getClosestReefTag());
+                  camera.setValidTags(RobotState.getReefAlignData().closestReefTag());
                 }
               }
             })
@@ -283,36 +293,31 @@ public final class DriveCommands {
                           DriverStation.getAlliance().isPresent()
                               && DriverStation.getAlliance().get() == Alliance.Red;
                       ChassisSpeeds speeds;
-                      if (RobotState.getClosestReefTag() != -1) {
+                      if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
                         double thetaSpeed = 0.0;
                         if (!xController.atSetpoint())
                           xSpeed =
-                              MathUtil.applyDeadband(
-                                  xController.calculate(
-                                      RobotState.getRobotPoseReef().getX(),
-                                      RobotState.getSetpoint().getX()),
-                                  0.09870152766556013);
+                              xController.calculate(
+                                  RobotState.getRobotPoseReef().getX(),
+                                  RobotState.getReefAlignData().setpoint().getX());
                         else xController.reset(RobotState.getRobotPoseReef().getX());
                         if (!yController.atSetpoint())
                           ySpeed =
-                              MathUtil.applyDeadband(
-                                  yController.calculate(
-                                      RobotState.getRobotPoseReef().getY(),
-                                      RobotState.getSetpoint().getY()),
-                                  0.042128593183473257);
+                              yController.calculate(
+                                  RobotState.getRobotPoseReef().getY(),
+                                  RobotState.getReefAlignData().setpoint().getY());
                         else yController.reset(RobotState.getRobotPoseReef().getY());
                         if (!omegaController.atSetpoint())
                           thetaSpeed =
-                              MathUtil.applyDeadband(
-                                  omegaController.calculate(
-                                      RobotState.getRobotPoseReef().getRotation().getRadians(),
-                                      RobotState.getSetpoint()
-                                          .getRotation()
-                                          .plus(Rotation2d.fromDegrees(-90.0))
-                                          .getRadians()),
-                                  0.09927912329132032);
+                              omegaController.calculate(
+                                  RobotState.getRobotPoseReef().getRotation().getRadians(),
+                                  RobotState.getReefAlignData()
+                                      .setpoint()
+                                      .getRotation()
+                                      .plus(Rotation2d.fromDegrees(-90.0))
+                                      .getRadians());
                         else
                           omegaController.reset(
                               RobotState.getRobotPoseReef().getRotation().getRadians());
@@ -336,7 +341,7 @@ public final class DriveCommands {
                       drive.runVelocity(speeds);
                     },
                     drive)
-                .until(() -> RobotState.getAtThreshold())
+                .until(() -> RobotState.getReefAlignData().atSetpoint())
                 .finallyDo(
                     () -> {
                       drive.runVelocity(new ChassisSpeeds());
