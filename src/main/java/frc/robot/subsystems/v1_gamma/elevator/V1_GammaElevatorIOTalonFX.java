@@ -80,7 +80,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
       follow.setControl(
           new Follower(
               talonFX.getDeviceID(),
-              talonFX.getDeviceID() % 2 == 0 ? false : true)); // odd IDs are inverted
+              follower.getDeviceID() % 2 == 0 ? false : true)); // odd IDs are inverted
     }
 
     positionRotations = talonFX.getPosition();
