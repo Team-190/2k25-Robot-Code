@@ -217,12 +217,14 @@ public class RobotContainer {
   }
 
   private void v0_FunkyConfigureAutos() {
-    Command test = AutonomousCommands.test(drive).cmd();
+    Command twoPieceBack = AutonomousCommands.twoPieceBack(drive).cmd();
+    Command threePieceAntiProcessor = AutonomousCommands.threePieceAntiProcessor(drive).cmd();
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption("Test", test);
+    autoChooser.addOption("Two Piece Back", twoPieceBack);
+    autoChooser.addOption("Three Piece AntiProcessor", threePieceAntiProcessor);
   }
 
   private void v0_WhiplashConfigureAutos() {

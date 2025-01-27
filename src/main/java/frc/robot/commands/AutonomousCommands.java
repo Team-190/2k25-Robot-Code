@@ -8,18 +8,18 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 
 public class AutonomousCommands {
-  public static final AutoRoutine test(Drive drive) {
-    AutoRoutine test = drive.getAutoFactory().newRoutine("test");
+  public static final AutoRoutine twoPieceBack(Drive drive) {
+    AutoRoutine twoPieceBack = drive.getAutoFactory().newRoutine("twoPieceBack");
 
-    AutoTrajectory traj = test.trajectory("Path1");
-    AutoTrajectory traj2 = test.trajectory("Path2");
-    AutoTrajectory traj3 = test.trajectory("Path3");
+    AutoTrajectory traj = twoPieceBack.trajectory("Path1");
+    AutoTrajectory traj2 = twoPieceBack.trajectory("Path2");
+    AutoTrajectory traj3 = twoPieceBack.trajectory("Path3");
 
-    test.active()
+    twoPieceBack
+        .active()
         .onTrue(
             Commands.sequence(
                 traj.resetOdometry(),
-                // traj.cmd(),
                 Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj2.cmd(),
@@ -27,6 +27,29 @@ public class AutonomousCommands {
                 Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
-    return test;
+    return twoPieceBack;
+  }
+
+  public static final AutoRoutine threePieceAntiProcessor(Drive drive) {
+    AutoRoutine threePieceAntiProcessor = drive.getAutoFactory().newRoutine("twoPieceBack");
+
+    AutoTrajectory traj = threePieceAntiProcessor.trajectory("Path1");
+    AutoTrajectory traj2 = threePieceAntiProcessor.trajectory("Path2");
+    AutoTrajectory traj4 = threePieceAntiProcessor.trajectory("Path4");
+
+    threePieceAntiProcessor
+        .active()
+        .onTrue(
+            Commands.sequence(
+                traj.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj2.cmd(),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj4.cmd(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return threePieceAntiProcessor;
   }
 }
