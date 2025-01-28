@@ -5,7 +5,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class FunnelConstants {
+public class V1_GammaFunnelConstants {
   public static final int SERIALIZER_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
@@ -77,10 +77,10 @@ public class FunnelConstants {
   public static final record FunnelParams(DCMotor motor, double momentOfInertia) {}
 
   @RequiredArgsConstructor
-  public enum FunnelState {
-    STOW(35.0),
-    OPENED(Units.degreesToRadians(15.0)),
-    CLOSED(Units.degreesToRadians(85.0)),
+  public enum FunnelState { //Max of 58º when not climbing
+    STOW(90.0),
+    OPENED(Units.degreesToRadians(60.0)),
+    CLOSED(Units.degreesToRadians(70.0)),
     CLIMB(Units.degreesToRadians(0.0));
 
     private final double angleRadians;

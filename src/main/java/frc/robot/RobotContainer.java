@@ -30,16 +30,16 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
-import frc.robot.subsystems.v1_gamma.funnel.Funnel;
-import frc.robot.subsystems.v1_gamma.funnel.FunnelIO;
-import frc.robot.subsystems.v1_gamma.funnel.FunnelIOTalonFX;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   // Subsystems
   private Drive drive;
-  private Funnel funnel;
+  private V1_GammaFunnel funnel;
   private Vision vision;
 
   private V0_FunkyRoller roller;
@@ -107,7 +107,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          funnel = new Funnel(new FunnelIOTalonFX());
+          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -156,7 +156,7 @@ public class RobotContainer {
       vision = new Vision();
     }
     if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {});
+      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
     }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});

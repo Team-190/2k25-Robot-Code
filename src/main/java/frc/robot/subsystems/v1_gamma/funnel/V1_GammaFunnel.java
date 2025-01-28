@@ -8,19 +8,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v1_gamma.funnel.FunnelConstants.FunnelState;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Funnel extends SubsystemBase {
-  private final FunnelIO io;
+public class V1_GammaFunnel extends SubsystemBase {
+  private final V1_GammaFunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine serializerCharacterizationRoutine;
   private FunnelState goal;
   private boolean climbing;
 
-  public Funnel(FunnelIO io) {
+  public V1_GammaFunnel(V1_GammaFunnelIO io) {
     this.io = io;
     inputs = new FunnelIOInputsAutoLogged();
 

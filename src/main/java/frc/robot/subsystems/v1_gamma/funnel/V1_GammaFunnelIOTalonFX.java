@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 
-public class FunnelIOTalonFX implements FunnelIO {
+public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   private final TalonFX serializerMotor;
   private final TalonFX rollerMotor;
   private final DigitalInput coralSensor;
@@ -54,47 +54,49 @@ public class FunnelIOTalonFX implements FunnelIO {
   private final Alert rollerDisconnectedAlert =
       new Alert("Funnel Roller Motor Disconnected. Check CAN bus!", AlertType.ERROR);
 
-  public FunnelIOTalonFX() {
-    this.serializerMotor = new TalonFX(FunnelConstants.SERIALIZER_MOTOR_ID);
-    this.rollerMotor = new TalonFX(FunnelConstants.ROLLER_MOTOR_ID);
-    this.coralSensor = new DigitalInput(FunnelConstants.CORAL_SENSOR_ID);
-    this.serializerEncoder = new CANcoder(FunnelConstants.SERIALIZER_MOTOR_ID);
+  public V1_GammaFunnelIOTalonFX() {
+    this.serializerMotor = new TalonFX(V1_GammaFunnelConstants.SERIALIZER_MOTOR_ID);
+    this.rollerMotor = new TalonFX(V1_GammaFunnelConstants.ROLLER_MOTOR_ID);
+    this.coralSensor = new DigitalInput(V1_GammaFunnelConstants.CORAL_SENSOR_ID);
+    this.serializerEncoder = new CANcoder(V1_GammaFunnelConstants.SERIALIZER_MOTOR_ID);
 
     TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
     serializerConfig.Feedback.FeedbackRemoteSensorID = serializerEncoder.getDeviceID();
     serializerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    serializerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
-    serializerConfig.Feedback.RotorToSensorRatio = FunnelConstants.SERIALIZER_CANCODER_GEAR_RATIO;
+    serializerConfig.Feedback.SensorToMechanismRatio =
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
+    serializerConfig.Feedback.RotorToSensorRatio =
+        V1_GammaFunnelConstants.SERIALIZER_CANCODER_GEAR_RATIO;
     serializerConfig.CurrentLimits.withSupplyCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
+        V1_GammaFunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
     serializerConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.SERIALIZER_STATOR_CURRENT_LIMIT());
+        V1_GammaFunnelConstants.CURRENT_LIMITS.SERIALIZER_STATOR_CURRENT_LIMIT());
     serializerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    serializerConfig.Slot0.kP = FunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get();
-    serializerConfig.Slot0.kD = FunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get();
-    serializerConfig.Slot0.kS = FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get();
-    serializerConfig.Slot0.kV = FunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get();
-    serializerConfig.Slot0.kA = FunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get();
+    serializerConfig.Slot0.kP = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get();
+    serializerConfig.Slot0.kD = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get();
+    serializerConfig.Slot0.kS = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get();
+    serializerConfig.Slot0.kV = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get();
+    serializerConfig.Slot0.kA = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get();
     serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        FunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
     serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        FunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
     serializerConfig.MotionMagic.MotionMagicAcceleration =
-        FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
+        V1_GammaFunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
     rollerConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
+        V1_GammaFunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.Feedback.SensorToMechanismRatio = V1_GammaFunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
 
     CANcoderConfiguration canCoderConfig = new CANcoderConfiguration();
     canCoderConfig.MagnetSensor.MagnetOffset =
-        Units.radiansToRotations(FunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.get());
+        Units.radiansToRotations(V1_GammaFunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.get());
     canCoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
@@ -226,7 +228,7 @@ public class FunnelIOTalonFX implements FunnelIO {
     return Math.abs(
             serializerGoal.getRadians()
                 - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
-        < FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+        < V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override

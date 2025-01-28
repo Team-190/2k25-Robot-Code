@@ -9,7 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
-public class FunnelIOSim implements FunnelIO {
+public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   public final DCMotorSim serializerMotorSim;
   public final DCMotorSim rollerMotorSim;
 
@@ -21,37 +21,37 @@ public class FunnelIOSim implements FunnelIO {
 
   private double rollerAppliedVolts = 0.0;
 
-  public FunnelIOSim() {
+  public V1_GammaFunnelIOSim() {
     serializerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.SERIALIZER_PARAMS.motor(),
-                FunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
-                FunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
-            FunnelConstants.SERIALIZER_PARAMS.motor());
+                V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor(),
+                V1_GammaFunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
+                V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
+            V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor());
 
     rollerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.ROLLER_PARAMS.motor(),
-                FunnelConstants.ROLLER_PARAMS.momentOfInertia(),
-                FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
-            FunnelConstants.ROLLER_PARAMS.motor());
+                V1_GammaFunnelConstants.ROLLER_PARAMS.motor(),
+                V1_GammaFunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                V1_GammaFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
+            V1_GammaFunnelConstants.ROLLER_PARAMS.motor());
 
     serializerController =
         new ProfiledPIDController(
-            FunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
             0.0,
-            FunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
 
     serializerFeedforward =
         new SimpleMotorFeedforward(
-            FunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
-            FunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
-            FunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
   }
 
   @Override

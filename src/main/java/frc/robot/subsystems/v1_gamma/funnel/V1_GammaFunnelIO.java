@@ -3,7 +3,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FunnelIO {
+public interface V1_GammaFunnelIO {
   @AutoLog
   public static class FunnelIOInputs {
     public Rotation2d serializerPosition = new Rotation2d();
