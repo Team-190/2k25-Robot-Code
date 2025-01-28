@@ -59,7 +59,9 @@ public class V1_GammaElevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () -> io.setPosition(V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                () ->
+                    io.setPosition(
+                        V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**

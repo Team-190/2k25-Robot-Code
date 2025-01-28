@@ -2,7 +2,7 @@ package frc.robot.subsystems.v1_gamma.manipulator;
 
 import frc.robot.util.LoggedTunableNumber;
 
-public class ManipulatorConstants {
+public class V1_GammaManipulatorConstants {
   public static final int MANIPULATOR_CAN_ID = 1;
   public static final int CORAL_SENSOR_ID = 2;
   public static final double SUPPLY_CURRENT_LIMIT = 40;

@@ -3,7 +3,7 @@ package frc.robot.subsystems.v1_gamma.manipulator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ManipulatorIO {
+public interface V1_GammaManipulatorIO {
   @AutoLog
   public static class ManipulatorIOInputs {
     public Rotation2d position = new Rotation2d();

@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class ManipulatorIOTalonFX implements ManipulatorIO {
+public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final TalonFX manipulator;
 
   private final TalonFXConfiguration manipulatorConfig;
@@ -32,17 +32,18 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private final VoltageOut voltageRequest;
 
-  public ManipulatorIOTalonFX() {
-    manipulator = new TalonFX(ManipulatorConstants.MANIPULATOR_CAN_ID);
+  public V1_GammaManipulatorIOTalonFX() {
+    manipulator = new TalonFX(V1_GammaManipulatorConstants.MANIPULATOR_CAN_ID);
 
     manipulatorConfig = new TalonFXConfiguration();
     manipulatorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    manipulatorConfig.CurrentLimits.SupplyCurrentLimit = ManipulatorConstants.SUPPLY_CURRENT_LIMIT;
+    manipulatorConfig.CurrentLimits.SupplyCurrentLimit =
+        V1_GammaManipulatorConstants.SUPPLY_CURRENT_LIMIT;
     manipulatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> manipulator.getConfigurator().apply(manipulatorConfig, 0.25));
 
-    coralSensor = new DigitalInput(ManipulatorConstants.CORAL_SENSOR_ID);
+    coralSensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
 
     manipulatorPositionRotations = manipulator.getPosition();
     manipulatorVelocityRotationsPerSecond = manipulator.getVelocity();
@@ -87,7 +88,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         inputs.manipulatorHasCoral
             ? coralSensor.get()
             : manipulatorTorqueCurrentAmps.getValueAsDouble()
-                >= ManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+                >= V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   @Override

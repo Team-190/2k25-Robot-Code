@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class Manipulator extends SubsystemBase {
-  private final ManipulatorIO io;
+public class V1_GammaManipulator extends SubsystemBase {
+  private final V1_GammaManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  public Manipulator(ManipulatorIO io) {
+  public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
   }
@@ -24,11 +24,11 @@ public class Manipulator extends SubsystemBase {
   }
 
   public Command intakeCoral() {
-    return runManipulator(ManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get());
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get());
   }
 
   public Command scoreCoral() {
-    return runManipulator(ManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
   public boolean hasCoral() {

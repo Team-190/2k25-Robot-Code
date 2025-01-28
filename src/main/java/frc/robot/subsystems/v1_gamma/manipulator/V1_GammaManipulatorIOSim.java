@@ -7,12 +7,12 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
-public class ManipulatorIOSim implements ManipulatorIO {
+public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
   private final DCMotorSim manipulatorSim;
 
   private double appliedVolts;
 
-  public ManipulatorIOSim() {
+  public V1_GammaManipulatorIOSim() {
     manipulatorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
