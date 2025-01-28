@@ -18,7 +18,7 @@ public class V1_GammaElevatorConstants {
   public static final Constraints CONSTRAINTS;
 
   static {
-    ELEVATOR_CAN_ID = 0;
+    ELEVATOR_CAN_ID = 20;
     ELEVATOR_GEAR_RATIO = 3.0;
     DRUM_RADIUS = Units.inchesToMeters(2.256);
 
