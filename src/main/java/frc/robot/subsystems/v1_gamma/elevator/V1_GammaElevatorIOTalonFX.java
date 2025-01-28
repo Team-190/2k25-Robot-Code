@@ -52,9 +52,11 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     config.Slot0.kG = V1_GammaElevatorConstants.GAINS.kG().get();
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
-    config.CurrentLimits.SupplyCurrentLimit = V1_GammaElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit =
+        V1_GammaElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = V1_GammaElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit =
+        V1_GammaElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
@@ -138,12 +140,21 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     inputs.positionMeters =
         positionRotations.getValueAsDouble() * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS * 2;
     inputs.velocityMetersPerSecond =
-        velocityRotationsPerSecond.getValueAsDouble() * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS * 2;
+        velocityRotationsPerSecond.getValueAsDouble()
+            * Math.PI
+            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * 2;
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
-        positionSetpointRotations.getValueAsDouble() * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS * 2;
+        positionSetpointRotations.getValueAsDouble()
+            * Math.PI
+            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * 2;
     inputs.positionErrorMeters =
-        positionErrorRotations.getValueAsDouble() * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS * 2;
+        positionErrorRotations.getValueAsDouble()
+            * Math.PI
+            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * 2;
 
     for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts[i].getValueAsDouble();
