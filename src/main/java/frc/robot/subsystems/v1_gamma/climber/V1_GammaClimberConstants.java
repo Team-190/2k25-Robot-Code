@@ -10,7 +10,8 @@ public class V1_GammaClimberConstants {
   public static final double CLIMBER_SUPPLY_CURRENT_LIMIT;
   public static final double CLIMBER_STATOR_CURRENT_LIMIT;
 
-  public static final double CLIMBER_CLIMBED_CURRENT;
+  public static final double
+      CLIMBER_CLIMBED_CURRENT; // Current draw used to determine when the robot has climbed.
 
   public static final double GEAR_RATIO;
   public static final double GEARBOX_EFFICIENCY;
@@ -28,5 +29,4 @@ public class V1_GammaClimberConstants {
     GEAR_RATIO = 1.0;
     GEARBOX_EFFICIENCY = 0.81;
   }
-  
 }
