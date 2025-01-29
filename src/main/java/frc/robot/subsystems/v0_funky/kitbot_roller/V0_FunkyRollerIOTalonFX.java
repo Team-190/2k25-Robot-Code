@@ -35,7 +35,7 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.CurrentLimits.SupplyCurrentLimit = V0_FunkyRollerConstants.SupplyCurrentLimit;
+    config.CurrentLimits.SupplyCurrentLimit = V0_FunkyRollerConstants.SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));

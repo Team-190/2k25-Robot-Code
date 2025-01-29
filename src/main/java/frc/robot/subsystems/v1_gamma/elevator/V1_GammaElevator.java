@@ -11,20 +11,20 @@ public class V1_GammaElevator extends SubsystemBase {
   private final V1_GammaElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
-  private ElevatorPositions position;
   private final KSCharacterization characterizationRoutine;
 
+  private ElevatorPositions position;
   private boolean isClosedLoop;
 
   public V1_GammaElevator(V1_GammaElevatorIO io) {
     this.io = io;
     inputs = new ElevatorIOInputsAutoLogged();
 
-    position = ElevatorPositions.STOW;
-
-    isClosedLoop = true;
     characterizationRoutine =
-        new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
+    new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
+
+    position = ElevatorPositions.STOW;
+    isClosedLoop = true;
   }
 
   @Override
@@ -45,7 +45,7 @@ public class V1_GammaElevator extends SubsystemBase {
    * @param position The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(V1_GammaElevatorConstants.ElevatorPositions position) {
+  public Command setPosition(ElevatorPositions position) {
     return runOnce(
         () -> {
           isClosedLoop = true;
