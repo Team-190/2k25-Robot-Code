@@ -21,7 +21,7 @@ public class V1_GammaElevator extends SubsystemBase {
     inputs = new ElevatorIOInputsAutoLogged();
 
     characterizationRoutine =
-    new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
+        new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
 
     position = ElevatorPositions.STOW;
     isClosedLoop = true;

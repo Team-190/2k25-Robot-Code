@@ -21,7 +21,7 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final TalonFX talonFX;
 
   private final TalonFXConfiguration config;
-  
+
   private final DigitalInput sensor;
 
   private final StatusSignal<Angle> positionRotations;

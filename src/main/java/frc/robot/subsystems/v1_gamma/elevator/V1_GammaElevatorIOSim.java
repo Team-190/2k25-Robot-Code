@@ -27,7 +27,7 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
             V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
             true,
             V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
-            
+
     controller =
         new ProfiledPIDController(
             V1_GammaElevatorConstants.GAINS.kP().get(),
