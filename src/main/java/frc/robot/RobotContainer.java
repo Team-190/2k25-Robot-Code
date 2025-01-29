@@ -191,8 +191,8 @@ public class RobotContainer {
 
     driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.getOperatorInputData().setCurrentReefPost(ReefPost.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.getOperatorInputData().setCurrentReefPost(ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {

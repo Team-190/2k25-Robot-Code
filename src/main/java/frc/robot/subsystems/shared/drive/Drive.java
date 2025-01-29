@@ -60,8 +60,6 @@ public class Drive extends SubsystemBase {
 
   @Getter private final AutoFactory autoFactory;
 
-  @Setter private boolean useTwerkDrive = false;
-
   static {
     odometryLock = new ReentrantLock();
   }
@@ -358,12 +356,6 @@ public class Drive extends SubsystemBase {
             yFF + yFeedback,
             rotationFF + rotationFeedback,
             Rotation2d.fromRadians(sample.heading));
-
-    if (!useTwerkDrive) {
-      runVelocity(velocity);
-      return;
-    }
-
     List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 
     for (int i = 0; i < 4; i++) {

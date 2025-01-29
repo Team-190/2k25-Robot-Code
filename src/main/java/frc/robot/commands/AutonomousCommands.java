@@ -20,11 +20,11 @@ public class AutonomousCommands {
             Commands.sequence(
                 traj.resetOdometry(),
                 // traj.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.getOperatorInputData().setCurrentReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj2.cmd(),
                 traj3.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.getOperatorInputData().setCurrentReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return test;

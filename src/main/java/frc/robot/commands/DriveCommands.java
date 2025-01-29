@@ -68,9 +68,9 @@ public final class DriveCommands {
             0.0,
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
 
-    autoHeadingController = new PIDController(5.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
-    autoXController = new PIDController(10.0, 0.0, 0.0);
-    autoYController = new PIDController(10.0, 0.0, 0.0);
+    autoHeadingController = new PIDController(DriveConstants.AUTO_GAINS.rotation_Kp().get(), 0.0, DriveConstants.AUTO_GAINS.rotation_Kd().get(), Constants.LOOP_PERIOD_SECONDS);
+    autoXController = new PIDController(DriveConstants.AUTO_GAINS.translation_Kp().get(), 0.0, 0.0);
+    autoYController = new PIDController(DriveConstants.AUTO_GAINS.translation_Kp().get(), 0.0, DriveConstants.AUTO_GAINS.translation_Kd().get());
 
     alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
     alignHeadingController.setTolerance(Units.degreesToRadians(1.0));
