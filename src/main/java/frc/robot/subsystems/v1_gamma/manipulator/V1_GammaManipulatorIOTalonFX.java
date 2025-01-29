@@ -18,10 +18,10 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
-  private final TalonFX manipulator;
+  private final TalonFX talonFX;
 
-  private final TalonFXConfiguration manipulatorConfig;
-  private final DigitalInput coralSensor;
+  private final TalonFXConfiguration config;
+  private final DigitalInput sensor;
 
   private final StatusSignal<Angle> manipulatorPositionRotations;
   private final StatusSignal<AngularVelocity> manipulatorVelocityRotationsPerSecond;
@@ -33,24 +33,23 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final VoltageOut voltageRequest;
 
   public V1_GammaManipulatorIOTalonFX() {
-    manipulator = new TalonFX(V1_GammaManipulatorConstants.MANIPULATOR_CAN_ID);
+    talonFX = new TalonFX(V1_GammaManipulatorConstants.MANIPULATOR_CAN_ID);
 
-    manipulatorConfig = new TalonFXConfiguration();
-    manipulatorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    manipulatorConfig.CurrentLimits.SupplyCurrentLimit =
-        V1_GammaManipulatorConstants.SUPPLY_CURRENT_LIMIT;
-    manipulatorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config = new TalonFXConfiguration();
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.CurrentLimits.SupplyCurrentLimit = V1_GammaManipulatorConstants.SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    tryUntilOk(5, () -> manipulator.getConfigurator().apply(manipulatorConfig, 0.25));
+    tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
 
-    coralSensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
+    sensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
 
-    manipulatorPositionRotations = manipulator.getPosition();
-    manipulatorVelocityRotationsPerSecond = manipulator.getVelocity();
-    manipulatorAppliedVoltage = manipulator.getMotorVoltage();
-    manipulatorSupplyCurrentAmps = manipulator.getSupplyCurrent();
-    manipulatorTorqueCurrentAmps = manipulator.getTorqueCurrent();
-    manipulatorTemperatureCelsius = manipulator.getDeviceTemp();
+    manipulatorPositionRotations = talonFX.getPosition();
+    manipulatorVelocityRotationsPerSecond = talonFX.getVelocity();
+    manipulatorAppliedVoltage = talonFX.getMotorVoltage();
+    manipulatorSupplyCurrentAmps = talonFX.getSupplyCurrent();
+    manipulatorTorqueCurrentAmps = talonFX.getTorqueCurrent();
+    manipulatorTemperatureCelsius = talonFX.getDeviceTemp();
 
     voltageRequest = new VoltageOut(0);
 
@@ -63,7 +62,7 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
         manipulatorTorqueCurrentAmps,
         manipulatorTemperatureCelsius);
 
-    manipulator.optimizeBusUtilization();
+    talonFX.optimizeBusUtilization();
   }
 
   @Override
@@ -84,15 +83,15 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
     inputs.torqueCurrentAmps = manipulatorTorqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = manipulatorTemperatureCelsius.getValueAsDouble();
 
-    inputs.manipulatorHasCoral =
-        inputs.manipulatorHasCoral
-            ? coralSensor.get()
+    inputs.hasCoral =
+        inputs.hasCoral
+            ? sensor.get()
             : manipulatorTorqueCurrentAmps.getValueAsDouble()
                 >= V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   @Override
   public void setVoltage(double volts) {
-    manipulator.setControl(voltageRequest.withOutput(volts));
+    talonFX.setControl(voltageRequest.withOutput(volts));
   }
 }

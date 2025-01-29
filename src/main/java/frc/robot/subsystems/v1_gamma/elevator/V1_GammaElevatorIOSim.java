@@ -8,15 +8,16 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
 public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
-  private ElevatorSim elevatorSim;
-  private double appliedVolts;
-  private double positionGoalMeters;
+  private ElevatorSim sim;
 
   private ProfiledPIDController controller;
   private ElevatorFeedforward feedforward;
 
+  private double appliedVolts;
+  private double positionGoalMeters;
+
   public V1_GammaElevatorIOSim() {
-    elevatorSim =
+    sim =
         new ElevatorSim(
             V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
             V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO,
@@ -47,18 +48,18 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    elevatorSim.setInputVoltage(appliedVolts);
-    elevatorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.positionMeters = elevatorSim.getPositionMeters();
-    inputs.velocityMetersPerSecond = elevatorSim.getVelocityMetersPerSecond();
+    inputs.positionMeters = sim.getPositionMeters();
+    inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters = controller.getSetpoint().position;
     inputs.positionErrorMeters = controller.getPositionError();
     for (int i = 0; i < 4; i++) {
       inputs.appliedVolts[i] = appliedVolts;
-      inputs.supplyCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
-      inputs.torqueCurrentAmps[i] = elevatorSim.getCurrentDrawAmps();
+      inputs.supplyCurrentAmps[i] = sim.getCurrentDrawAmps();
+      inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.temperatureCelsius[i] = 0.0;
     }
   }
@@ -70,18 +71,14 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
 
   @Override
   public void setPosition(double position) {
-    elevatorSim.setState(position, 0);
+    sim.setState(position, 0);
   }
 
   @Override
   public void setPositionGoal(double position) {
     positionGoalMeters = position;
     appliedVolts =
-        MathUtil.clamp(
-            controller.calculate(position)
-                + feedforward.calculate(controller.getSetpoint().position),
-            -12,
-            12);
+        controller.calculate(position) + feedforward.calculate(controller.getSetpoint().position);
   }
 
   @Override

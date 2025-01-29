@@ -10,9 +10,11 @@ import org.littletonrobotics.junction.Logger;
 public class V1_GammaElevator extends SubsystemBase {
   private final V1_GammaElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
-  private V1_GammaElevatorConstants.ElevatorPositions position;
+
+  private ElevatorPositions position;
+  private final KSCharacterization characterizationRoutine;
+
   private boolean isClosedLoop;
-  private final KSCharacterization ksRoutine;
 
   public V1_GammaElevator(V1_GammaElevatorIO io) {
     this.io = io;
@@ -21,7 +23,8 @@ public class V1_GammaElevator extends SubsystemBase {
     position = ElevatorPositions.STOW;
 
     isClosedLoop = true;
-    ksRoutine = new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
+    characterizationRoutine =
+        new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
   }
 
   @Override
@@ -69,8 +72,8 @@ public class V1_GammaElevator extends SubsystemBase {
    *
    * @return A command that runs the system identification routine.
    */
-  public Command runSysId() {
-    return Commands.sequence(runOnce(() -> isClosedLoop = false), ksRoutine);
+  public Command runCharacterization() {
+    return Commands.sequence(runOnce(() -> isClosedLoop = false), characterizationRoutine);
   }
 
   /**
@@ -88,7 +91,7 @@ public class V1_GammaElevator extends SubsystemBase {
    * @return The feedforward characterization velocity.
    */
   public double getFFCharacterizationVelocity() {
-    return inputs.positionMeters
+    return inputs.velocityMetersPerSecond
         * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO
         / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS);
   }

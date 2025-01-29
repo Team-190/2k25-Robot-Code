@@ -19,19 +19,21 @@ public class V1_GammaManipulator extends SubsystemBase {
     Logger.processInputs("Manipulator", inputs);
   }
 
+  private boolean hasCoral() {
+    return inputs.hasCoral;
+  }
+
   public Command runManipulator(double volts) {
     return this.run(() -> io.setVoltage(volts));
   }
 
   public Command intakeCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get());
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get())
+        .until(() -> hasCoral());
   }
 
   public Command scoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
-  }
-
-  public boolean hasCoral() {
-    return inputs.manipulatorHasCoral;
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
+        .until(() -> hasCoral());
   }
 }
