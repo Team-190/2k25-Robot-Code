@@ -21,12 +21,12 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
 
   private final TalonFXConfiguration config;
 
-  private final StatusSignal<Angle> rollerPositionRotations;
-  private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> rollerAppliedVoltage;
-  private final StatusSignal<Current> rollerSupplyCurrentAmps;
-  private final StatusSignal<Current> rollerTorqueCurrentAmps;
-  private final StatusSignal<Temperature> rollerTemperatureCelcius;
+  private final StatusSignal<Angle> positionRotations;
+  private final StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  private final StatusSignal<Voltage> appliedVoltage;
+  private final StatusSignal<Current> supplyCurrentAmps;
+  private final StatusSignal<Current> torqueCurrentAmps;
+  private final StatusSignal<Temperature> temperatureCelcius;
 
   private final VoltageOut voltageRequest;
 
@@ -40,23 +40,23 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
 
     tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
 
-    rollerPositionRotations = talonFX.getPosition();
-    rollerVelocityRotationsPerSecond = talonFX.getVelocity();
-    rollerAppliedVoltage = talonFX.getMotorVoltage();
-    rollerSupplyCurrentAmps = talonFX.getSupplyCurrent();
-    rollerTorqueCurrentAmps = talonFX.getTorqueCurrent();
-    rollerTemperatureCelcius = talonFX.getDeviceTemp();
+    positionRotations = talonFX.getPosition();
+    velocityRotationsPerSecond = talonFX.getVelocity();
+    appliedVoltage = talonFX.getMotorVoltage();
+    supplyCurrentAmps = talonFX.getSupplyCurrent();
+    torqueCurrentAmps = talonFX.getTorqueCurrent();
+    temperatureCelcius = talonFX.getDeviceTemp();
 
     voltageRequest = new VoltageOut(0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        rollerPositionRotations,
-        rollerVelocityRotationsPerSecond,
-        rollerAppliedVoltage,
-        rollerSupplyCurrentAmps,
-        rollerTorqueCurrentAmps,
-        rollerTemperatureCelcius);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVoltage,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelcius);
 
     talonFX.optimizeBusUtilization();
   }
@@ -64,20 +64,20 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
   @Override
   public void updateInputs(RollerIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        rollerPositionRotations,
-        rollerVelocityRotationsPerSecond,
-        rollerAppliedVoltage,
-        rollerSupplyCurrentAmps,
-        rollerTorqueCurrentAmps,
-        rollerTemperatureCelcius);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVoltage,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelcius);
 
-    inputs.position = Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
+    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
-        Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.appliedVolts = rollerAppliedVoltage.getValueAsDouble();
-    inputs.supplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
-    inputs.torqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
-    inputs.temperatureCelsius = rollerTemperatureCelcius.getValueAsDouble();
+        Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
+    inputs.appliedVolts = appliedVoltage.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelcius.getValueAsDouble();
   }
 
   @Override

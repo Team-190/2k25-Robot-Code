@@ -23,12 +23,12 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final TalonFXConfiguration config;
   private final DigitalInput sensor;
 
-  private final StatusSignal<Angle> manipulatorPositionRotations;
-  private final StatusSignal<AngularVelocity> manipulatorVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> manipulatorAppliedVoltage;
-  private final StatusSignal<Current> manipulatorSupplyCurrentAmps;
-  private final StatusSignal<Current> manipulatorTorqueCurrentAmps;
-  private final StatusSignal<Temperature> manipulatorTemperatureCelsius;
+  private final StatusSignal<Angle> positionRotations;
+  private final StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  private final StatusSignal<Voltage> appliedVoltage;
+  private final StatusSignal<Current> supplyCurrentAmps;
+  private final StatusSignal<Current> torqueCurrentAmps;
+  private final StatusSignal<Temperature> temperatureCelsius;
 
   private final VoltageOut voltageRequest;
 
@@ -44,23 +44,23 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
 
     sensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
 
-    manipulatorPositionRotations = talonFX.getPosition();
-    manipulatorVelocityRotationsPerSecond = talonFX.getVelocity();
-    manipulatorAppliedVoltage = talonFX.getMotorVoltage();
-    manipulatorSupplyCurrentAmps = talonFX.getSupplyCurrent();
-    manipulatorTorqueCurrentAmps = talonFX.getTorqueCurrent();
-    manipulatorTemperatureCelsius = talonFX.getDeviceTemp();
+    positionRotations = talonFX.getPosition();
+    velocityRotationsPerSecond = talonFX.getVelocity();
+    appliedVoltage = talonFX.getMotorVoltage();
+    supplyCurrentAmps = talonFX.getSupplyCurrent();
+    torqueCurrentAmps = talonFX.getTorqueCurrent();
+    temperatureCelsius = talonFX.getDeviceTemp();
 
     voltageRequest = new VoltageOut(0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        manipulatorPositionRotations,
-        manipulatorVelocityRotationsPerSecond,
-        manipulatorAppliedVoltage,
-        manipulatorSupplyCurrentAmps,
-        manipulatorTorqueCurrentAmps,
-        manipulatorTemperatureCelsius);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVoltage,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelsius);
 
     talonFX.optimizeBusUtilization();
   }
@@ -68,25 +68,25 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        manipulatorPositionRotations,
-        manipulatorVelocityRotationsPerSecond,
-        manipulatorAppliedVoltage,
-        manipulatorSupplyCurrentAmps,
-        manipulatorTorqueCurrentAmps,
-        manipulatorTemperatureCelsius);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVoltage,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelsius);
 
-    inputs.position = Rotation2d.fromRotations(manipulatorPositionRotations.getValueAsDouble());
+    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
-        Units.rotationsToRadians(manipulatorVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.appliedVolts = manipulatorAppliedVoltage.getValueAsDouble();
-    inputs.supplyCurrentAmps = manipulatorSupplyCurrentAmps.getValueAsDouble();
-    inputs.torqueCurrentAmps = manipulatorTorqueCurrentAmps.getValueAsDouble();
-    inputs.temperatureCelsius = manipulatorTemperatureCelsius.getValueAsDouble();
+        Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
+    inputs.appliedVolts = appliedVoltage.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
+    inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
 
     inputs.hasCoral =
         inputs.hasCoral
             ? sensor.get()
-            : manipulatorTorqueCurrentAmps.getValueAsDouble()
+            : torqueCurrentAmps.getValueAsDouble()
                 >= V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
