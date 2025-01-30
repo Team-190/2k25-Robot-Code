@@ -34,8 +34,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   private StatusSignal<?>[] statusSignals;
 
-  private MotionMagicTorqueCurrentFOC currentPositionControlRequest;
-  private TorqueCurrentFOC torqueCurrentControlRequest;
+  private MotionMagicTorqueCurrentFOC positionTorqueCurrentRequest;
+  private TorqueCurrentFOC torqueCurrentRequest;
 
   public V1_GammaElevatorIOTalonFX() {
     talonFX = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID);
@@ -77,12 +77,12 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
         V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get();
 
     talonFX.getConfigurator().apply(config);
-    for (TalonFX follow : followTalonFX) {
-      follow.getConfigurator().apply(config);
-      follow.setControl(
+    for (TalonFX follower : followTalonFX) {
+      follower.getConfigurator().apply(config);
+      follower.setControl(
           new Follower(
               talonFX.getDeviceID(),
-              talonFX.getDeviceID() % 2 == 0 ? false : true)); // odd IDs are inverted
+              follower.getDeviceID() % 2 == 0 ? false : true)); // odd IDs are inverted
     }
 
     positionRotations = talonFX.getPosition();
@@ -129,8 +129,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
       follow.optimizeBusUtilization();
     }
 
-    torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
-    currentPositionControlRequest = new MotionMagicTorqueCurrentFOC(0.0);
+    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
+    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0);
   }
 
   @Override
@@ -166,7 +166,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   @Override
   public void setCurrent(double amps) {
-    talonFX.setControl(torqueCurrentControlRequest.withOutput(amps));
+    talonFX.setControl(torqueCurrentRequest.withOutput(amps));
   }
 
   @Override
@@ -178,7 +178,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   public void setPositionGoal(double meters) {
     positionGoalMeters = meters;
     talonFX.setControl(
-        currentPositionControlRequest.withPosition(
+        positionTorqueCurrentRequest.withPosition(
             meters / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)));
   }
 
