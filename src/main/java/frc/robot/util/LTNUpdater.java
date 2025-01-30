@@ -5,6 +5,8 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -40,6 +42,34 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+  }
+
+  public static final void updateFunnel(V1_GammaFunnel funnel) {
+    LoggedTunableNumber.ifChanged(
+        funnel.hashCode(),
+        () -> {
+          funnel.updateGains(
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
+          funnel.updateConstraints(
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+          funnel.updateThresholds(
+              V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get(),
+              V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get());
+        },
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY(),
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS(),
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
   }
 
   public static final void updateElevator(V1_GammaElevator elevator) {

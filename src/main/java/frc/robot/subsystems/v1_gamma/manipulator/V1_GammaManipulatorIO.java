@@ -12,7 +12,7 @@ public interface V1_GammaManipulatorIO {
     public double supplyCurrentAmps = 0.0;
     public double torqueCurrentAmps = 0.0;
     public double temperatureCelsius = 0.0;
-    public boolean manipulatorHasCoral = false;
+    public boolean hasCoral = false;
   }
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}

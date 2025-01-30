@@ -7,15 +7,15 @@ public class V1_GammaManipulatorConstants {
   public static final int CORAL_SENSOR_ID = 2;
   public static final double SUPPLY_CURRENT_LIMIT = 40;
   public static final double MANIPULATOR_CURRENT_THRESHOLD = 0;
-  public static final VoltageTunableNumbers VOLTAGES;
+  public static final Voltages VOLTAGES;
 
   static {
     VOLTAGES =
-        new VoltageTunableNumbers(
-            new LoggedTunableNumber("Manipulator/IntakeVolts", 12.0),
-            new LoggedTunableNumber("Manipulator/ScoreVolts", -12.0));
+        new Voltages(
+            new LoggedTunableNumber("Manipulator/Intake Volts", 12.0),
+            new LoggedTunableNumber("Manipulator/Score Volts", -12.0));
   }
 
-  public static final record VoltageTunableNumbers(
+  public static final record Voltages(
       LoggedTunableNumber INTAKE_VOLTS, LoggedTunableNumber SCORE_VOLTS) {}
 }

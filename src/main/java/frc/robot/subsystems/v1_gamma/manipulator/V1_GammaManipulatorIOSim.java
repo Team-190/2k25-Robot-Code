@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
-  private final DCMotorSim manipulatorSim;
+  private final DCMotorSim sim;
 
   private double appliedVolts;
 
   public V1_GammaManipulatorIOSim() {
-    manipulatorSim =
+    sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
             DCMotor.getKrakenX60Foc(1));
@@ -23,13 +23,13 @@ public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
-    manipulatorSim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
-    manipulatorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.position = Rotation2d.fromRadians(manipulatorSim.getAngularPositionRad());
-    inputs.velocityRadiansPerSecond = manipulatorSim.getAngularVelocityRadPerSec();
+    inputs.position = Rotation2d.fromRadians(sim.getAngularPositionRad());
+    inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = manipulatorSim.getCurrentDrawAmps();
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps();
   }
 
   public void setVoltage(double volts) {

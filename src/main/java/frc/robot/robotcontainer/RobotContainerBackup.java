@@ -21,6 +21,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -39,6 +40,14 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -47,9 +56,11 @@ public class RobotContainerBackup {
   private Drive drive;
   private Vision vision;
 
-  private V1_GammaElevator elevator;
-
   private V0_FunkyRoller roller;
+
+  private V1_GammaElevator elevator;
+  private V1_GammaFunnel funnel;
+  private V1_GammaManipulator manipulator;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -112,8 +123,10 @@ public class RobotContainerBackup {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           vision = new Vision();
+          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
+          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
+          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -124,6 +137,8 @@ public class RobotContainerBackup {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOSim());
+          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOSim());
+          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOSim());
           vision = new Vision();
           break;
         case V2_DELTA:
@@ -162,11 +177,19 @@ public class RobotContainerBackup {
     if (vision == null) {
       vision = new Vision();
     }
+
+    if (roller == null) {
+      roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+    }
+
     if (elevator == null) {
       elevator = new V1_GammaElevator(new V1_GammaElevatorIO() {});
     }
-    if (roller == null) {
-      roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+    if (funnel == null) {
+      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
+    }
+    if (manipulator == null) {
+      manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIO() {});
     }
 
     switch (Constants.ROBOT) {
@@ -201,14 +224,10 @@ public class RobotContainerBackup {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.alignRobotToAprilTag(
-                drive, RobotState.getCurrentReefPost(), vision.getCameras()));
+    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
@@ -233,10 +252,12 @@ public class RobotContainerBackup {
   }
 
   private void v0_FunkyConfigureAutos() {
+    Command test = AutonomousCommands.test(drive).cmd();
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption("Test", test);
   }
 
   private void v0_WhiplashConfigureAutos() {
@@ -282,6 +303,7 @@ public class RobotContainerBackup {
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
         LTNUpdater.updateElevator(elevator);
+        LTNUpdater.updateFunnel(funnel);
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
