@@ -32,7 +32,6 @@ public abstract class Leds extends VirtualSubsystem {
   private static Leds instance;
 
   // Constants
-  private static int PORT;
   private static int LENGTH;
   protected static final boolean PRIDE_LEDS = false;
   protected static final int MIN_LOOP_CYCLE_COUNT = 10;
@@ -66,7 +65,6 @@ public abstract class Leds extends VirtualSubsystem {
 
   protected Leds(int LENGTH, int PORT) {
     Leds.LENGTH = LENGTH;
-    Leds.PORT = PORT;
     leds = new AddressableLED(PORT);
     buffer = new AddressableLEDBuffer(LENGTH);
     leds.setLength(LENGTH);
