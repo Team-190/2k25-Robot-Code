@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -208,14 +209,10 @@ public class RobotContainer {
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.alignRobotToAprilTag(
-                drive, RobotState.getCurrentReefPost(), vision.getCameras()));
+    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
   }
 
   private void v0_WhiplashConfigureButtonBindings() {
@@ -240,10 +237,12 @@ public class RobotContainer {
   }
 
   private void v0_FunkyConfigureAutos() {
+    Command test = AutonomousCommands.test(drive).cmd();
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption("Test", test);
   }
 
   private void v0_WhiplashConfigureAutos() {
