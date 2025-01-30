@@ -1,7 +1,5 @@
 package frc.robot.robotcontainer;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +21,7 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V1_GammaRobotContainer implements RobotContainer {
   // Subsystems
@@ -114,13 +113,12 @@ public class V1_GammaRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-        LTNUpdater.updateDrive(drive);
-        LTNUpdater.updateElevator(elevator);
+    LTNUpdater.updateDrive(drive);
+    LTNUpdater.updateElevator(elevator);
   }
 
   @Override
   public Command getAutonomousCommand() {
     return autoChooser.get();
   }
-    
 }
