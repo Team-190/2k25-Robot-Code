@@ -27,8 +27,8 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
   private StatusSignal<Current> torqueCurrentAmps;
   private StatusSignal<Temperature> temperatureCelsius;
 
-  private VoltageOut voltageControlRequest;
-  private TorqueCurrentFOC torqueCurrentControlRequest;
+  private VoltageOut voltageRequest;
+  private TorqueCurrentFOC torqueCurrentRequest;
 
   public V1_GammaClimberIOTalonFX() {
     talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID);
@@ -60,8 +60,8 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
         temperatureCelsius);
     talonFX.optimizeBusUtilization();
 
-    voltageControlRequest = new VoltageOut(0.0);
-    torqueCurrentControlRequest = new TorqueCurrentFOC(0.0);
+    voltageRequest = new VoltageOut(0.0);
+    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
   }
 
   @Override
@@ -85,12 +85,12 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
 
   @Override
   public void setVoltage(double volts) {
-    talonFX.setControl(voltageControlRequest.withOutput(volts).withEnableFOC(true));
+    talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
   public void setCurrent(double amps) {
-    talonFX.setControl(torqueCurrentControlRequest.withOutput(amps));
+    talonFX.setControl(torqueCurrentRequest.withOutput(amps));
   }
 
   @Override

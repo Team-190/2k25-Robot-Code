@@ -6,12 +6,12 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class V1_GammaClimberIOSim implements V1_GammaClimberIO {
-  private final DCMotorSim motorSim;
+  private final DCMotorSim sim;
 
   private double appliedVolts;
 
   public V1_GammaClimberIOSim() {
-    motorSim =
+    sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 V1_GammaClimberConstants.MOTOR_CONFIG, 0.004, V1_GammaClimberConstants.GEAR_RATIO),
@@ -22,36 +22,34 @@ public class V1_GammaClimberIOSim implements V1_GammaClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    motorSim.setInputVoltage(appliedVolts);
-    motorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.positionRadians = motorSim.getAngularPositionRad();
-    inputs.velocityRadiansPerSecond = motorSim.getAngularVelocityRadPerSec();
+    inputs.positionRadians = sim.getAngularPositionRad();
+    inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps =
-        motorSim.getCurrentDrawAmps() / V1_GammaClimberConstants.GEARBOX_EFFICIENCY;
-    inputs.torqueCurrentAmps = motorSim.getCurrentDrawAmps();
+        sim.getCurrentDrawAmps() / V1_GammaClimberConstants.GEARBOX_EFFICIENCY;
+    inputs.torqueCurrentAmps = sim.getCurrentDrawAmps();
   }
 
   @Override
   public void setVoltage(double volts) {
-    appliedVolts = MathUtil.clamp(volts, -12, 12);
+    appliedVolts = volts;
   }
 
   @Override
   public void setCurrent(double amps) {
     appliedVolts =
-        MathUtil.clamp(
-            -12,
+        
             ((V1_GammaClimberConstants.MOTOR_CONFIG.KtNMPerAmp
-                        * motorSim.getAngularVelocityRadPerSec())
+                        * sim.getAngularVelocityRadPerSec())
                     / V1_GammaClimberConstants.GEARBOX_EFFICIENCY)
-                + (amps * V1_GammaClimberConstants.MOTOR_CONFIG.rOhms),
-            12);
+                + (amps * V1_GammaClimberConstants.MOTOR_CONFIG.rOhms);
   }
 
   @Override
   public boolean isClimbed() {
-    return motorSim.getAngularVelocityRadPerSec() == 0;
+    return sim.getAngularVelocityRadPerSec() == 0;
   }
 }
