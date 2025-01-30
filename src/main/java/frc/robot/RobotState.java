@@ -150,7 +150,8 @@ public class RobotState {
       }
     }
 
-    Pose2d autoAlignSetpoint = Reef.reefMap.get(closestReefTag).getPost(operatorInputData.currentReefPost());
+    Pose2d autoAlignSetpoint =
+        Reef.reefMap.get(closestReefTag).getPost(operatorInputData.currentReefPost());
     double distanceToSetpoint =
         RobotState.getRobotPoseReef()
             .getTranslation()
@@ -161,11 +162,7 @@ public class RobotState {
 
     reefAlignData =
         new ReefAlignData(
-            closestReefTag,
-            autoAlignSetpoint,
-            distanceToSetpoint,
-            atSetpoint,
-            cameras);
+            closestReefTag, autoAlignSetpoint, distanceToSetpoint, atSetpoint, cameras);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
@@ -173,7 +170,8 @@ public class RobotState {
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
         "RobotState/Reef Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
-        Logger.recordOutput("RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
+    Logger.recordOutput(
+        "RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
     Logger.recordOutput("RobotState/Reef Data/Closest Reef Tag", closestReefTag);
     Logger.recordOutput("RobotState/Reef Data/Reef Setpoint", autoAlignSetpoint);
     Logger.recordOutput("RobotState/Reef Data/Distance to Post", distanceToSetpoint);
@@ -260,18 +258,16 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
+  public static void setReefPost(ReefPost post) {
+    operatorInputData = new OperatorInputData(post);
+  }
+
   public static final record ReefAlignData(
       int closestReefTag,
       Pose2d setpoint,
       double distance,
       boolean atSetpoint,
       Camera... cameras) {}
-  
-      public static final record OperatorInputData(
-        ReefPost currentReefPost
-      ) {
-        public OperatorInputData setCurrentReefPost(ReefPost currentReefPost) {
-          return new OperatorInputData(currentReefPost);
-        }
-      }
+
+  public static final record OperatorInputData(ReefPost currentReefPost) {}
 }
