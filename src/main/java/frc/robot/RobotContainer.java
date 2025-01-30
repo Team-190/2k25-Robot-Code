@@ -40,7 +40,12 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -49,11 +54,11 @@ public class RobotContainer {
   private Drive drive;
   private Vision vision;
 
-  private V1_GammaElevator elevator;
-
   private V0_FunkyRoller roller;
 
+  private V1_GammaElevator elevator;
   private V1_GammaFunnel funnel;
+  private V1_GammaManipulator manipulator;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -116,9 +121,10 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           vision = new Vision();
+          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
+          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -129,6 +135,8 @@ public class RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOSim());
+          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOSim());
+          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOSim());
           vision = new Vision();
           break;
         case V2_DELTA:
@@ -167,14 +175,19 @@ public class RobotContainer {
     if (vision == null) {
       vision = new Vision();
     }
-    if (elevator == null) {
-      elevator = new V1_GammaElevator(new V1_GammaElevatorIO() {});
-    }
+
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
     }
+
+    if (elevator == null) {
+      elevator = new V1_GammaElevator(new V1_GammaElevatorIO() {});
+    }
     if (funnel == null) {
       funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
+    }
+    if (manipulator == null) {
+      manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIO() {});
     }
 
     switch (Constants.ROBOT) {
@@ -287,6 +300,7 @@ public class RobotContainer {
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
+        LTNUpdater.updateElevator(elevator);
         LTNUpdater.updateFunnel(funnel);
         break;
       case V2_DELTA:
