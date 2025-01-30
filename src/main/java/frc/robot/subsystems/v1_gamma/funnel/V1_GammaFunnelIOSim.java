@@ -10,27 +10,25 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
-  public final DCMotorSim serializerMotorSim;
-  public final DCMotorSim rollerMotorSim;
+  public final DCMotorSim serializerSim;
+  public final DCMotorSim rollerSim;
 
   private final ProfiledPIDController serializerController;
   private SimpleMotorFeedforward serializerFeedforward;
 
-  private Rotation2d serializerPositionGoal = new Rotation2d();
-  private double serializerAppliedVolts = 0.0;
-
-  private double rollerAppliedVolts = 0.0;
+  private Rotation2d serializerPositionGoal;
+  private double serializerAppliedVolts;
+  private double rollerAppliedVolts;
 
   public V1_GammaFunnelIOSim() {
-    serializerMotorSim =
+    serializerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor(),
                 V1_GammaFunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
                 V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
             V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor());
-
-    rollerMotorSim =
+    rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 V1_GammaFunnelConstants.ROLLER_PARAMS.motor(),
@@ -46,36 +44,39 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
             new TrapezoidProfile.Constraints(
                 V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
                 V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
-
     serializerFeedforward =
         new SimpleMotorFeedforward(
             V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
             V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
             V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
+
+    serializerPositionGoal = new Rotation2d();
+    serializerAppliedVolts = 0.0;
+    rollerAppliedVolts = 0.0;
   }
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    serializerMotorSim.setInputVoltage(serializerAppliedVolts);
-    rollerMotorSim.setInputVoltage(rollerAppliedVolts);
-    serializerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
-    rollerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    serializerSim.setInputVoltage(MathUtil.clamp(serializerAppliedVolts, -12.0, 12.0));
+    rollerSim.setInputVoltage(MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0));
+    serializerSim.update(Constants.LOOP_PERIOD_SECONDS);
+    rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.serializerPosition =
-        Rotation2d.fromRotations(serializerMotorSim.getAngularPositionRotations());
-    inputs.serializerVelocityRadiansPerSecond = serializerMotorSim.getAngularVelocityRadPerSec();
+        Rotation2d.fromRotations(serializerSim.getAngularPositionRotations());
+    inputs.serializerVelocityRadiansPerSecond = serializerSim.getAngularVelocityRadPerSec();
     inputs.serializerAppliedVolts = serializerAppliedVolts;
-    inputs.serializerSupplyCurrentAmps = serializerMotorSim.getCurrentDrawAmps();
+    inputs.serializerSupplyCurrentAmps = serializerSim.getCurrentDrawAmps();
     inputs.serializerGoal = (serializerPositionGoal);
     inputs.serializerPositionSetpoint =
         Rotation2d.fromRadians(serializerController.getSetpoint().position);
     inputs.serializerPositionError =
         Rotation2d.fromRadians(serializerController.getPositionError());
 
-    inputs.rollerPosition = Rotation2d.fromRadians(rollerMotorSim.getAngularPositionRad());
-    inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
+    inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
+    inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();
     inputs.rollerAppliedVolts = rollerAppliedVolts;
-    inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
+    inputs.rollerSupplyCurrentAmps = rollerSim.getCurrentDrawAmps();
   }
 
   @Override
@@ -92,11 +93,8 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   public void setSerializerPosition(Rotation2d position) {
     serializerPositionGoal = position;
     serializerAppliedVolts =
-        MathUtil.clamp(
-            serializerController.calculate(position.getRadians())
-                + serializerFeedforward.calculate(position.getRadians()),
-            -12,
-            12);
+        serializerController.calculate(position.getRadians())
+            + serializerFeedforward.calculate(position.getRadians());
   }
 
   @Override

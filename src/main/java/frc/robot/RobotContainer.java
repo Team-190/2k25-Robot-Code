@@ -39,10 +39,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private Drive drive;
-  private V1_GammaFunnel funnel;
   private Vision vision;
 
   private V0_FunkyRoller roller;
+
+  private V1_GammaFunnel funnel;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -155,11 +156,11 @@ public class RobotContainer {
     if (vision == null) {
       vision = new Vision();
     }
-    if (funnel == null) {
-      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
-    }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+    }
+    if (funnel == null) {
+      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
     }
 
     switch (Constants.ROBOT) {

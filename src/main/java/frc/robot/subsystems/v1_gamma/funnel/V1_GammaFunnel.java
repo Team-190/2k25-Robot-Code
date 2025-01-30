@@ -15,26 +15,30 @@ import org.littletonrobotics.junction.Logger;
 public class V1_GammaFunnel extends SubsystemBase {
   private final V1_GammaFunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
-  private boolean isClosedLoop;
-  private final SysIdRoutine serializerCharacterizationRoutine;
+
+  private final SysIdRoutine characterizationRoutine;
   private FunnelState goal;
-  private boolean climbing;
+
+  private boolean isClimbing;
+  private boolean isClosedLoop;
 
   public V1_GammaFunnel(V1_GammaFunnelIO io) {
     this.io = io;
     inputs = new FunnelIOInputsAutoLogged();
 
-    isClosedLoop = true;
-
-    serializerCharacterizationRoutine =
+    characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
-                Seconds.of(10),
+                Seconds.of(3),
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setSerializerVoltage(volts.in(Volts)), null, this));
+    goal = FunnelState.OPENED;
+
+    isClimbing = false;
+    isClosedLoop = true;
   }
 
   @Override
@@ -43,10 +47,10 @@ public class V1_GammaFunnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      setSerializerPosition(goal.getAngle());
+      setSerializerPosition(goal.getAngle().getRadians());
     }
 
-    if (climbing) {
+    if (isClimbing) {
       setSerializerGoal(FunnelState.CLIMB);
     } else {
       if (hasCoral()) {
@@ -64,7 +68,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return A command to set the climbing state.
    */
   public Command setClimbing(boolean climbing) {
-    return runOnce(() -> this.climbing = climbing);
+    return runOnce(() -> this.isClimbing = climbing);
   }
 
   /**
@@ -139,13 +143,13 @@ public class V1_GammaFunnel extends SubsystemBase {
   public Command sysIdRoutine() {
     return Commands.sequence(
         runOnce(() -> isClosedLoop = false),
-        serializerCharacterizationRoutine.quasistatic(Direction.kForward),
+        characterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(4),
-        serializerCharacterizationRoutine.quasistatic(Direction.kReverse),
+        characterizationRoutine.quasistatic(Direction.kReverse),
         Commands.waitSeconds(4),
-        serializerCharacterizationRoutine.dynamic(Direction.kForward),
+        characterizationRoutine.dynamic(Direction.kForward),
         Commands.waitSeconds(4),
-        serializerCharacterizationRoutine.dynamic(Direction.kReverse));
+        characterizationRoutine.dynamic(Direction.kReverse));
   }
 
   /**
