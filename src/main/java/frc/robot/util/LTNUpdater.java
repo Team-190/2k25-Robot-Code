@@ -3,10 +3,10 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -70,6 +70,7 @@ public class LTNUpdater {
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY(),
         V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS(),
         V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
+  }
 
   public static final void updateElevator(V1_GammaElevator elevator) {
     LoggedTunableNumber.ifChanged(
