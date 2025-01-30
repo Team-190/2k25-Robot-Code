@@ -29,7 +29,7 @@ public class V1_GammaClimberConstants {
 
     CLIMBER_CLIMBED_CURRENT = 0.0;
 
-    GEAR_RATIO = 24.0; 
+    GEAR_RATIO = 24.0;
     GEARBOX_EFFICIENCY = 0.81;
 
     SPOOL_DIAMETER = Units.inchesToMeters(1.78);

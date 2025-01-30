@@ -41,11 +41,9 @@ public class V1_GammaClimberIOSim implements V1_GammaClimberIO {
   @Override
   public void setCurrent(double amps) {
     appliedVolts =
-        
-            ((V1_GammaClimberConstants.MOTOR_CONFIG.KtNMPerAmp
-                        * sim.getAngularVelocityRadPerSec())
-                    / V1_GammaClimberConstants.GEARBOX_EFFICIENCY)
-                + (amps * V1_GammaClimberConstants.MOTOR_CONFIG.rOhms);
+        ((V1_GammaClimberConstants.MOTOR_CONFIG.KtNMPerAmp * sim.getAngularVelocityRadPerSec())
+                / V1_GammaClimberConstants.GEARBOX_EFFICIENCY)
+            + (amps * V1_GammaClimberConstants.MOTOR_CONFIG.rOhms);
   }
 
   @Override
