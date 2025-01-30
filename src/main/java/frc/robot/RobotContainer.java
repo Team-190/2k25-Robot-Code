@@ -33,6 +33,9 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
@@ -48,6 +51,8 @@ public class RobotContainer {
   private V1_GammaElevator elevator;
 
   private V0_FunkyRoller roller;
+
+  private V1_GammaFunnel funnel;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -112,6 +117,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           vision = new Vision();
+          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           break;
         case V1_GAMMA_SIM:
           drive =
@@ -165,6 +171,9 @@ public class RobotContainer {
     }
     if (roller == null) {
       roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+    }
+    if (funnel == null) {
+      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
     }
 
     switch (Constants.ROBOT) {
@@ -279,6 +288,7 @@ public class RobotContainer {
       case V1_GAMMA:
       case V1_GAMMA_SIM:
         LTNUpdater.updateDrive(drive);
+        LTNUpdater.updateFunnel(funnel);
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
