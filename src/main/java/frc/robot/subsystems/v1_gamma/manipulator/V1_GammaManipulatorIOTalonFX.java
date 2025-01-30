@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v0_funky.kitbot_roller;
+package frc.robot.subsystems.v1_gamma.manipulator;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -15,37 +15,42 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
+public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final TalonFX talonFX;
 
   private final TalonFXConfiguration config;
+
+  private final DigitalInput sensor;
 
   private final StatusSignal<Angle> positionRotations;
   private final StatusSignal<AngularVelocity> velocityRotationsPerSecond;
   private final StatusSignal<Voltage> appliedVoltage;
   private final StatusSignal<Current> supplyCurrentAmps;
   private final StatusSignal<Current> torqueCurrentAmps;
-  private final StatusSignal<Temperature> temperatureCelcius;
+  private final StatusSignal<Temperature> temperatureCelsius;
 
   private final VoltageOut voltageRequest;
 
-  public V0_FunkyRollerIOTalonFX() {
-    talonFX = new TalonFX(V0_FunkyRollerConstants.ROLLER_CAN_ID);
+  public V1_GammaManipulatorIOTalonFX() {
+    talonFX = new TalonFX(V1_GammaManipulatorConstants.MANIPULATOR_CAN_ID);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.CurrentLimits.SupplyCurrentLimit = V0_FunkyRollerConstants.SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = V1_GammaManipulatorConstants.SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
+
+    sensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
 
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
     appliedVoltage = talonFX.getMotorVoltage();
     supplyCurrentAmps = talonFX.getSupplyCurrent();
     torqueCurrentAmps = talonFX.getTorqueCurrent();
-    temperatureCelcius = talonFX.getDeviceTemp();
+    temperatureCelsius = talonFX.getDeviceTemp();
 
     voltageRequest = new VoltageOut(0);
 
@@ -56,20 +61,20 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
         appliedVoltage,
         supplyCurrentAmps,
         torqueCurrentAmps,
-        temperatureCelcius);
+        temperatureCelsius);
 
     talonFX.optimizeBusUtilization();
   }
 
   @Override
-  public void updateInputs(RollerIOInputs inputs) {
+  public void updateInputs(ManipulatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         positionRotations,
         velocityRotationsPerSecond,
         appliedVoltage,
         supplyCurrentAmps,
         torqueCurrentAmps,
-        temperatureCelcius);
+        temperatureCelsius);
 
     inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
@@ -77,7 +82,13 @@ public class V0_FunkyRollerIOTalonFX implements V0_FunkyRollerIO {
     inputs.appliedVolts = appliedVoltage.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
-    inputs.temperatureCelsius = temperatureCelcius.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+
+    inputs.hasCoral =
+        inputs.hasCoral
+            ? sensor.get()
+            : torqueCurrentAmps.getValueAsDouble()
+                >= V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   @Override
