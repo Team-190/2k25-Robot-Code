@@ -1,12 +1,15 @@
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.v0_funky.V0_FunkyRobotContainer;
+import frc.robot.subsystems.v0_whiplash.V0_WhiplashRobotContainer;
+import frc.robot.subsystems.v1_gamma.V1_GammaRobotContainer;
+import frc.robot.subsystems.v2_delta.V2_DeltaRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.VirtualSubsystem;
@@ -92,8 +95,8 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit logger
     Logger.start();
-    SignalLogger.setPath("/U/logs/");
-    SignalLogger.start();
+    // SignalLogger.setPath("/U/logs/");
+    // SignalLogger.start();
 
     // Start timers
     canErrorTimer.reset();
@@ -106,7 +109,14 @@ public class Robot extends LoggedRobot {
     RobotController.setBrownoutVoltage(6);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    robotContainer =
+        switch (Constants.ROBOT) {
+          case V0_WHIPLASH, V0_WHIPLASH_SIM -> new V0_WhiplashRobotContainer();
+          case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
+          case V1_GAMMA, V1_GAMMA_SIM -> new V1_GammaRobotContainer();
+          case V2_DELTA, V2_DELTA_SIM -> new V2_DeltaRobotContainer();
+          default -> new RobotContainer() {};
+        };
 
     Shuffleboard.selectTab("Autonomous");
     if (!DriverStation.isFMSAttached()) {

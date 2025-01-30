@@ -20,6 +20,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
@@ -31,6 +32,15 @@ import frc.robot.Constants;
  * <p>Simulation is always based on voltage control.
  */
 public class ModuleIOSim implements ModuleIO {
+  private static final double DRIVE_KP = 0.05;
+  private static final double DRIVE_KD = 0.0;
+  private static final double DRIVE_KS = 0.0;
+  private static final double DRIVE_KV_ROT =
+      0.91035; // Same units as TunerConstants: (volt * secs) / rotation
+  private static final double DRIVE_KV = 1.0 / Units.rotationsToRadians(1.0 / DRIVE_KV_ROT);
+  private static final double TURN_KP = 8.0;
+  private static final double TURN_KD = 0.0;
+
   private final DCMotorSim driveSim;
   private final DCMotorSim turnSim;
 
@@ -66,12 +76,8 @@ public class ModuleIOSim implements ModuleIO {
     driveClosedLoop = false;
     turnClosedLoop = false;
 
-    driveController =
-        new PIDController(
-            DriveConstants.GAINS.drive_Kp().get(), 0.0, DriveConstants.GAINS.drive_Kd().get());
-    turnController =
-        new PIDController(
-            DriveConstants.GAINS.turn_Kp().get(), 0.0, DriveConstants.GAINS.turn_Kd().get());
+    driveController = new PIDController(DRIVE_KP, 0, DRIVE_KD);
+    turnController = new PIDController(TURN_KP, 0, TURN_KD);
 
     driveFFVolts = 0.0;
     driveAppliedVolts = 0.0;
@@ -143,8 +149,7 @@ public class ModuleIOSim implements ModuleIO {
   public void setDriveVelocity(double velocityRadiansPerSecond, double currentFeedforward) {
     driveClosedLoop = true;
     driveFFVolts =
-        DriveConstants.GAINS.drive_Ks().get() * Math.signum(velocityRadiansPerSecond)
-            + DriveConstants.GAINS.drive_Kv().get() * velocityRadiansPerSecond;
+        DRIVE_KS * Math.signum(velocityRadiansPerSecond) + DRIVE_KV * velocityRadiansPerSecond;
     driveController.setSetpoint(velocityRadiansPerSecond);
   }
 

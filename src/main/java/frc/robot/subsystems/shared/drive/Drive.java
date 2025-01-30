@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.util.AllianceFlipUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -96,13 +97,19 @@ public class Drive extends SubsystemBase {
 
     autoFactory =
         new AutoFactory(
-            RobotState::getRobotPose,
+            RobotState::getRobotPoseField,
             RobotState::resetRobotPose,
             this::choreoDrive,
-            false,
+            true,
             this,
             (sample, isStart) -> {
-              Logger.recordOutput("Auto/Choreo Trajectory", sample.getPoses());
+              Pose2d[] poses = sample.getPoses();
+              if (AllianceFlipUtil.shouldFlip()) {
+                for (int i = 0; i < sample.getPoses().length; i++) {
+                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
+                }
+              }
+              Logger.recordOutput("Auto/Choreo Trajectory", poses);
             });
   }
 
@@ -331,21 +338,23 @@ public class Drive extends SubsystemBase {
 
   /** Runs a choreo path from swerve samples */
   public void choreoDrive(SwerveSample sample) {
-    Pose2d pose = RobotState.getRobotPose();
+    Pose2d pose = RobotState.getRobotPoseField();
     double xFF = sample.vx;
     double yFF = sample.vy;
     double rotationFF = sample.omega;
 
-    double xFeedback = DriveCommands.getXController().calculate(pose.getX(), sample.x);
-    double yFeedback = DriveCommands.getYController().calculate(pose.getY(), sample.y);
+    double xFeedback = DriveCommands.getAutoXController().calculate(pose.getX(), sample.x);
+    double yFeedback = DriveCommands.getAutoYController().calculate(pose.getY(), sample.y);
     double rotationFeedback =
-        DriveCommands.getHeadingController()
+        DriveCommands.getAutoHeadingController()
             .calculate(pose.getRotation().getRadians(), sample.heading);
 
     ChassisSpeeds velocity =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, pose.getRotation());
-
+            xFF + xFeedback,
+            yFF + yFeedback,
+            rotationFF + rotationFeedback,
+            Rotation2d.fromRadians(sample.heading));
     List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 
     for (int i = 0; i < 4; i++) {
