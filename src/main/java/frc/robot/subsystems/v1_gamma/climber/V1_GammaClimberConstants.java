@@ -1,6 +1,7 @@
 package frc.robot.subsystems.v1_gamma.climber;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 
 public class V1_GammaClimberConstants {
   public static final int MOTOR_ID;
@@ -16,6 +17,8 @@ public class V1_GammaClimberConstants {
   public static final double GEAR_RATIO;
   public static final double GEARBOX_EFFICIENCY;
 
+  public static final double SPOOL_DIAMETER;
+
   static {
     MOTOR_ID = 1;
 
@@ -26,7 +29,9 @@ public class V1_GammaClimberConstants {
 
     CLIMBER_CLIMBED_CURRENT = 0.0;
 
-    GEAR_RATIO = 1.0;
+    GEAR_RATIO = 24.0; 
     GEARBOX_EFFICIENCY = 0.81;
+
+    SPOOL_DIAMETER = Units.inchesToMeters(1.78);
   }
 }
