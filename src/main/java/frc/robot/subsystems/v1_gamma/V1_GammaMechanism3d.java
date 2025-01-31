@@ -16,9 +16,9 @@ public class V1_GammaMechanism3d {
   private static final Pose3d ELEVATOR_CARRIAGE_MANIPULATOR =
       new Pose3d(0.088900, 0.0, 0.120650, new Rotation3d());
   private static final Pose3d FUNNEL_LEFT =
-      new Pose3d(-0.009102, 0.104775, 0.593223, new Rotation3d(0.0, 0.0, 0.0));
+      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
   private static final Pose3d FUNNEL_RIGHT =
-      new Pose3d(-0.009102, -0.104775, 0.593223, new Rotation3d(0.0, 0.0, 0.0));
+      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
 
   /*
    * Order:
@@ -30,8 +30,6 @@ public class V1_GammaMechanism3d {
   public static final Pose3d[] getPoses(double elevatorExtensionMeters, Rotation2d funnelAngle) {
     double extensionMeters =
         MathUtil.clamp(elevatorExtensionMeters, MIN_EXTENSION_METERS, MAX_EXTENSION_METERS);
-    double extensionFraction =
-        MathUtil.inverseInterpolate(MIN_EXTENSION_METERS, MAX_EXTENSION_METERS, extensionMeters);
 
     return new Pose3d[] {
       ELEVATOR_STAGE_1,
