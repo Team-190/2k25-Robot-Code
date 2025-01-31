@@ -28,6 +28,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
                 V1_GammaFunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
                 V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
             V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor());
+    serializerSim.setAngle(V1_GammaFunnelConstants.FunnelState.STOW.getAngle().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -62,8 +63,9 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
     serializerSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.serializerPosition =
-        Rotation2d.fromRotations(serializerSim.getAngularPositionRotations());
+    inputs.serializerAbsolutePosition =
+        Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
+    inputs.serializerPosition = Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
     inputs.serializerVelocityRadiansPerSecond = serializerSim.getAngularVelocityRadPerSec();
     inputs.serializerAppliedVolts = serializerAppliedVolts;
     inputs.serializerSupplyCurrentAmps = serializerSim.getCurrentDrawAmps();
