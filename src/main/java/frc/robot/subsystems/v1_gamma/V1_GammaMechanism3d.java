@@ -4,12 +4,17 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 
 public class V1_GammaMechanism3d {
-  private static final double EXTENSION_0_HEIGHT = 0.0; // Meters off the ground
+  private static final double ELEVATOR_STAGE_1_MIN_HEIGHT = 0.095250; // Meters off the ground
+  private static final double ELEVATOR_STAGE_1_MAX_HEIGHT = 0.8509;
+  private static final double ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT = 0.120650;
+  private static final double ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT = 0.822325;
 
-  private static final double MIN_EXTENSION_METERS = EXTENSION_0_HEIGHT; // Meters off the ground
-  private static final double MAX_EXTENSION_METERS = 0.5;
+  private static final double MIN_EXTENSION_METERS = ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT;
+  private static final double MAX_EXTENSION_METERS =
+      ELEVATOR_STAGE_1_MAX_HEIGHT + ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT;
 
   private static final Pose3d ELEVATOR_STAGE_1 =
       new Pose3d(0.088900, 0, 0.095250, new Rotation3d());
@@ -30,6 +35,21 @@ public class V1_GammaMechanism3d {
   public static final Pose3d[] getPoses(double elevatorExtensionMeters, Rotation2d funnelAngle) {
     double extensionMeters =
         MathUtil.clamp(elevatorExtensionMeters, MIN_EXTENSION_METERS, MAX_EXTENSION_METERS);
+
+    if (extensionMeters > ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT) {
+      ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
+          new Transform3d(
+              0.0, 0.0, extensionMeters - ELEVATOR_STAGE_1_MAX_HEIGHT, new Rotation3d()));
+      ELEVATOR_STAGE_1.transformBy(
+          new Transform3d(
+              0.0,
+              0.0,
+              extensionMeters - ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT,
+              new Rotation3d()));
+    } else if (extensionMeters < ELEVATOR_STAGE_1_MIN_HEIGHT) {
+      ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
+          new Transform3d(0.0, 0.0, extensionMeters, new Rotation3d()));
+    }
 
     return new Pose3d[] {
       ELEVATOR_STAGE_1,
