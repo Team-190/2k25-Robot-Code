@@ -16,8 +16,6 @@ public class V1_GammaMechanism3d {
     double extensionFraction =
         MathUtil.inverseInterpolate(MIN_EXTENSION_METERS, MAX_EXTENSION_METERS, extensionMeters);
 
-
-    
     return new Pose3d[] {};
   }
 }

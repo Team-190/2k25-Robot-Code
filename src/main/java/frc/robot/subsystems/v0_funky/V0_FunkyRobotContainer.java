@@ -3,6 +3,7 @@ package frc.robot.subsystems.v0_funky;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -36,6 +37,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandGenericHID keyboard = new CommandGenericHID(1);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -105,6 +107,10 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
     driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
     driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+
+    for (int i = 1; i < 81; i++) {
+      keyboard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
+    }
   }
 
   public void configureAutos() {
