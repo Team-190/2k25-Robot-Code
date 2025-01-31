@@ -61,6 +61,10 @@ public class V1_GammaFunnel extends SubsystemBase {
     }
   }
 
+  public Rotation2d getAngle() {
+    return inputs.serializerAbsolutePosition;
+  }
+
   /**
    * Sets the climbing state of the funnel.
    *

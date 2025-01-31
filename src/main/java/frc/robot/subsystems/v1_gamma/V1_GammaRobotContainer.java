@@ -30,6 +30,7 @@ import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V1_GammaRobotContainer implements RobotContainer {
@@ -135,10 +136,15 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     LTNUpdater.updateDrive(drive);
     LTNUpdater.updateElevator(elevator);
+    LTNUpdater.updateFunnel(funnel);
+
+    if (Constants.getMode().equals(Mode.SIM)) {
+      Logger.recordOutput("Component Poses", V1_GammaMechanism3d.getPoses(0.0, funnel.getAngle()));
+    }
   }
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return funnel.setSerializerVoltage(0.10);
   }
 }
