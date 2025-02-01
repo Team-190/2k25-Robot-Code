@@ -25,12 +25,16 @@ public class V1_GammaMechanism3d {
   private static final Pose3d FUNNEL_RIGHT =
       new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
 
-  /*
-   * Order:
-   *   Elevator stage 1
-   *   Elevator carriage and manipulator
-   *   Funnel left
-   *   Funnel right
+  /**
+   * Calculates and returns an array of Pose3d objects representing the positions of various
+   * components of the robot's elevator mechanism based on the given elevator extension and funnel
+   * angle.
+   *
+   * @param elevatorExtensionMeters The extension of the elevator in meters. This value is clamped
+   *     between MIN_EXTENSION_METERS and MAX_EXTENSION_METERS.
+   * @param funnelAngle The angle of the funnel as a Rotation2d object.
+   * @return An array of Pose3d objects representing the transformed poses of the elevator stage 1,
+   *     elevator carriage, left funnel, and right funnel.
    */
   public static final Pose3d[] getPoses(double elevatorExtensionMeters, Rotation2d funnelAngle) {
     double extensionMeters =
@@ -39,11 +43,11 @@ public class V1_GammaMechanism3d {
     double stage1Height = ELEVATOR_STAGE_1_MIN_HEIGHT;
     double carriageHeight = ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT;
 
-    // If extension is within the first stage's range, only move Stage 1
+    // If extension is within the first stage's range, only move carriage
     if (extensionMeters <= ELEVATOR_STAGE_1_MAX_HEIGHT) {
       carriageHeight = extensionMeters;
     } else {
-      // Stage 1 is fully extended, start moving the carriage
+      // Carriage is fully extended, start moving stage 1
       double remainingExtension = extensionMeters - ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT;
       stage1Height = ELEVATOR_STAGE_1_MIN_HEIGHT + remainingExtension;
       carriageHeight = ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT + remainingExtension;
