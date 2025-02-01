@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,10 +28,10 @@ public class KeyboardController {
     this.port = port;
     this.numButtons = numButtons;
     this.inst = NetworkTableInstance.getDefault();
-    this.keyboardTable = inst.getTable("AdvantageKit/Keyboard/" + port);
+    this.keyboardTable = inst.getTable("AdvantageKit/Keyboard/" + this.port);
 
-    buttonSubscribers = new BooleanSubscriber[numButtons];
-    for (int i = 0; i < numButtons; i++) {
+    buttonSubscribers = new BooleanSubscriber[this.numButtons];
+    for (int i = 0; i < this.numButtons; i++) {
       buttonSubscribers[i] = keyboardTable.getBooleanTopic(i + "").subscribe(false);
     }
     isConnectedSubscriber = keyboardTable.getBooleanTopic("isConnected").subscribe(false);
@@ -68,7 +67,7 @@ public class KeyboardController {
    * @return true if the HID is connected
    */
   public boolean isConnected() {
-    return true;
+    return keyboardTable.getEntry("isConnected").getBoolean(false);
   }
 
   private boolean getRawButton(int button) {
