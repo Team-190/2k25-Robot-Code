@@ -64,6 +64,15 @@ public class V1_GammaElevator extends SubsystemBase {
         });
   }
 
+  public Command setVoltage(double volts) {
+    return runEnd(
+        () -> {
+          isClosedLoop = false;
+          io.setVoltage(volts);
+        },
+        () -> io.setVoltage(0.0));
+  }
+
   /**
    * Resets the elevator position to the stow position.
    *

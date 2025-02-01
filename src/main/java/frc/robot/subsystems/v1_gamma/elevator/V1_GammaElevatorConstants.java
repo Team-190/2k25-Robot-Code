@@ -27,7 +27,7 @@ public class V1_GammaElevatorConstants {
 
     ELEVATOR_PARAMETERS =
         new ElevatorParameters(
-            DCMotor.getKrakenX60Foc(4), 4.46354129, 0, Units.inchesToMeters(58), 4);
+            DCMotor.getKrakenX60Foc(4), 4.46354129, 0, Units.inchesToMeters(61.5), 4);
     GAINS =
         new Gains(
             new LoggedTunableNumber("Elevator/Gains/kP", 10.0),
@@ -65,12 +65,12 @@ public class V1_GammaElevatorConstants {
 
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
-    STOW(0.0),
-    INTAKE(Units.inchesToMeters(0.2)),
-    L1(Units.inchesToMeters(0.4)),
-    L2(Units.inchesToMeters(0.6)),
-    L3(Units.inchesToMeters(0.8)),
-    L4(Units.inchesToMeters(1.0));
+    STOW(Units.inchesToMeters(0.0)),
+    INTAKE(Units.inchesToMeters(0.0)),
+    L1(Units.inchesToMeters(0.0)),
+    L2(Units.inchesToMeters(0.0)),
+    L3(Units.inchesToMeters(0.0)),
+    L4(Units.inchesToMeters(100.0));
 
     private final double position;
 

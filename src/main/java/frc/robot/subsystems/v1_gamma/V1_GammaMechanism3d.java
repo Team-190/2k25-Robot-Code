@@ -36,24 +36,31 @@ public class V1_GammaMechanism3d {
     double extensionMeters =
         MathUtil.clamp(elevatorExtensionMeters, MIN_EXTENSION_METERS, MAX_EXTENSION_METERS);
 
-    if (extensionMeters > ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT) {
-      ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
-          new Transform3d(
-              0.0, 0.0, extensionMeters - ELEVATOR_STAGE_1_MAX_HEIGHT, new Rotation3d()));
-      ELEVATOR_STAGE_1.transformBy(
-          new Transform3d(
-              0.0,
-              0.0,
-              extensionMeters - ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT,
-              new Rotation3d()));
-    } else if (extensionMeters < ELEVATOR_STAGE_1_MIN_HEIGHT) {
-      ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
-          new Transform3d(0.0, 0.0, extensionMeters, new Rotation3d()));
+    double stage1Height = ELEVATOR_STAGE_1_MIN_HEIGHT;
+    double carriageHeight = ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT;
+
+    // If extension is within the first stage's range, only move Stage 1
+    if (extensionMeters <= ELEVATOR_STAGE_1_MAX_HEIGHT) {
+      carriageHeight = extensionMeters;
+    } else {
+      // Stage 1 is fully extended, start moving the carriage
+      double remainingExtension = extensionMeters - ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT;
+      stage1Height = ELEVATOR_STAGE_1_MIN_HEIGHT + remainingExtension;
+      carriageHeight = ELEVATOR_CARRIAGE_MANIPULATOR_MAX_HEIGHT + remainingExtension;
     }
 
+    // Create transformed poses
+    Pose3d ELEVATOR_STAGE_1_POSE =
+        ELEVATOR_STAGE_1.transformBy(
+            new Transform3d(0, 0, stage1Height - ELEVATOR_STAGE_1_MIN_HEIGHT, new Rotation3d()));
+    Pose3d ELEVATOR_CARRIAGE_POSE =
+        ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
+            new Transform3d(
+                0, 0, carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT, new Rotation3d()));
+
     return new Pose3d[] {
-      ELEVATOR_STAGE_1,
-      ELEVATOR_CARRIAGE_MANIPULATOR,
+      ELEVATOR_STAGE_1_POSE,
+      ELEVATOR_CARRIAGE_POSE,
       FUNNEL_LEFT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians())),
       FUNNEL_RIGHT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.getRadians()))
     };
