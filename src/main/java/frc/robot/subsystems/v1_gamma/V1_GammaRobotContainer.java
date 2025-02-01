@@ -150,11 +150,18 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-            elevator.setPosition(ElevatorPositions.L4),
-            Commands.waitSeconds(5),
-            elevator.setPosition(ElevatorPositions.STOW),
-            Commands.waitSeconds(5))
-        .repeatedly();
+    return Commands.parallel(
+        Commands.sequence(
+                elevator.setPosition(ElevatorPositions.L4),
+                Commands.waitSeconds(1),
+                elevator.setPosition(ElevatorPositions.STOW),
+                Commands.waitSeconds(1))
+            .repeatedly(),
+        Commands.sequence(
+                funnel.setSerializerVoltage(0.5),
+                Commands.waitSeconds(1),
+                funnel.setSerializerVoltage(0.5),
+                Commands.waitSeconds(1))
+            .repeatedly());
   }
 }

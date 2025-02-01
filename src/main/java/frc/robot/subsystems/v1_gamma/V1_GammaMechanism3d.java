@@ -20,10 +20,8 @@ public class V1_GammaMechanism3d {
       new Pose3d(0.088900, 0, 0.095250, new Rotation3d());
   private static final Pose3d ELEVATOR_CARRIAGE_MANIPULATOR =
       new Pose3d(0.088900, 0.0, 0.120650, new Rotation3d());
-  private static final Pose3d FUNNEL_LEFT =
-      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
-  private static final Pose3d FUNNEL_RIGHT =
-      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+  private static final Pose3d FUNNEL_LEFT = new Pose3d(0, 0, 0, new Rotation3d(0.0, 0.0, 0.0));
+  private static final Pose3d FUNNEL_RIGHT = new Pose3d(0.0, 0.0, 0.0, new Rotation3d());
 
   /**
    * Calculates and returns an array of Pose3d objects representing the positions of various
@@ -65,8 +63,8 @@ public class V1_GammaMechanism3d {
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
-      FUNNEL_LEFT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians())),
-      FUNNEL_RIGHT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.getRadians()))
+      FUNNEL_LEFT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.getRadians())),
+      FUNNEL_RIGHT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))
     };
   }
 }
