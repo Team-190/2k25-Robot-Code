@@ -3,7 +3,6 @@ package frc.robot.subsystems.v0_funky;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -24,6 +23,7 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.util.KeyboardController;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -37,7 +37,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandGenericHID keyboard = new CommandGenericHID(1);
+  private final KeyboardController keyboard = new KeyboardController(1);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -108,7 +108,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
     driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
     driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
 
-    for (int i = 1; i < 81; i++) {
+    for (int i = 0; i < 80; i++) {
       keyboard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
     }
   }
