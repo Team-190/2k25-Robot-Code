@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KeyboardController {
-  private final int port;
   private final int numButtons;
 
   private NetworkTableInstance inst;
@@ -25,14 +24,13 @@ public class KeyboardController {
   }
 
   public KeyboardController(int port, int numButtons) {
-    this.port = port;
     this.numButtons = numButtons;
     this.inst = NetworkTableInstance.getDefault();
-    this.keyboardTable = inst.getTable("AdvantageKit/Keyboard/" + this.port);
+    this.keyboardTable = inst.getTable("/DriverStation/Keyboard/" + port);
 
     buttonSubscribers = new BooleanSubscriber[this.numButtons];
     for (int i = 0; i < this.numButtons; i++) {
-      buttonSubscribers[i] = keyboardTable.getBooleanTopic(i + "").subscribe(false);
+      buttonSubscribers[i] = keyboardTable.getBooleanTopic(String.valueOf(i)).subscribe(false);
     }
     isConnectedSubscriber = keyboardTable.getBooleanTopic("isConnected").subscribe(false);
   }
@@ -58,7 +56,8 @@ public class KeyboardController {
    */
   public Trigger button(int button, EventLoop loop) {
     var cache = m_buttonCache.computeIfAbsent(loop, k -> new HashMap<>());
-    return cache.computeIfAbsent(button, k -> new Trigger(loop, () -> getRawButton(k)));
+    return cache.computeIfAbsent(
+        button, k -> new Trigger(loop, () -> getRawButton(k) && isConnected()));
   }
 
   /**
@@ -67,7 +66,7 @@ public class KeyboardController {
    * @return true if the HID is connected
    */
   public boolean isConnected() {
-    return keyboardTable.getEntry("isConnected").getBoolean(false);
+    return isConnectedSubscriber.get();
   }
 
   private boolean getRawButton(int button) {

@@ -20,7 +20,7 @@ try:
 except Exception as e:
     print(f'Failed to initialize NetworkTables with server {SERVER}: {e}.')
 
-keyboard_status_table = NetworkTables.getTable('AdvantageKit/Keyboard/'+str(KEYBOARD))
+keyboard_status_table = NetworkTables.getTable('DriverStation/Keyboard/'+str(KEYBOARD))
 # alliance_table = NetworkTables.getTable('FMSInfo') # Will use later to set keyboard color to aliiance color (maybe)
 
 def on_disconnect(device_id, device_info):
@@ -86,6 +86,7 @@ try:
     while True:
         try:
             if connected is True:
+                keyboard_status_table.putBoolean('isConnected', True)
                 pass
             data = device.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=5000)
 

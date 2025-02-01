@@ -37,7 +37,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final KeyboardController keyboard = new KeyboardController(1);
+  private final KeyboardController keyboard = new KeyboardController(0);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
