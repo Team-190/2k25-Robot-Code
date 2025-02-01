@@ -4,8 +4,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,8 +34,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   private StatusSignal<?>[] statusSignals;
 
-  private MotionMagicTorqueCurrentFOC positionTorqueCurrentRequest;
-  private TorqueCurrentFOC torqueCurrentRequest;
+  private MotionMagicVoltage positionVoltageRequest;
+  private VoltageOut voltageRequest;
 
   public V1_GammaElevatorIOTalonFX() {
     talonFX = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID);
@@ -72,9 +72,9 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
             / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS);
 
     config.MotionMagic.MotionMagicAcceleration =
-        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get();
+        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get();
     config.MotionMagic.MotionMagicCruiseVelocity =
-        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get();
+        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond().get();
 
     talonFX.getConfigurator().apply(config);
     for (TalonFX follower : followTalonFX) {
@@ -129,8 +129,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
       follow.optimizeBusUtilization();
     }
 
-    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
-    positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0);
+    positionVoltageRequest = new MotionMagicVoltage(0.0);
+    voltageRequest = new VoltageOut(0.0);
   }
 
   @Override
@@ -165,8 +165,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setCurrent(double amps) {
-    talonFX.setControl(torqueCurrentRequest.withOutput(amps));
+  public void setVoltage(double volts) {
+    talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
@@ -178,7 +178,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   public void setPositionGoal(double meters) {
     positionGoalMeters = meters;
     talonFX.setControl(
-        positionTorqueCurrentRequest.withPosition(
+        positionVoltageRequest.withPosition(
             meters / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)));
   }
 

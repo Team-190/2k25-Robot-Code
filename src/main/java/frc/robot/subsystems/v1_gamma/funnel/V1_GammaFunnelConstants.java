@@ -23,16 +23,16 @@ public class V1_GammaFunnelConstants {
   public static final FunnelParams ROLLER_PARAMS;
 
   static {
-    SERIALIZER_MOTOR_ID = 0;
-    ROLLER_MOTOR_ID = 0;
-    CORAL_SENSOR_ID = 0;
-    SERIALIZER_CANCODER_ID = 0;
-    SERIALIZER_MOTOR_GEAR_RATIO = 1.0;
-    ROLLER_MOTOR_GEAR_RATIO = 1.0;
-    SERIALIZER_CANCODER_GEAR_RATIO = 1.0;
+    SERIALIZER_MOTOR_ID = 41;
+    ROLLER_MOTOR_ID = 40;
+    CORAL_SENSOR_ID = 1;
+    SERIALIZER_CANCODER_ID = 42;
+    SERIALIZER_MOTOR_GEAR_RATIO = 17.0;
+    ROLLER_MOTOR_GEAR_RATIO = 2.5;
+    SERIALIZER_CANCODER_GEAR_RATIO = 3.0;
     CANCODER_ABSOLUTE_OFFSET_RADIANS = new Rotation2d();
 
-    CURRENT_LIMITS = new FunnelCurrentLimits(0.0, 0.0, 0.0, 0.0);
+    CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
     SERIALIZER_MOTOR_GAINS =
         new Gains(
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kP", 0.0),
@@ -49,8 +49,8 @@ public class V1_GammaFunnelConstants {
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
-    SERIALIZER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
-    ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.004);
+    SERIALIZER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+    ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
   }
 
   public static final record FunnelCurrentLimits(
@@ -78,9 +78,9 @@ public class V1_GammaFunnelConstants {
 
   @RequiredArgsConstructor
   public enum FunnelState { // Max of 58º when not climbing
-    STOW(Rotation2d.fromDegrees(90.0)),
-    OPENED(Rotation2d.fromDegrees(60.0)),
-    CLOSED(Rotation2d.fromDegrees(70.0)),
+    STOW(Rotation2d.fromDegrees(57.687084)),
+    OPENED(Rotation2d.fromDegrees(57.687084)),
+    CLOSED(Rotation2d.fromDegrees(90.0)),
     CLIMB(Rotation2d.fromDegrees(0.0));
 
     private final Rotation2d angle;

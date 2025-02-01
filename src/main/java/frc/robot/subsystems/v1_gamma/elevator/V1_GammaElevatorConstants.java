@@ -26,10 +26,11 @@ public class V1_GammaElevatorConstants {
     ELEVATOR_STATOR_CURRENT_LIMIT = 40;
 
     ELEVATOR_PARAMETERS =
-        new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 1, 0, Units.inchesToMeters(58), 4);
+        new ElevatorParameters(
+            DCMotor.getKrakenX60Foc(4), 4.46354129, 0, Units.inchesToMeters(61.5), 4);
     GAINS =
         new Gains(
-            new LoggedTunableNumber("Elevator/Gains/kP", 0.1),
+            new LoggedTunableNumber("Elevator/Gains/kP", 10.0),
             new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
             new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
             new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
@@ -51,8 +52,8 @@ public class V1_GammaElevatorConstants {
       LoggedTunableNumber kA) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRotsPerSecSq,
-      LoggedTunableNumber cruisingVelocityRotsPerSec,
+      LoggedTunableNumber maxAccelerationRadiansPerSecondSquared,
+      LoggedTunableNumber cruisingVelocityRadiansPerSecond,
       LoggedTunableNumber goalToleranceMeters) {}
 
   public static record ElevatorParameters(
@@ -64,12 +65,12 @@ public class V1_GammaElevatorConstants {
 
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
-    STOW(0.0),
-    INTAKE(15.0),
-    L1(10.0),
-    L2(25.0),
-    L3(50.0),
-    L4(75.0);
+    STOW(Units.inchesToMeters(0.0)),
+    INTAKE(Units.inchesToMeters(0.0)),
+    L1(Units.inchesToMeters(0.0)),
+    L2(Units.inchesToMeters(0.0)),
+    L3(Units.inchesToMeters(0.0)),
+    L4(Units.inchesToMeters(100.0));
 
     private final double position;
 

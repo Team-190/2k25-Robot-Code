@@ -56,8 +56,8 @@ public class LTNUpdater {
               V1_GammaElevatorConstants.GAINS.kA().get(),
               V1_GammaElevatorConstants.GAINS.kG().get());
           elevator.setConstraints(
-              V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq().get(),
-              V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec().get());
+              V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+              V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond().get());
         },
         V1_GammaElevatorConstants.GAINS.kP(),
         V1_GammaElevatorConstants.GAINS.kD(),
@@ -65,8 +65,8 @@ public class LTNUpdater {
         V1_GammaElevatorConstants.GAINS.kV(),
         V1_GammaElevatorConstants.GAINS.kA(),
         V1_GammaElevatorConstants.GAINS.kG(),
-        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRotsPerSecSq(),
-        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRotsPerSec());
+        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared(),
+        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond());
   }
 
   public static final void updateFunnel(V1_GammaFunnel funnel) {

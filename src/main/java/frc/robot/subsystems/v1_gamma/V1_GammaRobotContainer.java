@@ -1,7 +1,9 @@
 package frc.robot.subsystems.v1_gamma;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -18,6 +20,7 @@ import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
@@ -30,6 +33,7 @@ import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V1_GammaRobotContainer implements RobotContainer {
@@ -135,10 +139,22 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     LTNUpdater.updateDrive(drive);
     LTNUpdater.updateElevator(elevator);
+    LTNUpdater.updateFunnel(funnel);
+
+    if (Constants.getMode().equals(Mode.SIM)) {
+      Logger.recordOutput(
+          "Component Poses",
+          V1_GammaMechanism3d.getPoses(elevator.getPosition(), new Rotation2d()));
+    }
   }
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.sequence(
+            elevator.setPosition(ElevatorPositions.L4),
+            Commands.waitSeconds(5),
+            elevator.setPosition(ElevatorPositions.STOW),
+            Commands.waitSeconds(5))
+        .repeatedly();
   }
 }
