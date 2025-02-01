@@ -16,12 +16,11 @@ KEYS = 80
 connected = False
 # Set up NetworkTables connection
 try:
-    NetworkTables.initialize(server=SERVER)  # Replace with 'localhost' / 10.1.90.2 if it doesn't work
+    NetworkTables.initialize(server=SERVER) 
 except Exception as e:
     print(f'Failed to initialize NetworkTables with server {SERVER}: {e}.')
 
-keyboard_status_table = NetworkTables.getTable('DriverStation/Keyboard/'+str(KEYBOARD))
-# alliance_table = NetworkTables.getTable('FMSInfo') # Will use later to set keyboard color to aliiance color (maybe)
+keyboard_status_table = NetworkTables.getTable('AdvantageKit/DriverStation/Keyboard'+str(KEYBOARD))
 
 def on_disconnect(device_id, device_info):
     keyboard_status_table.putBoolean('isConnected', False)

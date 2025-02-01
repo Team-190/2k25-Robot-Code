@@ -26,7 +26,7 @@ public class KeyboardController {
   public KeyboardController(int port, int numButtons) {
     this.numButtons = numButtons;
     this.inst = NetworkTableInstance.getDefault();
-    this.keyboardTable = inst.getTable("/DriverStation/Keyboard/" + port);
+    this.keyboardTable = inst.getTable("/AdvantageKit/DriverStation/Keyboard" + port);
 
     buttonSubscribers = new BooleanSubscriber[this.numButtons];
     for (int i = 0; i < this.numButtons; i++) {

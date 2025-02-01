@@ -107,10 +107,6 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
     driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
     driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
-
-    for (int i = 0; i < 80; i++) {
-      keyboard.button(i).onTrue(Commands.print("Button " + i + " pressed"));
-    }
   }
 
   public void configureAutos() {
