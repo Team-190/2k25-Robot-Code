@@ -52,4 +52,51 @@ public class AutonomousCommands {
 
     return threePieceAntiProcessor;
   }
+
+  public static final AutoRoutine threePieceTakeTwoLeft(Drive drive) {
+    AutoRoutine threePieceTakeTwoLeft = drive.getAutoFactory().newRoutine("threePieceTakeTwoLeft");
+
+    AutoTrajectory traj5 = threePieceTakeTwoLeft.trajectory("Path5");
+    AutoTrajectory traj6 = threePieceTakeTwoLeft.trajectory("Path6");
+    AutoTrajectory traj7 = threePieceTakeTwoLeft.trajectory("Path7");
+
+    threePieceTakeTwoLeft
+        .active()
+        .onTrue(
+            Commands.sequence(
+                traj5.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj6.cmd(),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj7.cmd(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return threePieceTakeTwoLeft;
+  }
+
+  public static final AutoRoutine threePieceTakeTwoRight(Drive drive) {
+    AutoRoutine threePieceTakeTwoRight =
+        drive.getAutoFactory().newRoutine("threePieceTakeTwoRight");
+
+    AutoTrajectory traj8 = threePieceTakeTwoRight.trajectory("Path8");
+    AutoTrajectory traj9 = threePieceTakeTwoRight.trajectory("Path9");
+    AutoTrajectory traj10 = threePieceTakeTwoRight.trajectory("Path10");
+
+    threePieceTakeTwoRight
+        .active()
+        .onTrue(
+            Commands.sequence(
+                traj8.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj9.cmd(),
+                DriveCommands.alignRobotToAprilTag(drive),
+                traj10.cmd(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return threePieceTakeTwoRight;
+  }
 }

@@ -278,6 +278,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return AutonomousCommands.threePieceTakeTwoLeft(drive).cmd();
   }
 }
