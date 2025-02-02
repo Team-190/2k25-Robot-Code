@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -55,27 +56,13 @@ public class V1_GammaFunnel extends SubsystemBase {
     }
   }
 
-  public Rotation2d getAngle() {
-    return inputs.clapDaddyAbsolutePosition;
-  }
-
-  /**
-   * Sets the climbing state of the funnel.
-   *
-   * @param climbing True if the funnel is climbing, false otherwise.
-   * @return A command to set the climbing state.
-   */
-  public Command setClimbing(boolean climbing) {
-    return runOnce(() -> this.isClimbing = climbing);
-  }
-
   /**
    * Sets the goal state of the clapDaddy.
    *
    * @param goal The desired FunnelState.
    * @return A command to set the clapDaddy goal.
    */
-  public Command setClapDaddyGoal(FunnelState goal) {
+  private Command setClapDaddyGoal(FunnelState goal) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -89,19 +76,18 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  public Command setRollerVoltage(double volts) {
+  private Command setRollerVoltage(double volts) {
     return run(() -> io.setRollerVoltage(volts));
   }
 
-  /**
-   * Sets the voltage of the clapDaddy.
-   *
-   * @param volts The desired voltage.
-   * @return A command to set the clapDaddy voltage.
-   */
-  public Command setClapDaddyVoltage(double volts) {
-    isClosedLoop = false;
-    return run(() -> io.setClapDaddyVoltage(volts));
+  public Command intakeCoral(BooleanSupplier coralLocked) {
+    return Commands.race(
+        Commands.sequence(
+            setClapDaddyGoal(FunnelState.OPENED),
+            Commands.waitUntil(() -> hasCoral()),
+            setClapDaddyGoal(FunnelState.CLOSED),
+            Commands.waitUntil(coralLocked)),
+        setRollerVoltage(12.0));
   }
 
   /**
@@ -111,15 +97,6 @@ public class V1_GammaFunnel extends SubsystemBase {
    */
   public Command stopRoller() {
     return runOnce(io::stopRoller);
-  }
-
-  /**
-   * Checks if the funnel has coral.
-   *
-   * @return True if the funnel has coral, false otherwise.
-   */
-  public boolean hasCoral() {
-    return inputs.hasCoral;
   }
 
   /**
@@ -140,13 +117,36 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
+   * Sets the climbing state of the funnel.
+   *
+   * @param climbing True if the funnel is climbing, false otherwise.
+   * @return A command to set the climbing state.
+   */
+  public Command setClimbing(boolean climbing) {
+    return runOnce(() -> this.isClimbing = climbing);
+  }
+
+  /**
+   * Checks if the funnel has coral.
+   *
+   * @return True if the funnel has coral, false otherwise.
+   */
+  public boolean hasCoral() {
+    return inputs.hasCoral;
+  }
+
+  /**
    * Checks if the clapDaddy motor is at the goal position.
    *
    * @return True if the clapDaddy motor is at the goal, false otherwise.
    */
-  @AutoLogOutput(key = "Funnel/clapDaddy Motor At Goal")
-  public boolean clapDaddyMotorAtGoal() {
+  @AutoLogOutput(key = "Funnel/At Goal")
+  public boolean atGoal() {
     return io.atClapDaddyGoal();
+  }
+
+  public Rotation2d getAngle() {
+    return inputs.clapDaddyAbsolutePosition;
   }
 
   /**

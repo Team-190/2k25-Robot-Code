@@ -36,7 +36,7 @@ public class V1_GammaFunnelConstants {
     CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
     CLAP_DADDY_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 10.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 40),
             new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 0.0),
             new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.0),
             new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
@@ -44,8 +44,8 @@ public class V1_GammaFunnelConstants {
     ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
     CLAP_DADDY_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 10.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 10.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
     CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
     ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);

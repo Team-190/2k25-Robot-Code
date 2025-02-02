@@ -87,8 +87,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
     inputs.clapDaddyGoal = Rotation2d.fromRadians(clapDaddyController.getGoal().position);
     inputs.clapDaddyPositionSetpoint =
         Rotation2d.fromRadians(clapDaddyController.getSetpoint().position);
-    inputs.clapDaddyPositionError =
-        Rotation2d.fromRadians(clapDaddyController.getPositionError());
+    inputs.clapDaddyPositionError = Rotation2d.fromRadians(clapDaddyController.getPositionError());
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();

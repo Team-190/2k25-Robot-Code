@@ -19,8 +19,8 @@ public class V1_GammaManipulator extends SubsystemBase {
     Logger.processInputs("Manipulator", inputs);
   }
 
-  private boolean hasCoral() {
-    return inputs.hasCoral;
+  public boolean hasCoral() {
+    return inputs.torqueCurrentAmps > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {

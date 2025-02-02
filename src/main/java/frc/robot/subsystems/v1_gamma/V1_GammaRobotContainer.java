@@ -2,7 +2,6 @@ package frc.robot.subsystems.v1_gamma;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -23,7 +22,6 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
@@ -149,11 +147,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-            funnel.setClapDaddyGoal(FunnelState.CLOSED),
-            Commands.waitSeconds(1),
-            funnel.setClapDaddyGoal(FunnelState.OPENED),
-            Commands.waitSeconds(1))
-        .repeatedly();
+    return autoChooser.get();
   }
 }

@@ -15,14 +15,11 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
   private final TalonFX talonFX;
 
   private final TalonFXConfiguration config;
-
-  private final DigitalInput sensor;
 
   private final StatusSignal<Angle> positionRotations;
   private final StatusSignal<AngularVelocity> velocityRotationsPerSecond;
@@ -42,8 +39,6 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
-
-    sensor = new DigitalInput(V1_GammaManipulatorConstants.CORAL_SENSOR_ID);
 
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
@@ -83,12 +78,6 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
-
-    inputs.hasCoral =
-        inputs.hasCoral
-            ? sensor.get()
-            : torqueCurrentAmps.getValueAsDouble()
-                >= V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   @Override
