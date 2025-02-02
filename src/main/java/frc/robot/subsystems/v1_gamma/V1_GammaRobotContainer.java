@@ -2,12 +2,17 @@ package frc.robot.subsystems.v1_gamma;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.IntakeCommands;
+import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -16,6 +21,7 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
@@ -44,6 +50,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -61,7 +68,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
+          vision = new Vision(RobotCameras.v1_GammaCams);
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
@@ -111,10 +118,54 @@ public class V1_GammaRobotContainer implements RobotContainer {
   }
 
   private void configureButtonBindings() {
+
+    // Default drive command
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+
+    // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
+    driver
+        .b()
+        .whileTrue(
+            CompositeCommands.ScoreCommands.scoreCoral(
+                elevator,
+                funnel,
+                manipulator,
+                RobotState.getOperatorInputData().currentReefHeight()));
+    driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
+
+    // Driver triggers
+    driver.leftTrigger(1.0).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    driver
+        .rightTrigger(1.0)
+        .whileTrue(
+            ScoreCommands.autoScoreCoral(
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                RobotState.getOperatorInputData().currentReefHeight(),
+                RobotCameras.v1_GammaCams));
+
+    // Driver bumpers
+    // driver.leftBumper().onTrue(() -> DriveCommands.inchLeft(drive));
+    // driver.rightBumper().onTrue(() -> DriveCommands.inchRight(drive));
+
+    // Operator face buttons
+    operator.y().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L4)));
+    operator.x().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L3)));
+    operator.b().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L2)));
+    operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
+
+    // Operator triggers
+    // operator.leftTrigger(1.0).onTrue(pre-score).onFalse(un-pre-score);
+    operator.rightTrigger(1.0).whileTrue(manipulator.scoreCoral());
+
+    // Operator bumpers
+    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
   }
 
   private void configureAutos() {

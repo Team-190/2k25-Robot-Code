@@ -24,7 +24,7 @@ public class V1_GammaManipulator extends SubsystemBase {
   }
 
   public Command runManipulator(double volts) {
-    return this.run(() -> io.setVoltage(volts));
+    return this.runEnd(() -> io.setVoltage(volts), () -> io.setVoltage(0));
   }
 
   public Command intakeCoral() {
@@ -33,7 +33,6 @@ public class V1_GammaManipulator extends SubsystemBase {
   }
 
   public Command scoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
-        .until(() -> hasCoral());
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import org.littletonrobotics.junction.Logger;
 
@@ -56,11 +57,30 @@ public class V1_GammaElevator extends SubsystemBase {
    * @param position The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(ElevatorPositions position) {
+  public Command setPosition(ReefHeight position) {
     return runOnce(
         () -> {
           isClosedLoop = true;
-          this.position = position;
+          switch (position) {
+            case STOW:
+              this.position = ElevatorPositions.STOW;
+              break;
+            case INTAKE:
+              this.position = ElevatorPositions.INTAKE;
+              break;
+            case L1:
+              this.position = ElevatorPositions.L1;
+              break;
+            case L2:
+              this.position = ElevatorPositions.L2;
+              break;
+            case L3:
+              this.position = ElevatorPositions.L3;
+              break;
+            case L4:
+              this.position = ElevatorPositions.L4;
+              break;
+          }
         });
   }
 
