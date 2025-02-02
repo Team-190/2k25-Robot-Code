@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,13 +27,13 @@ public class V1_GammaMechanism3d {
       new Pose3d(
           0.009102,
           -0.104775,
-          0.593223,
+          0.603223,
           new Rotation3d(0.0, 0.0, Units.degreesToRadians(-57.687084)));
   private static final Pose3d FUNNEL_RIGHT =
       new Pose3d(
-          -0.009102,
+          0.009102,
           0.104775,
-          0.593223,
+          0.603223,
           new Rotation3d(0.0, 0.0, Units.degreesToRadians(57.687084)));
 
   /**
@@ -77,8 +78,24 @@ public class V1_GammaMechanism3d {
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
-      FUNNEL_LEFT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.getRadians())),
-      FUNNEL_RIGHT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))
+      FUNNEL_LEFT
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(Units.degreesToRadians(23.0), Units.degreesToRadians(-15.0), 0.0)))
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(), new Rotation3d(0.0, 0.0, funnelAngle.getRadians()))),
+      FUNNEL_RIGHT
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(
+                      Units.degreesToRadians(-23.0), Units.degreesToRadians(-15.0), 0.0)))
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))),
     };
   }
 }
