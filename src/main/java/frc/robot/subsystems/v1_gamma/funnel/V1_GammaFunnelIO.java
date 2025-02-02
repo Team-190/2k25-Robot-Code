@@ -6,16 +6,16 @@ import org.littletonrobotics.junction.AutoLog;
 public interface V1_GammaFunnelIO {
   @AutoLog
   public static class FunnelIOInputs {
-    public Rotation2d serializerPosition = new Rotation2d();
-    public Rotation2d serializerAbsolutePosition = new Rotation2d();
-    public double serializerVelocityRadiansPerSecond = 0.0;
-    public double serializerAppliedVolts = 0.0;
-    public double serializerSupplyCurrentAmps = 0.0;
-    public double serializerTorqueCurrentAmps = 0.0;
-    public double serializerTemperatureCelsius = 0.0;
-    public Rotation2d serializerGoal = new Rotation2d();
-    public Rotation2d serializerPositionSetpoint = new Rotation2d();
-    public Rotation2d serializerPositionError = new Rotation2d();
+    public Rotation2d clapDaddyPosition = new Rotation2d();
+    public Rotation2d clapDaddyAbsolutePosition = new Rotation2d();
+    public double clapDaddyVelocityRadiansPerSecond = 0.0;
+    public double clapDaddyAppliedVolts = 0.0;
+    public double clapDaddySupplyCurrentAmps = 0.0;
+    public double clapDaddyTorqueCurrentAmps = 0.0;
+    public double clapDaddyTemperatureCelsius = 0.0;
+    public Rotation2d clapDaddyGoal = new Rotation2d();
+    public Rotation2d clapDaddyPositionSetpoint = new Rotation2d();
+    public Rotation2d clapDaddyPositionError = new Rotation2d();
 
     public Rotation2d rollerPosition = new Rotation2d();
     public double rollerVelocityRadiansPerSecond = 0.0;
@@ -35,11 +35,11 @@ public interface V1_GammaFunnelIO {
   public default void updateInputs(FunnelIOInputs inputs) {}
 
   /**
-   * Sets the voltage for the serializer.
+   * Sets the voltage for the clap daddy.
    *
    * @param volts The voltage to set.
    */
-  public default void setSerializerVoltage(double volts) {}
+  public default void setClapDaddyVoltage(double volts) {}
 
   /**
    * Sets the voltage for the roller.
@@ -49,21 +49,21 @@ public interface V1_GammaFunnelIO {
   public default void setRollerVoltage(double volts) {}
 
   /**
-   * Sets the position for the serializer.
+   * Sets the position for the clap daddy.
    *
    * @param position The position to set.
    */
-  public default void setSerializerPosition(Rotation2d position) {}
+  public default void setClapDaddyPosition(Rotation2d position) {}
 
   /** Stops the roller. */
   public default void stopRoller() {}
 
   /**
-   * Checks if the serializer is at its goal position.
+   * Checks if the clap daddy is at its goal position.
    *
-   * @return True if the serializer is at its goal, false otherwise.
+   * @return True if the clap daddy is at its goal, false otherwise.
    */
-  public default boolean atSerializerGoal() {
+  public default boolean atClapDaddyGoal() {
     return false;
   }
 

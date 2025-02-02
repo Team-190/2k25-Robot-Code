@@ -74,21 +74,21 @@ public class LTNUpdater {
         funnel.hashCode(),
         () -> {
           funnel.updateGains(
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
           funnel.updateConstraints(
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
-              V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
         },
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY());
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 }

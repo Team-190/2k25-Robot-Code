@@ -150,9 +150,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     return Commands.sequence(
-            funnel.setSerializerGoal(FunnelState.CLOSED),
+            funnel.setClapDaddyGoal(FunnelState.CLOSED),
             Commands.waitSeconds(1),
-            funnel.setSerializerGoal(FunnelState.OPENED),
+            funnel.setClapDaddyGoal(FunnelState.OPENED),
             Commands.waitSeconds(1))
         .repeatedly();
   }

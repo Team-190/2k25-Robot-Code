@@ -34,7 +34,7 @@ public class V1_GammaFunnel extends SubsystemBase {
                 Seconds.of(3),
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
-                (volts) -> io.setSerializerVoltage(volts.in(Volts)), null, this));
+                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     goal = FunnelState.OPENED;
 
     isClimbing = false;
@@ -47,16 +47,16 @@ public class V1_GammaFunnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      io.setSerializerPosition(goal.getAngle());
+      io.setClapDaddyPosition(goal.getAngle());
     }
 
     if (isClimbing) {
-      setSerializerGoal(FunnelState.CLIMB);
+      setClapDaddyGoal(FunnelState.CLIMB);
     }
   }
 
   public Rotation2d getAngle() {
-    return inputs.serializerAbsolutePosition;
+    return inputs.clapDaddyAbsolutePosition;
   }
 
   /**
@@ -70,12 +70,12 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Sets the goal state of the serializer.
+   * Sets the goal state of the clapDaddy.
    *
    * @param goal The desired FunnelState.
-   * @return A command to set the serializer goal.
+   * @return A command to set the clapDaddy goal.
    */
-  public Command setSerializerGoal(FunnelState goal) {
+  public Command setClapDaddyGoal(FunnelState goal) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -94,14 +94,14 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Sets the voltage of the serializer.
+   * Sets the voltage of the clapDaddy.
    *
    * @param volts The desired voltage.
-   * @return A command to set the serializer voltage.
+   * @return A command to set the clapDaddy voltage.
    */
-  public Command setSerializerVoltage(double volts) {
+  public Command setClapDaddyVoltage(double volts) {
     isClosedLoop = false;
-    return run(() -> io.setSerializerVoltage(volts));
+    return run(() -> io.setClapDaddyVoltage(volts));
   }
 
   /**
@@ -123,7 +123,7 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Runs the SysId routine for the serializer.
+   * Runs the SysId routine for the clapDaddy.
    *
    * @return A command to run the SysId routine.
    */
@@ -140,17 +140,17 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Checks if the serializer motor is at the goal position.
+   * Checks if the clapDaddy motor is at the goal position.
    *
-   * @return True if the serializer motor is at the goal, false otherwise.
+   * @return True if the clapDaddy motor is at the goal, false otherwise.
    */
-  @AutoLogOutput(key = "Funnel/Serializer Motor At Goal")
-  public boolean serializerMotorAtGoal() {
-    return io.atSerializerGoal();
+  @AutoLogOutput(key = "Funnel/clapDaddy Motor At Goal")
+  public boolean clapDaddyMotorAtGoal() {
+    return io.atClapDaddyGoal();
   }
 
   /**
-   * Updates the PID gains for the serializer.
+   * Updates the PID gains for the clapDaddy.
    *
    * @param kP The proportional gain.
    * @param kD The derivative gain.
@@ -163,7 +163,7 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Updates the motion constraints for the serializer.
+   * Updates the motion constraints for the clapDaddy.
    *
    * @param maxAcceleration The maximum acceleration.
    * @param maxVelocity The maximum velocity.
