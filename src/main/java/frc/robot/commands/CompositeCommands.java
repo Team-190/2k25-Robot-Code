@@ -17,7 +17,7 @@ public class CompositeCommands {
             () -> {
               RobotState.resetRobotPose(
                   new Pose2d(
-                      RobotState.getRobotPose().getTranslation(),
+                      RobotState.getRobotPoseField().getTranslation(),
                       AllianceFlipUtil.apply(new Rotation2d())));
             })
         .ignoringDisable(true);

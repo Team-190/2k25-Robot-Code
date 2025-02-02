@@ -3,6 +3,10 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -38,5 +42,53 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
+  }
+
+  public static final void updateElevator(V1_GammaElevator elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              V1_GammaElevatorConstants.GAINS.kP().get(),
+              V1_GammaElevatorConstants.GAINS.kD().get(),
+              V1_GammaElevatorConstants.GAINS.kS().get(),
+              V1_GammaElevatorConstants.GAINS.kV().get(),
+              V1_GammaElevatorConstants.GAINS.kA().get(),
+              V1_GammaElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared().get(),
+              V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond().get());
+        },
+        V1_GammaElevatorConstants.GAINS.kP(),
+        V1_GammaElevatorConstants.GAINS.kD(),
+        V1_GammaElevatorConstants.GAINS.kS(),
+        V1_GammaElevatorConstants.GAINS.kV(),
+        V1_GammaElevatorConstants.GAINS.kA(),
+        V1_GammaElevatorConstants.GAINS.kG(),
+        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationRadiansPerSecondSquared(),
+        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond());
+  }
+
+  public static final void updateFunnel(V1_GammaFunnel funnel) {
+    LoggedTunableNumber.ifChanged(
+        funnel.hashCode(),
+        () -> {
+          funnel.updateGains(
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+          funnel.updateConstraints(
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+        },
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 }

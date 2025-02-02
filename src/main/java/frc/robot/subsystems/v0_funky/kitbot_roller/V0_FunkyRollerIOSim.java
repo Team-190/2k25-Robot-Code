@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
 public class V0_FunkyRollerIOSim implements V0_FunkyRollerIO {
-  private final DCMotorSim rollerSim;
+  private final DCMotorSim sim;
 
   private double appliedVolts;
 
   public V0_FunkyRollerIOSim() {
-    rollerSim =
+    sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
             DCMotor.getKrakenX60Foc(1));
@@ -23,13 +23,13 @@ public class V0_FunkyRollerIOSim implements V0_FunkyRollerIO {
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    rollerSim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
-    rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
+    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.position = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
-    inputs.velocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();
+    inputs.position = Rotation2d.fromRadians(sim.getAngularPositionRad());
+    inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = rollerSim.getCurrentDrawAmps();
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps();
   }
 
   public void setVoltage(double volts) {
