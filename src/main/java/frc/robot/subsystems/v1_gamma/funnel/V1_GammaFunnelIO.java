@@ -79,14 +79,6 @@ public interface V1_GammaFunnelIO {
   public default void updateGains(double kP, double kD, double kS, double kV, double kA) {}
 
   /**
-   * Updates the angle thresholds for the funnel subsystem.
-   *
-   * @param maxAngle The maximum angle of the serializer.
-   * @param minAngle The minimum angle of the clapdaddy.
-   */
-  public default void updateThresholds(double maxAngle, double minAngle) {}
-
-  /**
    * Updates the constraints for the funnel subsystem.
    *
    * @param maxAcceleration The maximum acceleration.

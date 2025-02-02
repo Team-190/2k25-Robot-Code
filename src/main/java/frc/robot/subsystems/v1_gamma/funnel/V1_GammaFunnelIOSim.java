@@ -7,28 +7,34 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
-  public final DCMotorSim serializerSim;
+  public final SingleJointedArmSim serializerSim;
   public final DCMotorSim rollerSim;
 
   private final ProfiledPIDController serializerController;
   private SimpleMotorFeedforward serializerFeedforward;
 
-  private Rotation2d serializerPositionGoal;
   private double serializerAppliedVolts;
   private double rollerAppliedVolts;
+  private boolean serializerClosedLoop;
 
   public V1_GammaFunnelIOSim() {
     serializerSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
+        new SingleJointedArmSim(
+            LinearSystemId.createSingleJointedArmSystem(
                 V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor(),
                 V1_GammaFunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
                 V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
-            V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor());
-    serializerSim.setAngle(V1_GammaFunnelConstants.FunnelState.STOW.getAngle().getRadians());
+            V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor(),
+            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO,
+            1.0,
+            Double.NEGATIVE_INFINITY,
+            Double.POSITIVE_INFINITY,
+            false,
+            V1_GammaFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -51,25 +57,34 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
             V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
             V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
 
-    serializerPositionGoal = new Rotation2d();
     serializerAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
+    serializerClosedLoop = true;
+
+    serializerController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    serializerSim.setInputVoltage(MathUtil.clamp(serializerAppliedVolts, -12.0, 12.0));
-    rollerSim.setInputVoltage(MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0));
+    if (serializerClosedLoop) {
+      serializerAppliedVolts =
+          serializerController.calculate(serializerSim.getAngleRads())
+              + serializerFeedforward.calculate(serializerController.getSetpoint().position);
+    }
+
+    serializerAppliedVolts = MathUtil.clamp(serializerAppliedVolts, -12.0, 12.0);
+
+    serializerSim.setInputVoltage(serializerAppliedVolts);
+    rollerSim.setInputVoltage(rollerAppliedVolts);
     serializerSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.serializerAbsolutePosition =
-        Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
-    inputs.serializerPosition = Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
-    inputs.serializerVelocityRadiansPerSecond = serializerSim.getAngularVelocityRadPerSec();
+    inputs.serializerAbsolutePosition = Rotation2d.fromRadians(serializerSim.getAngleRads());
+    inputs.serializerPosition = Rotation2d.fromRadians(serializerSim.getAngleRads());
+    inputs.serializerVelocityRadiansPerSecond = serializerSim.getVelocityRadPerSec();
     inputs.serializerAppliedVolts = serializerAppliedVolts;
     inputs.serializerSupplyCurrentAmps = serializerSim.getCurrentDrawAmps();
-    inputs.serializerGoal = (serializerPositionGoal);
+    inputs.serializerGoal = Rotation2d.fromRadians(serializerController.getGoal().position);
     inputs.serializerPositionSetpoint =
         Rotation2d.fromRadians(serializerController.getSetpoint().position);
     inputs.serializerPositionError =
@@ -83,6 +98,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
 
   @Override
   public void setSerializerVoltage(double volts) {
+    serializerClosedLoop = false;
     serializerAppliedVolts = volts;
   }
 
@@ -93,10 +109,8 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
 
   @Override
   public void setSerializerPosition(Rotation2d position) {
-    serializerPositionGoal = position;
-    serializerAppliedVolts =
-        serializerController.calculate(position.getRadians())
-            + serializerFeedforward.calculate(position.getRadians());
+    serializerClosedLoop = true;
+    serializerController.setGoal(position.getRadians());
   }
 
   @Override
@@ -114,11 +128,6 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
     serializerController.setP(kP);
     serializerController.setD(kD);
     serializerFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
-  }
-
-  @Override
-  public void updateThresholds(double maxAngle, double minAngle) {
-    serializerController.enableContinuousInput(minAngle, maxAngle);
   }
 
   @Override

@@ -47,17 +47,11 @@ public class V1_GammaFunnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      setSerializerPosition(goal.getAngle().getRadians());
+      io.setSerializerPosition(goal.getAngle());
     }
 
     if (isClimbing) {
       setSerializerGoal(FunnelState.CLIMB);
-    } else {
-      if (hasCoral()) {
-        setSerializerGoal(FunnelState.CLOSED);
-      } else {
-        setSerializerGoal(FunnelState.OPENED);
-      }
     }
   }
 
@@ -108,17 +102,6 @@ public class V1_GammaFunnel extends SubsystemBase {
   public Command setSerializerVoltage(double volts) {
     isClosedLoop = false;
     return run(() -> io.setSerializerVoltage(volts));
-  }
-
-  /**
-   * Sets the position of the serializer.
-   *
-   * @param radians The desired position in radians.
-   * @return A command to set the serializer position.
-   */
-  public Command setSerializerPosition(double radians) {
-    isClosedLoop = true;
-    return run(() -> io.setSerializerPosition(Rotation2d.fromRadians(radians)));
   }
 
   /**
@@ -177,16 +160,6 @@ public class V1_GammaFunnel extends SubsystemBase {
    */
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
     io.updateGains(kP, kD, kS, kV, kA);
-  }
-
-  /**
-   * Updates the angle thresholds for the serializer.
-   *
-   * @param maxAngle The maximum angle.
-   * @param minAngle The minimum angle.
-   */
-  public void updateThresholds(double maxAngle, double minAngle) {
-    io.updateThresholds(maxAngle, minAngle);
   }
 
   /**

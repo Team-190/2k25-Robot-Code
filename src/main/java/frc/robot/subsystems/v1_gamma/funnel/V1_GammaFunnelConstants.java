@@ -2,6 +2,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -35,19 +36,16 @@ public class V1_GammaFunnelConstants {
     CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
     SERIALIZER_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kP", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kP", 10.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kD", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kS", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kV", 0.0),
             new LoggedTunableNumber("Funnel/Serializer Motor Gains/kA", 0.0));
-    ANGLE_THRESHOLDS =
-        new Thresholds(
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Angle", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor/Min Angle", 0.0));
+    ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
     SERIALIZER_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 10.0),
+            new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 10.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
     SERIALIZER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
     ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
@@ -66,8 +64,7 @@ public class V1_GammaFunnelConstants {
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public static final record Thresholds(
-      LoggedTunableNumber MAX_ANGLE_RADIANS, LoggedTunableNumber MIN_ANGLE_RADIANS) {}
+  public static final record Thresholds(double MAX_ANGLE_RADIANS, double MIN_ANGLE_RADIANS) {}
 
   public static final record Constraints(
       LoggedTunableNumber MAX_ACCELERATION,

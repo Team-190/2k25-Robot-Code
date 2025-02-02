@@ -19,11 +19,11 @@ import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
@@ -149,18 +149,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.parallel(
-        Commands.sequence(
-                elevator.setPosition(ElevatorPositions.L4),
-                Commands.waitSeconds(1),
-                elevator.setPosition(ElevatorPositions.STOW),
-                Commands.waitSeconds(1))
-            .repeatedly(),
-        Commands.sequence(
-                funnel.setSerializerVoltage(0.5),
-                Commands.waitSeconds(1),
-                funnel.setSerializerVoltage(0.5),
-                Commands.waitSeconds(1))
-            .repeatedly());
+    return Commands.sequence(
+            funnel.setSerializerGoal(FunnelState.CLOSED),
+            Commands.waitSeconds(1),
+            funnel.setSerializerGoal(FunnelState.OPENED),
+            Commands.waitSeconds(1))
+        .repeatedly();
   }
 }

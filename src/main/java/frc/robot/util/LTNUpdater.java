@@ -82,9 +82,6 @@ public class LTNUpdater {
           funnel.updateConstraints(
               V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
               V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
-          funnel.updateThresholds(
-              V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get(),
-              V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get());
         },
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP(),
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD(),
@@ -92,8 +89,6 @@ public class LTNUpdater {
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV(),
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA(),
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY(),
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS(),
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
+        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 }

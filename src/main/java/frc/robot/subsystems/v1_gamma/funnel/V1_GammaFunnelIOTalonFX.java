@@ -75,9 +75,9 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     serializerConfig.Slot0.kV = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get();
     serializerConfig.Slot0.kA = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get();
     serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS();
     serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS();
     serializerConfig.MotionMagic.MotionMagicAcceleration =
         V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
@@ -229,14 +229,6 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     serializerConfig.Slot0.kS = kS;
     serializerConfig.Slot0.kV = kV;
     serializerConfig.Slot0.kA = kA;
-    serializerTalonFX.getConfigurator().apply(serializerConfig);
-  }
-
-  @Override
-  public void updateThresholds(double maxAngle, double minAngle) {
-    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
-    serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = maxAngle;
-    serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = minAngle;
     serializerTalonFX.getConfigurator().apply(serializerConfig);
   }
 
