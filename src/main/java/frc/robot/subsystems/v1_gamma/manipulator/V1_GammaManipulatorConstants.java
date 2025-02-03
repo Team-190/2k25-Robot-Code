@@ -8,6 +8,7 @@ public class V1_GammaManipulatorConstants {
   public static final double SUPPLY_CURRENT_LIMIT = 40;
   public static final double MANIPULATOR_CURRENT_THRESHOLD = 0;
   public static final Voltages VOLTAGES;
+  public static final double halfScoreThreshold = 0.0;
 
   static {
     VOLTAGES =

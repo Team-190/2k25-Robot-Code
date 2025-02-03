@@ -34,6 +34,16 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   public Command scoreCoral() {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
-        .until(() -> hasCoral());
+        .until(() -> !hasCoral());
   }
+
+  private boolean reachedHalfScoreCoral() {
+    return inputs.position.getRadians() >= V1_GammaManipulatorConstants.halfScoreThreshold;
+  }
+
+  public Command halfScoreCoral() {
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
+      .until(() -> reachedHalfScoreCoral());
+  }
+
 }
