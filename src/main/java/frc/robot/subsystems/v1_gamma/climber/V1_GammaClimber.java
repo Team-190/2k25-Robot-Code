@@ -27,8 +27,8 @@ public class V1_GammaClimber extends SubsystemBase {
     isClimbed = io.isClimbed();
   }
 
-  public Command setCurrent(double amps) {
-    return this.run(() -> io.setCurrent(amps));
+  public Command setVoltage(double volts) {
+    return this.run(() -> io.setVoltage(volts));
   }
 
   public Command releaseClimber() {
