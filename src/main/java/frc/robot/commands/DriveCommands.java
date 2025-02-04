@@ -148,6 +148,11 @@ public final class DriveCommands {
         drive);
   }
 
+  public static final Command inchMovement(Drive drive, double velocity) {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
+        .withTimeout(.1);
+  }
+
   public static final Command stop(Drive drive) {
     return Commands.run(() -> drive.stopWithX());
   }
@@ -236,12 +241,6 @@ public final class DriveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
-  }
-
-  private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
-    Rotation2d lastAngle = new Rotation2d();
-    double gyroDelta = 0.0;
   }
 
   public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
@@ -368,5 +367,11 @@ public final class DriveCommands {
     double ans = Math.max(Math.abs(a), Math.abs(b));
     if (ans == Math.abs(a)) return Math.copySign(ans, a);
     else return Math.copySign(ans, b);
+  }
+
+  private static class WheelRadiusCharacterizationState {
+    double[] positions = new double[4];
+    Rotation2d lastAngle = new Rotation2d();
+    double gyroDelta = 0.0;
   }
 }

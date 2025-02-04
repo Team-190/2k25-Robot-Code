@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -49,7 +50,7 @@ public class RobotState {
         break;
     }
 
-    operatorInputData = new OperatorInputData(ReefPost.LEFT);
+    operatorInputData = new OperatorInputData(ReefPost.LEFT, ReefHeight.STOW);
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -259,7 +260,13 @@ public class RobotState {
   }
 
   public static void setReefPost(ReefPost post) {
-    operatorInputData = new OperatorInputData(post);
+    ReefHeight height = operatorInputData.currentReefHeight();
+    operatorInputData = new OperatorInputData(post, height);
+  }
+
+  public static void setReefHeight(ReefHeight height) {
+    ReefPost post = operatorInputData.currentReefPost();
+    operatorInputData = new OperatorInputData(post, height);
   }
 
   public static final record ReefAlignData(
@@ -269,5 +276,6 @@ public class RobotState {
       boolean atSetpoint,
       Camera... cameras) {}
 
-  public static final record OperatorInputData(ReefPost currentReefPost) {}
+  public static final record OperatorInputData(
+      ReefPost currentReefPost, ReefHeight currentReefHeight) {}
 }

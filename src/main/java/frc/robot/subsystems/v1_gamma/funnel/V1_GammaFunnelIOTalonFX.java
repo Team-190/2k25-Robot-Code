@@ -18,23 +18,23 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
-  private final TalonFX serializerTalonFX;
+  private final TalonFX clapDaddyTalonFX;
   private final TalonFX rollerTalonFX;
   private final DigitalInput coralSensor;
-  private final CANcoder serializerCANcoder;
+  private final CANcoder clapDaddyCANcoder;
 
-  private final TalonFXConfiguration serializerConfig;
+  private final TalonFXConfiguration clapDaddyConfig;
   private final TalonFXConfiguration rollerConfig;
   private final CANcoderConfiguration cancoderConfig;
 
-  private final StatusSignal<Angle> serializerPositionRotations;
-  private final StatusSignal<AngularVelocity> serializerVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> serializerAppliedVolts;
-  private final StatusSignal<Current> serializerSupplyCurrentAmps;
-  private final StatusSignal<Current> serializerTorqueCurrentAmps;
-  private final StatusSignal<Temperature> serializerTemperatureCelsius;
-  private final StatusSignal<Double> serializerPositionSetpointRotations;
-  private final StatusSignal<Double> serializerPositionErrorRotations;
+  private final StatusSignal<Angle> clapDaddyPositionRotations;
+  private final StatusSignal<AngularVelocity> clapDaddyVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> clapDaddyAppliedVolts;
+  private final StatusSignal<Current> clapDaddySupplyCurrentAmps;
+  private final StatusSignal<Current> clapDaddyTorqueCurrentAmps;
+  private final StatusSignal<Temperature> clapDaddyTemperatureCelsius;
+  private final StatusSignal<Double> clapDaddyPositionSetpointRotations;
+  private final StatusSignal<Double> clapDaddyPositionErrorRotations;
 
   private final StatusSignal<Angle> rollerPositionRotations;
   private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
@@ -45,43 +45,43 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
 
   private final StatusSignal<Angle> cancoderPositionRotations;
 
-  private Rotation2d serializerGoal;
+  private Rotation2d clapDaddyGoal;
 
   private MotionMagicVoltage positionControlRequest;
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
 
   public V1_GammaFunnelIOTalonFX() {
-    this.serializerTalonFX = new TalonFX(V1_GammaFunnelConstants.SERIALIZER_MOTOR_ID);
+    this.clapDaddyTalonFX = new TalonFX(V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_ID);
     this.rollerTalonFX = new TalonFX(V1_GammaFunnelConstants.ROLLER_MOTOR_ID);
     this.coralSensor = new DigitalInput(V1_GammaFunnelConstants.CORAL_SENSOR_ID);
-    this.serializerCANcoder = new CANcoder(V1_GammaFunnelConstants.SERIALIZER_MOTOR_ID);
+    this.clapDaddyCANcoder = new CANcoder(V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_ID);
 
-    serializerConfig = new TalonFXConfiguration();
-    serializerConfig.Feedback.FeedbackRemoteSensorID = serializerCANcoder.getDeviceID();
-    serializerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    serializerConfig.Feedback.SensorToMechanismRatio =
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO;
-    serializerConfig.Feedback.RotorToSensorRatio =
-        V1_GammaFunnelConstants.SERIALIZER_CANCODER_GEAR_RATIO;
-    serializerConfig.CurrentLimits.withSupplyCurrentLimit(
-        V1_GammaFunnelConstants.CURRENT_LIMITS.SERIALIZER_SUPPLY_CURRENT_LIMIT());
-    serializerConfig.CurrentLimits.withStatorCurrentLimit(
-        V1_GammaFunnelConstants.CURRENT_LIMITS.SERIALIZER_STATOR_CURRENT_LIMIT());
-    serializerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    serializerConfig.Slot0.kP = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get();
-    serializerConfig.Slot0.kD = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get();
-    serializerConfig.Slot0.kS = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get();
-    serializerConfig.Slot0.kV = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get();
-    serializerConfig.Slot0.kA = V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get();
-    serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS().get();
-    serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS().get();
-    serializerConfig.MotionMagic.MotionMagicAcceleration =
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
-    serializerConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+    clapDaddyConfig = new TalonFXConfiguration();
+    clapDaddyConfig.Feedback.FeedbackRemoteSensorID = clapDaddyCANcoder.getDeviceID();
+    clapDaddyConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    clapDaddyConfig.Feedback.SensorToMechanismRatio =
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
+    clapDaddyConfig.Feedback.RotorToSensorRatio =
+        V1_GammaFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO;
+    clapDaddyConfig.CurrentLimits.withSupplyCurrentLimit(
+        V1_GammaFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_SUPPLY_CURRENT_LIMIT());
+    clapDaddyConfig.CurrentLimits.withStatorCurrentLimit(
+        V1_GammaFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_STATOR_CURRENT_LIMIT());
+    clapDaddyConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    clapDaddyConfig.Slot0.kP = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get();
+    clapDaddyConfig.Slot0.kD = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get();
+    clapDaddyConfig.Slot0.kS = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get();
+    clapDaddyConfig.Slot0.kV = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get();
+    clapDaddyConfig.Slot0.kA = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get();
+    clapDaddyConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS();
+    clapDaddyConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS();
+    clapDaddyConfig.MotionMagic.MotionMagicAcceleration =
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+    clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity =
+        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
@@ -97,18 +97,18 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
-    serializerTalonFX.getConfigurator().apply(serializerConfig);
+    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
     rollerTalonFX.getConfigurator().apply(rollerConfig);
-    serializerCANcoder.getConfigurator().apply(cancoderConfig);
+    clapDaddyCANcoder.getConfigurator().apply(cancoderConfig);
 
-    serializerPositionRotations = serializerTalonFX.getPosition();
-    serializerVelocityRotationsPerSecond = serializerTalonFX.getVelocity();
-    serializerAppliedVolts = serializerTalonFX.getMotorVoltage();
-    serializerSupplyCurrentAmps = serializerTalonFX.getSupplyCurrent();
-    serializerTorqueCurrentAmps = serializerTalonFX.getTorqueCurrent();
-    serializerTemperatureCelsius = serializerTalonFX.getDeviceTemp();
-    serializerPositionSetpointRotations = serializerTalonFX.getClosedLoopReference();
-    serializerPositionErrorRotations = serializerTalonFX.getClosedLoopError();
+    clapDaddyPositionRotations = clapDaddyTalonFX.getPosition();
+    clapDaddyVelocityRotationsPerSecond = clapDaddyTalonFX.getVelocity();
+    clapDaddyAppliedVolts = clapDaddyTalonFX.getMotorVoltage();
+    clapDaddySupplyCurrentAmps = clapDaddyTalonFX.getSupplyCurrent();
+    clapDaddyTorqueCurrentAmps = clapDaddyTalonFX.getTorqueCurrent();
+    clapDaddyTemperatureCelsius = clapDaddyTalonFX.getDeviceTemp();
+    clapDaddyPositionSetpointRotations = clapDaddyTalonFX.getClosedLoopReference();
+    clapDaddyPositionErrorRotations = clapDaddyTalonFX.getClosedLoopError();
 
     rollerPositionRotations = rollerTalonFX.getPosition();
     rollerVelocityRotationsPerSecond = rollerTalonFX.getVelocity();
@@ -117,16 +117,16 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
-    cancoderPositionRotations = serializerCANcoder.getPosition();
+    cancoderPositionRotations = clapDaddyCANcoder.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        serializerPositionRotations,
-        serializerVelocityRotationsPerSecond,
-        serializerAppliedVolts,
-        serializerSupplyCurrentAmps,
-        serializerTorqueCurrentAmps,
-        serializerTemperatureCelsius,
+        clapDaddyPositionRotations,
+        clapDaddyVelocityRotationsPerSecond,
+        clapDaddyAppliedVolts,
+        clapDaddySupplyCurrentAmps,
+        clapDaddyTorqueCurrentAmps,
+        clapDaddyTemperatureCelsius,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVolts,
@@ -134,7 +134,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
-    serializerTalonFX.optimizeBusUtilization();
+    clapDaddyTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
@@ -145,14 +145,14 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        serializerPositionRotations,
-        serializerVelocityRotationsPerSecond,
-        serializerAppliedVolts,
-        serializerSupplyCurrentAmps,
-        serializerTorqueCurrentAmps,
-        serializerTemperatureCelsius,
-        serializerPositionSetpointRotations,
-        serializerPositionErrorRotations);
+        clapDaddyPositionRotations,
+        clapDaddyVelocityRotationsPerSecond,
+        clapDaddyAppliedVolts,
+        clapDaddySupplyCurrentAmps,
+        clapDaddyTorqueCurrentAmps,
+        clapDaddyTemperatureCelsius,
+        clapDaddyPositionSetpointRotations,
+        clapDaddyPositionErrorRotations);
 
     BaseStatusSignal.refreshAll(
         rollerPositionRotations,
@@ -164,21 +164,21 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
 
     cancoderPositionRotations.refresh();
 
-    inputs.serializerPosition =
-        Rotation2d.fromRotations(serializerPositionRotations.getValueAsDouble());
-    inputs.serializerAbsolutePosition =
+    inputs.clapDaddyPosition =
+        Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
+    inputs.clapDaddyAbsolutePosition =
         Rotation2d.fromRotations(cancoderPositionRotations.getValueAsDouble());
-    inputs.serializerVelocityRadiansPerSecond =
-        Units.rotationsToRadians(serializerVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.serializerAppliedVolts = serializerAppliedVolts.getValueAsDouble();
-    inputs.serializerSupplyCurrentAmps = serializerSupplyCurrentAmps.getValueAsDouble();
-    inputs.serializerTorqueCurrentAmps = serializerTorqueCurrentAmps.getValueAsDouble();
-    inputs.serializerTemperatureCelsius = serializerTemperatureCelsius.getValueAsDouble();
-    inputs.serializerGoal = serializerGoal;
-    inputs.serializerPositionSetpoint =
-        Rotation2d.fromRotations(serializerPositionSetpointRotations.getValueAsDouble());
-    inputs.serializerPositionError =
-        Rotation2d.fromRotations(serializerPositionErrorRotations.getValueAsDouble());
+    inputs.clapDaddyVelocityRadiansPerSecond =
+        Units.rotationsToRadians(clapDaddyVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.clapDaddyAppliedVolts = clapDaddyAppliedVolts.getValueAsDouble();
+    inputs.clapDaddySupplyCurrentAmps = clapDaddySupplyCurrentAmps.getValueAsDouble();
+    inputs.clapDaddyTorqueCurrentAmps = clapDaddyTorqueCurrentAmps.getValueAsDouble();
+    inputs.clapDaddyTemperatureCelsius = clapDaddyTemperatureCelsius.getValueAsDouble();
+    inputs.clapDaddyGoal = clapDaddyGoal;
+    inputs.clapDaddyPositionSetpoint =
+        Rotation2d.fromRotations(clapDaddyPositionSetpointRotations.getValueAsDouble());
+    inputs.clapDaddyPositionError =
+        Rotation2d.fromRotations(clapDaddyPositionErrorRotations.getValueAsDouble());
 
     inputs.rollerPosition = Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
     inputs.rollerVelocityRadiansPerSecond =
@@ -192,8 +192,8 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
-  public void setSerializerVoltage(double volts) {
-    serializerTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setClapDaddyVoltage(double volts) {
+    clapDaddyTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
@@ -202,9 +202,9 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
-  public void setSerializerPosition(Rotation2d position) {
-    serializerGoal = position;
-    serializerTalonFX.setControl(
+  public void setClapDaddyPosition(Rotation2d position) {
+    clapDaddyGoal = position;
+    clapDaddyTalonFX.setControl(
         positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
   }
 
@@ -214,37 +214,29 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
-  public boolean atSerializerGoal() {
+  public boolean atClapDaddyGoal() {
     return Math.abs(
-            serializerGoal.getRadians()
-                - Units.rotationsToRadians(serializerPositionRotations.getValueAsDouble()))
-        < V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+            clapDaddyGoal.getRadians()
+                - Units.rotationsToRadians(clapDaddyPositionRotations.getValueAsDouble()))
+        < V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
-    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
-    serializerConfig.Slot0.kP = kP;
-    serializerConfig.Slot0.kD = kD;
-    serializerConfig.Slot0.kS = kS;
-    serializerConfig.Slot0.kV = kV;
-    serializerConfig.Slot0.kA = kA;
-    serializerTalonFX.getConfigurator().apply(serializerConfig);
-  }
-
-  @Override
-  public void updateThresholds(double maxAngle, double minAngle) {
-    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
-    serializerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = maxAngle;
-    serializerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = minAngle;
-    serializerTalonFX.getConfigurator().apply(serializerConfig);
+    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
+    clapDaddyConfig.Slot0.kP = kP;
+    clapDaddyConfig.Slot0.kD = kD;
+    clapDaddyConfig.Slot0.kS = kS;
+    clapDaddyConfig.Slot0.kV = kV;
+    clapDaddyConfig.Slot0.kA = kA;
+    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
-    TalonFXConfiguration serializerConfig = new TalonFXConfiguration();
-    serializerConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
-    serializerConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
-    serializerTalonFX.getConfigurator().apply(serializerConfig);
+    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
+    clapDaddyConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
+    clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
   }
 }

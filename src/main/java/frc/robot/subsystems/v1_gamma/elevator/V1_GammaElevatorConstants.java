@@ -26,10 +26,11 @@ public class V1_GammaElevatorConstants {
     ELEVATOR_STATOR_CURRENT_LIMIT = 40;
 
     ELEVATOR_PARAMETERS =
-        new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 1, 0, Units.inchesToMeters(58), 4);
+        new ElevatorParameters(
+            DCMotor.getKrakenX60Foc(4), 6.803886, 0, Units.inchesToMeters(61.5), 4);
     GAINS =
         new Gains(
-            new LoggedTunableNumber("Elevator/Gains/kP", 0.1),
+            new LoggedTunableNumber("Elevator/Gains/kP", 20.0),
             new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
             new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
             new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
@@ -37,8 +38,8 @@ public class V1_GammaElevatorConstants {
             new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Elevator/Max Acceleration", 4),
-            new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
+            new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
+            new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
             new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
   }
 
@@ -51,8 +52,8 @@ public class V1_GammaElevatorConstants {
       LoggedTunableNumber kA) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRotsPerSecSq,
-      LoggedTunableNumber cruisingVelocityRotsPerSec,
+      LoggedTunableNumber maxAccelerationRadiansPerSecondSquared,
+      LoggedTunableNumber cruisingVelocityRadiansPerSecond,
       LoggedTunableNumber goalToleranceMeters) {}
 
   public static record ElevatorParameters(
@@ -65,11 +66,11 @@ public class V1_GammaElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(0.0),
-    INTAKE(15.0),
-    L1(10.0),
-    L2(25.0),
-    L3(50.0),
-    L4(75.0);
+    INTAKE(0.0),
+    L1(0.315),
+    L2(0.615),
+    L3(0.908),
+    L4(1.562);
 
     private final double position;
 

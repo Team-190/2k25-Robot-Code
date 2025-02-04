@@ -31,13 +31,6 @@ public interface V1_GammaElevatorIO {
   public default void setVoltage(double volts) {}
 
   /**
-   * Sets the current for the elevator.
-   *
-   * @param amps The current to set.
-   */
-  public default void setCurrent(double amps) {}
-
-  /**
    * Sets the position for the elevator.
    *
    * @param meters The position to set in meters.

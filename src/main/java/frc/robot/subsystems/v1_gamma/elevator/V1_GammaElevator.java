@@ -1,9 +1,15 @@
 package frc.robot.subsystems.v1_gamma.elevator;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.KSCharacterization;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import org.littletonrobotics.junction.Logger;
 
@@ -11,7 +17,7 @@ public class V1_GammaElevator extends SubsystemBase {
   private final V1_GammaElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
-  private final KSCharacterization characterizationRoutine;
+  private final SysIdRoutine characterizationRoutine;
 
   private ElevatorPositions position;
   private boolean isClosedLoop;
@@ -21,7 +27,13 @@ public class V1_GammaElevator extends SubsystemBase {
     inputs = new ElevatorIOInputsAutoLogged();
 
     characterizationRoutine =
-        new KSCharacterization(this, io::setCurrent, this::getFFCharacterizationVelocity);
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(3),
+                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
     position = ElevatorPositions.STOW;
     isClosedLoop = true;
@@ -45,12 +57,40 @@ public class V1_GammaElevator extends SubsystemBase {
    * @param position The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(ElevatorPositions position) {
+  public Command setPosition(ReefHeight position) {
     return runOnce(
         () -> {
           isClosedLoop = true;
-          this.position = position;
+          switch (position) {
+            case STOW:
+              this.position = ElevatorPositions.STOW;
+              break;
+            case INTAKE:
+              this.position = ElevatorPositions.INTAKE;
+              break;
+            case L1:
+              this.position = ElevatorPositions.L1;
+              break;
+            case L2:
+              this.position = ElevatorPositions.L2;
+              break;
+            case L3:
+              this.position = ElevatorPositions.L3;
+              break;
+            case L4:
+              this.position = ElevatorPositions.L4;
+              break;
+          }
         });
+  }
+
+  public Command setVoltage(double volts) {
+    return runEnd(
+        () -> {
+          isClosedLoop = false;
+          io.setVoltage(volts);
+        },
+        () -> io.setVoltage(0.0));
   }
 
   /**
@@ -68,12 +108,20 @@ public class V1_GammaElevator extends SubsystemBase {
   }
 
   /**
-   * Runs the system identification routine.
+   * Runs the SysId routine for the elevator.
    *
-   * @return A command that runs the system identification routine.
+   * @return A command to run the SysId routine.
    */
-  public Command runCharacterization() {
-    return Commands.sequence(runOnce(() -> isClosedLoop = false), characterizationRoutine);
+  public Command sysIdRoutine() {
+    return Commands.sequence(
+        runOnce(() -> isClosedLoop = false),
+        characterizationRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(4),
+        characterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(4),
+        characterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(4),
+        characterizationRoutine.dynamic(Direction.kReverse));
   }
 
   /**
@@ -81,8 +129,8 @@ public class V1_GammaElevator extends SubsystemBase {
    *
    * @return The current elevator position.
    */
-  public V1_GammaElevatorConstants.ElevatorPositions getPosition() {
-    return position;
+  public double getPosition() {
+    return inputs.positionMeters;
   }
 
   /**
