@@ -20,6 +20,16 @@ public class V1_GammaManipulator extends SubsystemBase {
     Logger.processInputs("Manipulator", inputs);
   }
 
+  private boolean reachedHalfScoreCoral(Rotation2d currentPosition) {
+    return currentPosition.getRadians()
+        >= currentPosition.plus(V1_GammaManipulatorConstants.halfScoreRotation).getRadians();
+  }
+
+  private boolean reachedStowCoral(Rotation2d currentPosition) {
+    return currentPosition.getRadians()
+        >= currentPosition.plus(V1_GammaManipulatorConstants.halfScoreRotation).getRadians();
+  }
+
   public boolean hasCoral() {
     return inputs.torqueCurrentAmps > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
@@ -38,14 +48,15 @@ public class V1_GammaManipulator extends SubsystemBase {
         .until(() -> !hasCoral());
   }
 
-  private boolean reachedHalfScoreCoral(Rotation2d currentPosition) {
-    return currentPosition.getRadians()
-        >= currentPosition.plus(V1_GammaManipulatorConstants.halfScoreRotation).getRadians();
-  }
-
   public Command halfScoreCoral() {
     Rotation2d currentPosition = inputs.position;
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
         .until(() -> reachedHalfScoreCoral(currentPosition));
+  }
+
+  public Command unHalfScoreCoral() {
+    Rotation2d currentPosition = inputs.position;
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get())
+        .until(() -> reachedStowCoral(currentPosition));
   }
 }

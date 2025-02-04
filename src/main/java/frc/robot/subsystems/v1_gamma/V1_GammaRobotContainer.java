@@ -160,7 +160,10 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
 
     // Operator triggers
-    // operator.leftTrigger(1.0).onTrue(pre-score).onFalse(un-pre-score);
+    operator
+        .leftTrigger(1.0)
+        .onTrue(manipulator.halfScoreCoral())
+        .onFalse(manipulator.unHalfScoreCoral());
     operator.rightTrigger(1.0).whileTrue(manipulator.scoreCoral());
 
     // Operator bumpers
