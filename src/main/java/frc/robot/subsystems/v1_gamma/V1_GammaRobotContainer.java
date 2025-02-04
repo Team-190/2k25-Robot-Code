@@ -150,8 +150,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 RobotCameras.v1_GammaCams));
 
     // Driver bumpers
-    // driver.leftBumper().onTrue(() -> DriveCommands.inchLeft(drive));
-    // driver.rightBumper().onTrue(() -> DriveCommands.inchRight(drive));
+    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
+    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
 
     // Operator face buttons
     operator.y().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L4)));

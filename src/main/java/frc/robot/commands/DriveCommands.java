@@ -148,31 +148,9 @@ public final class DriveCommands {
         drive);
   }
 
-  public static final Command inchMovement(Drive drive, double x) {
-    final Double[] distanceBefore = {0.0};
-    return Commands.run(
-            () -> {
-              if (distanceBefore[0] >= drive.getModulePositions()[0].distanceMeters + x) {
-                drive.stop();
-                return;
-              }
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      5.0,
-                      0.0,
-                      0.0,
-                      DriverStation.getAlliance().isPresent()
-                              && DriverStation.getAlliance().get() == Alliance.Red
-                          ? RobotState.getRobotPoseField()
-                              .getRotation()
-                              .plus(new Rotation2d(Math.PI))
-                          : RobotState.getRobotPoseField().getRotation()));
-            },
-            drive)
-        .beforeStarting(
-            () -> {
-              distanceBefore[0] = drive.getModulePositions()[0].distanceMeters;
-            });
+  public static final Command inchMovement(Drive drive, double velocity) {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
+        .withTimeout(.1);
   }
 
   public static final Command stop(Drive drive) {
