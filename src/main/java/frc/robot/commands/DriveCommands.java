@@ -148,6 +148,11 @@ public final class DriveCommands {
         drive);
   }
 
+  public static final Command inchMovement(Drive drive, double velocity) {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
+        .withTimeout(.1);
+  }
+
   public static final Command stop(Drive drive) {
     return Commands.run(() -> drive.stopWithX());
   }
