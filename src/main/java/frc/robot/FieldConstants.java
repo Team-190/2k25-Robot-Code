@@ -53,6 +53,15 @@ public class FieldConstants {
       RIGHT
     }
 
+    public static enum ReefHeight {
+      STOW,
+      INTAKE,
+      L1,
+      L2,
+      L3,
+      L4
+    }
+
     public static record PostPair(Pose2d right, Pose2d left) {
       public Pose2d getPost(ReefPost post) {
         return post == ReefPost.LEFT ? left : right;

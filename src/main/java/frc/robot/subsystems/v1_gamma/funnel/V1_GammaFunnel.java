@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,7 +35,7 @@ public class V1_GammaFunnel extends SubsystemBase {
                 Seconds.of(3),
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
-                (volts) -> io.setSerializerVoltage(volts.in(Volts)), null, this));
+                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     goal = FunnelState.OPENED;
 
     isClimbing = false;
@@ -47,41 +48,21 @@ public class V1_GammaFunnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      setSerializerPosition(goal.getAngle().getRadians());
+      io.setClapDaddyPosition(goal.getAngle());
     }
 
     if (isClimbing) {
-      setSerializerGoal(FunnelState.CLIMB);
-    } else {
-      if (hasCoral()) {
-        setSerializerGoal(FunnelState.CLOSED);
-      } else {
-        setSerializerGoal(FunnelState.OPENED);
-      }
+      setClapDaddyGoal(FunnelState.CLIMB);
     }
   }
 
-  public Rotation2d getAngle() {
-    return inputs.serializerAbsolutePosition;
-  }
-
   /**
-   * Sets the climbing state of the funnel.
-   *
-   * @param climbing True if the funnel is climbing, false otherwise.
-   * @return A command to set the climbing state.
-   */
-  public Command setClimbing(boolean climbing) {
-    return runOnce(() -> this.isClimbing = climbing);
-  }
-
-  /**
-   * Sets the goal state of the serializer.
+   * Sets the goal state of the clapDaddy.
    *
    * @param goal The desired FunnelState.
-   * @return A command to set the serializer goal.
+   * @return A command to set the clapDaddy goal.
    */
-  public Command setSerializerGoal(FunnelState goal) {
+  private Command setClapDaddyGoal(FunnelState goal) {
     return runOnce(
         () -> {
           isClosedLoop = true;
@@ -95,30 +76,18 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  public Command setRollerVoltage(double volts) {
+  private Command setRollerVoltage(double volts) {
     return run(() -> io.setRollerVoltage(volts));
   }
 
-  /**
-   * Sets the voltage of the serializer.
-   *
-   * @param volts The desired voltage.
-   * @return A command to set the serializer voltage.
-   */
-  public Command setSerializerVoltage(double volts) {
-    isClosedLoop = false;
-    return run(() -> io.setSerializerVoltage(volts));
-  }
-
-  /**
-   * Sets the position of the serializer.
-   *
-   * @param radians The desired position in radians.
-   * @return A command to set the serializer position.
-   */
-  public Command setSerializerPosition(double radians) {
-    isClosedLoop = true;
-    return run(() -> io.setSerializerPosition(Rotation2d.fromRadians(radians)));
+  public Command intakeCoral(BooleanSupplier coralLocked) {
+    return Commands.race(
+        Commands.sequence(
+            setClapDaddyGoal(FunnelState.OPENED),
+            Commands.waitUntil(() -> hasCoral()),
+            setClapDaddyGoal(FunnelState.CLOSED),
+            Commands.waitUntil(coralLocked)),
+        setRollerVoltage(12.0));
   }
 
   /**
@@ -131,16 +100,7 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Checks if the funnel has coral.
-   *
-   * @return True if the funnel has coral, false otherwise.
-   */
-  public boolean hasCoral() {
-    return inputs.hasCoral;
-  }
-
-  /**
-   * Runs the SysId routine for the serializer.
+   * Runs the SysId routine for the clapDaddy.
    *
    * @return A command to run the SysId routine.
    */
@@ -157,17 +117,40 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Checks if the serializer motor is at the goal position.
+   * Sets the climbing state of the funnel.
    *
-   * @return True if the serializer motor is at the goal, false otherwise.
+   * @param climbing True if the funnel is climbing, false otherwise.
+   * @return A command to set the climbing state.
    */
-  @AutoLogOutput(key = "Funnel/Serializer Motor At Goal")
-  public boolean serializerMotorAtGoal() {
-    return io.atSerializerGoal();
+  public Command setClimbing(boolean climbing) {
+    return runOnce(() -> this.isClimbing = climbing);
   }
 
   /**
-   * Updates the PID gains for the serializer.
+   * Checks if the funnel has coral.
+   *
+   * @return True if the funnel has coral, false otherwise.
+   */
+  public boolean hasCoral() {
+    return inputs.hasCoral;
+  }
+
+  /**
+   * Checks if the clapDaddy motor is at the goal position.
+   *
+   * @return True if the clapDaddy motor is at the goal, false otherwise.
+   */
+  @AutoLogOutput(key = "Funnel/At Goal")
+  public boolean atGoal() {
+    return io.atClapDaddyGoal();
+  }
+
+  public Rotation2d getAngle() {
+    return inputs.clapDaddyAbsolutePosition;
+  }
+
+  /**
+   * Updates the PID gains for the clapDaddy.
    *
    * @param kP The proportional gain.
    * @param kD The derivative gain.
@@ -180,17 +163,7 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   /**
-   * Updates the angle thresholds for the serializer.
-   *
-   * @param maxAngle The maximum angle.
-   * @param minAngle The minimum angle.
-   */
-  public void updateThresholds(double maxAngle, double minAngle) {
-    io.updateThresholds(maxAngle, minAngle);
-  }
-
-  /**
-   * Updates the motion constraints for the serializer.
+   * Updates the motion constraints for the clapDaddy.
    *
    * @param maxAcceleration The maximum acceleration.
    * @param maxVelocity The maximum velocity.

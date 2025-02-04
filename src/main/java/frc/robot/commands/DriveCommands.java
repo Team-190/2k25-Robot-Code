@@ -238,12 +238,6 @@ public final class DriveCommands {
                     })));
   }
 
-  private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
-    Rotation2d lastAngle = new Rotation2d();
-    double gyroDelta = 0.0;
-  }
-
   public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
 
     ProfiledPIDController xController =
@@ -368,5 +362,11 @@ public final class DriveCommands {
     double ans = Math.max(Math.abs(a), Math.abs(b));
     if (ans == Math.abs(a)) return Math.copySign(ans, a);
     else return Math.copySign(ans, b);
+  }
+
+  private static class WheelRadiusCharacterizationState {
+    double[] positions = new double[4];
+    Rotation2d lastAngle = new Rotation2d();
+    double gyroDelta = 0.0;
   }
 }

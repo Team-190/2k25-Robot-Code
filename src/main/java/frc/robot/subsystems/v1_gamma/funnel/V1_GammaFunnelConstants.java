@@ -2,61 +2,59 @@ package frc.robot.subsystems.v1_gamma.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
 public class V1_GammaFunnelConstants {
-  public static final int SERIALIZER_MOTOR_ID;
+  public static final int CLAP_DADDY_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
-  public static final int SERIALIZER_CANCODER_ID;
-  public static final double SERIALIZER_MOTOR_GEAR_RATIO;
+  public static final int CLAP_DADDY_CANCODER_ID;
+  public static final double CLAP_DADDY_MOTOR_GEAR_RATIO;
   public static final double ROLLER_MOTOR_GEAR_RATIO;
-  public static final double SERIALIZER_CANCODER_GEAR_RATIO;
+  public static final double CLAP_DADDY_CANCODER_GEAR_RATIO;
   public static final Rotation2d CANCODER_ABSOLUTE_OFFSET_RADIANS;
 
   public static final FunnelCurrentLimits CURRENT_LIMITS;
-  public static final Gains SERIALIZER_MOTOR_GAINS;
+  public static final Gains CLAP_DADDY_MOTOR_GAINS;
   public static final Thresholds ANGLE_THRESHOLDS;
-  public static final Constraints SERIALIZER_MOTOR_CONSTRAINTS;
-  public static final FunnelParams SERIALIZER_PARAMS;
+  public static final Constraints CLAP_DADDY_MOTOR_CONSTRAINTS;
+  public static final FunnelParams CLAP_DADDY_PARAMS;
   public static final FunnelParams ROLLER_PARAMS;
 
   static {
-    SERIALIZER_MOTOR_ID = 41;
+    CLAP_DADDY_MOTOR_ID = 41;
     ROLLER_MOTOR_ID = 40;
     CORAL_SENSOR_ID = 1;
-    SERIALIZER_CANCODER_ID = 42;
-    SERIALIZER_MOTOR_GEAR_RATIO = 17.0;
+    CLAP_DADDY_CANCODER_ID = 42;
+    CLAP_DADDY_MOTOR_GEAR_RATIO = 17.0;
     ROLLER_MOTOR_GEAR_RATIO = 2.5;
-    SERIALIZER_CANCODER_GEAR_RATIO = 3.0;
+    CLAP_DADDY_CANCODER_GEAR_RATIO = 3.0;
     CANCODER_ABSOLUTE_OFFSET_RADIANS = new Rotation2d();
 
     CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
-    SERIALIZER_MOTOR_GAINS =
+    CLAP_DADDY_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kP", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kS", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor Gains/kA", 0.0));
-    ANGLE_THRESHOLDS =
-        new Thresholds(
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Angle", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor/Min Angle", 0.0));
-    SERIALIZER_MOTOR_CONSTRAINTS =
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 40),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 0.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kA", 0.0));
+    ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
+    CLAP_DADDY_MOTOR_CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Acceleration", 0.0),
-            new LoggedTunableNumber("Funnel/Serializer Motor/Max Velocity", 0.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
             new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
-    SERIALIZER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+    CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
     ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
   }
 
   public static final record FunnelCurrentLimits(
-      double SERIALIZER_SUPPLY_CURRENT_LIMIT,
+      double CLAP_DADDY_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
-      double SERIALIZER_STATOR_CURRENT_LIMIT,
+      double CLAP_DADDY_STATOR_CURRENT_LIMIT,
       double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static final record Gains(
@@ -66,8 +64,7 @@ public class V1_GammaFunnelConstants {
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public static final record Thresholds(
-      LoggedTunableNumber MAX_ANGLE_RADIANS, LoggedTunableNumber MIN_ANGLE_RADIANS) {}
+  public static final record Thresholds(double MAX_ANGLE_RADIANS, double MIN_ANGLE_RADIANS) {}
 
   public static final record Constraints(
       LoggedTunableNumber MAX_ACCELERATION,

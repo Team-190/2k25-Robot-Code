@@ -1,0 +1,33 @@
+{
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "127.0.0.1"
+  },
+  "Persistent Values": {
+    "open": false
+  },
+  "Retained Values": {
+    "open": false
+  },
+  "outlineviewer@2": {
+    "open": true
+  },
+  "retained": {
+    "SmartDashboard": {
+      "Autonomous Modes": {
+        "open": true
+      }
+    }
+  },
+  "transitory": {
+    "TunableNumbers": {
+      "Elevator": {
+        "Gains": {
+          "open": true
+        },
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

@@ -86,7 +86,62 @@ public class CameraConstants {
                 .22,
                 new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
 
+    private static final Camera v1_GammaCenter =
+        new Camera(
+            new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-center")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                0,
+                .241,
+                .2,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-90))));
+
+    private static final Camera v1_GammaLeft =
+        new Camera(
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_3),
+            Limelight2PlusConstants.HORIZONTAL_FOV,
+            Limelight2PlusConstants.VERTICAL_FOV,
+            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-left")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                .284,
+                0.1884,
+                .22,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-135))));
+
+    private static final Camera v1_GammaRight =
+        new Camera(
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_3),
+            Limelight2PlusConstants.HORIZONTAL_FOV,
+            Limelight2PlusConstants.VERTICAL_FOV,
+            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-right")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                -.284,
+                0.1883,
+                .22,
+                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
+
     public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
+    public static final Camera[] v1_GammaCams = {v1_GammaCenter, v1_GammaLeft, v1_GammaRight};
   }
 
   public static class ReplayCameras {}

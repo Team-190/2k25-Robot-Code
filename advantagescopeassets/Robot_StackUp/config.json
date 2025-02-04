@@ -1,7 +1,7 @@
 {
   "name": "StackUp",
   "sourceUrl": "string",
-  "disableSimplification": false,
+  "disableSimplification": true,
   "rotations": [
     {
       "axis": "x",
@@ -109,6 +109,48 @@
         -0.088900,
         0,
         -0.120650
+      ]
+    },
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        },
+        {
+          "axis": "z",
+          "degrees": 180
+        },
+        {
+          "axis": "y",
+          "degrees": 25
+        }
+      ],
+      "zeroedPosition": [
+        -0.259,
+        0.104775,
+        -0.543223
+      ]
+    },
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        },
+        {
+          "axis": "z",
+          "degrees": 180
+        },
+        {
+          "axis": "y",
+          "degrees": 25
+        }
+      ],
+      "zeroedPosition": [
+        -0.259,
+        -0.104775,
+        -0.543223
       ]
     }
   ]

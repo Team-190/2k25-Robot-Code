@@ -7,28 +7,34 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
 public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
-  public final DCMotorSim serializerSim;
+  public final SingleJointedArmSim clapDaddySim;
   public final DCMotorSim rollerSim;
 
-  private final ProfiledPIDController serializerController;
-  private SimpleMotorFeedforward serializerFeedforward;
+  private final ProfiledPIDController clapDaddyController;
+  private SimpleMotorFeedforward clapDaddyFeedforward;
 
-  private Rotation2d serializerPositionGoal;
-  private double serializerAppliedVolts;
+  private double clapDaddyAppliedVolts;
   private double rollerAppliedVolts;
+  private boolean clapDaddyClosedLoop;
 
   public V1_GammaFunnelIOSim() {
-    serializerSim =
-        new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor(),
-                V1_GammaFunnelConstants.SERIALIZER_PARAMS.momentOfInertia(),
-                V1_GammaFunnelConstants.SERIALIZER_MOTOR_GEAR_RATIO),
-            V1_GammaFunnelConstants.SERIALIZER_PARAMS.motor());
-    serializerSim.setAngle(V1_GammaFunnelConstants.FunnelState.STOW.getAngle().getRadians());
+    clapDaddySim =
+        new SingleJointedArmSim(
+            LinearSystemId.createSingleJointedArmSystem(
+                V1_GammaFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+                V1_GammaFunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
+                V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
+            V1_GammaFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
+            1.0,
+            Double.NEGATIVE_INFINITY,
+            Double.POSITIVE_INFINITY,
+            false,
+            V1_GammaFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -37,43 +43,51 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
                 V1_GammaFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
             V1_GammaFunnelConstants.ROLLER_PARAMS.motor());
 
-    serializerController =
+    clapDaddyController =
         new ProfiledPIDController(
-            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kP().get(),
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
             0.0,
-            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kD().get(),
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                V1_GammaFunnelConstants.SERIALIZER_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
-    serializerFeedforward =
+                V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+    clapDaddyFeedforward =
         new SimpleMotorFeedforward(
-            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kS().get(),
-            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kV().get(),
-            V1_GammaFunnelConstants.SERIALIZER_MOTOR_GAINS.kA().get());
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+            V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
 
-    serializerPositionGoal = new Rotation2d();
-    serializerAppliedVolts = 0.0;
+    clapDaddyAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
+    clapDaddyClosedLoop = true;
+
+    clapDaddyController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    serializerSim.setInputVoltage(MathUtil.clamp(serializerAppliedVolts, -12.0, 12.0));
-    rollerSim.setInputVoltage(MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0));
-    serializerSim.update(Constants.LOOP_PERIOD_SECONDS);
+    if (clapDaddyClosedLoop) {
+      clapDaddyAppliedVolts =
+          clapDaddyController.calculate(clapDaddySim.getAngleRads())
+              + clapDaddyFeedforward.calculate(clapDaddyController.getSetpoint().position);
+    }
+
+    clapDaddyAppliedVolts = MathUtil.clamp(clapDaddyAppliedVolts, -12.0, 12.0);
+
+    clapDaddySim.setInputVoltage(clapDaddyAppliedVolts);
+    rollerSim.setInputVoltage(rollerAppliedVolts);
+    clapDaddySim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.serializerAbsolutePosition =
-        Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
-    inputs.serializerPosition = Rotation2d.fromRadians(serializerSim.getAngularPositionRad());
-    inputs.serializerVelocityRadiansPerSecond = serializerSim.getAngularVelocityRadPerSec();
-    inputs.serializerAppliedVolts = serializerAppliedVolts;
-    inputs.serializerSupplyCurrentAmps = serializerSim.getCurrentDrawAmps();
-    inputs.serializerGoal = (serializerPositionGoal);
-    inputs.serializerPositionSetpoint =
-        Rotation2d.fromRadians(serializerController.getSetpoint().position);
-    inputs.serializerPositionError =
-        Rotation2d.fromRadians(serializerController.getPositionError());
+    inputs.clapDaddyAbsolutePosition = Rotation2d.fromRadians(clapDaddySim.getAngleRads());
+    inputs.clapDaddyPosition = Rotation2d.fromRadians(clapDaddySim.getAngleRads());
+    inputs.clapDaddyVelocityRadiansPerSecond = clapDaddySim.getVelocityRadPerSec();
+    inputs.clapDaddyAppliedVolts = clapDaddyAppliedVolts;
+    inputs.clapDaddySupplyCurrentAmps = clapDaddySim.getCurrentDrawAmps();
+    inputs.clapDaddyGoal = Rotation2d.fromRadians(clapDaddyController.getGoal().position);
+    inputs.clapDaddyPositionSetpoint =
+        Rotation2d.fromRadians(clapDaddyController.getSetpoint().position);
+    inputs.clapDaddyPositionError = Rotation2d.fromRadians(clapDaddyController.getPositionError());
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();
@@ -82,8 +96,9 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   }
 
   @Override
-  public void setSerializerVoltage(double volts) {
-    serializerAppliedVolts = volts;
+  public void setClapDaddyVoltage(double volts) {
+    clapDaddyClosedLoop = false;
+    clapDaddyAppliedVolts = volts;
   }
 
   @Override
@@ -92,11 +107,9 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   }
 
   @Override
-  public void setSerializerPosition(Rotation2d position) {
-    serializerPositionGoal = position;
-    serializerAppliedVolts =
-        serializerController.calculate(position.getRadians())
-            + serializerFeedforward.calculate(position.getRadians());
+  public void setClapDaddyPosition(Rotation2d position) {
+    clapDaddyClosedLoop = true;
+    clapDaddyController.setGoal(position.getRadians());
   }
 
   @Override
@@ -105,25 +118,20 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   }
 
   @Override
-  public boolean atSerializerGoal() {
-    return serializerController.atGoal();
+  public boolean atClapDaddyGoal() {
+    return clapDaddyController.atGoal();
   }
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
-    serializerController.setP(kP);
-    serializerController.setD(kD);
-    serializerFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
-  }
-
-  @Override
-  public void updateThresholds(double maxAngle, double minAngle) {
-    serializerController.enableContinuousInput(minAngle, maxAngle);
+    clapDaddyController.setP(kP);
+    clapDaddyController.setD(kD);
+    clapDaddyFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
-    serializerController.setConstraints(
+    clapDaddyController.setConstraints(
         new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
   }
 }

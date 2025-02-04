@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import org.littletonrobotics.junction.Logger;
 
 public class V1_GammaMechanism3d {
   private static final double ELEVATOR_STAGE_1_MIN_HEIGHT = 0.095250; // Meters off the ground
@@ -21,9 +24,17 @@ public class V1_GammaMechanism3d {
   private static final Pose3d ELEVATOR_CARRIAGE_MANIPULATOR =
       new Pose3d(0.088900, 0.0, 0.120650, new Rotation3d());
   private static final Pose3d FUNNEL_LEFT =
-      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+      new Pose3d(
+          0.009102,
+          -0.104775,
+          0.603223,
+          new Rotation3d(0.0, 0.0, Units.degreesToRadians(-57.687084)));
   private static final Pose3d FUNNEL_RIGHT =
-      new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0.0, 0.0, 0.0));
+      new Pose3d(
+          0.009102,
+          0.104775,
+          0.603223,
+          new Rotation3d(0.0, 0.0, Units.degreesToRadians(57.687084)));
 
   /**
    * Calculates and returns an array of Pose3d objects representing the positions of various
@@ -62,11 +73,29 @@ public class V1_GammaMechanism3d {
             new Transform3d(
                 0, 0, carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT, new Rotation3d()));
 
+    Logger.recordOutput(
+        "Zero Poses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
-      FUNNEL_LEFT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians())),
-      FUNNEL_RIGHT.rotateBy(new Rotation3d(0.0, 0.0, funnelAngle.getRadians()))
+      FUNNEL_LEFT
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(Units.degreesToRadians(23.0), Units.degreesToRadians(-15.0), 0.0)))
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(), new Rotation3d(0.0, 0.0, funnelAngle.getRadians()))),
+      FUNNEL_RIGHT
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(
+                      Units.degreesToRadians(-23.0), Units.degreesToRadians(-15.0), 0.0)))
+          .transformBy(
+              new Transform3d(
+                  new Translation3d(),
+                  new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))),
     };
   }
 }
