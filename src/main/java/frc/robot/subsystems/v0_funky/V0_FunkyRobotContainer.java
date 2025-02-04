@@ -23,6 +23,7 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
+import frc.robot.util.KeyboardController;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -36,6 +37,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+  private final KeyboardController keyboard = new KeyboardController(0);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
