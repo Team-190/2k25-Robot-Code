@@ -92,8 +92,8 @@ public class RobotState {
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
-    fieldLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
-    reefLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
+    reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
