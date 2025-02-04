@@ -99,4 +99,50 @@ public class AutonomousCommands {
 
     return threePieceTakeTwoRight;
   }
+
+  public static final AutoRoutine autoALeft(Drive drive) {
+    AutoRoutine autoALeft = drive.getAutoFactory().newRoutine("autoALeft");
+
+    AutoTrajectory A_LEFT_PATH1 = autoALeft.trajectory("A_LEFT_PATH1");
+    AutoTrajectory A_LEFT_PATH2 = autoALeft.trajectory("A_LEFT_PATH2");
+    AutoTrajectory A_LEFT_PATH3 = autoALeft.trajectory("A_LEFT_PATH3");
+
+    autoALeft
+        .active()
+        .onTrue(
+            Commands.sequence(
+                A_LEFT_PATH1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                A_LEFT_PATH2.cmd(),
+                DriveCommands.alignRobotToAprilTag(drive),
+                A_LEFT_PATH3.cmd(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return autoALeft;
+  }
+
+  public static final AutoRoutine autoARight(Drive drive) {
+    AutoRoutine autoARight = drive.getAutoFactory().newRoutine("autoARight");
+
+    AutoTrajectory A_RIGHT_PATH1 = autoARight.trajectory("A_RIGHT_PATH1");
+    AutoTrajectory A_RIGHT_PATH2 = autoARight.trajectory("A_RIGHT_PATH2");
+    AutoTrajectory A_RIGHT_PATH3 = autoARight.trajectory("A_RIGHT_PATH3");
+
+    autoARight
+        .active()
+        .onTrue(
+            Commands.sequence(
+                A_RIGHT_PATH1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                A_RIGHT_PATH2.cmd(),
+                DriveCommands.alignRobotToAprilTag(drive),
+                A_RIGHT_PATH3.cmd(),
+                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return autoARight;
+  }
 }
