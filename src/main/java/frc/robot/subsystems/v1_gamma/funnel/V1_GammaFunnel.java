@@ -84,9 +84,9 @@ public class V1_GammaFunnel extends SubsystemBase {
     return Commands.race(
         Commands.sequence(
             setClapDaddyGoal(FunnelState.OPENED),
-            Commands.waitUntil(() -> hasCoral()).withTimeout(0.5),
+            Commands.waitUntil(() -> hasCoral()),
             setClapDaddyGoal(FunnelState.CLOSED),
-            Commands.waitUntil(coralLocked).withTimeout(0.5)),
+            Commands.waitUntil(coralLocked)),
         setRollerVoltage(12.0));
   }
 
