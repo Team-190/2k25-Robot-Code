@@ -122,6 +122,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         clapDaddyPositionRotations,
+        cancoderPositionRotations,
         clapDaddyVelocityRotationsPerSecond,
         clapDaddyAppliedVolts,
         clapDaddySupplyCurrentAmps,
@@ -223,20 +224,20 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
-    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
-    clapDaddyConfig.Slot0.kP = kP;
-    clapDaddyConfig.Slot0.kD = kD;
-    clapDaddyConfig.Slot0.kS = kS;
-    clapDaddyConfig.Slot0.kV = kV;
-    clapDaddyConfig.Slot0.kA = kA;
-    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
+    TalonFXConfiguration newClapDaddyGains = new TalonFXConfiguration();
+    newClapDaddyGains.Slot0.kP = kP;
+    newClapDaddyGains.Slot0.kD = kD;
+    newClapDaddyGains.Slot0.kS = kS;
+    newClapDaddyGains.Slot0.kV = kV;
+    newClapDaddyGains.Slot0.kA = kA;
+    clapDaddyTalonFX.getConfigurator().apply(newClapDaddyGains);
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
-    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
-    clapDaddyConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
-    clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
-    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
+    TalonFXConfiguration newClapDaddyConstraints = new TalonFXConfiguration();
+    newClapDaddyConstraints.MotionMagic.MotionMagicAcceleration = maxAcceleration;
+    newClapDaddyConstraints.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+    clapDaddyTalonFX.getConfigurator().apply(newClapDaddyConstraints);
   }
 }

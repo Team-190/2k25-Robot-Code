@@ -24,7 +24,6 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   private StatusSignal<Angle> positionRotations;
   private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
-  private double positionGoalMeters;
   private StatusSignal<Double> positionSetpointRotations;
   private StatusSignal<Double> positionErrorRotations;
   private StatusSignal<Voltage>[] appliedVolts;
@@ -34,7 +33,9 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   private StatusSignal<?>[] statusSignals;
 
-  private MotionMagicVoltage positionVoltageRequest;
+  private double positionGoalMeters;
+
+  private MotionMagicVoltage positionControlRequest;
   private VoltageOut voltageRequest;
 
   public V1_GammaElevatorIOTalonFX() {
@@ -129,7 +130,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
       follow.optimizeBusUtilization();
     }
 
-    positionVoltageRequest = new MotionMagicVoltage(0.0);
+    positionControlRequest = new MotionMagicVoltage(0.0);
     voltageRequest = new VoltageOut(0.0);
   }
 
@@ -178,7 +179,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   public void setPositionGoal(double meters) {
     positionGoalMeters = meters;
     talonFX.setControl(
-        positionVoltageRequest.withPosition(
+        positionControlRequest.withPosition(
             meters / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)));
   }
 
