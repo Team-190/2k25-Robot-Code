@@ -3,7 +3,6 @@ package frc.robot.subsystems.v1_gamma.climber;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -28,7 +27,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
   private StatusSignal<Temperature> temperatureCelsius;
 
   private VoltageOut voltageRequest;
-  private TorqueCurrentFOC torqueCurrentRequest;
 
   public V1_GammaClimberIOTalonFX() {
     talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID);
@@ -61,7 +59,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     talonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
-    torqueCurrentRequest = new TorqueCurrentFOC(0.0);
   }
 
   @Override
@@ -88,10 +85,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
-  @Override
-  public void setCurrent(double amps) {
-    talonFX.setControl(torqueCurrentRequest.withOutput(amps));
-  }
 
   @Override
   public boolean isClimbed() {
