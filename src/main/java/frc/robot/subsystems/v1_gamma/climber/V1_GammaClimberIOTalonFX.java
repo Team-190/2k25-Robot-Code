@@ -85,7 +85,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
-
   @Override
   public boolean isClimbed() {
     return torqueCurrentAmps.getValueAsDouble() >= V1_GammaClimberConstants.CLIMBER_CLIMBED_CURRENT;

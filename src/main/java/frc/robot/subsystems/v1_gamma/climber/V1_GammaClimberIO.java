@@ -26,7 +26,7 @@ public interface V1_GammaClimberIO {
    * @param volts The voltage to set.
    */
   public default void setVoltage(double volts) {}
-  
+
   /**
    * Gets the state of the climber based on the current draw.
    *
