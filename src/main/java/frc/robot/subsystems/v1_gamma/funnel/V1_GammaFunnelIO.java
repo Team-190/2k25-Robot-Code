@@ -53,7 +53,7 @@ public interface V1_GammaFunnelIO {
    *
    * @param position The position to set.
    */
-  public default void setClapDaddyPosition(Rotation2d position) {}
+  public default void setClapDaddyPositionGoal(Rotation2d position) {}
 
   /** Stops the roller. */
   public default void stopRoller() {}

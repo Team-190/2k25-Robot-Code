@@ -107,7 +107,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   }
 
   @Override
-  public void setClapDaddyPosition(Rotation2d position) {
+  public void setClapDaddyPositionGoal(Rotation2d position) {
     clapDaddyClosedLoop = true;
     clapDaddyController.setGoal(position.getRadians());
   }

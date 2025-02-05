@@ -67,15 +67,15 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
 
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
-    inputs.positionGoalMeters = controller.getGoal().position;
-    inputs.positionSetpointMeters = controller.getSetpoint().position;
-    inputs.positionErrorMeters = controller.getPositionError();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts;
       inputs.supplyCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.temperatureCelsius[i] = 0.0;
     }
+    inputs.positionGoalMeters = controller.getGoal().position;
+    inputs.positionSetpointMeters = controller.getSetpoint().position;
+    inputs.positionErrorMeters = controller.getPositionError();
   }
 
   @Override
@@ -85,24 +85,24 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setPosition(double position) {
-    sim.setState(position, 0);
+  public void setPosition(double positionMeters) {
+    sim.setState(positionMeters, 0);
   }
 
   @Override
-  public void setPositionGoal(double position) {
+  public void setPositionGoal(double positionMeters) {
     isClosedLoop = true;
-    controller.setGoal(position);
+    controller.setGoal(positionMeters); 
   }
 
   @Override
-  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+  public void updateGains(double kP, double kD, double kS, double kV, double kA, double kG) {
     controller.setPID(kP, 0, kD);
     feedforward = new ElevatorFeedforward(kS, kG, kV);
   }
 
   @Override
-  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+  public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
     controller.setConstraints(new Constraints(cruisingVelocity, maxAcceleration));
   }
 }
