@@ -63,7 +63,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return A command to set the clapDaddy goal.
    */
   private Command setClapDaddyGoal(FunnelState goal) {
-    return runOnce(
+    return Commands.runOnce(
         () -> {
           isClosedLoop = true;
           this.goal = goal;
@@ -77,16 +77,16 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   private Command setRollerVoltage(double volts) {
-    return run(() -> io.setRollerVoltage(volts));
+    return Commands.run(() -> io.setRollerVoltage(volts));
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
     return Commands.race(
         Commands.sequence(
             setClapDaddyGoal(FunnelState.OPENED),
-            Commands.waitUntil(() -> hasCoral()),
+            Commands.waitUntil(() -> hasCoral()).withTimeout(0.5),
             setClapDaddyGoal(FunnelState.CLOSED),
-            Commands.waitUntil(coralLocked)),
+            Commands.waitUntil(coralLocked).withTimeout(0.5)),
         setRollerVoltage(12.0));
   }
 
@@ -96,7 +96,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return A command to stop the roller.
    */
   public Command stopRoller() {
-    return runOnce(io::stopRoller);
+    return Commands.runOnce(io::stopRoller);
   }
 
   /**
@@ -106,7 +106,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    */
   public Command sysIdRoutine() {
     return Commands.sequence(
-        runOnce(() -> isClosedLoop = false),
+        Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(4),
         characterizationRoutine.quasistatic(Direction.kReverse),
@@ -123,7 +123,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return A command to set the climbing state.
    */
   public Command setClimbing(boolean climbing) {
-    return runOnce(() -> this.isClimbing = climbing);
+    return Commands.runOnce(() -> this.isClimbing = climbing);
   }
 
   /**

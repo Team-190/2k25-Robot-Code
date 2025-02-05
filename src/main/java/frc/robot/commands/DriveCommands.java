@@ -286,6 +286,8 @@ public final class DriveCommands {
     omegaController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+
     return Commands.runOnce(
             () -> {
               for (Camera camera : cameras) {
@@ -324,7 +326,6 @@ public final class DriveCommands {
                                   RobotState.getReefAlignData()
                                       .setpoint()
                                       .getRotation()
-                                      .plus(Rotation2d.fromDegrees(-90.0))
                                       .getRadians());
                         else
                           omegaController.reset(
