@@ -6,6 +6,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -71,7 +73,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
             torqueCurrentAmps,
             temperatureCelsius)
         .isOK();
-    inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());
+    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
