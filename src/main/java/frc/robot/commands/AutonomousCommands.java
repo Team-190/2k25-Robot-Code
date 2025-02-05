@@ -3,9 +3,13 @@ package frc.robot.commands;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 
 public class AutonomousCommands {
   public static final AutoRoutine twoPieceBack(Drive drive) {
@@ -23,9 +27,14 @@ public class AutonomousCommands {
                 Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj2.cmd(),
+                Commands.runOnce(() -> drive.stop()),
+                funnel.intakeCoral(() -> false).withTimeout(1.0),
                 traj3.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                Commands.parallel(
+                    DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
+                manipulator.scoreCoral().withTimeout(.25),
+                elevator.setPosition(ReefHeight.STOW)));
 
     return twoPieceBack;
   }

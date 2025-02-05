@@ -32,6 +32,8 @@ public class DriveConstants {
   public static final Gains GAINS;
   public static final AutoAlignGains AUTO_ALIGN_GAINS;
 
+  public static final AutoAlignGains AUTO_GAINS;
+
   public static final double ODOMETRY_FREQUENCY;
   public static final double DRIVER_DEADBAND;
 
@@ -75,6 +77,12 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
                 new LoggedTunableNumber("Drive/Rotation KP", 40.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.00));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
@@ -114,6 +122,12 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
                 new LoggedTunableNumber("Drive/Rotation KP", 10.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
@@ -155,6 +169,13 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Rotation KP", 5.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
 
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
+
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
@@ -194,6 +215,12 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
                 new LoggedTunableNumber("Drive/Rotation KP", 5.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;

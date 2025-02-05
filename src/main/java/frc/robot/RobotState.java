@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -18,15 +19,9 @@ import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
-import lombok.Setter;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-  @Setter
-  @Getter
-  @AutoLogOutput(key = "RobotState/Reef Data/Current Reef Post")
-  private static ReefPost currentReefPost;
 
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
@@ -37,6 +32,7 @@ public class RobotState {
   private static final SwerveDriveOdometry odometry;
 
   @Getter private static ReefAlignData reefAlignData;
+  @Getter private static OperatorInputData operatorInputData;
 
   static {
     switch (Constants.ROBOT) {
@@ -54,7 +50,7 @@ public class RobotState {
         break;
     }
 
-    currentReefPost = ReefPost.LEFT;
+    operatorInputData = new OperatorInputData(ReefPost.LEFT, ReefHeight.STOW);
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -80,7 +76,7 @@ public class RobotState {
         new SwerveDriveOdometry(
             DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
 
-    reefAlignData = new ReefAlignData(-1, new Pose2d(), 0.0, false, false, false, false);
+    reefAlignData = new ReefAlignData(-1, new Pose2d(), 0.0, false);
   }
 
   public RobotState() {}
@@ -96,8 +92,8 @@ public class RobotState {
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
-    fieldLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
-    reefLocalizer.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
+    reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
@@ -155,7 +151,8 @@ public class RobotState {
       }
     }
 
-    Pose2d autoAlignSetpoint = Reef.reefMap.get(closestReefTag).getPost(getCurrentReefPost());
+    Pose2d autoAlignSetpoint =
+        Reef.reefMap.get(closestReefTag).getPost(operatorInputData.currentReefPost());
     double distanceToSetpoint =
         RobotState.getRobotPoseReef()
             .getTranslation()
@@ -166,36 +163,7 @@ public class RobotState {
 
     reefAlignData =
         new ReefAlignData(
-            closestReefTag,
-            autoAlignSetpoint,
-            distanceToSetpoint,
-            false,
-            false,
-            false,
-            atSetpoint,
-            cameras);
-
-    double distanceToSetpointX =
-        Math.abs(RobotState.getRobotPoseReef().getX() - autoAlignSetpoint.getX());
-    double distanceToSetpointY =
-        Math.abs(RobotState.getRobotPoseReef().getX() - autoAlignSetpoint.getX());
-    double distanceToSetpointTheta =
-        Math.abs(
-            RobotState.getRobotPoseReef().getRotation().getRadians()
-                - autoAlignSetpoint.getRotation().getRadians());
-
-    boolean atX =
-        Math.abs(distanceToSetpointX)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get();
-    boolean atY =
-        Math.abs(distanceToSetpointY)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get();
-    boolean atTheta =
-        Math.abs(distanceToSetpointTheta)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                .omegaPIDConstants()
-                .tolerance()
-                .get();
+            closestReefTag, autoAlignSetpoint, distanceToSetpoint, atSetpoint, cameras);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
@@ -203,13 +171,12 @@ public class RobotState {
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
         "RobotState/Reef Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
+    Logger.recordOutput(
+        "RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
     Logger.recordOutput("RobotState/Reef Data/Closest Reef Tag", closestReefTag);
     Logger.recordOutput("RobotState/Reef Data/Reef Setpoint", autoAlignSetpoint);
     Logger.recordOutput("RobotState/Reef Data/Distance to Post", distanceToSetpoint);
     Logger.recordOutput("RobotState/Reef Data/At Setpoint", atSetpoint);
-    Logger.recordOutput("RobotState/Reef Data/At X Setpoint", atX);
-    Logger.recordOutput("RobotState/Reef Data/At Y Setpoint", atY);
-    Logger.recordOutput("RobotState/Reef Data/At Theta Setpoint", atTheta);
   }
 
   public static Pose2d getRobotPoseField() {
@@ -292,14 +259,23 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
+  public static void setReefPost(ReefPost post) {
+    ReefHeight height = operatorInputData.currentReefHeight();
+    operatorInputData = new OperatorInputData(post, height);
+  }
+
+  public static void setReefHeight(ReefHeight height) {
+    ReefPost post = operatorInputData.currentReefPost();
+    operatorInputData = new OperatorInputData(post, height);
+  }
+
   public static final record ReefAlignData(
       int closestReefTag,
       Pose2d setpoint,
       double distance,
-      boolean atX,
-      boolean atY,
-      boolean atTheta,
       boolean atSetpoint,
       Camera... cameras) {}
-  ;
+
+  public static final record OperatorInputData(
+      ReefPost currentReefPost, ReefHeight currentReefHeight) {}
 }

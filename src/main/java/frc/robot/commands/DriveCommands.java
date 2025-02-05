@@ -68,9 +68,18 @@ public final class DriveCommands {
             0.0,
             DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
 
-    autoHeadingController = new PIDController(5.0, 0.0, 0.0, Constants.LOOP_PERIOD_SECONDS);
-    autoXController = new PIDController(10.0, 0.0, 0.0);
-    autoYController = new PIDController(10.0, 0.0, 0.0);
+    autoHeadingController =
+        new PIDController(
+            DriveConstants.AUTO_GAINS.rotation_Kp().get(),
+            0.0,
+            DriveConstants.AUTO_GAINS.rotation_Kd().get(),
+            Constants.LOOP_PERIOD_SECONDS);
+    autoXController = new PIDController(DriveConstants.AUTO_GAINS.translation_Kp().get(), 0.0, 0.0);
+    autoYController =
+        new PIDController(
+            DriveConstants.AUTO_GAINS.translation_Kp().get(),
+            0.0,
+            DriveConstants.AUTO_GAINS.translation_Kd().get());
 
     alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
     alignHeadingController.setTolerance(Units.degreesToRadians(1.0));
@@ -137,6 +146,11 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
+  }
+
+  public static final Command inchMovement(Drive drive, double velocity) {
+    return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
+        .withTimeout(.1);
   }
 
   public static final Command stop(Drive drive) {
@@ -229,12 +243,6 @@ public final class DriveCommands {
                     })));
   }
 
-  private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
-    Rotation2d lastAngle = new Rotation2d();
-    double gyroDelta = 0.0;
-  }
-
   public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
 
     ProfiledPIDController xController =
@@ -278,6 +286,8 @@ public final class DriveCommands {
     omegaController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+
     return Commands.runOnce(
             () -> {
               for (Camera camera : cameras) {
@@ -316,7 +326,6 @@ public final class DriveCommands {
                                   RobotState.getReefAlignData()
                                       .setpoint()
                                       .getRotation()
-                                      .plus(Rotation2d.fromDegrees(-90.0))
                                       .getRadians());
                         else
                           omegaController.reset(
@@ -359,5 +368,11 @@ public final class DriveCommands {
     double ans = Math.max(Math.abs(a), Math.abs(b));
     if (ans == Math.abs(a)) return Math.copySign(ans, a);
     else return Math.copySign(ans, b);
+  }
+
+  private static class WheelRadiusCharacterizationState {
+    double[] positions = new double[4];
+    Rotation2d lastAngle = new Rotation2d();
+    double gyroDelta = 0.0;
   }
 }
