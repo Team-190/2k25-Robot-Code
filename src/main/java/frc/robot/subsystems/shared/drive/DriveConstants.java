@@ -73,9 +73,9 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV0_Funky.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
-                new LoggedTunableNumber("Drive/Translation KP", 25.0),
+                new LoggedTunableNumber("Drive/Translation KP", 40.0),
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
-                new LoggedTunableNumber("Drive/Rotation KP", 20.0),
+                new LoggedTunableNumber("Drive/Rotation KP", 40.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.00));
         AUTO_GAINS =
             new AutoAlignGains(
@@ -251,7 +251,7 @@ public class DriveConstants {
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
             new LoggedTunableNumber(
-                "Drive/Align Robot To April Tag/positionThresholdMeters", 0.045));
+                "Drive/Align Robot To April Tag/positionThresholdMeters", 0.0508));
   }
 
   public record DriveConfig(
