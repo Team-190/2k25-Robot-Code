@@ -105,6 +105,10 @@ public class Camera {
     return inputs.tagIDOfInterest;
   }
 
+  public boolean getIsConnected() {
+    return inputs.isConnected;
+  }
+
   public void setPipeline(int pipeline) {
     io.setPipeline(pipeline);
   }
