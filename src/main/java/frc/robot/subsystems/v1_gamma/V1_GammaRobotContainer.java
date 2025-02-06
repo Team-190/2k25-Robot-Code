@@ -202,6 +202,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.twoPieceBack(drive, elevator, funnel, manipulator).cmd();
+    return AutonomousCommands.autoALeft(drive, elevator, funnel, manipulator).cmd();
   }
 }
