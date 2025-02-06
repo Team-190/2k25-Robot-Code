@@ -9,6 +9,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface CameraIO {
   @AutoLog
   public static class CameraIOInputs {
+    public double currentHeartbeat = -1;
+    public boolean isConnected = false;
     public Rotation2d xOffset = new Rotation2d();
     public Rotation2d yOffset = new Rotation2d();
     public boolean targetAquired = false;
@@ -21,6 +23,10 @@ public interface CameraIO {
   }
 
   public default void updateInputs(CameraIOInputs inputs) {}
+
+  public default boolean getIsConnected(CameraIOInputs inputs) {
+    return false;
+  }
 
   public default Rotation2d getXOffset() {
     return new Rotation2d();
