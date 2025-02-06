@@ -4,8 +4,9 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
-import choreo.util.ChoreoAllianceFlipUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
@@ -15,6 +16,8 @@ import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
+import org.littletonrobotics.junction.Logger;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
@@ -138,19 +141,54 @@ public class AutonomousCommands {
   }
 
   private static final SwerveSample flipSample(SwerveSample sample) {
-    return new SwerveSample(
-      sample.t,
-      sample.y,  // Swap x with y
-      -sample.x, // Swap y with x and negate to reflect across the y-axis
-      sample.heading + Math.PI / 2, // Rotate heading by +90 degrees
-      sample.vy,  // Swap vx with vy
-      -sample.vx, // Swap vy with vx and negate
-      sample.omega, // Omega stays the same (no mirror effect needed)
-      sample.ay,  // Swap ax with ay
-      -sample.ax, // Swap ay with ax and negate
-      sample.alpha, // Alpha stays the same
-      sample.moduleForcesY(), // Swap forces in x with y
-      Arrays.stream(sample.moduleForcesX()).map(x -> -x).toArray() // Swap and negate forces in y
-  );  
+    double newHeading = sample.heading;
+
+    double approachAngle = Math.atan2(sample.vy, sample.vx);
+    boolean changeHeading = Math.abs(Math.sin(newHeading - approachAngle)) > 0.7;
+    newHeading = changeHeading ? newHeading + Math.PI : newHeading;
+
+    return new SwerveSample( // Change y
+        sample.t,
+        sample.x,
+        FieldConstants.fieldWidth - sample.y,
+        -newHeading,
+        sample.vx,
+        sample.vy,
+        -sample.omega - (changeHeading ? Math.PI : 0),
+        sample.ax,
+        sample.ay,
+        -sample.alpha - (changeHeading ? Math.PI : 0),
+        Arrays.stream(sample.moduleForcesX()).map(x -> -x).toArray(),
+        sample.moduleForcesY());
+  }
+
+  public static final void test(Drive drive) {
+    AutoRoutine test = drive.getAutoFactory().newRoutine("test");
+
+    AutoTrajectory TEST_PATH1 = test.trajectory("B_LEFT_PATH1");
+    AutoTrajectory TEST_PATH2 = mirrorAuto("B_LEFT_PATH1", test);
+
+    AutoTrajectory TEST_PATH3 = test.trajectory("B_LEFT_PATH2");
+    AutoTrajectory TEST_PATH4 = mirrorAuto("B_LEFT_PATH2", test);
+
+    AutoTrajectory TEST_PATH5 = test.trajectory("B_LEFT_PATH3");
+    AutoTrajectory TEST_PATH6 = mirrorAuto("B_LEFT_PATH3", test);
+
+    Logger.recordOutput(
+        "TestPathOG",
+        Stream.of(
+                TEST_PATH1.getRawTrajectory().getPoses(),
+                TEST_PATH3.getRawTrajectory().getPoses(),
+                TEST_PATH5.getRawTrajectory().getPoses())
+            .flatMap(Stream::of)
+            .toArray(Pose2d[]::new));
+    Logger.recordOutput(
+        "TestPathMirror",
+        Stream.of(
+                TEST_PATH2.getRawTrajectory().getPoses(),
+                TEST_PATH4.getRawTrajectory().getPoses(),
+                TEST_PATH6.getRawTrajectory().getPoses())
+            .flatMap(Stream::of)
+            .toArray(Pose2d[]::new));
   }
 }

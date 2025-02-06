@@ -202,6 +202,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.autoBRight(drive).cmd();
+    return Commands.sequence(
+        AutonomousCommands.autoBRight(drive).cmd().withTimeout(14),
+        Commands.waitSeconds(4).alongWith(Commands.print("Waiting for 4 seconds")),
+        AutonomousCommands.autoBLeft(drive).cmd());
   }
 }
