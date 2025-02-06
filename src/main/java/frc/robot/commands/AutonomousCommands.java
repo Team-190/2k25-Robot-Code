@@ -12,7 +12,11 @@ import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 
 public class AutonomousCommands {
-  public static final AutoRoutine twoPieceBack(Drive drive) {
+  public static final AutoRoutine twoPieceBack(
+      Drive drive,
+      V1_GammaElevator elevator,
+      V1_GammaFunnel funnel,
+      V1_GammaManipulator manipulator) {
     AutoRoutine twoPieceBack = drive.getAutoFactory().newRoutine("twoPieceBack");
 
     AutoTrajectory traj = twoPieceBack.trajectory("Path1");
@@ -24,7 +28,7 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 traj.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj2.cmd(),
                 Commands.runOnce(() -> drive.stop()),
@@ -51,12 +55,12 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 traj.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj2.cmd(),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj4.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return threePieceAntiProcessor;
@@ -74,12 +78,12 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 traj5.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj6.cmd(),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj7.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return threePieceTakeTwoLeft;
@@ -98,12 +102,12 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 traj8.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj9.cmd(),
                 DriveCommands.alignRobotToAprilTag(drive),
                 traj10.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return threePieceTakeTwoRight;
@@ -121,12 +125,12 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 A_LEFT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 A_LEFT_PATH2.cmd(),
                 DriveCommands.alignRobotToAprilTag(drive),
                 A_LEFT_PATH3.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return autoALeft;
@@ -144,14 +148,38 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 A_RIGHT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 A_RIGHT_PATH2.cmd(),
                 DriveCommands.alignRobotToAprilTag(drive),
                 A_RIGHT_PATH3.cmd(),
-                Commands.runOnce(() -> RobotState.setCurrentReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return autoARight;
+  }
+
+  public static final AutoRoutine autoBLeft(Drive drive) {
+    AutoRoutine autoBLeft = drive.getAutoFactory().newRoutine("autoBLeft");
+
+    AutoTrajectory B_LEFT_PATH1 = autoBLeft.trajectory("B_LEFT_PATH1");
+    AutoTrajectory B_LEFT_PATH2 = autoBLeft.trajectory("B_LEFT_PATH2");
+    AutoTrajectory B_LEFT_PATH3 = autoBLeft.trajectory("B_LEFT_PATH3");
+
+    autoBLeft
+        .active()
+        .onTrue(
+            Commands.sequence(
+                B_LEFT_PATH1.resetOdometry(),
+                B_LEFT_PATH1.cmd(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                B_LEFT_PATH2.cmd(),
+                Commands.waitSeconds(2),
+                B_LEFT_PATH3.cmd(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return autoBLeft;
   }
 }
