@@ -2,6 +2,9 @@ package frc.robot.commands;
 
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
+import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
@@ -10,6 +13,8 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
@@ -89,11 +94,63 @@ public class AutonomousCommands {
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 DriveCommands.alignRobotToAprilTag(drive),
                 B_LEFT_PATH2.cmd(),
-                Commands.waitSeconds(2),
                 B_LEFT_PATH3.cmd(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 DriveCommands.alignRobotToAprilTag(drive)));
 
     return autoBLeft;
+  }
+
+  public static final AutoRoutine autoBRight(Drive drive) {
+    AutoRoutine autoBRight = drive.getAutoFactory().newRoutine("autoBLeft");
+
+    AutoTrajectory B_RIGHT_PATH1 = mirrorAuto("B_LEFT_PATH1", autoBRight);
+    AutoTrajectory B_RIGHT_PATH2 = mirrorAuto("B_LEFT_PATH2", autoBRight);
+    AutoTrajectory B_RIGHT_PATH3 = mirrorAuto("B_LEFT_PATH3", autoBRight);
+
+    autoBRight
+        .active()
+        .onTrue(
+            Commands.sequence(
+                B_RIGHT_PATH1.resetOdometry(),
+                B_RIGHT_PATH1.cmd(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
+                DriveCommands.alignRobotToAprilTag(drive),
+                B_RIGHT_PATH2.cmd(),
+                B_RIGHT_PATH3.cmd(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                DriveCommands.alignRobotToAprilTag(drive)));
+
+    return autoBRight;
+  }
+
+  public static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {
+    Trajectory<SwerveSample> trajectory = routine.trajectory(traj).getRawTrajectory();
+    var flippedStates = new ArrayList<SwerveSample>();
+    for (var sample : trajectory.samples()) {
+      flippedStates.add(flipSample(sample));
+    }
+    AutoTrajectory mirrored =
+        routine.trajectory(
+            new Trajectory<SwerveSample>(
+                trajectory.name(), flippedStates, trajectory.splits(), trajectory.events()));
+    return mirrored;
+  }
+
+  private static final SwerveSample flipSample(SwerveSample sample) {
+    return new SwerveSample(
+      sample.t,
+      sample.y,  // Swap x with y
+      -sample.x, // Swap y with x and negate to reflect across the y-axis
+      sample.heading + Math.PI / 2, // Rotate heading by +90 degrees
+      sample.vy,  // Swap vx with vy
+      -sample.vx, // Swap vy with vx and negate
+      sample.omega, // Omega stays the same (no mirror effect needed)
+      sample.ay,  // Swap ax with ay
+      -sample.ax, // Swap ay with ax and negate
+      sample.alpha, // Alpha stays the same
+      sample.moduleForcesY(), // Swap forces in x with y
+      Arrays.stream(sample.moduleForcesX()).map(x -> -x).toArray() // Swap and negate forces in y
+  );  
   }
 }

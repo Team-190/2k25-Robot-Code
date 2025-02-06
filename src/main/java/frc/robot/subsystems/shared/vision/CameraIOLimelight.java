@@ -30,7 +30,7 @@ public class CameraIOLimelight implements CameraIO {
     inputs.currentHeartbeat =
         NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb").getDouble(-1);
     inputs.isConnected = getIsConnected(inputs);
-    
+
     if (inputs.isConnected) {
       inputs.xOffset = Rotation2d.fromDegrees(LimelightHelpers.getTX(name));
       inputs.yOffset = Rotation2d.fromDegrees(LimelightHelpers.getTY(name));
