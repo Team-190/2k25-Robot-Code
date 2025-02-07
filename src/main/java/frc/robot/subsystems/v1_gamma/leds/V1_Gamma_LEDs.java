@@ -33,7 +33,7 @@ public class V1_Gamma_LEDs extends Leds {
   private double lastEnabledTime = 0.0;
   private boolean estopped = false;
 
-  private static final int LENGTH = 38;
+  private static final int LENGTH = 68;
   private static final int PORT = 0;
 
   public V1_Gamma_LEDs() {
