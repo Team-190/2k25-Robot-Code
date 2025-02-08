@@ -2,10 +2,12 @@ package frc.robot.subsystems.v1_gamma.climber;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface V1_GammaClimberIO {
   @AutoLog
   public static class ClimberIOInputs {
-    public double positionRadians = 0.0;
+    public Rotation2d position = new Rotation2d();
     public double velocityRadiansPerSecond = 0.0;
     public double appliedVolts = 0.0;
     public double supplyCurrentAmps = 0.0;

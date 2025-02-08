@@ -7,13 +7,13 @@ public interface V1_GammaElevatorIO {
   public static class ElevatorIOInputs {
     public double positionMeters = 0.0;
     public double velocityMetersPerSecond = 0.0;
-    public double positionGoalMeters = 0.0;
-    public double positionSetpointMeters = 0.0;
-    public double positionErrorMeters = 0.0;
     public double[] appliedVolts = {0.0, 0.0, 0.0, 0.0};
     public double[] supplyCurrentAmps = {0.0, 0.0, 0.0, 0.0};
     public double[] torqueCurrentAmps = {0.0, 0.0, 0.0, 0.0};
     public double[] temperatureCelsius = {0.0, 0.0, 0.0, 0.0};
+    public double positionGoalMeters = 0.0;
+    public double positionSetpointMeters = 0.0;
+    public double positionErrorMeters = 0.0;
   }
 
   /**
