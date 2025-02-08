@@ -24,7 +24,7 @@ public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
     appliedVolts = MathUtil.clamp(appliedVolts, -12.0, 12.0);
-    
+
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
