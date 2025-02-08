@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
 public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
-  private ElevatorSim sim;
+  private final ElevatorSim sim;
 
-  private ProfiledPIDController controller;
+  private final ProfiledPIDController controller;
   private ElevatorFeedforward feedforward;
 
   private double appliedVolts;
@@ -59,7 +59,8 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
           controller.calculate(sim.getPositionMeters())
               + feedforward.calculate(controller.getSetpoint().position);
     }
-    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    appliedVolts = MathUtil.clamp(appliedVolts, -12.0, 12.0);
+    sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.positionMeters = sim.getPositionMeters();
