@@ -14,7 +14,17 @@ public interface V1_GammaManipulatorIO {
     public double temperatureCelsius = 0.0;
   }
 
+  /**
+   * Updates the inputs for the manipulator subsystem.
+   *
+   * @param inputs The inputs to update.
+   */
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
+  /**
+   * Sets the voltage for the manipulator.
+   *
+   * @param volts The voltage to set.
+   */
   public default void setVoltage(double volts) {}
 }

@@ -49,11 +49,11 @@ public interface V1_GammaFunnelIO {
   public default void setRollerVoltage(double volts) {}
 
   /**
-   * Sets the position for the clap daddy.
+   * Sets the goal for the clap daddy.
    *
    * @param position The position to set.
    */
-  public default void setClapDaddyPosition(Rotation2d position) {}
+  public default void setClapDaddyGoal(Rotation2d position) {}
 
   /** Stops the roller. */
   public default void stopRoller() {}

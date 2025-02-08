@@ -48,7 +48,7 @@ public class V1_GammaFunnel extends SubsystemBase {
     Logger.processInputs("Funnel", inputs);
 
     if (isClosedLoop) {
-      io.setClapDaddyPosition(goal.getAngle());
+      io.setClapDaddyGoal(goal.getAngle());
     }
 
     if (isClimbing) {
