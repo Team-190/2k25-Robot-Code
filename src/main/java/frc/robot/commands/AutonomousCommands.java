@@ -4,7 +4,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -15,8 +14,7 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-import org.littletonrobotics.junction.Logger;
+import java.util.Arrays;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
@@ -98,7 +96,8 @@ public class AutonomousCommands {
                 B_LEFT_PATH2.cmd(),
                 B_LEFT_PATH3.cmd(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
+                DriveCommands.alignRobotToAprilTag(drive)
+                ));
 
     return autoBLeft;
   }
@@ -121,7 +120,8 @@ public class AutonomousCommands {
                 B_RIGHT_PATH2.cmd(),
                 B_RIGHT_PATH3.cmd(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
+                DriveCommands.alignRobotToAprilTag(drive)
+                ));
 
     return autoBRight;
   }
@@ -153,36 +153,6 @@ public class AutonomousCommands {
         -sample.ay,
         sample.alpha,
         sample.moduleForcesX(),
-        sample.moduleForcesY());
-  }
-
-  public static final void test(Drive drive) {
-    AutoRoutine test = drive.getAutoFactory().newRoutine("test");
-
-    AutoTrajectory TEST_PATH1 = test.trajectory("B_LEFT_PATH1");
-    AutoTrajectory TEST_PATH2 = mirrorAuto("B_LEFT_PATH1", test);
-
-    AutoTrajectory TEST_PATH3 = test.trajectory("B_LEFT_PATH2");
-    AutoTrajectory TEST_PATH4 = mirrorAuto("B_LEFT_PATH2", test);
-
-    AutoTrajectory TEST_PATH5 = test.trajectory("B_LEFT_PATH3");
-    AutoTrajectory TEST_PATH6 = mirrorAuto("B_LEFT_PATH3", test);
-
-    Logger.recordOutput(
-        "TestPathOG",
-        Stream.of(
-                TEST_PATH1.getRawTrajectory().getPoses(),
-                TEST_PATH3.getRawTrajectory().getPoses(),
-                TEST_PATH5.getRawTrajectory().getPoses())
-            .flatMap(Stream::of)
-            .toArray(Pose2d[]::new));
-    Logger.recordOutput(
-        "TestPathMirror",
-        Stream.of(
-                TEST_PATH2.getRawTrajectory().getPoses(),
-                TEST_PATH4.getRawTrajectory().getPoses(),
-                TEST_PATH6.getRawTrajectory().getPoses())
-            .flatMap(Stream::of)
-            .toArray(Pose2d[]::new));
+        Arrays.stream(sample.moduleForcesY()).map(y -> -y).toArray());
   }
 }

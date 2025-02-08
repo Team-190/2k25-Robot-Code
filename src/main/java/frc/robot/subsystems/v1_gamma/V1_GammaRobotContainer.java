@@ -38,7 +38,6 @@ import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -211,8 +210,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     return Commands.sequence(
-        AutonomousCommands.autoBRight(drive).cmd().withTimeout(14),
-        Commands.waitSeconds(4).alongWith(Commands.print("Waiting for 4 seconds")),
+        AutonomousCommands.autoBRight(drive).cmd().withTimeout(10),
         AutonomousCommands.autoBLeft(drive).cmd());
   }
 }
