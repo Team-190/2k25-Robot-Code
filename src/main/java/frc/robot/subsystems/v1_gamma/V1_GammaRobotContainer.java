@@ -38,7 +38,6 @@ import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
