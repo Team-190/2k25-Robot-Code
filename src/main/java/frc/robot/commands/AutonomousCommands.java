@@ -15,7 +15,6 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
 
@@ -127,7 +126,7 @@ public class AutonomousCommands {
     return autoBRight;
   }
 
-  public static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {
+  private static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {
     Trajectory<SwerveSample> trajectory = routine.trajectory(traj).getRawTrajectory();
     var flippedStates = new ArrayList<SwerveSample>();
     for (var sample : trajectory.samples()) {
@@ -141,24 +140,19 @@ public class AutonomousCommands {
   }
 
   private static final SwerveSample flipSample(SwerveSample sample) {
-    double newHeading = sample.heading;
-
-    double approachAngle = Math.atan2(sample.vy, sample.vx);
-    boolean changeHeading = Math.abs(Math.sin(newHeading - approachAngle)) > 0.7;
-    newHeading = changeHeading ? newHeading + Math.PI : newHeading;
 
     return new SwerveSample( // Change y
         sample.t,
         sample.x,
         FieldConstants.fieldWidth - sample.y,
-        -newHeading,
+        Math.PI - sample.heading,
         sample.vx,
-        sample.vy,
-        -sample.omega - (changeHeading ? Math.PI : 0),
+        -sample.vy,
+        sample.omega,
         sample.ax,
-        sample.ay,
-        -sample.alpha - (changeHeading ? Math.PI : 0),
-        Arrays.stream(sample.moduleForcesX()).map(x -> -x).toArray(),
+        -sample.ay,
+        sample.alpha,
+        sample.moduleForcesX(),
         sample.moduleForcesY());
   }
 
