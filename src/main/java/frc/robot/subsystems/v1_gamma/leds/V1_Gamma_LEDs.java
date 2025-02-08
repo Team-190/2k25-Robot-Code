@@ -33,7 +33,7 @@ public class V1_Gamma_LEDs extends Leds {
   private double lastEnabledTime = 0.0;
   private boolean estopped = false;
 
-  private static final int LENGTH = 60;
+  private static final int LENGTH = 68;
   private static final int PORT = 0;
 
   public V1_Gamma_LEDs() {
@@ -81,7 +81,7 @@ public class V1_Gamma_LEDs extends Leds {
     // Stop loading notifier if running
     loadingNotifier.stop();
 
-    setPattern();
+    rainbow(1, 3);
 
     // Update LEDs
     leds.setData(buffer);
