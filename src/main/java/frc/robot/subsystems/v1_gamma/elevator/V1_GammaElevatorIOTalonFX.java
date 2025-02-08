@@ -183,7 +183,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+  public void updateGains(double kP, double kD, double kS, double kV, double kA, double kG) {
     TalonFXConfiguration newGains =
         new TalonFXConfiguration() {
           {
@@ -202,7 +202,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+  public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
     TalonFXConfiguration newConstraints =
         new TalonFXConfiguration() {
           {

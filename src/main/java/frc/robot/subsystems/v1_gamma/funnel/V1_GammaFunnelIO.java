@@ -63,7 +63,7 @@ public interface V1_GammaFunnelIO {
    *
    * @return True if the clap daddy is at its goal, false otherwise.
    */
-  public default boolean atClapDaddyGoal() {
+  public default boolean atClapDaddyPositionGoal() {
     return false;
   }
 

@@ -142,7 +142,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    */
   @AutoLogOutput(key = "Funnel/At Goal")
   public boolean atGoal() {
-    return io.atClapDaddyGoal();
+    return io.atClapDaddyPositionGoal();
   }
 
   public Rotation2d getAngle() {
