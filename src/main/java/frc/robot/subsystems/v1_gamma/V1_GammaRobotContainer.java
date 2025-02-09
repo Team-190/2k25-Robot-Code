@@ -142,7 +142,12 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 funnel,
                 manipulator,
                 RobotState.getOperatorInputData().currentReefHeight()));
-    driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    // driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
+
+    driver
+        .a()
+        .whileTrue(
+            DriveCommands.alignRobotToAprilTag(drive, RobotCameras.v1_GammaCams));
 
     // Driver triggers
     driver.leftTrigger(1.0).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));

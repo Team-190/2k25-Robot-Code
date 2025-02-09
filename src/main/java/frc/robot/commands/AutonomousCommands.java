@@ -96,8 +96,7 @@ public class AutonomousCommands {
                 B_LEFT_PATH2.cmd(),
                 B_LEFT_PATH3.cmd(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)
-                ));
+                DriveCommands.alignRobotToAprilTag(drive)));
 
     return autoBLeft;
   }
@@ -120,8 +119,7 @@ public class AutonomousCommands {
                 B_RIGHT_PATH2.cmd(),
                 B_RIGHT_PATH3.cmd(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)
-                ));
+                DriveCommands.alignRobotToAprilTag(drive)));
 
     return autoBRight;
   }
