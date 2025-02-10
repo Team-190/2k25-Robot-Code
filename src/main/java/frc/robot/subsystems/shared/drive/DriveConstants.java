@@ -131,8 +131,8 @@ public class DriveConstants {
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
         break;
-      case V1_GAMMA:
-      case V1_GAMMA_SIM:
+      case V1_STACKUP:
+      case V1_STACKUP_SIM:
       default:
         FRONT_LEFT = TunerConstantsV1_Gamma.FrontLeft;
         FRONT_RIGHT = TunerConstantsV1_Gamma.FrontRight;

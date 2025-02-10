@@ -113,7 +113,7 @@ public class Robot extends LoggedRobot {
         switch (Constants.ROBOT) {
           case V0_WHIPLASH, V0_WHIPLASH_SIM -> new V0_WhiplashRobotContainer();
           case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
-          case V1_GAMMA, V1_GAMMA_SIM -> new V1_GammaRobotContainer();
+          case V1_STACKUP, V1_STACKUP_SIM -> new V1_GammaRobotContainer();
           case V2_DELTA, V2_DELTA_SIM -> new V2_DeltaRobotContainer();
           default -> new RobotContainer() {};
         };

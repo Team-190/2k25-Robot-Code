@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v1_gamma.funnel;
 
+import static frc.robot.util.PhoenixUtil.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -9,13 +11,14 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.subsystems.shared.drive.TunerConstantsV1_Gamma;
 
 public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   private final TalonFX clapDaddyTalonFX;
@@ -52,36 +55,41 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   private NeutralOut neutralRequest;
 
   public V1_GammaFunnelIOTalonFX() {
-    this.clapDaddyTalonFX = new TalonFX(V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_ID);
-    this.rollerTalonFX = new TalonFX(V1_GammaFunnelConstants.ROLLER_MOTOR_ID);
-    this.coralSensor = new DigitalInput(V1_GammaFunnelConstants.CORAL_SENSOR_ID);
-    this.clapDaddyCANcoder = new CANcoder(V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_ID);
+    clapDaddyTalonFX =
+        new TalonFX(V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_ID, TunerConstantsV1_Gamma.kCANBus);
+    rollerTalonFX = new TalonFX(V1_GammaFunnelConstants.ROLLER_MOTOR_ID);
+    coralSensor = new DigitalInput(V1_GammaFunnelConstants.CORAL_SENSOR_ID);
+    clapDaddyCANcoder =
+        new CANcoder(
+            V1_GammaFunnelConstants.CLAP_DADDY_CANCODER_ID, TunerConstantsV1_Gamma.kCANBus);
 
     clapDaddyConfig = new TalonFXConfiguration();
-    clapDaddyConfig.Feedback.FeedbackRemoteSensorID = clapDaddyCANcoder.getDeviceID();
-    clapDaddyConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     clapDaddyConfig.Feedback.SensorToMechanismRatio =
         V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
-    clapDaddyConfig.Feedback.RotorToSensorRatio =
-        V1_GammaFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO;
     clapDaddyConfig.CurrentLimits.withSupplyCurrentLimit(
         V1_GammaFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_SUPPLY_CURRENT_LIMIT());
     clapDaddyConfig.CurrentLimits.withStatorCurrentLimit(
         V1_GammaFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_STATOR_CURRENT_LIMIT());
     clapDaddyConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    clapDaddyConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     clapDaddyConfig.Slot0.kP = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get();
     clapDaddyConfig.Slot0.kD = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get();
     clapDaddyConfig.Slot0.kS = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get();
     clapDaddyConfig.Slot0.kV = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get();
     clapDaddyConfig.Slot0.kA = V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get();
     clapDaddyConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS();
+        Units.radiansToRotations(V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS());
+    clapDaddyConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     clapDaddyConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS();
+        Units.radiansToRotations(V1_GammaFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
+    clapDaddyConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
     clapDaddyConfig.MotionMagic.MotionMagicAcceleration =
         V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity =
         V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+
+    tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
@@ -91,15 +99,22 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.Feedback.SensorToMechanismRatio = V1_GammaFunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
 
+    tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
+
     cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.MagnetOffset =
         V1_GammaFunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.getRotations();
-    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
-    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
-    rollerTalonFX.getConfigurator().apply(rollerConfig);
-    clapDaddyCANcoder.getConfigurator().apply(cancoderConfig);
+    tryUntilOk(5, () -> clapDaddyCANcoder.getConfigurator().apply(cancoderConfig, 0.25));
+    tryUntilOk(
+        5,
+        () ->
+            clapDaddyTalonFX.setPosition(
+                clapDaddyCANcoder.getPosition().getValueAsDouble()
+                    / V1_GammaFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO,
+                0.25));
 
     clapDaddyPositionRotations = clapDaddyTalonFX.getPosition();
     clapDaddyVelocityRotationsPerSecond = clapDaddyTalonFX.getVelocity();
@@ -132,10 +147,12 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
         rollerAppliedVolts,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius);
+        rollerTemperatureCelsius,
+        cancoderPositionRotations);
 
     clapDaddyTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
+    clapDaddyCANcoder.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
     neutralRequest = new NeutralOut();
@@ -167,7 +184,9 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
     inputs.clapDaddyAbsolutePosition =
-        Rotation2d.fromRotations(cancoderPositionRotations.getValueAsDouble());
+        Rotation2d.fromRotations(
+            cancoderPositionRotations.getValueAsDouble()
+                / V1_GammaFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO);
     inputs.clapDaddyVelocityRadiansPerSecond =
         Units.rotationsToRadians(clapDaddyVelocityRotationsPerSecond.getValueAsDouble());
     inputs.clapDaddyAppliedVolts = clapDaddyAppliedVolts.getValueAsDouble();
@@ -223,7 +242,6 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
-    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
     clapDaddyConfig.Slot0.kP = kP;
     clapDaddyConfig.Slot0.kD = kD;
     clapDaddyConfig.Slot0.kS = kS;
@@ -234,7 +252,6 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
-    TalonFXConfiguration clapDaddyConfig = new TalonFXConfiguration();
     clapDaddyConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
     clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
