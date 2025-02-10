@@ -42,8 +42,8 @@ public class RobotState {
       case V0_WHIPLASH:
       case V0_WHIPLASH_SIM:
         break;
-      case V1_GAMMA:
-      case V1_GAMMA_SIM:
+      case V1_STACKUP:
+      case V1_STACKUP_SIM:
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
@@ -173,6 +173,8 @@ public class RobotState {
         "RobotState/Reef Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
     Logger.recordOutput(
         "RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
+    Logger.recordOutput(
+        "RobotState/Reef Data/Current Reef Height", operatorInputData.currentReefHeight());
     Logger.recordOutput("RobotState/Reef Data/Closest Reef Tag", closestReefTag);
     Logger.recordOutput("RobotState/Reef Data/Reef Setpoint", autoAlignSetpoint);
     Logger.recordOutput("RobotState/Reef Data/Distance to Post", distanceToSetpoint);

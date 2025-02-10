@@ -32,7 +32,7 @@ public class V1_GammaFunnel extends SubsystemBase {
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
-                Seconds.of(3),
+                Seconds.of(1),
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
@@ -62,7 +62,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @param goal The desired FunnelState.
    * @return A command to set the clapDaddy goal.
    */
-  private Command setClapDaddyGoal(FunnelState goal) {
+  public Command setClapDaddyGoal(FunnelState goal) {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
@@ -82,12 +82,17 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
     return Commands.race(
-        Commands.sequence(
-            setClapDaddyGoal(FunnelState.OPENED),
-            Commands.waitUntil(() -> hasCoral()),
-            setClapDaddyGoal(FunnelState.CLOSED),
-            Commands.waitUntil(coralLocked)),
-        setRollerVoltage(12.0));
+            Commands.sequence(
+                setClapDaddyGoal(FunnelState.OPENED),
+                Commands.waitUntil(() -> hasCoral()),
+                setClapDaddyGoal(FunnelState.CLOSED),
+                Commands.waitUntil(coralLocked)),
+            setRollerVoltage(12.0))
+        .finallyDo(
+            () -> {
+              goal = FunnelState.OPENED;
+              io.setRollerVoltage(0.0);
+            });
   }
 
   /**
@@ -170,5 +175,9 @@ public class V1_GammaFunnel extends SubsystemBase {
    */
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
     io.updateConstraints(maxAcceleration, maxVelocity);
+  }
+
+  public Command setFunnelVoltage(double volts) {
+    return Commands.run(() -> io.setClapDaddyVoltage(volts));
   }
 }

@@ -1,7 +1,7 @@
 {
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "127.0.0.1"
+    "serverTeam": "10.1.90.2"
   },
   "Persistent Values": {
     "open": false
@@ -25,6 +25,12 @@
         "Gains": {
           "open": true
         },
+        "open": true
+      },
+      "Funnel": {
+        "open": true
+      },
+      "Manipulator": {
         "open": true
       },
       "open": true

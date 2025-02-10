@@ -37,9 +37,9 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
             0,
             V1_GammaElevatorConstants.GAINS.kD().get(),
             new Constraints(
-                V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond().get(),
+                V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
                 V1_GammaElevatorConstants.CONSTRAINTS
-                    .maxAccelerationRadiansPerSecondSquared()
+                    .maxAccelerationMetersPerSecondSquared()
                     .get()));
 
     feedforward =

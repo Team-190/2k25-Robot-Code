@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class V1_Gamma_LEDs extends Leds {
   private static Leds instance;
@@ -23,7 +22,6 @@ public class V1_Gamma_LEDs extends Leds {
   public double autoFinishedTime = 0.0;
   public boolean lowBatteryAlert = false;
 
-  @AutoLogOutput(key = "LEDs/Led States")
   public static ArrayList<LED_STATE> ledStates = new ArrayList<>();
 
   private Optional<Alliance> alliance = Optional.empty();

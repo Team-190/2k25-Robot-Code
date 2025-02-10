@@ -26,19 +26,19 @@ public class V1_GammaFunnelConstants {
   static {
     CLAP_DADDY_MOTOR_ID = 41;
     ROLLER_MOTOR_ID = 40;
-    CORAL_SENSOR_ID = 1;
-    CLAP_DADDY_CANCODER_ID = 42;
+    CORAL_SENSOR_ID = 0;
+    CLAP_DADDY_CANCODER_ID = 40;
     CLAP_DADDY_MOTOR_GEAR_RATIO = 17.0;
     ROLLER_MOTOR_GEAR_RATIO = 2.5;
     CLAP_DADDY_CANCODER_GEAR_RATIO = 3.0;
-    CANCODER_ABSOLUTE_OFFSET_RADIANS = new Rotation2d();
+    CANCODER_ABSOLUTE_OFFSET_RADIANS = Rotation2d.fromRadians(5.131165735477469);
 
     CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
     CLAP_DADDY_MOTOR_GAINS =
         new Gains(
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 40),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 0.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 125.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 5.0),
+            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.224),
             new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
             new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kA", 0.0));
     ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
@@ -74,9 +74,9 @@ public class V1_GammaFunnelConstants {
   public static final record FunnelParams(DCMotor motor, double momentOfInertia) {}
 
   @RequiredArgsConstructor
-  public enum FunnelState { // Max of 58º when not climbing
-    STOW(Rotation2d.fromDegrees(57.687084)),
-    OPENED(Rotation2d.fromDegrees(57.687084)),
+  public enum FunnelState {
+    STOW(Rotation2d.fromDegrees(65.0)),
+    OPENED(Rotation2d.fromDegrees(65.0)),
     CLOSED(Rotation2d.fromDegrees(90.0)),
     CLIMB(Rotation2d.fromDegrees(0.0));
 

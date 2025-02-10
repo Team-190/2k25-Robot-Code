@@ -20,27 +20,26 @@ public class V1_GammaElevatorConstants {
   static {
     ELEVATOR_CAN_ID = 20;
     ELEVATOR_GEAR_RATIO = 3.0;
-    DRUM_RADIUS = Units.inchesToMeters(2.256);
+    DRUM_RADIUS = Units.inchesToMeters(2.256 / 2.0);
 
     ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
     ELEVATOR_STATOR_CURRENT_LIMIT = 40;
 
     ELEVATOR_PARAMETERS =
-        new ElevatorParameters(
-            DCMotor.getKrakenX60Foc(4), 6.803886, 0, Units.inchesToMeters(61.5), 4);
+        new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43, 4);
     GAINS =
         new Gains(
-            new LoggedTunableNumber("Elevator/Gains/kP", 20.0),
-            new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
-            new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
-            new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
+            new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
+            new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
+            new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
+            new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
             new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
             new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
-            new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
-            new LoggedTunableNumber("Elevator/Goal Tolerance", 0.01));
+            new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
+            new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+            new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
   }
 
   public static record Gains(
@@ -52,8 +51,8 @@ public class V1_GammaElevatorConstants {
       LoggedTunableNumber kA) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRadiansPerSecondSquared,
-      LoggedTunableNumber cruisingVelocityRadiansPerSecond,
+      LoggedTunableNumber maxAccelerationMetersPerSecondSquared,
+      LoggedTunableNumber cruisingVelocityMetersPerSecond,
       LoggedTunableNumber goalToleranceMeters) {}
 
   public static record ElevatorParameters(
@@ -67,10 +66,10 @@ public class V1_GammaElevatorConstants {
   public static enum ElevatorPositions {
     STOW(0.0),
     INTAKE(0.0),
-    L1(0.315),
-    L2(0.615),
-    L3(0.908),
-    L4(1.562);
+    L1(0.11295250319916351),
+    L2(0.37296301250898894),
+    L3(0.7606347556550676),
+    L4(1.3864590139769697 + Units.inchesToMeters(0.25));
 
     private final double position;
 

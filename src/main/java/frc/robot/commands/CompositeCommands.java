@@ -31,6 +31,7 @@ public class CompositeCommands {
         V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(ReefHeight.INTAKE),
+          Commands.waitUntil(() -> !elevator.atGoal()),
           Commands.waitUntil(() -> elevator.atGoal()),
           Commands.race(
               manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())));
@@ -53,10 +54,7 @@ public class CompositeCommands {
     }
 
     public static final Command scoreCoral(
-        V1_GammaElevator elevator,
-        V1_GammaFunnel funnel,
-        V1_GammaManipulator manipulator,
-        ReefHeight level) {
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
       return Commands.sequence(
           elevator.setPosition(level),
           Commands.waitUntil(() -> elevator.atGoal()),
