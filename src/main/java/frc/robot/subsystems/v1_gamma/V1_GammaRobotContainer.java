@@ -71,11 +71,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          // vision = new Vision(RobotCameras.v1_GammaCams);
+          vision = new Vision(RobotCameras.v1_GammaCams);
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
-          // leds = new V1_Gamma_LEDs();
+          leds = new V1_Gamma_LEDs();
           break;
         case V1_STACKUP_SIM:
           drive =
@@ -163,8 +163,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.b().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L2)));
     operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
 
-    operator.povUp().onTrue(elevator.setPosition());
-
     // Operator triggers
     operator
         .leftTrigger(0.5)
@@ -207,6 +205,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return DriveCommands.feedforwardCharacterization(drive);
+    return DriveCommands.wheelRadiusCharacterization(drive);
   }
 }
