@@ -233,7 +233,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
-  public boolean atClapDaddyGoal() {
+  public boolean atClapDaddyPositionGoal() {
     return Math.abs(
             clapDaddyGoal.getRadians()
                 - Units.rotationsToRadians(clapDaddyPositionRotations.getValueAsDouble()))

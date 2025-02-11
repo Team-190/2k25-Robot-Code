@@ -23,7 +23,9 @@ public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
-    sim.setInputVoltage(MathUtil.clamp(appliedVolts, -12.0, 12.0));
+    appliedVolts = MathUtil.clamp(appliedVolts, -12.0, 12.0);
+
+    sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.position = Rotation2d.fromRadians(sim.getAngularPositionRad());

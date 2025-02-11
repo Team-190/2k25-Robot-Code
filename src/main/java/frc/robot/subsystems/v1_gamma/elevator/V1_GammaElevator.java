@@ -190,7 +190,7 @@ public class V1_GammaElevator extends SubsystemBase {
    * @param kG The gravity gain.
    */
   public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
-    io.setGains(kP, kD, kS, kV, kA, kG);
+    io.updateGains(kP, kD, kS, kV, kA, kG);
   }
 
   /**
@@ -200,7 +200,7 @@ public class V1_GammaElevator extends SubsystemBase {
    * @param cruisingVelocity The cruising velocity.
    */
   public void setConstraints(double maxAcceleration, double cruisingVelocity) {
-    io.setConstraints(maxAcceleration, cruisingVelocity);
+    io.updateConstraints(maxAcceleration, cruisingVelocity);
   }
 
   /**

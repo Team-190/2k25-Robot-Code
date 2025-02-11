@@ -73,6 +73,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
     }
 
     clapDaddyAppliedVolts = MathUtil.clamp(clapDaddyAppliedVolts, -12.0, 12.0);
+    rollerAppliedVolts = MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0);
 
     clapDaddySim.setInputVoltage(clapDaddyAppliedVolts);
     rollerSim.setInputVoltage(rollerAppliedVolts);
@@ -118,7 +119,7 @@ public class V1_GammaFunnelIOSim implements V1_GammaFunnelIO {
   }
 
   @Override
-  public boolean atClapDaddyGoal() {
+  public boolean atClapDaddyPositionGoal() {
     return clapDaddyController.atGoal();
   }
 

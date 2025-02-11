@@ -205,7 +205,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+  public void updateGains(double kP, double kD, double kS, double kV, double kA, double kG) {
     config.Slot0.kP = kP;
     config.Slot0.kD = kD;
     config.Slot0.kS = kS;
@@ -219,7 +219,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   }
 
   @Override
-  public void setConstraints(double maxAcceleration, double cruisingVelocity) {
+  public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
     config.MotionMagic.MotionMagicAcceleration =
         maxAcceleration
             / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)

@@ -54,7 +54,8 @@ public interface V1_GammaElevatorIO {
    * @param kA The acceleration gain.
    * @param kG The gravity gain.
    */
-  public default void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {}
+  public default void updateGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {}
 
   /**
    * Sets the constraints for the elevator.
@@ -62,5 +63,5 @@ public interface V1_GammaElevatorIO {
    * @param maxAcceleration The maximum acceleration.
    * @param cruisingVelocity The cruising velocity.
    */
-  public default void setConstraints(double maxAcceleration, double cruisingVelocity) {}
+  public default void updateConstraints(double maxAcceleration, double cruisingVelocity) {}
 }
