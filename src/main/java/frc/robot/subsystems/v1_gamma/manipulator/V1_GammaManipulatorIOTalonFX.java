@@ -84,6 +84,6 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
 
   @Override
   public void setVoltage(double volts) {
-    talonFX.setControl(voltageRequest.withOutput(volts));
+    talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
   }
 }

@@ -222,15 +222,15 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
+  public void stopRoller() {
+    rollerTalonFX.setControl(neutralRequest);
+  }
+
+  @Override
   public void setClapDaddyGoal(Rotation2d position) {
     clapDaddyGoal = position;
     clapDaddyTalonFX.setControl(
         positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
-  }
-
-  @Override
-  public void stopRoller() {
-    rollerTalonFX.setControl(neutralRequest);
   }
 
   @Override
