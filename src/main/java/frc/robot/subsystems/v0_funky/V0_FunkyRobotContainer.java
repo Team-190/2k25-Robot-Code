@@ -22,7 +22,6 @@ import frc.robot.subsystems.shared.vision.CameraConstants;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIO;
-import frc.robot.subsystems.v0_funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -54,7 +53,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision(CameraConstants.RobotCameras.v0_FunkyCams);
-          roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
+          roller = new V0_FunkyRoller(new V0_FunkyGroundCoralIOTalonFX());
           break;
         case V0_FUNKY_SIM:
           drive =
