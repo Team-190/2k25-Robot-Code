@@ -10,7 +10,6 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
@@ -18,8 +17,10 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
+import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
+import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
@@ -63,18 +64,18 @@ public class V1_GammaRobotContainer implements RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V1_STACKUP:
-          // drive =
-          //     new Drive(
-          //         new GyroIOPigeon2(),
-          //         new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
-          //         new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
-          //         new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
-          //         new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          // vision = new Vision(RobotCameras.v1_GammaCams);
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+          vision = new Vision(RobotCameras.v1_GammaCams);
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
-          // leds = new V1_Gamma_LEDs();
+          leds = new V1_Gamma_LEDs();
           break;
         case V1_STACKUP_SIM:
           drive =
@@ -162,8 +163,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.b().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L2)));
     operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
 
-    operator.povUp().onTrue(elevator.setPosition());
-
     // Operator triggers
     operator
         .leftTrigger(0.5)
@@ -206,6 +205,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.autoALeft(drive, elevator, funnel, manipulator).cmd();
+    return DriveCommands.wheelRadiusCharacterization(drive);
   }
 }

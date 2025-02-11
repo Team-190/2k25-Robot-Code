@@ -21,6 +21,9 @@
   },
   "transitory": {
     "TunableNumbers": {
+      "Drive": {
+        "open": true
+      },
       "Elevator": {
         "Gains": {
           "open": true
