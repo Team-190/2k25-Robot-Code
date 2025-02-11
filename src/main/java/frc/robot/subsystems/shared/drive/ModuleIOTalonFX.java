@@ -141,7 +141,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     cancoderConfig = constants.EncoderInitialConfigs;
     cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
-    cancoder.getConfigurator().apply(cancoderConfig);
+    tryUntilOk(5, () -> cancoder.getConfigurator().apply(cancoderConfig, 0.25));
 
     drivePositionRotations = driveTalonFX.getPosition();
     driveVelocityRotationsPerSecond = driveTalonFX.getVelocity();

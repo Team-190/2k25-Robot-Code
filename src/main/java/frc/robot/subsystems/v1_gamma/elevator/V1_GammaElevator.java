@@ -210,7 +210,7 @@ public class V1_GammaElevator extends SubsystemBase {
    */
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
-    return Math.abs(inputs.positionErrorMeters)
-        < V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+    return (inputs.positionMeters - position.getPosition())
+        <= V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 }

@@ -79,7 +79,7 @@ public class V1_Gamma_LEDs extends Leds {
     // Stop loading notifier if running
     loadingNotifier.stop();
 
-    rainbow(1, 3);
+    setPattern();
 
     // Update LEDs
     leds.setData(buffer);

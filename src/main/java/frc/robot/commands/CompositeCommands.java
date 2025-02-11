@@ -31,8 +31,7 @@ public class CompositeCommands {
         V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(ReefHeight.INTAKE),
-          Commands.waitUntil(() -> !elevator.atGoal()),
-          Commands.waitUntil(() -> elevator.atGoal()),
+          Commands.waitUntil(elevator::atGoal),
           Commands.race(
               manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())));
     }
@@ -48,8 +47,8 @@ public class CompositeCommands {
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.alignRobotToAprilTag(drive, cameras),
-          elevator.setPosition(level),
-          Commands.waitUntil(() -> elevator.atGoal()),
+          // elevator.setPosition(level),
+          // Commands.waitUntil(() -> elevator.atGoal()),
           manipulator.scoreCoral().withTimeout(0.5));
     }
 

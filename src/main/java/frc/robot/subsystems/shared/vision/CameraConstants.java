@@ -99,10 +99,7 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
             new Transform3d(
-                0,
-                .241,
-                .2,
-                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-90))));
+                -0.211842, 0.0, 0.226176, new Rotation3d(0, 0, Units.degreesToRadians(-180))));
 
     private static final Camera v1_GammaLeft =
         new Camera(
@@ -117,10 +114,10 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
             new Transform3d(
-                .284,
-                0.1884,
-                .22,
-                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-135))));
+                -0.203974,
+                -0.281026,
+                0.237475,
+                new Rotation3d(0.0, 0, Units.degreesToRadians(225))));
 
     private static final Camera v1_GammaRight =
         new Camera(
@@ -135,10 +132,7 @@ public class CameraConstants {
                 .publish(),
             List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
             new Transform3d(
-                -.284,
-                0.1883,
-                .22,
-                new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
+                -0.203974, 0.281026, 0.237475, new Rotation3d(0, 0, Units.degreesToRadians(-225))));
 
     public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
     public static final Camera[] v1_GammaCams = {v1_GammaCenter, v1_GammaLeft, v1_GammaRight};
