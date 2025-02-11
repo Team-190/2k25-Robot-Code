@@ -14,7 +14,6 @@ import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import frc.robot.util.AllianceFlipUtil;
 
 public class CompositeCommands {
-  // Shared
   public static final Command resetHeading(Drive drive) {
     return Commands.runOnce(
             () -> {
@@ -47,8 +46,8 @@ public class CompositeCommands {
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.alignRobotToAprilTag(drive, cameras),
-          // elevator.setPosition(level),
-          // Commands.waitUntil(() -> elevator.atGoal()),
+          elevator.setPosition(level),
+          Commands.waitUntil(elevator::atGoal),
           manipulator.scoreCoral().withTimeout(0.5));
     }
 
@@ -56,7 +55,7 @@ public class CompositeCommands {
         V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
       return Commands.sequence(
           elevator.setPosition(level),
-          Commands.waitUntil(() -> elevator.atGoal()),
+          Commands.waitUntil(elevator::atGoal),
           manipulator.scoreCoral().withTimeout(0.5));
     }
   }
