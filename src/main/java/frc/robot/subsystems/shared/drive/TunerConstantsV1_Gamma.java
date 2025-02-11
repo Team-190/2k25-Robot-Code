@@ -18,9 +18,9 @@ public class TunerConstantsV1_Gamma {
   // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
   public static final Slot0Configs steerGains =
       new Slot0Configs()
-          .withKP(100)
+          .withKP(4000)
           .withKI(0)
-          .withKD(0.5)
+          .withKD(75)
           .withKS(0.1)
           .withKV(2.33)
           .withKA(0)
@@ -28,14 +28,16 @@ public class TunerConstantsV1_Gamma {
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
   public static final Slot0Configs driveGains =
-      new Slot0Configs().withKP(0.1).withKI(0).withKD(0).withKS(0).withKV(0.124);
+      new Slot0Configs().withKP(0).withKI(0).withKD(0).withKS(25.199692999999986).withKV(0.0);
 
   // The closed-loop output type to use for the steer motors;
   // This affects the PID/FF gains for the steer motors
-  public static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
+  public static final ClosedLoopOutputType kSteerClosedLoopOutput =
+      ClosedLoopOutputType.TorqueCurrentFOC;
   // The closed-loop output type to use for the drive motors;
   // This affects the PID/FF gains for the drive motors
-  public static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+  public static final ClosedLoopOutputType kDriveClosedLoopOutput =
+      ClosedLoopOutputType.TorqueCurrentFOC;
 
   // The type of motor used for the drive motor
   public static final DriveMotorArrangement kDriveMotorType =
@@ -133,8 +135,8 @@ public class TunerConstantsV1_Gamma {
   public static final int kFrontLeftSteerMotorId = 2;
   public static final int kFrontLeftEncoderId = 1;
   public static final Angle kFrontLeftEncoderOffset = Rotations.of(0.17919921875);
-  public static final boolean kFrontLeftSteerMotorInverted = false;
-  public static final boolean kFrontLeftEncoderInverted = true;
+  public static final boolean kFrontLeftSteerMotorInverted = true;
+  public static final boolean kFrontLeftEncoderInverted = false;
 
   public static final Distance kFrontLeftXPos = Inches.of(11.375);
   public static final Distance kFrontLeftYPos = Inches.of(11.375);
@@ -144,8 +146,8 @@ public class TunerConstantsV1_Gamma {
   public static final int kFrontRightSteerMotorId = 4;
   public static final int kFrontRightEncoderId = 2;
   public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.087646484375);
-  public static final boolean kFrontRightSteerMotorInverted = false;
-  public static final boolean kFrontRightEncoderInverted = true;
+  public static final boolean kFrontRightSteerMotorInverted = true;
+  public static final boolean kFrontRightEncoderInverted = false;
 
   public static final Distance kFrontRightXPos = Inches.of(11.375);
   public static final Distance kFrontRightYPos = Inches.of(-11.375);
@@ -155,8 +157,8 @@ public class TunerConstantsV1_Gamma {
   public static final int kBackLeftSteerMotorId = 6;
   public static final int kBackLeftEncoderId = 3;
   public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.448486328125);
-  public static final boolean kBackLeftSteerMotorInverted = false;
-  public static final boolean kBackLeftEncoderInverted = true;
+  public static final boolean kBackLeftSteerMotorInverted = true;
+  public static final boolean kBackLeftEncoderInverted = false;
 
   public static final Distance kBackLeftXPos = Inches.of(-11.375);
   public static final Distance kBackLeftYPos = Inches.of(11.375);
@@ -166,8 +168,8 @@ public class TunerConstantsV1_Gamma {
   public static final int kBackRightSteerMotorId = 8;
   public static final int kBackRightEncoderId = 4;
   public static final Angle kBackRightEncoderOffset = Rotations.of(0.031982421875);
-  public static final boolean kBackRightSteerMotorInverted = false;
-  public static final boolean kBackRightEncoderInverted = true;
+  public static final boolean kBackRightSteerMotorInverted = true;
+  public static final boolean kBackRightEncoderInverted = false;
 
   public static final Distance kBackRightXPos = Inches.of(-11.375);
   public static final Distance kBackRightYPos = Inches.of(-11.375);

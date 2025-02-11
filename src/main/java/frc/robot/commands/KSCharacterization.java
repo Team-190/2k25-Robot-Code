@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class KSCharacterization extends Command {
   private static final LoggedTunableNumber currentRampFactor =
@@ -48,6 +49,7 @@ public class KSCharacterization extends Command {
     System.out.println("********** FF Characterization Results **********\n\n\n\n\n\n\n\n\n");
     System.out.println(
         "Static Characterization output: " + currentInput + " amps\n\n\n\n\n\n\n\n\n\n");
+    Logger.recordOutput("KS output", currentInput);
     inputConsumer.accept(0);
   }
 }
