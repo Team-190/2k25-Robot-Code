@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
@@ -160,6 +162,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.b().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L2)));
     operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
 
+    Trigger autoMoveElevator = new Trigger(() -> elevator.getPosition() != ElevatorPositions.INTAKE || elevator.getPosition() != ElevatorPositions.STOW);
+
     // Operator triggers
     operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
     operator.rightTrigger(0.5).whileTrue(manipulator.scoreCoral());
@@ -195,7 +199,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
           "Component Poses",
-          V1_GammaMechanism3d.getPoses(elevator.getPosition(), funnel.getAngle()));
+          V1_GammaMechanism3d.getPoses(elevator.getPositionMeters(), funnel.getAngle()));
     }
   }
 
