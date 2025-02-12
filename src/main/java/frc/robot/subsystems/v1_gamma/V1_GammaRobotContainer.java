@@ -181,6 +181,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "3 Piece", AutonomousCommands.autoALeft(drive, elevator, funnel, manipulator).cmd());
   }
 
   @Override
@@ -206,8 +208,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        AutonomousCommands.autoBRight(drive).cmd().withTimeout(10),
-        AutonomousCommands.autoBLeft(drive).cmd());
+    return autoChooser.get();
   }
 }
