@@ -134,7 +134,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
-    driver.b().whileTrue(CompositeCommands.ScoreCommands.scoreCoral(elevator, manipulator));
+    driver.b().onTrue(elevator.setPosition());
     driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
 
     // Driver triggers
@@ -151,8 +151,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 RobotCameras.v1_GammaCams));
 
     // Driver bumpers
-    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
-    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
+    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
+    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
 
     // Operator face buttons
     operator.y().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L4)));
@@ -161,10 +161,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
 
     // Operator triggers
-    operator
-        .leftTrigger(0.5)
-        .onTrue(manipulator.halfScoreCoral())
-        .onFalse(manipulator.unHalfScoreCoral());
+    operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
     operator.rightTrigger(0.5).whileTrue(manipulator.scoreCoral());
 
     // Operator bumpers

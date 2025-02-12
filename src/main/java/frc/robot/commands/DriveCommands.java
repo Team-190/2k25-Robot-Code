@@ -35,6 +35,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
+import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.DoubleSupplier;
@@ -295,6 +296,7 @@ public final class DriveCommands {
                   camera.setValidTags(RobotState.getReefAlignData().closestReefTag());
                 }
               }
+              V1_Gamma_LEDs.setAutoAligning(true);
             })
         .andThen(
             Commands.run(
@@ -361,6 +363,7 @@ public final class DriveCommands {
                       for (Camera camera : cameras) {
                         camera.setValidTags(FieldConstants.validTags);
                       }
+                      V1_Gamma_LEDs.setAutoAligning(false);
                     }));
   }
 

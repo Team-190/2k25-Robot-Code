@@ -27,8 +27,9 @@ public class V1_Gamma_LEDs extends Leds {
   private static final int RIGHT_LENGTH_END = 33;
   private static final int LEFT_LENGTH_START = 34;
   private static final int LEFT_LENGTH_END = 68;
-  
+
   @Setter private static boolean isIntaking = false;
+  @Setter private static boolean isAutoAligning = false;
 
   public V1_Gamma_LEDs() {
     super(LENGTH, PORT);
@@ -42,7 +43,7 @@ public class V1_Gamma_LEDs extends Leds {
   }
 
   public synchronized void periodic() {
-    lowBatteryAlert = RobotController.getBatteryVoltage() <= 11.8;
+    lowBatteryAlert = RobotController.getBatteryVoltage() <= 12.4;
     // Update auto state
     if (DriverStation.isDisabled()) {
       autoFinished = false;
@@ -84,10 +85,12 @@ public class V1_Gamma_LEDs extends Leds {
         // Low battery
         strobe(Color.kOrangeRed, Color.kBlack, STROBE_FAST_DURATION);
       } else {
-        rainbow(LENGTH, 2.0);
+        rainbow(LENGTH, 5.0);
       }
     } else if (DriverStation.isEnabled()) {
-      if (isIntaking) {
+      if (isAutoAligning) {
+        rainbow(LENGTH, 0.5);
+      } else if (isIntaking) {
         solid(Color.kAqua);
       } else {
         if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
