@@ -134,11 +134,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
-    driver
-        .b()
-        .whileTrue(
-            CompositeCommands.ScoreCommands.scoreCoral(
-                elevator, manipulator, RobotState.getOperatorInputData().currentReefHeight()));
+    driver.b().whileTrue(CompositeCommands.ScoreCommands.scoreCoral(elevator, manipulator));
     driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
 
     // Driver triggers

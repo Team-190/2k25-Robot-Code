@@ -94,7 +94,6 @@ public class V1_GammaElevator extends SubsystemBase {
   public Command setPosition(ReefHeight newPosition) {
     return Commands.runOnce(
         () -> {
-          RobotState.setReefHeight(newPosition);
           isClosedLoop = true;
           switch (newPosition) {
             case STOW:
@@ -210,7 +209,7 @@ public class V1_GammaElevator extends SubsystemBase {
    */
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
-    return (inputs.positionMeters - position.getPosition())
+    return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
         <= V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 }

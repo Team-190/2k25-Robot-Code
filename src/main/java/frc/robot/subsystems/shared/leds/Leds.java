@@ -8,7 +8,6 @@
 package frc.robot.subsystems.shared.leds;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Notifier;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.util.VirtualSubsystem;
 import java.util.List;
-import java.util.function.DoubleSupplier;
 
 public abstract class Leds extends VirtualSubsystem {
   public static class DefaultLeds extends Leds {
@@ -150,12 +148,70 @@ public abstract class Leds extends VirtualSubsystem {
     }
   }
 
-  public void elevatorPattern(DoubleSupplier position, Color c1, Color c2) {
-    int litLength =
-        (int) MathUtil.clamp(Units.metersToInches(position.getAsDouble()) / 0.5, 0, LENGTH);
-    wave(c1, c2, litLength, 0.1);
-    if (litLength > 0) {
-      breath(c1, c2, System.currentTimeMillis() / 1000.0);
+  public void solid(Color color, int start, int end) {
+    if (color != null) {
+      for (int i = start; i < end; i++) {
+        buffer.setLED(i, color);
+      }
+    }
+  }
+
+  public void solid(double percent, Color color, int start, int end) {
+    for (int i = start; i < MathUtil.clamp(end * percent, 0, end); i++) {
+      buffer.setLED(i, color);
+    }
+  }
+
+  public void strobe(Color c1, Color c2, double duration, int start, int end) {
+    boolean c1On = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
+    solid(c1On ? c1 : c2, start, end);
+  }
+
+  public void breath(Color c1, Color c2, double timestamp, int start, int end) {
+    double x = ((timestamp % BREATH_DURATION) / BREATH_DURATION) * 2.0 * Math.PI;
+    double ratio = (Math.sin(x) + 1.0) / 2.0;
+    double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
+    double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
+    double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);
+    solid(new Color(red, green, blue), start, end);
+  }
+
+  public void rainbow(double cycleLength, double duration, int start, int end) {
+    double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
+    double xDiffPerLed = 180.0 / cycleLength;
+    for (int i = start; i < end; i++) {
+      x += xDiffPerLed;
+      x %= 180.0;
+      buffer.setHSV(i, (int) x, 255, 255);
+    }
+  }
+
+  public void wave(Color c1, Color c2, double cycleLength, double duration, int start, int end) {
+    double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
+    double xDiffPerLed = (2.0 * Math.PI) / cycleLength;
+    for (int i = start; i < end; i++) {
+      x += xDiffPerLed;
+      double ratio = (Math.pow(Math.sin(x), WAVE_EXPONENT) + 1.0) / 2.0;
+      if (Double.isNaN(ratio)) {
+        ratio = (-Math.pow(Math.sin(x + Math.PI), WAVE_EXPONENT) + 1.0) / 2.0;
+      }
+      if (Double.isNaN(ratio)) {
+        ratio = 0.5;
+      }
+      double red = (c1.red * (1 - ratio)) + (c2.red * ratio);
+      double green = (c1.green * (1 - ratio)) + (c2.green * ratio);
+      double blue = (c1.blue * (1 - ratio)) + (c2.blue * ratio);
+      buffer.setLED(i, new Color(red, green, blue));
+    }
+  }
+
+  public void stripes(List<Color> colors, int length, double duration, int start, int end) {
+    int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
+    for (int i = start; i < end; i++) {
+      int colorIndex =
+          (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
+      colorIndex = colors.size() - 1 - colorIndex;
+      buffer.setLED(i, colors.get(colorIndex));
     }
   }
 }

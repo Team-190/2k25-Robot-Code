@@ -30,6 +30,7 @@ public class CompositeCommands {
         V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(ReefHeight.INTAKE),
+          Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
           Commands.race(
               manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())));
@@ -37,6 +38,15 @@ public class CompositeCommands {
   }
 
   public static class ScoreCommands {
+    public static final Command scoreCoral(
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+          elevator.setPosition(),
+          Commands.waitSeconds(0.125),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.scoreCoral().withTimeout(0.5));
+    }
+
     public static final Command autoScoreCoral(
         Drive drive,
         V1_GammaElevator elevator,
@@ -45,18 +55,7 @@ public class CompositeCommands {
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.alignRobotToAprilTag(drive, cameras),
-          elevator.setPosition(level),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.5));
-    }
-
-    public static final Command scoreCoral(
-        V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
-      return Commands.sequence(
-          elevator.setPosition(level),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.5));
+          DriveCommands.alignRobotToAprilTag(drive, cameras), scoreCoral(elevator, manipulator));
     }
   }
 }
