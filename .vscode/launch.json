@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "frc.robot.Main",
+      "projectName": "2k25-Robot-Code"
+    },
+    {
+      "type": "java",
       "name": "Constants",
       "request": "launch",
       "mainClass": "frc.robot.Constants",

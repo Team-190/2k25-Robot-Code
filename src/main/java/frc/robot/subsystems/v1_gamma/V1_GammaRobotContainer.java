@@ -205,6 +205,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return DriveCommands.wheelRadiusCharacterization(drive);
+    return Commands.sequence(
+        AutonomousCommands.autoBRight(drive).cmd().withTimeout(10),
+        AutonomousCommands.autoBLeft(drive).cmd());
   }
 }

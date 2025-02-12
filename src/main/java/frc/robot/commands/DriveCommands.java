@@ -326,6 +326,7 @@ public final class DriveCommands {
                                   RobotState.getReefAlignData()
                                       .setpoint()
                                       .getRotation()
+                                      .plus(Rotation2d.fromDegrees(-90))
                                       .getRadians());
                         else
                           omegaController.reset(

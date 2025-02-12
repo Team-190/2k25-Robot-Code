@@ -9,6 +9,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -129,6 +130,6 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return AutonomousCommands.autoBLeft(drive).cmd();
   }
 }
