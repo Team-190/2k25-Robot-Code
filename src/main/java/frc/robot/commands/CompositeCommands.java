@@ -26,6 +26,15 @@ public class CompositeCommands {
         .ignoringDisable(true);
   }
 
+  public static final Command setStaticReefHeight(ReefHeight height) {
+    return Commands.runOnce(() -> RobotState.setReefHeight(height));
+  }
+
+  public static final Command setDynamicReefHeight(ReefHeight height, V1_GammaElevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> RobotState.setReefHeight(height)), elevator.setPosition());
+  }
+
   public static class IntakeCommands {
     public static final Command intakeCoral(
         V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -21,7 +22,7 @@ public class V1_GammaElevator extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
 
-  private ElevatorPositions position;
+  @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
   public V1_GammaElevator(V1_GammaElevatorIO io) {
@@ -163,7 +164,7 @@ public class V1_GammaElevator extends SubsystemBase {
    *
    * @return The current elevator position.
    */
-  public double getPosition() {
+  public double getPositionMeters() {
     return inputs.positionMeters;
   }
 
