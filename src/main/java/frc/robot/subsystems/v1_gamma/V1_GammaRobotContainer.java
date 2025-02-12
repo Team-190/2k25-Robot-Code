@@ -26,10 +26,10 @@ import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
@@ -128,6 +128,17 @@ public class V1_GammaRobotContainer implements RobotContainer {
   }
 
   private void configureButtonBindings() {
+    // Generic triggers
+    Trigger elevatorStow =
+        new Trigger(
+            () ->
+                elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                    || elevator.getPosition().equals(ElevatorPositions.STOW));
+    Trigger elevatorNotStow =
+        new Trigger(
+            () ->
+                !elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                    && !elevator.getPosition().equals(ElevatorPositions.STOW));
 
     // Default drive command
     drive.setDefaultCommand(
@@ -157,12 +168,27 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
 
     // Operator face buttons
-    operator.y().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L4)));
-    operator.x().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L3)));
-    operator.b().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L2)));
-    operator.a().onTrue(Commands.runOnce(() -> RobotState.setReefHeight(ReefHeight.L1)));
+    operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
+    operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
+    operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
+    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
 
-    Trigger autoMoveElevator = new Trigger(() -> elevator.getPosition() != ElevatorPositions.INTAKE || elevator.getPosition() != ElevatorPositions.STOW);
+    operator
+        .y()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+    operator
+        .x()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+    operator
+        .b()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+    operator
+        .a()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
     operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
