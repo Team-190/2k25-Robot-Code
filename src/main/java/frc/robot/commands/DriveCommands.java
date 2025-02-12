@@ -52,18 +52,17 @@ public final class DriveCommands {
   @Getter private static final PIDController autoYController;
   @Getter private static final PIDController autoHeadingController;
 
-
   private static final ProfiledPIDController omegaController =
-  new ProfiledPIDController(
-      DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
-      0.0,
-      DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
-      new TrapezoidProfile.Constraints(
-          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-              .omegaPIDConstants()
-              .maxVelocity()
-              .get(),
-          Double.POSITIVE_INFINITY));
+      new ProfiledPIDController(
+          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
+          0.0,
+          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
+          new TrapezoidProfile.Constraints(
+              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                  .omegaPIDConstants()
+                  .maxVelocity()
+                  .get(),
+              Double.POSITIVE_INFINITY));
 
   static {
     alignHeadingController =
@@ -354,30 +353,25 @@ public final class DriveCommands {
                     }));
   }
 
-
   private static double thetaSpeedCalculate() {
     double thetaSpeed = 0.0;
-    
+
     omegaController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
     omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
     if (!omegaController.atSetpoint())
-    thetaSpeed =
-        omegaController.calculate(
-            RobotState.getRobotPoseReef().getRotation().getRadians(),
-            RobotState.getReefAlignData()
-                .setpoint()
-                .getRotation()
-                .getRadians());
-  else
-    omegaController.reset(
-        RobotState.getRobotPoseReef().getRotation().getRadians());
+      thetaSpeed =
+          omegaController.calculate(
+              RobotState.getRobotPoseReef().getRotation().getRadians(),
+              RobotState.getReefAlignData().setpoint().getRotation().getRadians());
+    else omegaController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("thetaSpeed", thetaSpeed);
     return thetaSpeed;
   }
+
   public static double absMax(double a, double b) {
     double ans = Math.max(Math.abs(a), Math.abs(b));
     if (ans == Math.abs(a)) return Math.copySign(ans, a);

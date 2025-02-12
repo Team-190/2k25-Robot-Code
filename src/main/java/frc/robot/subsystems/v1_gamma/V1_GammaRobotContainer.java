@@ -130,7 +130,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Default drive command
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX(), driver.getHID()::getXButton));
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            driver.getHID()::getXButton));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
