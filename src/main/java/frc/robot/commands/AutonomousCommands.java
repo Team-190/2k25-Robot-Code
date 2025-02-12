@@ -34,8 +34,7 @@ public class AutonomousCommands {
             Commands.sequence(
                 A_LEFT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
-                Commands.parallel(
-                    DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
+                Commands.parallel(A_LEFT_PATH1.cmd(), elevator.setPosition(ReefHeight.L4)),
                 elevator.setPosition(ReefHeight.STOW),
                 manipulator.scoreCoral().withTimeout(0.5),
                 A_LEFT_PATH2.cmd(),
@@ -56,26 +55,7 @@ public class AutonomousCommands {
   }
 
   public static final AutoRoutine autoARight(Drive drive) {
-    AutoRoutine autoARight = drive.getAutoFactory().newRoutine("autoARight");
-
-    AutoTrajectory A_RIGHT_PATH1 = autoARight.trajectory("A_RIGHT_PATH1");
-    AutoTrajectory A_RIGHT_PATH2 = autoARight.trajectory("A_RIGHT_PATH2");
-    AutoTrajectory A_RIGHT_PATH3 = autoARight.trajectory("A_RIGHT_PATH3");
-
-    autoARight
-        .active()
-        .onTrue(
-            Commands.sequence(
-                A_RIGHT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
-                DriveCommands.alignRobotToAprilTag(drive),
-                A_RIGHT_PATH2.cmd(),
-                DriveCommands.alignRobotToAprilTag(drive),
-                A_RIGHT_PATH3.cmd(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
-
-    return autoARight;
+    return null;
   }
 
   public static final AutoRoutine autoBLeft(Drive drive) {
