@@ -134,10 +134,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.getHID()::getXButton));
+            driver.getHID()::getBButton));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
+    driver.x().onTrue(elevator.setPosition());
     driver.b().onTrue(elevator.setPosition());
     driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
 
