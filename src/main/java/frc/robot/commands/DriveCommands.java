@@ -38,6 +38,7 @@ import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -50,6 +51,19 @@ public final class DriveCommands {
   @Getter private static final PIDController autoXController;
   @Getter private static final PIDController autoYController;
   @Getter private static final PIDController autoHeadingController;
+
+
+  private static final ProfiledPIDController omegaController =
+  new ProfiledPIDController(
+      DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
+      0.0,
+      DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
+      new TrapezoidProfile.Constraints(
+          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+              .omegaPIDConstants()
+              .maxVelocity()
+              .get(),
+          Double.POSITIVE_INFINITY));
 
   static {
     alignHeadingController =
@@ -96,7 +110,8 @@ public final class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier rotateToReef) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -138,7 +153,7 @@ public final class DriveCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
                   fieldRelativeYVel,
-                  angular,
+                  rotateToReef.getAsBoolean() ? thetaSpeedCalculate() : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -151,7 +166,7 @@ public final class DriveCommands {
 
   public static final Command inchMovement(Drive drive, double velocity) {
     return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
-        .withTimeout(.1);
+        .withTimeout(.07);
   }
 
   public static final Command stop(Drive drive) {
@@ -268,26 +283,11 @@ public final class DriveCommands {
                     .maxVelocity()
                     .get(),
                 Double.POSITIVE_INFINITY));
-    ProfiledPIDController omegaController =
-        new ProfiledPIDController(
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
-            0.0,
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
-            new TrapezoidProfile.Constraints(
-                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                    .omegaPIDConstants()
-                    .maxVelocity()
-                    .get(),
-                Double.POSITIVE_INFINITY));
 
     xController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
     yController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
-    omegaController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
-
-    omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
     return Commands.runOnce(
             () -> {
@@ -308,7 +308,6 @@ public final class DriveCommands {
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
-                        double thetaSpeed = 0.0;
                         if (!xController.atSetpoint())
                           xSpeed =
                               xController.calculate(
@@ -321,26 +320,14 @@ public final class DriveCommands {
                                   RobotState.getRobotPoseReef().getY(),
                                   RobotState.getReefAlignData().setpoint().getY());
                         else yController.reset(RobotState.getRobotPoseReef().getY());
-                        if (!omegaController.atSetpoint())
-                          thetaSpeed =
-                              omegaController.calculate(
-                                  RobotState.getRobotPoseReef().getRotation().getRadians(),
-                                  RobotState.getReefAlignData()
-                                      .setpoint()
-                                      .getRotation()
-                                      .getRadians());
-                        else
-                          omegaController.reset(
-                              RobotState.getRobotPoseReef().getRotation().getRadians());
 
                         Logger.recordOutput("xSpeed", -xSpeed);
                         Logger.recordOutput("ySpeed", -ySpeed);
-                        Logger.recordOutput("thetaSpeed", thetaSpeed);
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -xSpeed,
                                 -ySpeed,
-                                thetaSpeed,
+                                thetaSpeedCalculate(),
                                 isFlipped
                                     ? RobotState.getRobotPoseReef()
                                         .getRotation()
@@ -367,6 +354,30 @@ public final class DriveCommands {
                     }));
   }
 
+
+  private static double thetaSpeedCalculate() {
+    double thetaSpeed = 0.0;
+    
+    omegaController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
+
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    if (!omegaController.atSetpoint())
+    thetaSpeed =
+        omegaController.calculate(
+            RobotState.getRobotPoseReef().getRotation().getRadians(),
+            RobotState.getReefAlignData()
+                .setpoint()
+                .getRotation()
+                .getRadians());
+  else
+    omegaController.reset(
+        RobotState.getRobotPoseReef().getRotation().getRadians());
+
+    Logger.recordOutput("thetaSpeed", thetaSpeed);
+    return thetaSpeed;
+  }
   public static double absMax(double a, double b) {
     double ans = Math.max(Math.abs(a), Math.abs(b));
     if (ans == Math.abs(a)) return Math.copySign(ans, a);
