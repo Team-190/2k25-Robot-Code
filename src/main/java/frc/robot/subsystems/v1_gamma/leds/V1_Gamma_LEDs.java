@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.leds.Leds;
+import lombok.Setter;
 
 public class V1_Gamma_LEDs extends Leds {
   private static Leds instance;
@@ -21,11 +22,13 @@ public class V1_Gamma_LEDs extends Leds {
   private boolean estopped = false;
 
   private static final int LENGTH = 68;
+  private static final int PORT = 0;
   private static final int RIGHT_LENGTH_START = 0;
   private static final int RIGHT_LENGTH_END = 33;
   private static final int LEFT_LENGTH_START = 34;
   private static final int LEFT_LENGTH_END = 68;
-  private static final int PORT = 0;
+  
+  @Setter private static boolean isIntaking = false;
 
   public V1_Gamma_LEDs() {
     super(LENGTH, PORT);
@@ -84,20 +87,24 @@ public class V1_Gamma_LEDs extends Leds {
         rainbow(LENGTH, 2.0);
       }
     } else if (DriverStation.isEnabled()) {
-      if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
-        breath(
-            Color.kBlack,
-            Color.kDarkViolet,
-            Timer.getFPGATimestamp(),
-            LEFT_LENGTH_START,
-            LEFT_LENGTH_END);
-      } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
-        breath(
-            Color.kBlack,
-            Color.kDarkViolet,
-            Timer.getFPGATimestamp(),
-            RIGHT_LENGTH_START,
-            RIGHT_LENGTH_END);
+      if (isIntaking) {
+        solid(Color.kAqua);
+      } else {
+        if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
+          breath(
+              Color.kBlack,
+              Color.kDarkViolet,
+              Timer.getFPGATimestamp(),
+              LEFT_LENGTH_START,
+              LEFT_LENGTH_END);
+        } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
+          breath(
+              Color.kBlack,
+              Color.kDarkViolet,
+              Timer.getFPGATimestamp(),
+              RIGHT_LENGTH_START,
+              RIGHT_LENGTH_END);
+        }
       }
     }
   }

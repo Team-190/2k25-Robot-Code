@@ -10,6 +10,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import frc.robot.util.AllianceFlipUtil;
 
@@ -29,11 +30,12 @@ public class CompositeCommands {
     public static final Command intakeCoral(
         V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
       return Commands.sequence(
-          elevator.setPosition(ReefHeight.INTAKE),
-          Commands.waitSeconds(0.125),
-          Commands.waitUntil(elevator::atGoal),
-          Commands.race(
-              manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())));
+              Commands.runOnce(() -> V1_Gamma_LEDs.setIntaking(true)),
+              elevator.setPosition(ReefHeight.INTAKE),
+              Commands.waitUntil(elevator::atGoal),
+              Commands.race(
+                  manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
+          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
     }
   }
 
