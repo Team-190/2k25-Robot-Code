@@ -1,11 +1,9 @@
 package frc.robot.subsystems.v1_gamma.manipulator;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class V1_GammaManipulator extends SubsystemBase {
@@ -14,34 +12,17 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   private final Timer currentTimer;
 
-  @AutoLogOutput(key = "Manipulator/currentPosition")
-  private Rotation2d
-      currentPosition; // Used to store the old position when the half score command is run
-
   public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
 
     currentTimer = new Timer();
-    currentPosition = inputs.position;
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
-  }
-
-  private boolean reachedHalfScoreCoral() {
-    return inputs.position.getRadians()
-        > currentPosition.getRadians()
-            + V1_GammaManipulatorConstants.halfScoreRotation.getRadians();
-  }
-
-  private boolean reachedStowCoral() {
-    return inputs.position.getRadians()
-        < currentPosition.getRadians()
-            - V1_GammaManipulatorConstants.halfUnScoreRotation.getRadians();
   }
 
   public boolean hasCoral() {
@@ -66,20 +47,10 @@ public class V1_GammaManipulator extends SubsystemBase {
   }
 
   public Command halfScoreCoral() {
-    return Commands.sequence(
-        this.runOnce(() -> updatePosition()),
-        runManipulator(V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get())
-            .until(() -> reachedHalfScoreCoral()));
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }
 
   public Command unHalfScoreCoral() {
-    return Commands.sequence(
-        runOnce(() -> updatePosition()),
-        runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get())
-            .until(() -> reachedStowCoral()));
-  }
-
-  private void updatePosition() {
-    currentPosition = inputs.position;
+    return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }
 }
