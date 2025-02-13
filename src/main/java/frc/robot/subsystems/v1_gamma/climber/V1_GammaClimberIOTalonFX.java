@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.subsystems.shared.drive.TunerConstantsV1_Gamma;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
 import frc.robot.util.PhoenixUtil;
 
@@ -34,7 +35,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
   private final VoltageOut voltageRequest;
 
   public V1_GammaClimberIOTalonFX() {
-    talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID);
+    talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID, TunerConstantsV1_Gamma.kCANBus);
     redundantSwitchOne = new DigitalInput(1);
     redundantSwitchTwo = new DigitalInput(2);
 
