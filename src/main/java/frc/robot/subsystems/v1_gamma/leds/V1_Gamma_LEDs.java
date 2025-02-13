@@ -90,23 +90,29 @@ public class V1_Gamma_LEDs extends Leds {
     } else if (DriverStation.isEnabled()) {
       if (isAutoAligning) {
         rainbow(LENGTH, 0.5);
-      } else if (isIntaking) {
-        solid(Color.kAqua);
       } else {
         if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
-          breath(
-              Color.kBlack,
-              Color.kDarkViolet,
-              Timer.getFPGATimestamp(),
-              LEFT_LENGTH_START,
-              LEFT_LENGTH_END);
+          if (isIntaking) {
+            solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
+          } else {
+            breath(
+                Color.kBlack,
+                Color.kDarkViolet,
+                Timer.getFPGATimestamp(),
+                LEFT_LENGTH_START,
+                LEFT_LENGTH_END);
+          }
         } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
-          breath(
-              Color.kBlack,
-              Color.kDarkViolet,
-              Timer.getFPGATimestamp(),
-              RIGHT_LENGTH_START,
-              RIGHT_LENGTH_END);
+          if (isIntaking) {
+            solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
+          } else {
+            breath(
+                Color.kBlack,
+                Color.kDarkViolet,
+                Timer.getFPGATimestamp(),
+                RIGHT_LENGTH_START,
+                RIGHT_LENGTH_END);
+          }
         }
       }
     }

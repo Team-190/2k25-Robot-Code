@@ -140,9 +140,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 !elevator.getPosition().equals(ElevatorPositions.INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger halfScoreTrigger =
-        new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
-    Trigger unHalfScoreTrigger =
         new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
+    Trigger unHalfScoreTrigger =
+        new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
 
     // Default drive command
     drive.setDefaultCommand(
@@ -177,7 +177,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
 
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
-
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
     // Operator face buttons
