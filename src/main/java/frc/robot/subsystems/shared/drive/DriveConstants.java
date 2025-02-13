@@ -36,6 +36,7 @@ public class DriveConstants {
 
   public static final double ODOMETRY_FREQUENCY;
   public static final double DRIVER_DEADBAND;
+  public static final double OPERATOR_DEADBAND;
 
   public static final AlignRobotToAprilTagConstants ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
 
@@ -85,6 +86,7 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
       case V0_WHIPLASH:
       case V0_WHIPLASH_SIM:
@@ -130,6 +132,7 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
       case V1_STACKUP:
       case V1_STACKUP_SIM:
@@ -178,6 +181,7 @@ public class DriveConstants {
 
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
@@ -223,6 +227,7 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
     }
     ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =

@@ -139,6 +139,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
             () ->
                 !elevator.getPosition().equals(ElevatorPositions.INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
+    Trigger halfScoreTrigger =
+        new Trigger(
+            () ->
+                Math.hypot(operator.getLeftX(), operator.getLeftY())
+                    > DriveConstants.OPERATOR_DEADBAND);
 
     // Default drive command
     drive.setDefaultCommand(
@@ -171,6 +176,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Driver bumpers
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
+
+    halfScoreTrigger.onTrue(manipulator.halfScoreCoral()).onFalse(manipulator.unHalfScoreCoral());
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
