@@ -1,7 +1,6 @@
 package frc.robot.subsystems.v1_gamma.climber;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
@@ -27,7 +26,7 @@ public class V1_GammaClimberIOSim implements V1_GammaClimberIO {
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.position = Rotation2d.fromRadians(sim.getAngularPositionRad());
+    inputs.positionRadians = sim.getAngularPositionRad();
     inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.supplyCurrentAmps =

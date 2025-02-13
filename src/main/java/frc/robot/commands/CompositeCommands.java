@@ -8,8 +8,10 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
 import frc.robot.util.AllianceFlipUtil;
@@ -24,6 +26,17 @@ public class CompositeCommands {
                       AllianceFlipUtil.apply(new Rotation2d())));
             })
         .ignoringDisable(true);
+  }
+
+  public static final Command climb(
+      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber) {
+    return Commands.sequence(
+        elevator.setPosition(ReefHeight.STOW),
+        Commands.waitUntil(elevator::atGoal),
+        funnel.setClapDaddyGoal(FunnelState.CLIMB),
+        climber.releaseClimber(),
+        // Commands.waitUntil(climber::climberReady),
+        climber.winchClimber());
   }
 
   public static final Command setStaticReefHeight(ReefHeight height) {

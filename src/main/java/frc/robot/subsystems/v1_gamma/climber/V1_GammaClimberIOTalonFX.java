@@ -6,31 +6,38 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
+import frc.robot.util.PhoenixUtil;
 
 public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
-  private TalonFX talonFX;
+  private final TalonFX talonFX;
+  private final DigitalInput redundantSwitchOne;
+  private final DigitalInput redundantSwitchTwo;
 
-  private TalonFXConfiguration config;
+  private final TalonFXConfiguration config;
 
-  private StatusSignal<Angle> positionRotations;
-  private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
-  private StatusSignal<Voltage> appliedVolts;
-  private StatusSignal<Current> supplyCurrentAmps;
-  private StatusSignal<Current> torqueCurrentAmps;
-  private StatusSignal<Temperature> temperatureCelsius;
+  private final StatusSignal<Angle> positionRotations;
+  private final StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  private final StatusSignal<Voltage> appliedVolts;
+  private final StatusSignal<Current> supplyCurrentAmps;
+  private final StatusSignal<Current> torqueCurrentAmps;
+  private final StatusSignal<Temperature> temperatureCelsius;
+  private final StatusSignal<Boolean> softLimitEngaged;
 
-  private VoltageOut voltageRequest;
+  private final VoltageOut voltageRequest;
 
   public V1_GammaClimberIOTalonFX() {
     talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID);
+    redundantSwitchOne = new DigitalInput(1);
+    redundantSwitchTwo = new DigitalInput(2);
+
     config = new TalonFXConfiguration();
 
     config.CurrentLimits.SupplyCurrentLimit = V1_GammaClimberConstants.CLIMBER_SUPPLY_CURRENT_LIMIT;
@@ -40,7 +47,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
 
-    talonFX.getConfigurator().apply(config);
+    PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
 
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
@@ -48,6 +55,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     supplyCurrentAmps = talonFX.getSupplyCurrent();
     torqueCurrentAmps = talonFX.getTorqueCurrent();
     temperatureCelsius = talonFX.getDeviceTemp();
+    softLimitEngaged = talonFX.getFault_ForwardSoftLimit();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50,
@@ -56,7 +64,8 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
         appliedVolts,
         supplyCurrentAmps,
         torqueCurrentAmps,
-        temperatureCelsius);
+        temperatureCelsius,
+        softLimitEngaged);
     talonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
@@ -65,20 +74,23 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-            positionRotations,
-            velocityRotationsPerSecond,
-            appliedVolts,
-            supplyCurrentAmps,
-            torqueCurrentAmps,
-            temperatureCelsius)
-        .isOK();
-    inputs.position = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVolts,
+        supplyCurrentAmps,
+        torqueCurrentAmps,
+        temperatureCelsius,
+        softLimitEngaged);
+    inputs.positionRadians = Units.radiansToRotations(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+
+    inputs.redundantSwitchOne = redundantSwitchOne.get();
+    inputs.redundantSwitchTwo = redundantSwitchTwo.get();
   }
 
   @Override
@@ -88,6 +100,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
 
   @Override
   public boolean isClimbed() {
-    return torqueCurrentAmps.getValueAsDouble() >= V1_GammaClimberConstants.CLIMBER_CLIMBED_CURRENT;
+    return softLimitEngaged.getValue();
   }
 }

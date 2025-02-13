@@ -89,7 +89,7 @@ public class V1_GammaElevator extends SubsystemBase {
   /**
    * Sets the position of the elevator.
    *
-   * @param position The desired elevator position.
+   * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
   public Command setPosition(ReefHeight newPosition) {

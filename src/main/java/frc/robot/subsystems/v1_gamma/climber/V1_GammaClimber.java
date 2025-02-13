@@ -6,8 +6,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class V1_GammaClimber extends SubsystemBase {
-  private V1_GammaClimberIO io;
-  private ClimberIOInputsAutoLogged inputs;
+  private final V1_GammaClimberIO io;
+  private final ClimberIOInputsAutoLogged inputs;
 
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
@@ -27,6 +27,10 @@ public class V1_GammaClimber extends SubsystemBase {
     isClimbed = io.isClimbed();
   }
 
+  public boolean climberReady() {
+    return inputs.redundantSwitchOne && inputs.redundantSwitchOne;
+  }
+
   public Command setVoltage(double volts) {
     return this.run(() -> io.setVoltage(volts));
   }
@@ -36,6 +40,6 @@ public class V1_GammaClimber extends SubsystemBase {
   }
 
   public Command winchClimber() {
-    return this.run(() -> io.setVoltage(-12)).until(() -> isClimbed);
+    return this.run(() -> io.setVoltage(12)).until(() -> isClimbed);
   }
 }

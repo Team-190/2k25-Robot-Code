@@ -25,6 +25,10 @@ import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIO;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOSim;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOTalonFX;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
@@ -51,6 +55,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   private V1_GammaElevator elevator;
   private V1_GammaFunnel funnel;
   private V1_GammaManipulator manipulator;
+  private V1_GammaClimber climber;
 
   private V1_Gamma_LEDs leds;
 
@@ -78,6 +83,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
           manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
+          climber = new V1_GammaClimber(new V1_GammaClimberIOTalonFX());
           leds = new V1_Gamma_LEDs();
           break;
         case V1_STACKUP_SIM:
@@ -92,6 +98,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
           elevator = new V1_GammaElevator(new V1_GammaElevatorIOSim());
           funnel = new V1_GammaFunnel(new V1_GammaFunnelIOSim());
           manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOSim());
+          climber = new V1_GammaClimber(new V1_GammaClimberIOSim());
           break;
         default:
           break;
@@ -121,6 +128,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
     }
     if (leds == null) {
       leds = new V1_Gamma_LEDs();
+    }
+    if (climber == null) {
+      climber = new V1_GammaClimber(new V1_GammaClimberIO() {});
     }
 
     configureButtonBindings();

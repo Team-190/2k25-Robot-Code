@@ -20,7 +20,6 @@ public class V1_GammaFunnel extends SubsystemBase {
   private final SysIdRoutine characterizationRoutine;
   private FunnelState goal;
 
-  private boolean isClimbing;
   private boolean isClosedLoop;
 
   public V1_GammaFunnel(V1_GammaFunnelIO io) {
@@ -38,7 +37,6 @@ public class V1_GammaFunnel extends SubsystemBase {
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     goal = FunnelState.OPENED;
 
-    isClimbing = false;
     isClosedLoop = true;
   }
 
@@ -49,10 +47,6 @@ public class V1_GammaFunnel extends SubsystemBase {
 
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
-    }
-
-    if (isClimbing) {
-      setClapDaddyGoal(FunnelState.CLIMB);
     }
   }
 
@@ -119,16 +113,6 @@ public class V1_GammaFunnel extends SubsystemBase {
         characterizationRoutine.dynamic(Direction.kForward),
         Commands.waitSeconds(4),
         characterizationRoutine.dynamic(Direction.kReverse));
-  }
-
-  /**
-   * Sets the climbing state of the funnel.
-   *
-   * @param climbing True if the funnel is climbing, false otherwise.
-   * @return A command to set the climbing state.
-   */
-  public Command setClimbing(boolean climbing) {
-    return Commands.runOnce(() -> this.isClimbing = climbing);
   }
 
   /**
