@@ -35,7 +35,8 @@ public class CompositeCommands {
         Commands.waitUntil(elevator::atGoal),
         funnel.setClapDaddyGoal(FunnelState.CLIMB),
         climber.releaseClimber(),
-        // Commands.waitUntil(climber::climberReady),
+        Commands.waitSeconds(2.5),
+        Commands.waitUntil(climber::climberReady),
         climber.winchClimber());
   }
 
