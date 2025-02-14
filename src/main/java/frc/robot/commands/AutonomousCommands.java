@@ -40,21 +40,25 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     elevator.setPosition(ReefHeight.L4)),
-                elevator.setPosition(ReefHeight.STOW),
                 manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH2.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
                 Commands.parallel(
-                    DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
+                    DriveCommands.alignRobotToAprilTag(drive, cameras),
+                    elevator.setPosition(ReefHeight.L4)),
+                manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH3.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
                 Commands.parallel(
-                    DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
+                    DriveCommands.alignRobotToAprilTag(drive, cameras),
+                    elevator.setPosition(ReefHeight.L4)),
+                manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW)));
 
     return autoALeft;
