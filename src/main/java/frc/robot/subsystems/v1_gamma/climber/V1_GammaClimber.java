@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v1_gamma.climber;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -9,6 +10,8 @@ public class V1_GammaClimber extends SubsystemBase {
   private final V1_GammaClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
+  private Timer reduntantSwitchTimer;
+
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
 
@@ -17,6 +20,7 @@ public class V1_GammaClimber extends SubsystemBase {
     inputs = new ClimberIOInputsAutoLogged();
 
     isClimbed = false;
+    reduntantSwitchTimer = new Timer();
   }
 
   @Override
@@ -28,7 +32,14 @@ public class V1_GammaClimber extends SubsystemBase {
   }
 
   public boolean climberReady() {
-    return inputs.redundantSwitchOne && inputs.redundantSwitchOne;
+    if (inputs.redundantSwitchOne && inputs.redundantSwitchOne) {
+      reduntantSwitchTimer.start();
+    } else {
+      reduntantSwitchTimer.reset();
+    }
+    return inputs.redundantSwitchOne
+        && inputs.redundantSwitchOne
+        && reduntantSwitchTimer.hasElapsed(.25);
   }
 
   public Command setVoltage(double volts) {
@@ -36,10 +47,10 @@ public class V1_GammaClimber extends SubsystemBase {
   }
 
   public Command releaseClimber() {
-    return this.run(() -> io.setVoltage(4)).withTimeout(0.1);
+    return this.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0)).withTimeout(0.1);
   }
 
   public Command winchClimber() {
-    return this.run(() -> io.setVoltage(12)).until(() -> isClimbed);
+    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 }

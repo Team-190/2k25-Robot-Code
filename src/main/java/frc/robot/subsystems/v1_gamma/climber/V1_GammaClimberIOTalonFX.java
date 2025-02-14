@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
+import frc.robot.subsystems.shared.drive.TunerConstantsV1_Gamma;
 import frc.robot.util.PhoenixUtil;
 
 public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
@@ -29,12 +29,11 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
   private final StatusSignal<Current> supplyCurrentAmps;
   private final StatusSignal<Current> torqueCurrentAmps;
   private final StatusSignal<Temperature> temperatureCelsius;
-  private final StatusSignal<Boolean> softLimitEngaged;
 
   private final VoltageOut voltageRequest;
 
   public V1_GammaClimberIOTalonFX() {
-    talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID);
+    talonFX = new TalonFX(V1_GammaClimberConstants.MOTOR_ID, TunerConstantsV1_Gamma.kCANBus);
     redundantSwitchOne = new DigitalInput(1);
     redundantSwitchTwo = new DigitalInput(2);
 
@@ -44,9 +43,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = V1_GammaClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Feedback.SensorToMechanismRatio = V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
-
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
 
     positionRotations = talonFX.getPosition();
@@ -55,7 +52,6 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
     supplyCurrentAmps = talonFX.getSupplyCurrent();
     torqueCurrentAmps = talonFX.getTorqueCurrent();
     temperatureCelsius = talonFX.getDeviceTemp();
-    softLimitEngaged = talonFX.getFault_ForwardSoftLimit();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50,
@@ -64,8 +60,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
         appliedVolts,
         supplyCurrentAmps,
         torqueCurrentAmps,
-        temperatureCelsius,
-        softLimitEngaged);
+        temperatureCelsius);
     talonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
@@ -79,9 +74,8 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
         appliedVolts,
         supplyCurrentAmps,
         torqueCurrentAmps,
-        temperatureCelsius,
-        softLimitEngaged);
-    inputs.positionRadians = Units.radiansToRotations(positionRotations.getValueAsDouble());
+        temperatureCelsius);
+    inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
@@ -100,6 +94,7 @@ public class V1_GammaClimberIOTalonFX implements V1_GammaClimberIO {
 
   @Override
   public boolean isClimbed() {
-    return softLimitEngaged.getValue();
+    return positionRotations.getValueAsDouble()
+        >= Units.radiansToRotations(V1_GammaClimberConstants.CLIMBER_CLIMBED_RADIANS);
   }
 }

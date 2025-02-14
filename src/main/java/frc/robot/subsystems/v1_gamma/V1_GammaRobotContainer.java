@@ -186,6 +186,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
 
+    driver.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
+    driver.povDown().whileTrue(climber.winchClimber());
+
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
