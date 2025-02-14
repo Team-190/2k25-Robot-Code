@@ -9,7 +9,9 @@ import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
@@ -21,7 +23,8 @@ public class AutonomousCommands {
       Drive drive,
       V1_GammaElevator elevator,
       V1_GammaFunnel funnel,
-      V1_GammaManipulator manipulator) {
+      V1_GammaManipulator manipulator,
+      Camera... cameras) {
     AutoRoutine autoALeft = drive.getAutoFactory().newRoutine("autoALeft");
 
     AutoTrajectory A_LEFT_PATH1 = autoALeft.trajectory("A_LEFT_PATH1");
@@ -33,75 +36,28 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 A_LEFT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
-                Commands.parallel(A_LEFT_PATH1.cmd(), elevator.setPosition(ReefHeight.L4)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                Commands.parallel(
+                    DriveCommands.alignRobotToAprilTag(drive, cameras),
+                    elevator.setPosition(ReefHeight.L4)),
                 elevator.setPosition(ReefHeight.STOW),
                 manipulator.scoreCoral().withTimeout(0.5),
-                A_LEFT_PATH2.cmd(),
-                Commands.runOnce(() -> drive.stop()),
-                funnel.intakeCoral(() -> false).withTimeout(1),
+                Commands.deadline(
+                    A_LEFT_PATH2.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
                 elevator.setPosition(ReefHeight.STOW),
-                A_LEFT_PATH3.cmd(),
-                Commands.runOnce(() -> drive.stop()),
-                funnel.intakeCoral(() -> false).withTimeout(1),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                Commands.deadline(
+                    A_LEFT_PATH3.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive), elevator.setPosition(ReefHeight.L4)),
                 elevator.setPosition(ReefHeight.STOW)));
 
     return autoALeft;
-  }
-
-  public static final AutoRoutine autoARight(Drive drive) {
-    return null;
-  }
-
-  public static final AutoRoutine autoBLeft(Drive drive) {
-    AutoRoutine autoBLeft = drive.getAutoFactory().newRoutine("autoBLeft");
-
-    AutoTrajectory B_LEFT_PATH1 = autoBLeft.trajectory("B_LEFT_PATH1");
-    AutoTrajectory B_LEFT_PATH2 = autoBLeft.trajectory("B_LEFT_PATH2");
-    AutoTrajectory B_LEFT_PATH3 = autoBLeft.trajectory("B_LEFT_PATH3");
-
-    autoBLeft
-        .active()
-        .onTrue(
-            Commands.sequence(
-                B_LEFT_PATH1.resetOdometry(),
-                B_LEFT_PATH1.cmd(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
-                DriveCommands.alignRobotToAprilTag(drive),
-                B_LEFT_PATH2.cmd(),
-                B_LEFT_PATH3.cmd(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
-
-    return autoBLeft;
-  }
-
-  public static final AutoRoutine autoBRight(Drive drive) {
-    AutoRoutine autoBRight = drive.getAutoFactory().newRoutine("autoBLeft");
-
-    AutoTrajectory B_RIGHT_PATH1 = mirrorAuto("B_LEFT_PATH1", autoBRight);
-    AutoTrajectory B_RIGHT_PATH2 = mirrorAuto("B_LEFT_PATH2", autoBRight);
-    AutoTrajectory B_RIGHT_PATH3 = mirrorAuto("B_LEFT_PATH3", autoBRight);
-
-    autoBRight
-        .active()
-        .onTrue(
-            Commands.sequence(
-                B_RIGHT_PATH1.resetOdometry(),
-                B_RIGHT_PATH1.cmd(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
-                DriveCommands.alignRobotToAprilTag(drive),
-                B_RIGHT_PATH2.cmd(),
-                B_RIGHT_PATH3.cmd(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
-                DriveCommands.alignRobotToAprilTag(drive)));
-
-    return autoBRight;
   }
 
   private static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {
