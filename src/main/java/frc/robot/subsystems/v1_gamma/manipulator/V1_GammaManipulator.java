@@ -26,7 +26,6 @@ public class V1_GammaManipulator extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-
     return Math.abs(inputs.torqueCurrentAmps)
         > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
@@ -44,6 +43,10 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   public Command scoreCoral() {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+  }
+
+  public Command scoreL4Coral() {
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_L4_VOLTS().get());
   }
 
   public Command halfScoreCoral() {

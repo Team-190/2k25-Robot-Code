@@ -10,6 +10,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -69,7 +70,10 @@ public class CompositeCommands {
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.5));
+          Commands.either(
+              manipulator.scoreL4Coral().withTimeout(0.75),
+              manipulator.scoreCoral().withTimeout(0.5),
+              () -> elevator.getPosition().equals(ElevatorPositions.L4)));
     }
 
     public static final Command autoScoreCoral(

@@ -186,9 +186,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
 
-    driver.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
-    driver.povDown().whileTrue(climber.winchClimber());
-
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
@@ -222,6 +219,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+
+    operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
+    operator.povDown().whileTrue(climber.winchClimber());
   }
 
   private void configureAutos() {
@@ -230,7 +230,15 @@ public class V1_GammaRobotContainer implements RobotContainer {
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
-        "3 Piece", AutonomousCommands.autoALeft(drive, elevator, funnel, manipulator).cmd());
+        "3 Piece Left",
+        AutonomousCommands.autoALeft(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
+    autoChooser.addOption(
+        "3 Piece Right",
+        AutonomousCommands.autoARight(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
   }
 
   @Override

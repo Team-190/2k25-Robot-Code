@@ -33,7 +33,6 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.util.AllianceFlipUtil;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -355,16 +354,7 @@ public class Drive extends SubsystemBase {
             yFF + yFeedback,
             rotationFF + rotationFeedback,
             Rotation2d.fromRadians(sample.heading));
-    List<Vector<N2>> moduleTorques = new ArrayList<>(4);
 
-    for (int i = 0; i < 4; i++) {
-      moduleTorques.add(
-          new Translation2d(sample.moduleForcesX()[i], sample.moduleForcesY()[i])
-              .rotateBy(Rotation2d.fromRadians(sample.heading))
-              .unaryMinus()
-              .toVector());
-    }
-
-    runVelocityTorque(velocity, moduleTorques);
+    runVelocity(velocity);
   }
 }

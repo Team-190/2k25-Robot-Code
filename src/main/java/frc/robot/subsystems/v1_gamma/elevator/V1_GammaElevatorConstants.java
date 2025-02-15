@@ -68,7 +68,7 @@ public class V1_GammaElevatorConstants {
     INTAKE(0.0),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
-    L3(0.7606347556550676),
+    L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
     L4(1.3864590139769697 + Units.inchesToMeters(0.25));
 
     private final double position;

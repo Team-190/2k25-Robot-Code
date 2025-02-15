@@ -21,11 +21,13 @@ public class V1_GammaManipulatorConstants {
         new Voltages(
             new LoggedTunableNumber("Manipulator/Intake Volts", 6.0),
             new LoggedTunableNumber("Manipulator/Score Volts", 6.0),
+            new LoggedTunableNumber("Manipulator/Score L4 Volts", 3.0),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0));
   }
 
   public static final record Voltages(
       LoggedTunableNumber INTAKE_VOLTS,
       LoggedTunableNumber SCORE_VOLTS,
+      LoggedTunableNumber SCORE_L4_VOLTS,
       LoggedTunableNumber HALF_VOLTS) {}
 }
