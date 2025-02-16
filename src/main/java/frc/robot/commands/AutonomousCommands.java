@@ -37,7 +37,7 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 A_LEFT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 A_LEFT_PATH1.cmd(),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
@@ -129,6 +129,27 @@ public class AutonomousCommands {
                 elevator.setPosition(ReefHeight.STOW)));
 
     return autoARight;
+  }
+
+  public static final AutoRoutine blueSideAuto(
+      Drive drive,
+      V1_GammaElevator elevator,
+      V1_GammaFunnel funnel,
+      V1_GammaManipulator manipulator,
+      Camera... cameras) {
+    AutoRoutine blueSide = drive.getAutoFactory().newRoutine("blueSide");
+
+    AutoTrajectory A_LEFT_PATH1 = blueSide.trajectory("A_LEFT_PATH1");
+
+    blueSide
+        .active()
+        .onTrue(
+            Commands.sequence(
+                A_LEFT_PATH1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
+                A_LEFT_PATH1.cmd()));
+
+    return blueSide;
   }
 
   private static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {

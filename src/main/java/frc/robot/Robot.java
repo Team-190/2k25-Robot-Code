@@ -95,8 +95,6 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit logger
     Logger.start();
-    // SignalLogger.setPath("/U/logs/");
-    // SignalLogger.start();
 
     // Start timers
     canErrorTimer.reset();

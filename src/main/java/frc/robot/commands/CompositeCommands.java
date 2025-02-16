@@ -71,7 +71,7 @@ public class CompositeCommands {
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
           Commands.either(
-              manipulator.scoreL4Coral().withTimeout(0.75),
+              manipulator.scoreL4Coral().withTimeout(0.8),
               manipulator.scoreCoral().withTimeout(0.5),
               () -> elevator.getPosition().equals(ElevatorPositions.L4)));
     }
