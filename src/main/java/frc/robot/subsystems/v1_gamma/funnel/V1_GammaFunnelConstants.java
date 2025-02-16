@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -33,22 +34,47 @@ public class V1_GammaFunnelConstants {
     CLAP_DADDY_CANCODER_GEAR_RATIO = 3.0;
     CANCODER_ABSOLUTE_OFFSET_RADIANS = Rotation2d.fromRadians(4.95);
 
-    CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
-    CLAP_DADDY_MOTOR_GAINS =
-        new Gains(
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 125.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 5.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.224),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kA", 0.0));
-    ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
-    CLAP_DADDY_MOTOR_CONSTRAINTS =
-        new Constraints(
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
-            new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
-            new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
-    CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
-    ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+    switch (Constants.getMode()) {
+      case REAL:
+      case REPLAY:
+      default:
+        CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
+        CLAP_DADDY_MOTOR_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 125.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 5.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.224),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kA", 0.0));
+        ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
+        CLAP_DADDY_MOTOR_CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
+                new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
+        CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        break;
+
+      case SIM:
+        CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
+        CLAP_DADDY_MOTOR_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kP", 40),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kD", 0.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kS", 0.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kV", 0.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor Gains/kA", 0.0));
+        ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
+        CLAP_DADDY_MOTOR_CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
+                new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
+                new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
+        CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        break;
+    }
   }
 
   public static final record FunnelCurrentLimits(
