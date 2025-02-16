@@ -30,7 +30,7 @@ public class CompositeCommands {
   }
 
   public static final Command climb(
-      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber) {
+      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber, Drive drive) {
     return Commands.sequence(
         elevator.setPosition(ReefHeight.STOW),
         Commands.waitUntil(elevator::atGoal),
@@ -38,7 +38,7 @@ public class CompositeCommands {
         climber.releaseClimber(),
         Commands.waitSeconds(2.5),
         Commands.waitUntil(climber::climberReady),
-        climber.winchClimber());
+        Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
   }
 
   public static final Command setStaticReefHeight(ReefHeight height) {
