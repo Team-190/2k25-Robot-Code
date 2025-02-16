@@ -9,6 +9,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
@@ -36,7 +37,7 @@ public class CompositeCommands {
         Commands.waitUntil(elevator::atGoal),
         funnel.setClapDaddyGoal(FunnelState.CLIMB),
         climber.releaseClimber(),
-        Commands.waitSeconds(2.5),
+        Commands.waitSeconds(V1_GammaClimberConstants.WAIT_AFTER_RELEASE_SECONDS),
         Commands.waitUntil(climber::climberReady),
         Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
   }

@@ -50,7 +50,7 @@ public class V1_GammaClimber extends SubsystemBase {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(0.5)) {
+      if (redundantTrustTimer.hasElapsed(V1_GammaClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (inputs.redundantSwitchOne) {
@@ -72,7 +72,7 @@ public class V1_GammaClimber extends SubsystemBase {
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
       return inputs.redundantSwitchOne
           && inputs.redundantSwitchTwo
-          && redundantSwitchesTimer.hasElapsed(.25);
+          && redundantSwitchesTimer.hasElapsed(V1_GammaClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchOne) {
       return inputs.redundantSwitchOne;
     } else if (trustRedundantSwitchTwo) {
