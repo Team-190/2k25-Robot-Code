@@ -18,6 +18,8 @@ public class V1_GammaElevatorConstants {
   public static final Gains GAINS;
   public static final Constraints CONSTRAINTS;
 
+  public static final double ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS;
+
   static {
     switch (Constants.getMode()) {
       case REAL:
@@ -45,6 +47,7 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
+        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.1;
         break;
       case SIM:
         ELEVATOR_CAN_ID = 20;
@@ -70,6 +73,8 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
+
+        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.1;
     }
   }
 
@@ -103,9 +108,14 @@ public class V1_GammaElevatorConstants {
     L4(1.3864590139769697 + Units.inchesToMeters(0.25));
 
     private final double position;
+    private double offset;
 
     public double getPosition() {
-      return position;
+      return position + offset;
+    }
+
+    public void changeOffset(double offset) {
+      this.offset += offset;
     }
   }
 }

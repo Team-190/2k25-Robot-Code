@@ -213,4 +213,8 @@ public class V1_GammaElevator extends SubsystemBase {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
         <= V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
+
+  public void changeSetpoint(ElevatorPositions position, double offset) {
+    position.changeOffset(offset);
+  }
 }

@@ -19,6 +19,8 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
   private FunnelState goal;
+  private double rollerVoltageOffset;
+  private boolean sensorActive;
 
   private boolean isClosedLoop;
 
@@ -36,6 +38,8 @@ public class V1_GammaFunnel extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     goal = FunnelState.OPENED;
+    rollerVoltageOffset = 0.0;
+    sensorActive = true;
 
     isClosedLoop = true;
   }
@@ -70,7 +74,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
+  public Command setRollerVoltage(double volts) {
     return Commands.run(() -> io.setRollerVoltage(volts));
   }
 
@@ -81,7 +85,7 @@ public class V1_GammaFunnel extends SubsystemBase {
                 Commands.waitUntil(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
-            setRollerVoltage(12.0))
+            setRollerVoltage(V1_GammaFunnelConstants.ROLLER_VOLTS + rollerVoltageOffset))
         .finallyDo(
             () -> {
               goal = FunnelState.OPENED;
@@ -121,7 +125,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return inputs.hasCoral;
+    return inputs.hasCoral && sensorActive;
   }
 
   /**
@@ -163,5 +167,21 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   public Command setFunnelVoltage(double volts) {
     return Commands.run(() -> io.setClapDaddyVoltage(volts));
+  }
+
+  public double rollerVoltageOffset() {
+    return rollerVoltageOffset;
+  }
+
+  public void setRollerVoltageOffset(double offset) {
+    rollerVoltageOffset += offset;
+  }
+
+  public void setFunnelPositionOffset(FunnelState state, double offset) {
+    state.setOffset(offset);
+  }
+
+  public void toggleSensorActive() {
+    sensorActive = !sensorActive;
   }
 }
