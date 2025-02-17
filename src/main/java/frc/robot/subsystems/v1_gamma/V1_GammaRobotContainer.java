@@ -174,7 +174,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver
         .rightTrigger(0.5)
         .whileTrue(
-            ScoreCommands.autoScoreCoral(
+            ScoreCommands.autoScoreCoralSequence(
                 drive,
                 elevator,
                 funnel,
@@ -214,7 +214,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     // Operator triggers
     operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
-    operator.rightTrigger(0.5).whileTrue(manipulator.scoreCoral());
+    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(elevator, manipulator));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));

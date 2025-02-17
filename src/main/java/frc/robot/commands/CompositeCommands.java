@@ -10,7 +10,6 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -66,17 +65,19 @@ public class CompositeCommands {
   public static class ScoreCommands {
     public static final Command scoreCoral(
         V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return manipulator.scoreCoral().withTimeout(1);
+    }
+
+    public static final Command scoreCoralSequence(
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
-          Commands.either(
-              manipulator.scoreL4Coral().withTimeout(0.8),
-              manipulator.scoreCoral().withTimeout(0.5),
-              () -> elevator.getPosition().equals(ElevatorPositions.L4)));
+          manipulator.scoreCoral().withTimeout(1));
     }
 
-    public static final Command autoScoreCoral(
+    public static final Command autoScoreCoralSequence(
         Drive drive,
         V1_GammaElevator elevator,
         V1_GammaFunnel funnel,
@@ -84,7 +85,8 @@ public class CompositeCommands {
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.alignRobotToAprilTag(drive, cameras), scoreCoral(elevator, manipulator));
+          DriveCommands.alignRobotToAprilTag(drive, cameras),
+          scoreCoralSequence(elevator, manipulator));
     }
   }
 }
