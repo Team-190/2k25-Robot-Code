@@ -1,3 +1,3 @@
 @echo off
-python ./ds_hid.py
+start /min powershell -Command "python ./ds_hid.py; exit"
 exit
