@@ -50,7 +50,12 @@ public class V1_GammaElevator extends SubsystemBase {
     Logger.recordOutput("Elevator/Position", position.name());
 
     if (isClosedLoop) {
-      io.setPositionGoal(position.getPosition());
+      // TODO: Fix this (this is bad, reset to not be tuneable numbers [sorry elliot])
+      if (position == ElevatorPositions.TOP_ALGAE)
+        io.setPositionGoal(V1_GammaElevatorConstants.ALGAE_TOP_SETPOINT.get());
+      else if (position == ElevatorPositions.BOT_ALGAE)
+        io.setPositionGoal(V1_GammaElevatorConstants.ALGAE_BOT_SETPOINT.get());
+      else io.setPositionGoal(position.getPosition());
     }
   }
 
@@ -81,6 +86,14 @@ public class V1_GammaElevator extends SubsystemBase {
               break;
             case L4:
               this.position = ElevatorPositions.L4;
+              break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
               break;
           }
         });
@@ -114,6 +127,14 @@ public class V1_GammaElevator extends SubsystemBase {
               break;
             case L4:
               this.position = ElevatorPositions.L4;
+              break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
               break;
           }
         });

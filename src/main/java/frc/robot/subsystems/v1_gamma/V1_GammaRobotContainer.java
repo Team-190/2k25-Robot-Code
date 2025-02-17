@@ -190,11 +190,27 @@ public class V1_GammaRobotContainer implements RobotContainer {
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
     // Operator face buttons
+    operator
+        .start()
+        .and(elevatorStow)
+        .onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.TOP_ALGAE));
+    operator
+        .back()
+        .and(elevatorStow)
+        .onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.BOT_ALGAE));
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
     operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
     operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
     operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
 
+    operator
+        .start()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.TOP_ALGAE, elevator));
+    operator
+        .back()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.BOT_ALGAE, elevator));
     operator
         .y()
         .and(elevatorNotStow)
@@ -222,6 +238,10 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
     operator.povDown().whileTrue(climber.winchClimber());
+    operator.povRight().onTrue(manipulator.blepCoral());
+    operator.povLeft().onTrue(manipulator.unBlepCoral());
+    // operator.povRight().whileTrue(manipulator.runManipulator(-12));
+    // operator.povLeft().whileTrue(manipulator.runManipulator(12));
   }
 
   private void configureAutos() {

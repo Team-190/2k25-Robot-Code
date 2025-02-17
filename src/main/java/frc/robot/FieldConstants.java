@@ -59,7 +59,9 @@ public class FieldConstants {
       L1,
       L2,
       L3,
-      L4
+      L4,
+      TOP_ALGAE,
+      BOT_ALGAE
     }
 
     public static record PostPair(Pose2d right, Pose2d left) {
