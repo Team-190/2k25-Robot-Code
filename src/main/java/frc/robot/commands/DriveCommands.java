@@ -300,9 +300,6 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
-                      boolean isFlipped =
-                          DriverStation.getAlliance().isPresent()
-                              && DriverStation.getAlliance().get() == Alliance.Red;
                       ChassisSpeeds speeds;
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
@@ -326,12 +323,9 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -xSpeed,
                                 -ySpeed,
-                                thetaSpeedCalculate(),
-                                isFlipped
-                                    ? RobotState.getRobotPoseReef()
+                                thetaSpeedCalculate(),RobotState.getRobotPoseReef()
                                         .getRotation()
-                                        .plus(new Rotation2d(Math.PI))
-                                    : RobotState.getRobotPoseReef().getRotation());
+                                        .plus(new Rotation2d(Math.PI)));
                       } else {
                         speeds = new ChassisSpeeds();
                       }
