@@ -1,6 +1,7 @@
 import usb.core
 import usb.util
-import usb.backend.libusb1
+import libusb1  # Import libusb1 to ensure it's available, but we won't use USBContext
+import platform  # To check the operating system
 from usbmonitor import USBMonitor
 from networktables import NetworkTables
 
@@ -16,11 +17,11 @@ KEYS = 80
 connected = False
 # Set up NetworkTables connection
 try:
-    NetworkTables.initialize(server=SERVER) 
+    NetworkTables.initialize(server=SERVER)
 except Exception as e:
     print(f'Failed to initialize NetworkTables with server {SERVER}: {e}.')
 
-keyboard_status_table = NetworkTables.getTable('AdvantageKit/DriverStation/Keyboard'+str(KEYBOARD))
+keyboard_status_table = NetworkTables.getTable('AdvantageKit/DriverStation/Keyboard' + str(KEYBOARD))
 
 def on_disconnect(device_id, device_info):
     keyboard_status_table.putBoolean('isConnected', False)
@@ -47,10 +48,8 @@ def set_up_NT():
 
 set_up_NT()
 
-
-# Find the XK-80 device
-backend = usb.backend.libusb1.get_backend()
-device = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID, backend=backend)
+# Use pyusb's default backend (which uses libusb1 if it's installed)
+device = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
 
 if device is None:
     print("XK-80 not found! Check connections.")
@@ -58,9 +57,11 @@ if device is None:
 
 print("XK-80 found and ready!")
 
-# Detach kernel driver if necessary (Linux only)
-if device.is_kernel_driver_active(0):
-    device.detach_kernel_driver(0)
+# Only attempt to detach kernel driver on Linux
+if platform.system() != "Windows":
+    # Detach kernel driver if necessary (Linux only)
+    if device.is_kernel_driver_active(0):
+        device.detach_kernel_driver(0)
 
 # Set device configuration
 device.set_configuration()
@@ -79,7 +80,6 @@ if endpoint is None:
     exit(1)
 
 print("Listening for XK-80 key presses...")
-
 
 try:
     while True:
@@ -132,6 +132,8 @@ finally:
 
     try:
         usb.util.release_interface(device, 0)
-        device.attach_kernel_driver(0)  # Only needed on Linux
+        # Do not attach kernel driver on Windows
+        if platform.system() != "Windows" and device.is_kernel_driver_active(0):
+            device.attach_kernel_driver(0)
     except:
         pass  # Ignore errors if device is already gone

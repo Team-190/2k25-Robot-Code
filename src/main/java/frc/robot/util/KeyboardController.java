@@ -188,6 +188,10 @@ public class KeyboardController {
     public Trigger decrementSpeed() {
       return controller.button(30);
     }
+
+    public Trigger eject() {
+      return controller.button(7);
+    }
   }
 
   public static final record Elevator(KeyboardController controller) {

@@ -30,19 +30,24 @@ import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIO;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOSim;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOTalonFX;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
+import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorConstants;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
+import frc.robot.util.KeyboardController;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -62,6 +67,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
+  private final KeyboardController debugBoard = new KeyboardController(0);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -222,6 +228,244 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
     operator.povDown().whileTrue(climber.winchClimber());
+
+    // Debug board
+    // Base triggers
+    debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
+    // TODO: Add Translate & rotate commands
+    debugBoard
+        .scoring()
+        .primeLeft()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    debugBoard
+        .scoring()
+        .primeRight()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+    debugBoard.scoring().track().whileTrue(DriveCommands.alignRobotToAprilTag(drive));
+    // Funnel triggers
+    debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
+    debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
+    debugBoard.funnel().wingsStingerOut().onTrue(funnel.setClapDaddyGoal(FunnelState.CLIMB));
+    debugBoard
+        .funnel()
+        .wheelsIn()
+        .whileTrue(
+            funnel.setRollerVoltage(
+                V1_GammaFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset()));
+    debugBoard
+        .funnel()
+        .wheelsOut()
+        .whileTrue(
+            funnel.setRollerVoltage(
+                -(V1_GammaFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset())));
+    debugBoard
+        .funnel()
+        .incrementFunnelWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(
+                        V1_GammaFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .decrementFunnelWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(
+                        -V1_GammaFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .incrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .incrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .incrementStingerOutSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLIMB,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementStingerOutSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLIMB,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
+
+    // Elevator triggers
+    debugBoard
+        .elevator()
+        .stow()
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.STOW, elevator));
+    debugBoard.elevator().raise().onTrue(elevator.setPosition());
+    debugBoard.elevator().primeL1().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    debugBoard.elevator().primeL2().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
+    debugBoard.elevator().primeL3().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
+    debugBoard.elevator().primeL4().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
+    debugBoard
+        .elevator()
+        .decreaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .decreaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    // Manipulator triggers
+    debugBoard
+        .endEffector()
+        .wheelsIn()
+        .whileTrue(
+            manipulator.runManipulator(
+                V1_GammaManipulatorConstants.VOLTAGES.RUN_INWARDS_VOLTS().get()));
+    debugBoard
+        .endEffector()
+        .wheelsOut()
+        .whileTrue(
+            manipulator.runManipulator(
+                V1_GammaManipulatorConstants.VOLTAGES.RUN_OUTWARD_VOLTS().get()));
+    debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+    debugBoard
+        .endEffector()
+        .incrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
+    debugBoard
+        .endEffector()
+        .decrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        -V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
+    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
+    // Climber triggers
+    debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
+    debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
+    debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
   }
 
   private void configureAutos() {
