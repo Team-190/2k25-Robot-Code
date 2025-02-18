@@ -10,6 +10,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -87,6 +88,19 @@ public class CompositeCommands {
       return Commands.sequence(
           DriveCommands.alignRobotToAprilTag(drive, cameras),
           scoreCoralSequence(elevator, manipulator));
+    }
+
+    public static final Command ejectCoral(
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return Commands.either(
+          Commands.sequence(
+              elevator.setPosition(ReefHeight.L1),
+              manipulator.scoreCoral().withTimeout(2),
+              elevator.setPosition(ReefHeight.STOW)),
+          manipulator.scoreCoral().withTimeout(2),
+          () ->
+              elevator.getPosition() == ElevatorPositions.STOW
+                  || elevator.getPosition() == ElevatorPositions.INTAKE);
     }
   }
 }

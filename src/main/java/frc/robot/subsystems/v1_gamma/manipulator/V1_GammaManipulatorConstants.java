@@ -23,7 +23,7 @@ public class V1_GammaManipulatorConstants {
             new LoggedTunableNumber("Manipulator/Score Volts", 6.0),
             new LoggedTunableNumber("Manipulator/Score L4 Volts", 3.0),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
-            new LoggedTunableNumber("Manipulator/Run Inwards Volts", -6.0),
+            new LoggedTunableNumber("Manipulator/Run Inwards Volts", -12.0),
             new LoggedTunableNumber("Manipulator/Run Outward Volts", 6.0),
             0.1);
   }

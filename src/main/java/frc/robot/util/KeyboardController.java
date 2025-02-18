@@ -190,7 +190,7 @@ public class KeyboardController {
     }
 
     public Trigger eject() {
-      return controller.button(8);
+      return controller.button(7);
     }
   }
 

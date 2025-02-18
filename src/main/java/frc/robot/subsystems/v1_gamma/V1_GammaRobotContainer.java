@@ -233,8 +233,14 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
     // TODO: Add Translate & rotate commands
-    debugBoard.scoring().primeLeft().onTrue(DriveCommands.inchMovement(drive, -0.5));
-    debugBoard.scoring().primeRight().onTrue(DriveCommands.inchMovement(drive, 0.5));
+    debugBoard
+        .scoring()
+        .primeLeft()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    debugBoard
+        .scoring()
+        .primeRight()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
     debugBoard.scoring().track().whileTrue(DriveCommands.alignRobotToAprilTag(drive));
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
@@ -322,7 +328,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                     funnel.setFunnelPositionOffset(
                         FunnelState.CLIMB,
                         -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
-    debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorActive));
+    debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
 
     // Elevator triggers
     debugBoard
@@ -438,7 +444,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
         .whileTrue(
             manipulator.runManipulator(
                 V1_GammaManipulatorConstants.VOLTAGES.RUN_OUTWARD_VOLTS().get()));
-    debugBoard.endEffector().eject().whileTrue(manipulator.outtakeCoral());
+    debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
     debugBoard
         .endEffector()
         .incrementSpeed()
@@ -455,7 +461,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 () ->
                     manipulator.incrementScoreSpeed(
                         -V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
-    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorActive());
+    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
     // Climber triggers
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
     debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());

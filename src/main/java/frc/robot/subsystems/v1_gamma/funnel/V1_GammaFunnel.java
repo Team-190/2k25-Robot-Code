@@ -20,7 +20,7 @@ public class V1_GammaFunnel extends SubsystemBase {
   private final SysIdRoutine characterizationRoutine;
   private FunnelState goal;
   private double rollerVoltageOffset;
-  private boolean sensorActive;
+  private boolean sensorOverride;
 
   private boolean isClosedLoop;
 
@@ -39,7 +39,7 @@ public class V1_GammaFunnel extends SubsystemBase {
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     goal = FunnelState.OPENED;
     rollerVoltageOffset = 0.0;
-    sensorActive = true;
+    sensorOverride = false;
 
     isClosedLoop = true;
   }
@@ -125,7 +125,7 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return inputs.hasCoral && sensorActive;
+    return inputs.hasCoral || sensorOverride;
   }
 
   /**
@@ -181,7 +181,7 @@ public class V1_GammaFunnel extends SubsystemBase {
     state.setOffset(offset);
   }
 
-  public void toggleSensorActive() {
-    sensorActive = !sensorActive;
+  public void toggleSensorOverride() {
+    sensorOverride = !sensorOverride;
   }
 }

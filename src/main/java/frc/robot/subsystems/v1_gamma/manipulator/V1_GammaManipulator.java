@@ -13,7 +13,7 @@ public class V1_GammaManipulator extends SubsystemBase {
   private final Timer currentTimer;
 
   private double scoreSpeedOffset;
-  private boolean sensorActive;
+  private boolean sensorOverride;
 
   public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
@@ -22,7 +22,7 @@ public class V1_GammaManipulator extends SubsystemBase {
     currentTimer = new Timer();
 
     scoreSpeedOffset = 0.0;
-    sensorActive = true;
+    sensorOverride = false;
   }
 
   @Override
@@ -33,7 +33,8 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
-        > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD && sensorActive;
+            > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD
+        || sensorOverride;
   }
 
   public Command runManipulator(double volts) {
@@ -43,16 +44,14 @@ public class V1_GammaManipulator extends SubsystemBase {
   public Command intakeCoral() {
     return Commands.sequence(
         Commands.runOnce(() -> currentTimer.restart()),
-        runManipulator(V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get())
+        runManipulator(
+                V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get() + scoreSpeedOffset)
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
-  public Command outtakeCoral() {
-    return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get()).until(()->!hasCoral());
-  }
-
   public Command scoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get()+scoreSpeedOffset);
+    return runManipulator(
+        V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get() + scoreSpeedOffset);
   }
 
   public Command halfScoreCoral() {
@@ -64,10 +63,10 @@ public class V1_GammaManipulator extends SubsystemBase {
   }
 
   public void incrementScoreSpeed(double offset) {
-    this.scoreSpeedOffset+=offset;
+    this.scoreSpeedOffset += offset;
   }
 
-  public Command toggleSensorActive() {
-    return Commands.runOnce(() -> sensorActive = !sensorActive);
+  public Command toggleSensorOverride() {
+    return Commands.runOnce(() -> sensorOverride = !sensorOverride);
   }
 }

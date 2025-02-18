@@ -47,7 +47,7 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
-        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.1;
+        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.0127;
         break;
       case SIM:
         ELEVATOR_CAN_ID = 20;
