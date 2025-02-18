@@ -108,6 +108,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
     tryUntilOk(5, () -> clapDaddyCANcoder.getConfigurator().apply(cancoderConfig, 0.25));
+    
     tryUntilOk(
         5,
         () ->
@@ -117,6 +118,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
                 0.25));
 
     clapDaddyPositionRotations = clapDaddyTalonFX.getPosition();
+    cancoderPositionRotations = clapDaddyCANcoder.getPosition();
     clapDaddyVelocityRotationsPerSecond = clapDaddyTalonFX.getVelocity();
     clapDaddyAppliedVolts = clapDaddyTalonFX.getMotorVoltage();
     clapDaddySupplyCurrentAmps = clapDaddyTalonFX.getSupplyCurrent();
@@ -132,11 +134,11 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
-    cancoderPositionRotations = clapDaddyCANcoder.getPosition();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         clapDaddyPositionRotations,
+        cancoderPositionRotations,
         clapDaddyVelocityRotationsPerSecond,
         clapDaddyAppliedVolts,
         clapDaddySupplyCurrentAmps,
@@ -147,8 +149,7 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
         rollerAppliedVolts,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius,
-        cancoderPositionRotations);
+        rollerTemperatureCelsius);
 
     clapDaddyTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
@@ -221,15 +222,15 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
   }
 
   @Override
+  public void stopRoller() {
+    rollerTalonFX.setControl(neutralRequest);
+  }
+
+  @Override
   public void setClapDaddyGoal(Rotation2d position) {
     clapDaddyGoal = position;
     clapDaddyTalonFX.setControl(
         positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
-  }
-
-  @Override
-  public void stopRoller() {
-    rollerTalonFX.setControl(neutralRequest);
   }
 
   @Override
@@ -247,13 +248,13 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     clapDaddyConfig.Slot0.kS = kS;
     clapDaddyConfig.Slot0.kV = kV;
     clapDaddyConfig.Slot0.kA = kA;
-    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
+    tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
     clapDaddyConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
     clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
-    clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig);
+    tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
   }
 }
