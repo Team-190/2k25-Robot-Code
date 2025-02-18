@@ -43,6 +43,7 @@ import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorConstants;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
@@ -232,6 +233,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
     // TODO: Add Translate & rotate commands
+    debugBoard.scoring().primeLeft().onTrue(DriveCommands.inchMovement(drive, -0.5));
+    debugBoard.scoring().primeRight().onTrue(DriveCommands.inchMovement(drive, 0.5));
+    debugBoard.scoring().track().whileTrue(DriveCommands.alignRobotToAprilTag(drive));
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
     debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
@@ -271,7 +275,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.CLOSED, V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.CLOSED,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .incrementIntakeSetpoint()
@@ -279,7 +284,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.OPENED, V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.OPENED,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .incrementStingerOutSetpoint()
@@ -287,7 +293,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.CLIMB, V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.CLIMB,
+                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .decrementClosedSetpoint()
@@ -295,7 +302,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.CLOSED, -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.CLOSED,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .decrementIntakeSetpoint()
@@ -303,7 +311,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.OPENED, -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.OPENED,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .decrementStingerOutSetpoint()
@@ -311,7 +320,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setFunnelPositionOffset(
-                        FunnelState.CLIMB, -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        FunnelState.CLIMB,
+                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorActive));
 
     // Elevator triggers
@@ -415,7 +425,41 @@ public class V1_GammaRobotContainer implements RobotContainer {
                     elevator.changeSetpoint(
                         ElevatorPositions.STOW,
                         V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
-
+    // Manipulator triggers
+    debugBoard
+        .endEffector()
+        .wheelsIn()
+        .whileTrue(
+            manipulator.runManipulator(
+                V1_GammaManipulatorConstants.VOLTAGES.RUN_INWARDS_VOLTS().get()));
+    debugBoard
+        .endEffector()
+        .wheelsOut()
+        .whileTrue(
+            manipulator.runManipulator(
+                V1_GammaManipulatorConstants.VOLTAGES.RUN_OUTWARD_VOLTS().get()));
+    debugBoard.endEffector().eject().whileTrue(manipulator.outtakeCoral());
+    debugBoard
+        .endEffector()
+        .incrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
+    debugBoard
+        .endEffector()
+        .decrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        -V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
+    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorActive());
+    // Climber triggers
+    debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
+    debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
+    debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
   }
 
   private void configureAutos() {

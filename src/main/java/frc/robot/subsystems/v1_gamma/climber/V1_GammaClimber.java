@@ -53,4 +53,12 @@ public class V1_GammaClimber extends SubsystemBase {
   public Command winchClimber() {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
+
+  public Command incrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).withTimeout(0.04);
+  }
+
+  public Command decrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(-12), () -> io.setVoltage(0)).withTimeout(0.04);
+  }
 }

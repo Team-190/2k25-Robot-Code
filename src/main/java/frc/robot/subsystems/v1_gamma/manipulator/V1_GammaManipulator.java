@@ -12,11 +12,17 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   private final Timer currentTimer;
 
+  private double scoreSpeedOffset;
+  private boolean sensorActive;
+
   public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
 
     currentTimer = new Timer();
+
+    scoreSpeedOffset = 0.0;
+    sensorActive = true;
   }
 
   @Override
@@ -27,7 +33,7 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
-        > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+        > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD && sensorActive;
   }
 
   public Command runManipulator(double volts) {
@@ -41,8 +47,12 @@ public class V1_GammaManipulator extends SubsystemBase {
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
+  public Command outtakeCoral() {
+    return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get()).until(()->!hasCoral());
+  }
+
   public Command scoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get()+scoreSpeedOffset);
   }
 
   public Command halfScoreCoral() {
@@ -51,5 +61,13 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   public Command unHalfScoreCoral() {
     return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+  }
+
+  public void incrementScoreSpeed(double offset) {
+    this.scoreSpeedOffset+=offset;
+  }
+
+  public Command toggleSensorActive() {
+    return Commands.runOnce(() -> sensorActive = !sensorActive);
   }
 }
