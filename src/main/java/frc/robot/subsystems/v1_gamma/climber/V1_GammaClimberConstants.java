@@ -18,6 +18,10 @@ public class V1_GammaClimberConstants {
 
   public static final double SPOOL_DIAMETER;
 
+  public static final double WAIT_AFTER_RELEASE_SECONDS;
+  public static final double REDUNDANCY_DELAY_SECONDS;
+  public static final double REDUNDANCY_TRUSTING_TIMEOUT_SECONDS;
+
   static {
     MOTOR_ID = 50;
 
@@ -32,5 +36,9 @@ public class V1_GammaClimberConstants {
     GEARBOX_EFFICIENCY = 0.81;
 
     SPOOL_DIAMETER = Units.inchesToMeters(1.78);
+
+    WAIT_AFTER_RELEASE_SECONDS = 2.5;
+    REDUNDANCY_DELAY_SECONDS = 0.25;
+    REDUNDANCY_TRUSTING_TIMEOUT_SECONDS = 0.5;
   }
 }
