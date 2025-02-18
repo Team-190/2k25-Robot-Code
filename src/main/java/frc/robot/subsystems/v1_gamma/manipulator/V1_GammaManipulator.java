@@ -66,19 +66,19 @@ public class V1_GammaManipulator extends SubsystemBase {
         <= Math.abs(this.previousPosition.getRotations()) - rotations.getRotations();
   }
 
-  public Command blepCoral() {
+  public Command stowAlgaeArm() {
     return Commands.sequence(
         Commands.runOnce(() -> this.previousPosition = inputs.position),
-        runManipulator(.5)
+        runManipulator(-1)
             .until(
-                () -> getManipulatorRotationsOut(V1_GammaManipulatorConstants.halfScoreRotation)));
+                () -> getManipulatorRotationsIn(V1_GammaManipulatorConstants.MANIPULATOR_STOW_ROTATIONS)));
   }
 
-  public Command unBlepCoral() {
+  public Command deployAlgaeArm() {
     return Commands.sequence(
         Commands.runOnce(() -> this.previousPosition = inputs.position),
-        runManipulator(-.5)
+        runManipulator(-1)
             .until(
-                () -> getManipulatorRotationsIn(V1_GammaManipulatorConstants.halfScoreRotation)));
+                () -> getManipulatorRotationsIn(V1_GammaManipulatorConstants.MANIPULATOR_DEPLOY_ROTATIONS)));
   }
 }

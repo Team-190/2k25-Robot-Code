@@ -43,7 +43,7 @@ public class V1_Gamma_LEDs extends Leds {
   }
 
   public synchronized void periodic() {
-    lowBatteryAlert = RobotController.getBatteryVoltage() <= 12.4;
+    lowBatteryAlert = RobotController.getBatteryVoltage() <= 11.5;
     // Update auto state
     if (DriverStation.isDisabled()) {
       autoFinished = false;

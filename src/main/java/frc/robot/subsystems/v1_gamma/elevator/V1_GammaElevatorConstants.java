@@ -76,8 +76,8 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
 
-        ALGAE_TOP_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Top_Setpoint", 0.9);
-        ALGAE_BOT_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Bot_Setpoint", 0.53);
+        ALGAE_TOP_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Top_Setpoint", 10.05);
+        ALGAE_BOT_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Bot_Setpoint", 0.61);
     }
   }
 

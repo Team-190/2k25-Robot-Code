@@ -238,8 +238,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber));
     operator.povDown().whileTrue(climber.winchClimber());
-    operator.povRight().onTrue(manipulator.blepCoral());
-    operator.povLeft().onTrue(manipulator.unBlepCoral());
+    operator.povRight().onTrue(manipulator.stowAlgaeArm());
+    operator.povLeft().onTrue(manipulator.deployAlgaeArm());
     // operator.povRight().whileTrue(manipulator.runManipulator(-12));
     // operator.povLeft().whileTrue(manipulator.runManipulator(12));
   }
