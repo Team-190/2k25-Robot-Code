@@ -323,9 +323,10 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -xSpeed,
                                 -ySpeed,
-                                thetaSpeedCalculate(),RobotState.getRobotPoseReef()
-                                        .getRotation()
-                                        .plus(new Rotation2d(Math.PI)));
+                                thetaSpeedCalculate(),
+                                RobotState.getRobotPoseReef()
+                                    .getRotation()
+                                    .plus(new Rotation2d(Math.PI)));
                       } else {
                         speeds = new ChassisSpeeds();
                       }

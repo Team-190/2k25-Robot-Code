@@ -239,11 +239,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
         AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
-    autoChooser.addOption(
-        "BlueSide",
-        AutonomousCommands.blueSideAuto(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
-            .cmd());
   }
 
   @Override
