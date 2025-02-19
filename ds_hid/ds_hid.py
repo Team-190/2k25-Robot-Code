@@ -15,6 +15,7 @@ KEYBOARD = 0
 KEYS = 80
 
 connected = False
+device_not_found = False
 # Set up NetworkTables connection
 try:
     NetworkTables.initialize(server=SERVER)
@@ -33,6 +34,20 @@ def on_connect(device_id, device_info):
     connected = True
     print(f"Device connected: {device_id}")
 
+def find_device():
+    """Continuously check for XK-80 until found."""
+    global device_not_found
+    while True:
+        device = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
+        
+        if device is None:
+            if not device_not_found:
+                print("XK-80 not found! Check connections.")
+                device_not_found = True 
+        else:
+            print("XK-80 found and ready!")
+            return device  # Exit loop when device is found
+
 
 monitor = USBMonitor()
 monitor.start_monitoring(on_connect=on_connect, on_disconnect=on_disconnect, check_every_seconds=0.02)
@@ -49,11 +64,7 @@ def set_up_NT():
 set_up_NT()
 
 # Use pyusb's default backend (which uses libusb1 if it's installed)
-device = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
-
-if device is None:
-    print("XK-80 not found! Check connections.")
-    exit(1)
+device = find_device()
 
 print("XK-80 found and ready!")
 
