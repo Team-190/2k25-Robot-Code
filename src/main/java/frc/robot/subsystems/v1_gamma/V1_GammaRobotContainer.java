@@ -213,7 +213,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
-    operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    operator
+        .leftTrigger(0.5)
+        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
     operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(elevator, manipulator));
 
     // Operator bumpers

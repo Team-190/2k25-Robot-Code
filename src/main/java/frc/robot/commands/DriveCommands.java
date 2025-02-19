@@ -304,25 +304,82 @@ public final class DriveCommands {
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
-                        if (!xController.atSetpoint())
-                          xSpeed =
-                              xController.calculate(
-                                  RobotState.getRobotPoseReef().getX(),
-                                  RobotState.getReefAlignData().setpoint().getX());
-                        else xController.reset(RobotState.getRobotPoseReef().getX());
-                        if (!yController.atSetpoint())
-                          ySpeed =
-                              yController.calculate(
-                                  RobotState.getRobotPoseReef().getY(),
-                                  RobotState.getReefAlignData().setpoint().getY());
-                        else yController.reset(RobotState.getRobotPoseReef().getY());
+
+                        double ex =
+                            RobotState.getReefAlignData().setpoint().getX()
+                                - RobotState.getRobotPoseReef().getX();
+                        double ey =
+                            RobotState.getReefAlignData().setpoint().getY()
+                                - RobotState.getRobotPoseReef().getY();
+
+                        // Rotate errors into the reef post's coordinate frame
+                        double ex_prime =
+                            ex
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double ey_prime =
+                            -ex
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        if (!xController.atSetpoint()) xSpeed = xController.calculate(0, ex_prime);
+                        else xController.reset(ex_prime);
+                        if (!yController.atSetpoint()) ySpeed = yController.calculate(0, ey_prime);
+                        else yController.reset(ey_prime);
 
                         Logger.recordOutput("xSpeed", -xSpeed);
                         Logger.recordOutput("ySpeed", -ySpeed);
+
+                        // Re-rotate the speeds into field relative coordinate frame
+                        double adjustedXSpeed =
+                            xSpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                - ySpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double adjustedYSpeed =
+                            xSpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ySpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
-                                -xSpeed,
-                                -ySpeed,
+                                -adjustedXSpeed,
+                                -adjustedYSpeed,
                                 thetaSpeedCalculate(),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
