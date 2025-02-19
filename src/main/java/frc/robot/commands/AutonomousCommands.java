@@ -37,7 +37,7 @@ public class AutonomousCommands {
         .onTrue(
             Commands.sequence(
                 A_LEFT_PATH1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 A_LEFT_PATH1.cmd(),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),

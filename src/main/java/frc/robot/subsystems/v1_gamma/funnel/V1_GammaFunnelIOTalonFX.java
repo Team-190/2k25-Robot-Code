@@ -108,7 +108,6 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
     tryUntilOk(5, () -> clapDaddyCANcoder.getConfigurator().apply(cancoderConfig, 0.25));
-
     tryUntilOk(
         5,
         () ->
