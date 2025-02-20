@@ -227,6 +227,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
+    autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
@@ -241,6 +242,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
         AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
+    autoChooser.addOption("2 Piece Left", AutonomousCommands.autoBLeft(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams).cmd());
+    autoChooser.addOption("2 Piece Right", AutonomousCommands.autoBRight(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams).cmd());
   }
 
   @Override
