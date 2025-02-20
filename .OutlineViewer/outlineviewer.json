@@ -22,6 +22,15 @@
   "transitory": {
     "TunableNumbers": {
       "Drive": {
+        "Align Robot To April Tag": {
+          "X Constants": {
+            "open": true
+          },
+          "Y Constants": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
       },
       "Elevator": {
