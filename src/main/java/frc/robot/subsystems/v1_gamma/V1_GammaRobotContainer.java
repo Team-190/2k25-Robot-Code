@@ -242,8 +242,16 @@ public class V1_GammaRobotContainer implements RobotContainer {
         AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
-    autoChooser.addOption("2 Piece Left", AutonomousCommands.autoBLeft(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams).cmd());
-    autoChooser.addOption("2 Piece Right", AutonomousCommands.autoBRight(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams).cmd());
+    autoChooser.addOption(
+        "2 Piece Left",
+        AutonomousCommands.autoBLeft(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
+    autoChooser.addOption(
+        "2 Piece Right",
+        AutonomousCommands.autoBRight(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
   }
 
   @Override
