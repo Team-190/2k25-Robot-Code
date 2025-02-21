@@ -2,10 +2,7 @@ package frc.robot.commands;
 
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
@@ -15,8 +12,6 @@ import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
@@ -83,10 +78,10 @@ public class AutonomousCommands {
       Camera... cameras) {
     AutoRoutine autoARight = drive.getAutoFactory().newRoutine("autoARight");
 
-    AutoTrajectory A_RIGHT_PATH1 = mirrorAuto("A_LEFT_PATH1", autoARight);
-    AutoTrajectory A_RIGHT_PATH2 = mirrorAuto("A_LEFT_PATH2", autoARight);
-    AutoTrajectory A_RIGHT_PATH3 = mirrorAuto("A_LEFT_PATH3", autoARight);
-    AutoTrajectory A_RIGHT_PATH4 = mirrorAuto("A_LEFT_PATH4", autoARight);
+    AutoTrajectory A_RIGHT_PATH1 = autoARight.trajectory("A_RIGHT_PATH1");
+    AutoTrajectory A_RIGHT_PATH2 = autoARight.trajectory("A_RIGHT_PATH2");
+    AutoTrajectory A_RIGHT_PATH3 = autoARight.trajectory("A_RIGHT_PATH3");
+    AutoTrajectory A_RIGHT_PATH4 = autoARight.trajectory("A_RIGHT_PATH4");
 
     autoARight
         .active()
@@ -180,9 +175,9 @@ public class AutonomousCommands {
       Camera... cameras) {
     AutoRoutine autoBRight = drive.getAutoFactory().newRoutine("autoBRight");
 
-    AutoTrajectory B_RIGHT_PATH1 = mirrorAuto("B_LEFT_PATH1", autoBRight);
-    AutoTrajectory B_RIGHT_PATH2 = mirrorAuto("B_LEFT_PATH2", autoBRight);
-    AutoTrajectory B_RIGHT_PATH3 = mirrorAuto("B_LEFT_PATH3", autoBRight);
+    AutoTrajectory B_RIGHT_PATH1 = autoBRight.trajectory("B_RIGHT_PATH1");
+    AutoTrajectory B_RIGHT_PATH2 = autoBRight.trajectory("B_RIGHT_PATH2");
+    AutoTrajectory B_RIGHT_PATH3 = autoBRight.trajectory("B_RIGHT_PATH3");
 
     autoBRight
         .active()
@@ -211,35 +206,5 @@ public class AutonomousCommands {
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)))));
 
     return autoBRight;
-  }
-
-  private static final AutoTrajectory mirrorAuto(String traj, AutoRoutine routine) {
-    Trajectory<SwerveSample> trajectory = routine.trajectory(traj).getRawTrajectory();
-    var flippedStates = new ArrayList<SwerveSample>();
-    for (var sample : trajectory.samples()) {
-      flippedStates.add(flipSample(sample));
-    }
-    AutoTrajectory mirrored =
-        routine.trajectory(
-            new Trajectory<SwerveSample>(
-                trajectory.name(), flippedStates, trajectory.splits(), trajectory.events()));
-    return mirrored;
-  }
-
-  private static final SwerveSample flipSample(SwerveSample sample) {
-
-    return new SwerveSample( // Change y
-        sample.t,
-        sample.x,
-        FieldConstants.fieldWidth - sample.y,
-        -sample.heading,
-        sample.vx,
-        -sample.vy,
-        -sample.omega,
-        sample.ax,
-        -sample.ay,
-        sample.alpha,
-        sample.moduleForcesX(),
-        Arrays.stream(sample.moduleForcesY()).map(y -> -y).toArray());
   }
 }
