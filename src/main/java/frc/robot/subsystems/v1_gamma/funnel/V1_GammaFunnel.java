@@ -164,4 +164,22 @@ public class V1_GammaFunnel extends SubsystemBase {
   public Command setFunnelVoltage(double volts) {
     return Commands.run(() -> io.setClapDaddyVoltage(volts));
   }
+
+  public Command wiggleClapDaddy() {
+    return Commands.sequence(
+      Commands.runOnce(() -> isClosedLoop = false),
+      Commands.repeatingSequence(Commands.parallel(
+        Commands.run(() -> io.setClapDaddyVoltage(0.5)),
+        Commands.waitSeconds(0.5)
+      ),
+      Commands.parallel(
+        Commands.run(() -> io.setClapDaddyVoltage(-0.5)),
+        Commands.waitSeconds(0.5)
+      ))
+    ).finallyDo(()-> {
+      io.setClapDaddyVoltage(0.0);
+      isClosedLoop = true;
+      setClapDaddyGoal(goal);
+    });
+  }
 }
