@@ -74,6 +74,19 @@ public class KeyboardController {
   }
 
   /**
+   * Constructs an event instance around this button's digital signal.
+   *
+   * @param row the row index
+   * @param col the column index
+   * @return an event instance representing the button's digital signal attached to the {@link
+   *     CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
+   * @see #button(int, EventLoop)
+   */
+  public Trigger button(int row, int col) {
+    return button(8 * (col - 1) + row - 1);
+  }
+
+  /**
    * Get if the HID is connected.
    *
    * @return true if the HID is connected
@@ -107,184 +120,184 @@ public class KeyboardController {
   }
 
   public Trigger resetHeading() {
-    return button(73);
+    return button(2, 10);
   }
 
   public static final record Funnel(KeyboardController controller) {
     public Trigger wingsClose() {
-      return controller.button(1);
+      return controller.button(2, 1);
     }
 
     public Trigger wingsIntake() {
-      return controller.button(2);
+      return controller.button(3, 2);
     }
 
-    public Trigger wingsStingerOut() {
-      return controller.button(3);
-    }
-
-    public Trigger wheelsIn() {
-      return controller.button(4);
+    public Trigger rollerWheelsIn() {
+      return controller.button(4, 1);
     }
 
     public Trigger incrementClosedSetpoint() {
-      return controller.button(9);
+      return controller.button(2, 2);
     }
 
     public Trigger incrementIntakeSetpoint() {
-      return controller.button(10);
+      return controller.button(3, 2);
     }
 
-    public Trigger incrementStingerOutSetpoint() {
-      return controller.button(11);
-    }
-
-    public Trigger wheelsOut() {
-      return controller.button(12);
+    public Trigger rollerWheelsOut() {
+      return controller.button(4, 2);
     }
 
     public Trigger decrementClosedSetpoint() {
-      return controller.button(17);
+      return controller.button(2, 3);
     }
 
     public Trigger decrementIntakeSetpoint() {
-      return controller.button(18);
-    }
-
-    public Trigger decrementStingerOutSetpoint() {
-      return controller.button(19);
-    }
-
-    public Trigger incrementFunnelWheelsSpeed() {
-      return controller.button(20);
+      return controller.button(3, 3);
     }
 
     public Trigger funnelSensorToggle() {
-      return controller.button(25);
+      return controller.button(2, 4);
     }
 
-    public Trigger decrementFunnelWheelsSpeed() {
-      return controller.button(28);
+    public Trigger incrementRollerWheelsSpeed() {
+      return controller.button(4, 3);
+    }
+
+    public Trigger decrementRollerWheelsSpeed() {
+      return controller.button(4, 4);
     }
   }
 
   public static final record EndEffector(KeyboardController controller) {
     public Trigger wheelsIn() {
-      return controller.button(6);
+      return controller.button(6, 1);
     }
 
     public Trigger wheelsOut() {
-      return controller.button(14);
+      return controller.button(6, 2);
     }
 
     public Trigger toggleSensor() {
-      return controller.button(7);
+      return controller.button(7, 4);
     }
 
     public Trigger incrementSpeed() {
-      return controller.button(22);
+      return controller.button(6, 3);
     }
 
     public Trigger decrementSpeed() {
-      return controller.button(30);
+      return controller.button(6, 4);
     }
 
     public Trigger eject() {
-      return controller.button(7);
+      return controller.button(7, 1);
     }
   }
 
   public static final record Elevator(KeyboardController controller) {
     public Trigger stow() {
-      return controller.button(33);
+      return controller.button(2, 5);
     }
 
     public Trigger raise() {
-      return controller.button(34);
+      return controller.button(3, 5);
     }
 
     public Trigger primeL4() {
-      return controller.button(35);
+      return controller.button(4, 5);
     }
 
     public Trigger primeL3() {
-      return controller.button(36);
+      return controller.button(5, 5);
     }
 
     public Trigger primeL2() {
-      return controller.button(37);
+      return controller.button(6, 5);
     }
 
     public Trigger primeL1() {
-      return controller.button(38);
+      return controller.button(7, 5);
     }
 
     public Trigger increaseStowSetpoint() {
-      return controller.button(41);
+      return controller.button(2, 6);
     }
 
     public Trigger decreaseStowSetpoint() {
-      return controller.button(49);
+      return controller.button(2, 7);
     }
 
     public Trigger increaseL4Setpoint() {
-      return controller.button(43);
+      return controller.button(4, 6);
     }
 
     public Trigger decreaseL4Setpoint() {
-      return controller.button(51);
+      return controller.button(4, 7);
     }
 
     public Trigger increaseL3Setpoint() {
-      return controller.button(44);
+      return controller.button(5, 6);
     }
 
     public Trigger decreaseL3Setpoint() {
-      return controller.button(52);
+      return controller.button(5, 7);
     }
 
     public Trigger increaseL2Setpoint() {
-      return controller.button(45);
+      return controller.button(6, 6);
     }
 
     public Trigger decreaseL2Setpoint() {
-      return controller.button(53);
+      return controller.button(6, 7);
     }
 
     public Trigger increaseL1Setpoint() {
-      return controller.button(46);
+      return controller.button(7, 6);
     }
 
     public Trigger decreaseL1Setpoint() {
-      return controller.button(54);
+      return controller.button(7, 7);
     }
   }
 
   public static final record Climber(KeyboardController controller) {
     public Trigger deployLower() {
-      return controller.button(61);
+      return controller.button(6, 8);
+    }
+
+    public Trigger stingerOut() {
+      return controller.button(7, 8);
     }
 
     public Trigger incrementWintchOut() {
-      return controller.button(69);
+      return controller.button(6, 9);
     }
 
     public Trigger incrementWintchIn() {
-      return controller.button(77);
+      return controller.button(6, 10);
+    }
+
+    public Trigger stingerIncrementSetpoint() {
+      return controller.button(7, 9);
+    }
+
+    public Trigger stingerDecrementSetpoint() {
+      return controller.button(7, 10);
     }
   }
 
   public static final record Scoring(KeyboardController controller) {
     public Trigger primeLeft() {
-      return controller.button(59);
+      return controller.button(4, 8);
     }
 
     public Trigger primeRight() {
-      return controller.button(67);
+      return controller.button(4, 9);
     }
 
     public Trigger track() {
-      return controller.button(75);
+      return controller.button(4, 10);
     }
   }
 }

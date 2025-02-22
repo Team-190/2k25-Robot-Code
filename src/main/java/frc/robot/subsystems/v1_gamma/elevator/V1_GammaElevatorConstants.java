@@ -116,6 +116,7 @@ public class V1_GammaElevatorConstants {
 
     public void changeOffset(double offset) {
       this.offset += offset;
+      INTAKE.offset = STOW.offset;
     }
   }
 }

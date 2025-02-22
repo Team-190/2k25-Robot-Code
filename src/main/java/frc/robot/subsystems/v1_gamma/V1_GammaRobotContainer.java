@@ -245,22 +245,21 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
     debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
-    debugBoard.funnel().wingsStingerOut().onTrue(funnel.setClapDaddyGoal(FunnelState.CLIMB));
     debugBoard
         .funnel()
-        .wheelsIn()
+        .rollerWheelsIn()
         .whileTrue(
             funnel.setRollerVoltage(
                 V1_GammaFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset()));
     debugBoard
         .funnel()
-        .wheelsOut()
+        .rollerWheelsOut()
         .whileTrue(
             funnel.setRollerVoltage(
                 -(V1_GammaFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset())));
     debugBoard
         .funnel()
-        .incrementFunnelWheelsSpeed()
+        .incrementRollerWheelsSpeed()
         .onTrue(
             Commands.runOnce(
                 () ->
@@ -268,7 +267,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                         V1_GammaFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
     debugBoard
         .funnel()
-        .decrementFunnelWheelsSpeed()
+        .decrementRollerWheelsSpeed()
         .onTrue(
             Commands.runOnce(
                 () ->
@@ -294,15 +293,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
                         V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
-        .incrementStingerOutSetpoint()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    funnel.setFunnelPositionOffset(
-                        FunnelState.CLIMB,
-                        V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
-    debugBoard
-        .funnel()
         .decrementClosedSetpoint()
         .onTrue(
             Commands.runOnce(
@@ -318,15 +308,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 () ->
                     funnel.setFunnelPositionOffset(
                         FunnelState.OPENED,
-                        -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
-    debugBoard
-        .funnel()
-        .decrementStingerOutSetpoint()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    funnel.setFunnelPositionOffset(
-                        FunnelState.CLIMB,
                         -V1_GammaFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
 
@@ -464,6 +445,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
     // Climber triggers
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
+    debugBoard.climber().stingerOut().onTrue(climber.releaseClimber()); //TODO: Check with Marcus
     debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
     debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
   }
