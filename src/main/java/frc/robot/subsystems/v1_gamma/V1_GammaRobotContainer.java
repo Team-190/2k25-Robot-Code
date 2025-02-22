@@ -456,6 +456,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                     manipulator.incrementScoreSpeed(
                         -V1_GammaManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT())));
     debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
+    debugBoard.endEffector().blep().onTrue(manipulator.runManipulator(0.0)); //TODO: Add blep command
     // Climber triggers
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
     debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());

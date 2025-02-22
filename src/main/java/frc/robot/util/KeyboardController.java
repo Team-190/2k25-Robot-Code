@@ -193,6 +193,10 @@ public class KeyboardController {
     public Trigger eject() {
       return controller.button(7, 1);
     }
+
+    public Trigger blep() {
+      return controller.button(7, 2);
+    }
   }
 
   public static final record Elevator(KeyboardController controller) {
