@@ -50,12 +50,7 @@ public class V1_GammaElevator extends SubsystemBase {
     Logger.recordOutput("Elevator/Position", position.name());
 
     if (isClosedLoop) {
-      // TODO: Fix this (this is bad, reset to not be tuneable numbers [sorry elliot])
-      if (position == ElevatorPositions.TOP_ALGAE)
-        io.setPositionGoal(V1_GammaElevatorConstants.ALGAE_TOP_SETPOINT.get());
-      else if (position == ElevatorPositions.BOT_ALGAE)
-        io.setPositionGoal(V1_GammaElevatorConstants.ALGAE_BOT_SETPOINT.get());
-      else io.setPositionGoal(position.getPosition());
+      io.setPositionGoal(position.getPosition());
     }
   }
 
