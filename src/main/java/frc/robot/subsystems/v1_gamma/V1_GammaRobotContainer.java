@@ -367,6 +367,13 @@ public class V1_GammaRobotContainer implements RobotContainer {
                     elevator.changeSetpoint(
                         ElevatorPositions.STOW,
                         -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard.elevator().decreaseAlgaeSetPoint().onTrue(Commands.runOnce(
+        () ->
+            elevator.changeSetpoint(
+                ElevatorPositions.STOW,
+                -V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    
     debugBoard
         .elevator()
         .increaseL1Setpoint()
@@ -412,6 +419,12 @@ public class V1_GammaRobotContainer implements RobotContainer {
                     elevator.changeSetpoint(
                         ElevatorPositions.STOW,
                         V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    
+    debugBoard.elevator().increaseAlgaeSetPoint().onTrue(Commands.runOnce(
+        () ->
+            elevator.changeSetpoint(
+                ElevatorPositions.STOW,
+                V1_GammaElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
     // Manipulator triggers
     debugBoard
         .endEffector()

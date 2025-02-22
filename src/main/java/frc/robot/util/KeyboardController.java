@@ -259,6 +259,18 @@ public class KeyboardController {
     public Trigger decreaseL1Setpoint() {
       return controller.button(7, 7);
     }
+
+    public Trigger primeAlgae() {
+      return controller.button(8, 5);
+    }
+
+    public Trigger increaseAlgaeSetPoint() {
+      return controller.button(8, 6);
+    }
+
+    public Trigger decreaseAlgaeSetPoint() {
+      return controller.button(8, 7);
+    }
   }
 
   public static final record Climber(KeyboardController controller) {
