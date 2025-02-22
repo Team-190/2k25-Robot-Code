@@ -277,14 +277,6 @@ public class KeyboardController {
     public Trigger incrementWintchIn() {
       return controller.button(6, 10);
     }
-
-    public Trigger stingerIncrementSetpoint() {
-      return controller.button(7, 9);
-    }
-
-    public Trigger stingerDecrementSetpoint() {
-      return controller.button(7, 10);
-    }
   }
 
   public static final record Scoring(KeyboardController controller) {

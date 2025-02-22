@@ -445,7 +445,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
     debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
     // Climber triggers
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
-    debugBoard.climber().stingerOut().onTrue(climber.releaseClimber()); //TODO: Check with Marcus
     debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
     debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
   }
