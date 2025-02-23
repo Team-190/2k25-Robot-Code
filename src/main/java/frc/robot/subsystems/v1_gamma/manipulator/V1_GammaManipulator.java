@@ -85,14 +85,14 @@ public class V1_GammaManipulator extends SubsystemBase {
         Commands.runOnce(
             () -> {
               assAtSetoint = false;
-              desiredRotations = V1_GammaManipulatorConstants.MANIPULATOR_STOW_ROTATIONS;
+              desiredRotations = V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION;
             }),
         Commands.runOnce(() -> this.previousPosition = inputs.position),
         runManipulator(-2)
             .until(
                 () ->
                     getManipulatorRotationsIn(
-                        V1_GammaManipulatorConstants.MANIPULATOR_STOW_ROTATIONS)),
+                        V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
         Commands.runOnce(() -> assAtSetoint = true));
   }
 }
