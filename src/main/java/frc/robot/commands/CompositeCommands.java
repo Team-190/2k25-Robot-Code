@@ -61,21 +61,35 @@ public class CompositeCommands {
           .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
     }
 
-    public static final Command blep(V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+    public static final Command twerk(
+        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
       return Commands.sequence(
-          elevator.setPosition(getAlgaePosition()),
+          Commands.parallel(
+              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
           Commands.waitUntil(elevator::atGoal),
-          manipulator.deployAlgaeArm(),
-          Commands.waitSeconds(0.2),
-          manipulator.stowAlgaeArm());
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(
+              () ->
+                  elevator.setPosition(
+                      switch (RobotState.getReefAlignData().closestReefTag()) {
+                        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+                        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+                        default -> ReefHeight.BOT_ALGAE;
+                      })),
+          manipulator.removeAlgae());
     }
 
-    private static final ReefHeight getAlgaePosition() {
-      return switch (RobotState.getReefAlignData().closestReefTag()) {
-        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-        default -> ReefHeight.INTAKE;
-      };
+    public static final Command twerk(
+        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
+      return Commands.sequence(
+          Commands.parallel(
+              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(() -> elevator.setPosition(level)),
+          manipulator.removeAlgae());
     }
 
     public static final Command intakeCoralOverride(
