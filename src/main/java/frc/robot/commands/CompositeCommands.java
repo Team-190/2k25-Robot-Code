@@ -61,12 +61,22 @@ public class CompositeCommands {
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
           .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
     }
+
+    public static final Command intakeCoralOverride(
+        V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+              Commands.runOnce(() -> V1_Gamma_LEDs.setIntaking(true)),
+              elevator.setPosition(ReefHeight.INTAKE),
+              Commands.waitUntil(elevator::atGoal),
+              Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
+          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+    }
   }
 
   public static class ScoreCommands {
     public static final Command scoreCoral(
         V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
-      return manipulator.scoreCoral().withTimeout(1);
+      return manipulator.scoreCoral().withTimeout(0.4);
     }
 
     public static final Command scoreCoralSequence(
@@ -75,7 +85,7 @@ public class CompositeCommands {
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(1));
+          manipulator.scoreCoral().withTimeout(0.4));
     }
 
     public static final Command autoScoreCoralSequence(
