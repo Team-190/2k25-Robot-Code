@@ -229,7 +229,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
-    operator.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    operator
+        .leftTrigger(0.5)
+        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
     operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(elevator, manipulator));
 
     // Operator bumpers
@@ -245,6 +247,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
+    autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
@@ -260,8 +263,13 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
-        "BlueSide",
-        AutonomousCommands.blueSideAuto(
+        "2 Piece Left",
+        AutonomousCommands.autoBLeft(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
+    autoChooser.addOption(
+        "2 Piece Right",
+        AutonomousCommands.autoBRight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
   }

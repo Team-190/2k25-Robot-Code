@@ -10,7 +10,6 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -78,12 +77,22 @@ public class CompositeCommands {
         default -> ReefHeight.INTAKE;
       };
     }
+
+    public static final Command intakeCoralOverride(
+        V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+              Commands.runOnce(() -> V1_Gamma_LEDs.setIntaking(true)),
+              elevator.setPosition(ReefHeight.INTAKE),
+              Commands.waitUntil(elevator::atGoal),
+              Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
+          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+    }
   }
 
   public static class ScoreCommands {
     public static final Command scoreCoral(
         V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
-      return manipulator.scoreCoral().withTimeout(1);
+      return manipulator.scoreCoral().withTimeout(0.4);
     }
 
     public static final Command scoreCoralSequence(
@@ -92,7 +101,7 @@ public class CompositeCommands {
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(1));
+          manipulator.scoreCoral().withTimeout(0.4));
     }
 
     public static final Command autoScoreCoralSequence(
