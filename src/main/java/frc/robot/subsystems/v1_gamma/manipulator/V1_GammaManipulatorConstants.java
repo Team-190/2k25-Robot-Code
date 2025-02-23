@@ -14,10 +14,9 @@ public class V1_GammaManipulatorConstants {
   static {
     MANIPULATOR_CAN_ID = 30;
     SUPPLY_CURRENT_LIMIT = 40.0;
-    MANIPULATOR_CURRENT_THRESHOLD = 30.0;
-    MANIPULATOR_STOW_ROTATIONS = Rotation2d.fromRadians(10);
-    MANIPULATOR_DEPLOY_ROTATIONS = Rotation2d.fromRadians(1);
-
+    MANIPULATOR_CURRENT_THRESHOLD = 39.0;
+    MANIPULATOR_STOW_ROTATIONS = Rotation2d.fromRotations(.15);
+    MANIPULATOR_DEPLOY_ROTATIONS = Rotation2d.fromRotations(.25);
     VOLTAGES =
         new Voltages(
             new LoggedTunableNumber("Manipulator/Intake Volts", 6.0),

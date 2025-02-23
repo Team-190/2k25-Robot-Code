@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class V1_GammaManipulator extends SubsystemBase {
@@ -35,6 +36,7 @@ public class V1_GammaManipulator extends SubsystemBase {
         "ASS Setpoint", previousPosition.getRadians() - desiredRotations.getRadians());
   }
 
+  @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
         > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
