@@ -37,7 +37,7 @@ public class V1_GammaClimberConstants {
 
     SPOOL_DIAMETER = Units.inchesToMeters(1.78);
 
-    WAIT_AFTER_RELEASE_SECONDS = 2.5;
+    WAIT_AFTER_RELEASE_SECONDS = 1.1;
     REDUNDANCY_DELAY_SECONDS = 0.25;
     REDUNDANCY_TRUSTING_TIMEOUT_SECONDS = 0.5;
   }

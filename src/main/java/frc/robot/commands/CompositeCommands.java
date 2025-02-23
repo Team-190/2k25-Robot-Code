@@ -33,10 +33,12 @@ public class CompositeCommands {
       V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber, Drive drive) {
     return Commands.sequence(
         elevator.setPosition(ReefHeight.STOW),
+        Commands.waitSeconds(0.02),
         Commands.waitUntil(elevator::atGoal),
         funnel.setClapDaddyGoal(FunnelState.CLIMB),
-        climber.releaseClimber(),
-        Commands.waitSeconds(V1_GammaClimberConstants.WAIT_AFTER_RELEASE_SECONDS),
+        Commands.parallel(
+            climber.releaseClimber(),
+            Commands.waitSeconds(V1_GammaClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
         Commands.waitUntil(climber::climberReady),
         Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
   }

@@ -12,10 +12,13 @@ public class V1_GammaClimber extends SubsystemBase {
 
   private Timer redundantSwitchesTimer;
   private Timer redundantTrustTimer;
+
   @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
   private boolean trustRedundantSwitchOne;
+
   @AutoLogOutput(key = "Climber/trustRedundantSwitchTwo")
   private boolean trustRedundantSwitchTwo;
+
   @AutoLogOutput(key = "Climber/override")
   private boolean override;
 
@@ -41,16 +44,21 @@ public class V1_GammaClimber extends SubsystemBase {
 
     Logger.recordOutput("Climber/redundantSwitchesTimer", redundantSwitchesTimer.get());
     Logger.recordOutput("Climber/redundantTrustTimer", redundantTrustTimer.get());
+    Logger.recordOutput("Climber/Ready", climberReady());
 
     isClimbed = io.isClimbed();
   }
 
-  public boolean climberReady() { 
+  public boolean climberReady() {
+    if (override) {
+      return true;
+    }
     if (inputs.redundantSwitchOne != inputs.redundantSwitchOne) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(V1_GammaClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+      if (redundantTrustTimer.hasElapsed(
+          V1_GammaClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (inputs.redundantSwitchOne) {
@@ -78,7 +86,7 @@ public class V1_GammaClimber extends SubsystemBase {
     } else if (trustRedundantSwitchTwo) {
       return inputs.redundantSwitchTwo;
     } else {
-      return override;
+      return false;
     }
   }
 
@@ -94,7 +102,7 @@ public class V1_GammaClimber extends SubsystemBase {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
-  public Command manualDeployOverride(boolean override) { //set using debug board button
+  public Command manualDeployOverride(boolean override) { // set using debug board button
     return this.runOnce(() -> this.override = override);
   }
 }
