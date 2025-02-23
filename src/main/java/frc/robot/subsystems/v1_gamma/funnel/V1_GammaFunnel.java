@@ -177,12 +177,13 @@ public class V1_GammaFunnel extends SubsystemBase {
         Commands.runOnce(() -> currentPosition = inputs.clapDaddyPosition.getRadians()),
         Commands.repeatingSequence(
             Commands.sequence(
-                setFunnelVoltage(state == FunnelState.OPENED ? 1 : -3).until(() -> clapped(state)),
+                setFunnelVoltage(state.name().equals("OPENED") ? 1 : -3)
+                    .until(() -> clapped(state)),
                 setClapDaddyGoal(state))));
   }
 
   private boolean clapped(FunnelState state) {
     return Math.abs(currentPosition - inputs.clapDaddyPosition.getRadians())
-        >= (state == FunnelState.OPENED ? .05 : .15);
+        >= (state.name().equals("OPENED") ? .05 : .15);
   }
 }
