@@ -18,7 +18,12 @@ public class V1_GammaFunnel extends SubsystemBase {
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
+
+  @AutoLogOutput(key = "Funnel/Goal")
   private FunnelState goal;
+
+  @AutoLogOutput(key = "Funnel/CurrentPosition")
+  private double currentPosition;
 
   private boolean isClosedLoop;
 
@@ -78,10 +83,9 @@ public class V1_GammaFunnel extends SubsystemBase {
     return Commands.race(
             Commands.sequence(
                 setClapDaddyGoal(FunnelState.OPENED),
-                Commands.waitUntil(() -> hasCoral()),
+                wiggleClapDaddy(FunnelState.OPENED).until(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
-                Commands.waitUntil(coralLocked).withTimeout(4), //TODO: tune timeout
-                wiggleClapDaddy().until(coralLocked)),
+                wiggleClapDaddy(FunnelState.CLOSED).until(coralLocked)),
             setRollerVoltage(12.0))
         .finallyDo(
             () -> {
@@ -163,24 +167,23 @@ public class V1_GammaFunnel extends SubsystemBase {
   }
 
   public Command setFunnelVoltage(double volts) {
-    return Commands.run(() -> io.setClapDaddyVoltage(volts));
+    return Commands.runOnce(() -> isClosedLoop = false)
+        .andThen(Commands.run(() -> io.setClapDaddyVoltage(volts)));
   }
 
-  public Command wiggleClapDaddy() {
+  public Command wiggleClapDaddy(FunnelState state) {
     return Commands.sequence(
-      Commands.runOnce(() -> isClosedLoop = false),
-      Commands.repeatingSequence(Commands.parallel(
-        Commands.run(() -> io.setClapDaddyVoltage(0.5)),
-        Commands.waitSeconds(0.5)
-      ),
-      Commands.parallel(
-        Commands.run(() -> io.setClapDaddyVoltage(-0.5)),
-        Commands.waitSeconds(0.5)
-      ))
-    ).finallyDo(()-> {
-      io.setClapDaddyVoltage(0.0);
-      isClosedLoop = true;
-      setClapDaddyGoal(goal);
-    });
+        Commands.runOnce(() -> currentPosition = inputs.clapDaddyPosition.getRadians()),
+        Commands.repeatingSequence(
+            Commands.either(
+                Commands.sequence(
+                    setFunnelVoltage(1).until(this::clapped), setClapDaddyGoal(state)),
+                Commands.sequence(
+                    setFunnelVoltage(-1).until(this::clapped), setClapDaddyGoal(state)),
+                () -> state == FunnelState.OPENED)));
+  }
+
+  private boolean clapped() {
+    return Math.abs(currentPosition - inputs.clapDaddyPosition.getRadians()) >= .05;
   }
 }

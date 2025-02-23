@@ -51,7 +51,7 @@ public class V1_GammaFunnelConstants {
             new Constraints(
                 new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Acceleration", 100.0),
                 new LoggedTunableNumber("Funnel/Clap Daddy Motor/Max Velocity", 100.0),
-                new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
+                new LoggedTunableNumber("Funnel/Goal Tolerance", 0.1));
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         break;
