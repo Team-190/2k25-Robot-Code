@@ -17,8 +17,6 @@ public class V1_GammaElevatorConstants {
   public static final ElevatorParameters ELEVATOR_PARAMETERS;
   public static final Gains GAINS;
   public static final Constraints CONSTRAINTS;
-  public static LoggedTunableNumber ALGAE_TOP_SETPOINT;
-  public static LoggedTunableNumber ALGAE_BOT_SETPOINT;
 
   static {
     switch (Constants.getMode()) {
@@ -47,9 +45,6 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
-
-        ALGAE_TOP_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Top_Setpoint", 0.9);
-        ALGAE_BOT_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Bot_Setpoint", 0.53);
         break;
       case SIM:
         ELEVATOR_CAN_ID = 20;
@@ -75,9 +70,6 @@ public class V1_GammaElevatorConstants {
                 new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
-
-        ALGAE_TOP_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Top_Setpoint", 10.05);
-        ALGAE_BOT_SETPOINT = new LoggedTunableNumber("Elevator/Algae_Bot_Setpoint", 0.61);
     }
   }
 
@@ -105,8 +97,8 @@ public class V1_GammaElevatorConstants {
   public static enum ElevatorPositions {
     STOW(0.0),
     INTAKE(0.0),
-    TOP_ALGAE(.6 - Units.inchesToMeters(1)),
-    BOT_ALGAE(.6 - Units.inchesToMeters(1)),
+    TOP_ALGAE(0.9),
+    BOT_ALGAE(0.53),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
