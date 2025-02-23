@@ -45,10 +45,6 @@ public class V1_GammaManipulator extends SubsystemBase {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
-  public Command scoreL4Coral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_L4_VOLTS().get());
-  }
-
   public Command halfScoreCoral() {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }

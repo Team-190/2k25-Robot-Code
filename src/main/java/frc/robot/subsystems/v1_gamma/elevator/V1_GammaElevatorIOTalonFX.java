@@ -25,13 +25,13 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
   private StatusSignal<Angle> positionRotations;
   private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
-  private double positionGoalMeters;
-  private StatusSignal<Double> positionSetpointRotations;
-  private StatusSignal<Double> positionErrorRotations;
   private ArrayList<StatusSignal<Voltage>> appliedVolts;
   private ArrayList<StatusSignal<Current>> supplyCurrentAmps;
   private ArrayList<StatusSignal<Current>> torqueCurrentAmps;
   private ArrayList<StatusSignal<Temperature>> temperatureCelsius;
+  private double positionGoalMeters;
+  private StatusSignal<Double> positionSetpointRotations;
+  private StatusSignal<Double> positionErrorRotations;
 
   private StatusSignal<?>[] statusSignals;
 
@@ -95,13 +95,13 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
 
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
-    positionGoalMeters = 0.0;
-    positionSetpointRotations = talonFX.getClosedLoopReference();
-    positionErrorRotations = talonFX.getClosedLoopError();
     appliedVolts.add(talonFX.getMotorVoltage());
     supplyCurrentAmps.add(talonFX.getSupplyCurrent());
     torqueCurrentAmps.add(talonFX.getTorqueCurrent());
     temperatureCelsius.add(talonFX.getDeviceTemp());
+    positionGoalMeters = 0.0;
+    positionSetpointRotations = talonFX.getClosedLoopReference();
+    positionErrorRotations = talonFX.getClosedLoopError();
 
     for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
       appliedVolts.add(followTalonFX[i].getMotorVoltage());
@@ -160,6 +160,12 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
             * Math.PI
             * V1_GammaElevatorConstants.DRUM_RADIUS
             * 2;
+    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
+      inputs.appliedVolts[i] = appliedVolts.get(i).getValueAsDouble();
+      inputs.supplyCurrentAmps[i] = supplyCurrentAmps.get(i).getValueAsDouble();
+      inputs.torqueCurrentAmps[i] = torqueCurrentAmps.get(i).getValueAsDouble();
+      inputs.temperatureCelsius[i] = temperatureCelsius.get(i).getValueAsDouble();
+    }
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
         (positionSetpointRotations.getValueAsDouble()
@@ -172,13 +178,6 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
             * Math.PI
             * V1_GammaElevatorConstants.DRUM_RADIUS
             * 2;
-
-    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
-      inputs.appliedVolts[i] = appliedVolts.get(i).getValueAsDouble();
-      inputs.supplyCurrentAmps[i] = supplyCurrentAmps.get(i).getValueAsDouble();
-      inputs.torqueCurrentAmps[i] = torqueCurrentAmps.get(i).getValueAsDouble();
-      inputs.temperatureCelsius[i] = temperatureCelsius.get(i).getValueAsDouble();
-    }
   }
 
   @Override

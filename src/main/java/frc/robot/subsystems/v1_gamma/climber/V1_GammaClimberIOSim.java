@@ -41,6 +41,6 @@ public class V1_GammaClimberIOSim implements V1_GammaClimberIO {
 
   @Override
   public boolean isClimbed() {
-    return sim.getAngularVelocityRadPerSec() == 0;
+    return false;
   }
 }

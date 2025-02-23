@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -44,62 +43,64 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
-  @Getter private static final PIDController alignXController;
-  @Getter private static final PIDController alignYController;
-  @Getter private static final PIDController alignHeadingController;
+  @Getter private static final ProfiledPIDController alignXController;
+  @Getter private static final ProfiledPIDController alignYController;
+  private static final ProfiledPIDController alignHeadingController;
 
   @Getter private static final PIDController autoXController;
   @Getter private static final PIDController autoYController;
   @Getter private static final PIDController autoHeadingController;
 
-  private static final ProfiledPIDController omegaController =
-      new ProfiledPIDController(
-          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
-          0.0,
-          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
-          new TrapezoidProfile.Constraints(
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                  .omegaPIDConstants()
-                  .maxVelocity()
-                  .get(),
-              Double.POSITIVE_INFINITY));
-
   static {
-    alignHeadingController =
-        new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
-            0,
-            DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get(),
-            Constants.LOOP_PERIOD_SECONDS);
     alignXController =
-        new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
+        new ProfiledPIDController(
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kP().get(),
             0.0,
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .xPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
     alignYController =
-        new PIDController(
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
+        new ProfiledPIDController(
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kP().get(),
             0.0,
-            DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .yPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
+    alignHeadingController =
+        new ProfiledPIDController(
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
+            0.0,
+            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
+            new TrapezoidProfile.Constraints(
+                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .maxVelocity()
+                    .get(),
+                Double.POSITIVE_INFINITY));
 
-    autoHeadingController =
+    autoXController =
         new PIDController(
-            DriveConstants.AUTO_GAINS.rotation_Kp().get(),
-            0.0,
-            DriveConstants.AUTO_GAINS.rotation_Kd().get(),
-            Constants.LOOP_PERIOD_SECONDS);
-    autoXController = new PIDController(DriveConstants.AUTO_GAINS.translation_Kp().get(), 0.0, 0.0);
+            DriveConstants.AUTO_GAINS.translation_Kp().get(),
+            0,
+            DriveConstants.AUTO_GAINS.translation_Kd().get());
     autoYController =
         new PIDController(
             DriveConstants.AUTO_GAINS.translation_Kp().get(),
-            0.0,
+            0,
             DriveConstants.AUTO_GAINS.translation_Kd().get());
-
-    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    alignHeadingController.setTolerance(Units.degreesToRadians(1.0));
-
-    autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    autoHeadingController.setTolerance(Units.degreesToRadians(1.0));
+    autoHeadingController =
+        new PIDController(
+            DriveConstants.AUTO_GAINS.rotation_Kp().get(),
+            0,
+            DriveConstants.AUTO_GAINS.rotation_Kd().get());
   }
 
   /**
@@ -176,9 +177,9 @@ public final class DriveCommands {
     alignHeadingController.setPID(kp, 0.0, kd);
   }
 
-  public static final void setTranslationPID(double kp, double kd) {
-    alignXController.setPID(kp, 0.0, kd);
-    alignYController.setPID(kp, 0.0, kd);
+  public static final void setTranslationPID(double xKp, double xKd, double yKp, double yKd) {
+    alignXController.setPID(xKp, 0.0, xKd);
+    alignYController.setPID(yKp, 0.0, yKd);
   }
 
   public static Command feedforwardCharacterization(Drive drive) {
@@ -260,32 +261,9 @@ public final class DriveCommands {
 
   public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
 
-    ProfiledPIDController xController =
-        new ProfiledPIDController(
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kP().get(),
-            0.0,
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kD().get(),
-            new TrapezoidProfile.Constraints(
-                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                    .xPIDConstants()
-                    .maxVelocity()
-                    .get(),
-                Double.POSITIVE_INFINITY));
-    ProfiledPIDController yController =
-        new ProfiledPIDController(
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kP().get(),
-            0.0,
-            DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kD().get(),
-            new TrapezoidProfile.Constraints(
-                DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                    .yPIDConstants()
-                    .maxVelocity()
-                    .get(),
-                Double.POSITIVE_INFINITY));
-
-    xController.setTolerance(
+    alignXController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
-    yController.setTolerance(
+    alignYController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
 
     return Commands.runOnce(
@@ -300,38 +278,92 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
-                      boolean isFlipped =
-                          DriverStation.getAlliance().isPresent()
-                              && DriverStation.getAlliance().get() == Alliance.Red;
                       ChassisSpeeds speeds;
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
-                        if (!xController.atSetpoint())
-                          xSpeed =
-                              xController.calculate(
-                                  RobotState.getRobotPoseReef().getX(),
-                                  RobotState.getReefAlignData().setpoint().getX());
-                        else xController.reset(RobotState.getRobotPoseReef().getX());
-                        if (!yController.atSetpoint())
-                          ySpeed =
-                              yController.calculate(
-                                  RobotState.getRobotPoseReef().getY(),
-                                  RobotState.getReefAlignData().setpoint().getY());
-                        else yController.reset(RobotState.getRobotPoseReef().getY());
+
+                        double ex =
+                            RobotState.getReefAlignData().setpoint().getX()
+                                - RobotState.getRobotPoseReef().getX();
+                        double ey =
+                            RobotState.getReefAlignData().setpoint().getY()
+                                - RobotState.getRobotPoseReef().getY();
+
+                        // Rotate errors into the reef post's coordinate frame
+                        double ex_prime =
+                            ex
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double ey_prime =
+                            -ex
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        if (!alignXController.atSetpoint())
+                          xSpeed = alignXController.calculate(0, ex_prime);
+                        else alignXController.reset(ex_prime);
+                        if (!alignYController.atSetpoint())
+                          ySpeed = alignYController.calculate(0, ey_prime);
+                        else alignYController.reset(ey_prime);
 
                         Logger.recordOutput("xSpeed", -xSpeed);
                         Logger.recordOutput("ySpeed", -ySpeed);
+
+                        // Re-rotate the speeds into field relative coordinate frame
+                        double adjustedXSpeed =
+                            xSpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                - ySpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double adjustedYSpeed =
+                            xSpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ySpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .setpoint()
+                                            .getRotation()
+                                            .getRadians());
+
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
-                                -xSpeed,
-                                -ySpeed,
+                                -adjustedXSpeed,
+                                -adjustedYSpeed,
                                 thetaSpeedCalculate(),
-                                isFlipped
-                                    ? RobotState.getRobotPoseReef()
-                                        .getRotation()
-                                        .plus(new Rotation2d(Math.PI))
-                                    : RobotState.getRobotPoseReef().getRotation());
+                                RobotState.getRobotPoseReef()
+                                    .getRotation()
+                                    .plus(new Rotation2d(Math.PI)));
                       } else {
                         speeds = new ChassisSpeeds();
                       }
@@ -342,10 +374,10 @@ public final class DriveCommands {
                 .finallyDo(
                     () -> {
                       drive.runVelocity(new ChassisSpeeds());
-                      omegaController.reset(
+                      alignHeadingController.reset(
                           RobotState.getRobotPoseReef().getRotation().getRadians());
-                      xController.reset(RobotState.getRobotPoseReef().getX());
-                      yController.reset(RobotState.getRobotPoseReef().getY());
+                      alignXController.reset(RobotState.getRobotPoseReef().getX());
+                      alignYController.reset(RobotState.getRobotPoseReef().getY());
                       for (Camera camera : cameras) {
                         camera.setValidTags(FieldConstants.validTags);
                       }
@@ -356,17 +388,17 @@ public final class DriveCommands {
   private static double thetaSpeedCalculate() {
     double thetaSpeed = 0.0;
 
-    omegaController.setTolerance(
+    alignHeadingController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
-    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    if (!omegaController.atSetpoint())
+    if (!alignHeadingController.atSetpoint())
       thetaSpeed =
-          omegaController.calculate(
+          alignHeadingController.calculate(
               RobotState.getRobotPoseReef().getRotation().getRadians(),
               RobotState.getReefAlignData().setpoint().getRotation().getRadians());
-    else omegaController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+    else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("thetaSpeed", thetaSpeed);
     return thetaSpeed;
