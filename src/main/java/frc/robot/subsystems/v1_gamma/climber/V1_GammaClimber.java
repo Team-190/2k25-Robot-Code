@@ -10,7 +10,17 @@ public class V1_GammaClimber extends SubsystemBase {
   private final V1_GammaClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
-  private Timer reduntantSwitchTimer;
+  private Timer redundantSwitchesTimer;
+  private Timer redundantTrustTimer;
+
+  @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
+  private boolean trustRedundantSwitchOne;
+
+  @AutoLogOutput(key = "Climber/trustRedundantSwitchTwo")
+  private boolean trustRedundantSwitchTwo;
+
+  @AutoLogOutput(key = "Climber/override")
+  private boolean override;
 
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
@@ -20,7 +30,11 @@ public class V1_GammaClimber extends SubsystemBase {
     inputs = new ClimberIOInputsAutoLogged();
 
     isClimbed = false;
-    reduntantSwitchTimer = new Timer();
+    redundantSwitchesTimer = new Timer();
+    redundantTrustTimer = new Timer();
+    trustRedundantSwitchOne = true;
+    trustRedundantSwitchTwo = true;
+    override = false;
   }
 
   @Override
@@ -28,18 +42,52 @@ public class V1_GammaClimber extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
 
+    Logger.recordOutput("Climber/redundantSwitchesTimer", redundantSwitchesTimer.get());
+    Logger.recordOutput("Climber/redundantTrustTimer", redundantTrustTimer.get());
+    Logger.recordOutput("Climber/Ready", climberReady());
+
     isClimbed = io.isClimbed();
   }
 
   public boolean climberReady() {
-    if (inputs.redundantSwitchOne && inputs.redundantSwitchOne) {
-      reduntantSwitchTimer.start();
-    } else {
-      reduntantSwitchTimer.reset();
+    if (override) {
+      return true;
     }
-    return inputs.redundantSwitchOne
-        && inputs.redundantSwitchOne
-        && reduntantSwitchTimer.hasElapsed(.25);
+    if (inputs.redundantSwitchOne != inputs.redundantSwitchOne) {
+      redundantTrustTimer.start();
+      trustRedundantSwitchOne = false;
+      trustRedundantSwitchTwo = false;
+      if (redundantTrustTimer.hasElapsed(
+          V1_GammaClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+        if (inputs.redundantSwitchOne) {
+          trustRedundantSwitchOne = true;
+        } else if (inputs.redundantSwitchOne) {
+          trustRedundantSwitchTwo = true;
+        }
+      }
+    } else {
+      trustRedundantSwitchOne = true;
+      trustRedundantSwitchTwo = true;
+      redundantTrustTimer.reset();
+    }
+
+    if (inputs.redundantSwitchOne && inputs.redundantSwitchOne) {
+      redundantSwitchesTimer.start();
+    } else {
+      redundantSwitchesTimer.reset();
+    }
+
+    if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
+      return inputs.redundantSwitchOne
+          && inputs.redundantSwitchTwo
+          && redundantSwitchesTimer.hasElapsed(V1_GammaClimberConstants.REDUNDANCY_DELAY_SECONDS);
+    } else if (trustRedundantSwitchOne) {
+      return inputs.redundantSwitchOne;
+    } else if (trustRedundantSwitchTwo) {
+      return inputs.redundantSwitchTwo;
+    } else {
+      return false;
+    }
   }
 
   public Command setVoltage(double volts) {
@@ -52,5 +100,9 @@ public class V1_GammaClimber extends SubsystemBase {
 
   public Command winchClimber() {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+  }
+
+  public Command manualDeployOverride(boolean override) { // set using debug board button
+    return this.runOnce(() -> this.override = override);
   }
 }
