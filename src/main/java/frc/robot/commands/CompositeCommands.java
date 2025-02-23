@@ -9,6 +9,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
+import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
@@ -29,15 +30,17 @@ public class CompositeCommands {
   }
 
   public static final Command climb(
-      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber) {
+      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber, Drive drive) {
     return Commands.sequence(
         elevator.setPosition(ReefHeight.STOW),
+        Commands.waitSeconds(0.02),
         Commands.waitUntil(elevator::atGoal),
         funnel.setClapDaddyGoal(FunnelState.CLIMB),
-        climber.releaseClimber(),
-        Commands.waitSeconds(2.5),
+        Commands.parallel(
+            climber.releaseClimber(),
+            Commands.waitSeconds(V1_GammaClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
         Commands.waitUntil(climber::climberReady),
-        climber.winchClimber());
+        Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
   }
 
   public static final Command setStaticReefHeight(ReefHeight height) {
