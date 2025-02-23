@@ -14,7 +14,7 @@ public class V1_GammaManipulatorConstants {
   static {
     MANIPULATOR_CAN_ID = 30;
     SUPPLY_CURRENT_LIMIT = 40.0;
-    MANIPULATOR_CURRENT_THRESHOLD = 30.0;
+    MANIPULATOR_CURRENT_THRESHOLD = 39.0;
     halfScoreRotation = Rotation2d.fromRotations(.15);
     halfUnScoreRotation = Rotation2d.fromRotations(.25);
     VOLTAGES =
