@@ -173,17 +173,16 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   public Command wiggleClapDaddy(FunnelState state) {
     return Commands.sequence(
+        Commands.runOnce(() -> Logger.recordOutput("Wiggle", state.name())),
         Commands.runOnce(() -> currentPosition = inputs.clapDaddyPosition.getRadians()),
         Commands.repeatingSequence(
-            Commands.either(
-                Commands.sequence(
-                    setFunnelVoltage(1).until(this::clapped), setClapDaddyGoal(state)),
-                Commands.sequence(
-                    setFunnelVoltage(-1).until(this::clapped), setClapDaddyGoal(state)),
-                () -> state == FunnelState.OPENED)));
+            Commands.sequence(
+                setFunnelVoltage(state == FunnelState.OPENED ? 1 : -3).until(() -> clapped(state)),
+                setClapDaddyGoal(state))));
   }
 
-  private boolean clapped() {
-    return Math.abs(currentPosition - inputs.clapDaddyPosition.getRadians()) >= .05;
+  private boolean clapped(FunnelState state) {
+    return Math.abs(currentPosition - inputs.clapDaddyPosition.getRadians())
+        >= (state == FunnelState.OPENED ? .05 : .15);
   }
 }
