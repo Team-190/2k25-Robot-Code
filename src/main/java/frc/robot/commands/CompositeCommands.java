@@ -10,6 +10,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -59,6 +60,23 @@ public class CompositeCommands {
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
           .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+    }
+
+    public static final Command blep(V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+          elevator.setPosition(getAlgaePosition()),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.deployAlgaeArm(),
+          Commands.waitSeconds(0.2),
+          manipulator.stowAlgaeArm());
+    }
+
+    private static final ReefHeight getAlgaePosition() {
+      return switch (RobotState.getReefAlignData().closestReefTag()) {
+        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+        default -> ReefHeight.INTAKE;
+      };
     }
   }
 

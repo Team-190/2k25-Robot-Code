@@ -134,7 +134,6 @@ public class V1_GammaFunnelIOTalonFX implements V1_GammaFunnelIO {
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
-
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         clapDaddyPositionRotations,

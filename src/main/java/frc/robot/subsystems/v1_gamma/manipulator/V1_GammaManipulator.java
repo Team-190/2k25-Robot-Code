@@ -71,7 +71,9 @@ public class V1_GammaManipulator extends SubsystemBase {
         Commands.runOnce(() -> this.previousPosition = inputs.position),
         runManipulator(-1)
             .until(
-                () -> getManipulatorRotationsIn(V1_GammaManipulatorConstants.MANIPULATOR_STOW_ROTATIONS)));
+                () ->
+                    getManipulatorRotationsIn(
+                        V1_GammaManipulatorConstants.MANIPULATOR_STOW_ROTATIONS)));
   }
 
   public Command deployAlgaeArm() {
@@ -79,6 +81,8 @@ public class V1_GammaManipulator extends SubsystemBase {
         Commands.runOnce(() -> this.previousPosition = inputs.position),
         runManipulator(-1)
             .until(
-                () -> getManipulatorRotationsIn(V1_GammaManipulatorConstants.MANIPULATOR_DEPLOY_ROTATIONS)));
+                () ->
+                    getManipulatorRotationsIn(
+                        V1_GammaManipulatorConstants.MANIPULATOR_DEPLOY_ROTATIONS)));
   }
 }
