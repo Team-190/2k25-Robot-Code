@@ -186,6 +186,9 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
+    driver.back().onTrue(manipulator.toggleAlgaeArm());
+    driver.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
+
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
@@ -224,8 +227,6 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
-    operator.back().onTrue(manipulator.toggleAlgaeArm());
-    operator.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
   }
 
   private void configureAutos() {
