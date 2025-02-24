@@ -136,7 +136,6 @@ public class AutonomousCommands {
 
     AutoTrajectory B_LEFT_PATH1 = autoBLeft.trajectory("B_LEFT_PATH1");
     AutoTrajectory B_LEFT_PATH2 = autoBLeft.trajectory("B_LEFT_PATH2");
-    AutoTrajectory B_LEFT_PATH3 = autoBLeft.trajectory("B_LEFT_PATH3");
 
     autoBLeft
         .active()
@@ -158,11 +157,7 @@ public class AutonomousCommands {
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     elevator.setPosition(ReefHeight.L4)),
                 manipulator.scoreCoral().withTimeout(0.5),
-                elevator.setPosition(ReefHeight.STOW),
-                Commands.deadline(
-                    B_LEFT_PATH3.cmd(),
-                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)))));
+                elevator.setPosition(ReefHeight.STOW)));
 
     return autoBLeft;
   }
@@ -177,7 +172,6 @@ public class AutonomousCommands {
 
     AutoTrajectory B_RIGHT_PATH1 = autoBRight.trajectory("B_RIGHT_PATH1");
     AutoTrajectory B_RIGHT_PATH2 = autoBRight.trajectory("B_RIGHT_PATH2");
-    AutoTrajectory B_RIGHT_PATH3 = autoBRight.trajectory("B_RIGHT_PATH3");
 
     autoBRight
         .active()
@@ -199,11 +193,7 @@ public class AutonomousCommands {
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     elevator.setPosition(ReefHeight.L4)),
                 manipulator.scoreCoral().withTimeout(0.5),
-                elevator.setPosition(ReefHeight.STOW),
-                Commands.deadline(
-                    B_RIGHT_PATH3.cmd(),
-                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)))));
+                elevator.setPosition(ReefHeight.STOW)));
 
     return autoBRight;
   }
