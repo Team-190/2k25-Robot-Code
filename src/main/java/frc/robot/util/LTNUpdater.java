@@ -32,26 +32,16 @@ public class LTNUpdater {
         drive.hashCode(),
         () -> {
           DriveCommands.setRotationPID(
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get());
+              DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
+              DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd().get());
           DriveCommands.setTranslationPID(
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kP().get(),
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kD().get(),
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kP().get(),
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kD().get());
+              DriveConstants.AUTO_ALIGN_GAINS.translation_Kp().get(),
+              DriveConstants.AUTO_ALIGN_GAINS.translation_Kd().get());
         },
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kP(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().kD(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().maxVelocity(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kP(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().kD(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().maxVelocity(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().maxVelocity(),
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance());
+        DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp(),
+        DriveConstants.AUTO_ALIGN_GAINS.rotation_Kd(),
+        DriveConstants.AUTO_ALIGN_GAINS.translation_Kp(),
+        DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
   public static final void updateElevator(V1_GammaElevator elevator) {
