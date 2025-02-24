@@ -97,6 +97,8 @@ public class V1_GammaElevatorConstants {
   public static enum ElevatorPositions {
     STOW(0.0),
     INTAKE(0.0),
+    TOP_ALGAE(1.2),
+    BOT_ALGAE(0.82),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),

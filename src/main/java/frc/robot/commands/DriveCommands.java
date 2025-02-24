@@ -180,9 +180,9 @@ public final class DriveCommands {
         drive);
   }
 
-  public static final Command inchMovement(Drive drive, double velocity) {
+  public static final Command inchMovement(Drive drive, double velocity, double time) {
     return Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, velocity, 0.0)))
-        .withTimeout(.07);
+        .withTimeout(time);
   }
 
   public static final Command stop(Drive drive) {

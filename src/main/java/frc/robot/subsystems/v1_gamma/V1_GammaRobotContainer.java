@@ -183,8 +183,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 RobotCameras.v1_GammaCams));
 
     // Driver bumpers
-    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5));
-    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5));
+    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
+    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
@@ -224,6 +224,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
+    operator.back().onTrue(manipulator.toggleAlgaeArm());
+    operator.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
   }
 
   private void configureAutos() {

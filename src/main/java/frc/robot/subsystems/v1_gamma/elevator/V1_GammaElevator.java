@@ -82,6 +82,14 @@ public class V1_GammaElevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
+              break;
           }
         });
   }
@@ -114,6 +122,14 @@ public class V1_GammaElevator extends SubsystemBase {
               break;
             case L4:
               this.position = ElevatorPositions.L4;
+              break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
               break;
           }
         });

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v1_gamma.manipulator;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,18 +13,27 @@ public class V1_GammaManipulator extends SubsystemBase {
   private final ManipulatorIOInputsAutoLogged inputs;
 
   private final Timer currentTimer;
+  private Rotation2d previousPosition;
+  private Rotation2d desiredRotations;
+
+  private boolean assAtSetoint;
 
   public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
 
     currentTimer = new Timer();
+    previousPosition = inputs.position;
+    desiredRotations = new Rotation2d();
   }
 
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
+    Logger.recordOutput("ASS At Setpoint", assAtSetoint);
+    Logger.recordOutput(
+        "ASS Setpoint", previousPosition.getRadians() - desiredRotations.getRadians());
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -47,11 +57,42 @@ public class V1_GammaManipulator extends SubsystemBase {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
+  public Command removeAlgae() {
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.REMOVE_ALGAE().get());
+  }
+
   public Command halfScoreCoral() {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }
 
   public Command unHalfScoreCoral() {
     return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+  }
+
+  public boolean getManipulatorRotationsOut(Rotation2d rotations) {
+    return Math.abs(inputs.position.getRotations())
+        >= Math.abs(this.previousPosition.getRotations()) + rotations.getRotations();
+  }
+
+  public boolean getManipulatorRotationsIn(Rotation2d rotations) {
+    return inputs.position.getRotations()
+        <= this.previousPosition.getRotations() - rotations.getRotations();
+  }
+
+  public Command toggleAlgaeArm() {
+    return Commands.sequence(
+        Commands.waitSeconds(0.05),
+        Commands.runOnce(
+            () -> {
+              assAtSetoint = false;
+              desiredRotations = V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION;
+            }),
+        Commands.runOnce(() -> this.previousPosition = inputs.position),
+        runManipulator(-2)
+            .until(
+                () ->
+                    getManipulatorRotationsIn(
+                        V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
+        Commands.runOnce(() -> assAtSetoint = true));
   }
 }
