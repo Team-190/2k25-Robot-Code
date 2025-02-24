@@ -46,8 +46,8 @@ import java.util.Queue;
  * <p>Device configuration and other behaviors not exposed by TunerConstants can be customized here.
  */
 public class ModuleIOTalonFX implements ModuleIO {
-  private final TalonFX driveTalon;
-  private final TalonFX turnTalon;
+  private final TalonFX driveTalonFX;
+  private final TalonFX turnTalonFX;
   private final CANcoder cancoder;
 
   private final TalonFXConfiguration driveConfig;
@@ -89,8 +89,8 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
-    driveTalon = new TalonFX(constants.DriveMotorId, DriveConstants.DRIVE_CONFIG.canBus());
-    turnTalon = new TalonFX(constants.SteerMotorId, DriveConstants.DRIVE_CONFIG.canBus());
+    driveTalonFX = new TalonFX(constants.DriveMotorId, DriveConstants.DRIVE_CONFIG.canBus());
+    turnTalonFX = new TalonFX(constants.SteerMotorId, DriveConstants.DRIVE_CONFIG.canBus());
     cancoder = new CANcoder(constants.EncoderId, DriveConstants.DRIVE_CONFIG.canBus());
 
     driveConfig = new TalonFXConfiguration();
@@ -106,8 +106,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.DriveMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    tryUntilOk(5, () -> driveTalonFX.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> driveTalonFX.setPosition(0.0, 0.25));
 
     turnConfig = new TalonFXConfiguration();
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -118,6 +118,8 @@ public class ModuleIOTalonFX implements ModuleIO {
           case RemoteCANcoder -> FeedbackSensorSourceValue.RemoteCANcoder;
           case FusedCANcoder -> FeedbackSensorSourceValue.FusedCANcoder;
           case SyncCANcoder -> FeedbackSensorSourceValue.SyncCANcoder;
+          default -> throw new IllegalArgumentException(
+              "Unexpected value: " + constants.FeedbackSource);
         };
     turnConfig.Feedback.RotorToSensorRatio = constants.SteerMotorGearRatio;
     turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40.0;
@@ -135,36 +137,37 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.SteerMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    tryUntilOk(5, () -> turnTalonFX.getConfigurator().apply(turnConfig, 0.25));
 
     cancoderConfig = constants.EncoderInitialConfigs;
     cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
-    cancoder.getConfigurator().apply(cancoderConfig);
+    tryUntilOk(5, () -> cancoder.getConfigurator().apply(cancoderConfig, 0.25));
 
-    drivePositionRotations = driveTalon.getPosition();
-    driveVelocityRotationsPerSecond = driveTalon.getVelocity();
-    driveAppliedVolts = driveTalon.getMotorVoltage();
-    driveSupplyCurrentAmps = driveTalon.getSupplyCurrent();
-    driveTorqueCurrentAmps = driveTalon.getTorqueCurrent();
-    driveTemperatureCelcius = driveTalon.getDeviceTemp();
-    driveVelocitySetpointRotationsPerSecond = driveTalon.getClosedLoopReference();
-    driveVelocityErrorRotationsPerSecond = driveTalon.getClosedLoopError();
+    drivePositionRotations = driveTalonFX.getPosition();
+    driveVelocityRotationsPerSecond = driveTalonFX.getVelocity();
+    driveAppliedVolts = driveTalonFX.getMotorVoltage();
+    driveSupplyCurrentAmps = driveTalonFX.getSupplyCurrent();
+    driveTorqueCurrentAmps = driveTalonFX.getTorqueCurrent();
+    driveTemperatureCelcius = driveTalonFX.getDeviceTemp();
+    driveVelocitySetpointRotationsPerSecond = driveTalonFX.getClosedLoopReference();
+    driveVelocityErrorRotationsPerSecond = driveTalonFX.getClosedLoopError();
 
     turnAbsolutePositionRotations = cancoder.getAbsolutePosition();
-    turnPositionRotations = turnTalon.getPosition();
-    turnVelocityRotationsPerSecond = turnTalon.getVelocity();
-    turnAppliedVolts = turnTalon.getMotorVoltage();
-    turnSupplyCurrentAmps = turnTalon.getSupplyCurrent();
-    turnTorqueCurrentAmps = turnTalon.getTorqueCurrent();
-    turnTemperatureCelcius = turnTalon.getDeviceTemp();
+    turnPositionRotations = turnTalonFX.getPosition();
+    turnVelocityRotationsPerSecond = turnTalonFX.getVelocity();
+    turnAppliedVolts = turnTalonFX.getMotorVoltage();
+    turnSupplyCurrentAmps = turnTalonFX.getSupplyCurrent();
+    turnTorqueCurrentAmps = turnTalonFX.getTorqueCurrent();
+    turnTemperatureCelcius = turnTalonFX.getDeviceTemp();
     turnPositionGoal = new Rotation2d();
-    turnPositionSetpointRotations = turnTalon.getClosedLoopReference();
-    turnPositionErrorRotations = turnTalon.getClosedLoopError();
+    turnPositionSetpointRotations = turnTalonFX.getClosedLoopReference();
+    turnPositionErrorRotations = turnTalonFX.getClosedLoopError();
 
     timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
-        PhoenixOdometryThread.getInstance().registerSignal(driveTalon.getPosition());
-    turnPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(turnTalon.getPosition());
+        PhoenixOdometryThread.getInstance().registerSignal(driveTalonFX.getPosition());
+    turnPositionQueue =
+        PhoenixOdometryThread.getInstance().registerSignal(turnTalonFX.getPosition());
 
     torqueCurrentRequest = new TorqueCurrentFOC(0.0);
     velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
@@ -196,8 +199,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTemperatureCelcius,
         turnPositionSetpointRotations,
         turnPositionErrorRotations);
-    driveTalon.optimizeBusUtilization();
-    turnTalon.optimizeBusUtilization();
+    driveTalonFX.optimizeBusUtilization();
+    turnTalonFX.optimizeBusUtilization();
     cancoder.optimizeBusUtilization();
   }
 
@@ -272,17 +275,17 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveAmps(double currentAmps) {
-    driveTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
+    driveTalonFX.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
   public void setTurnAmps(double currentAmps) {
-    turnTalon.setControl(torqueCurrentRequest.withOutput(currentAmps));
+    turnTalonFX.setControl(torqueCurrentRequest.withOutput(currentAmps));
   }
 
   @Override
   public void setDriveVelocity(double velocityRadiansPerSecond, double currentFeedforward) {
-    driveTalon.setControl(
+    driveTalonFX.setControl(
         velocityTorqueCurrentRequest
             .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
             .withFeedForward(currentFeedforward));
@@ -290,7 +293,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setTurnPosition(Rotation2d rotation) {
-    turnTalon.setControl(positionTorqueCurrentRequest.withPosition(rotation.getRotations()));
+    turnTalonFX.setControl(positionTorqueCurrentRequest.withPosition(rotation.getRotations()));
   }
 
   @Override
@@ -299,15 +302,15 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.Slot0.kD = drive_Kd;
     turnConfig.Slot0.kP = turn_Kp;
     turnConfig.Slot0.kD = turn_Kd;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    tryUntilOk(5, () -> driveTalonFX.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> turnTalonFX.getConfigurator().apply(turnConfig, 0.25));
   }
 
   @Override
   public void setFeedforward(double drive_Ks, double drive_Kv) {
     driveConfig.Slot0.kS = drive_Ks;
     driveConfig.Slot0.kV = drive_Kv;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    tryUntilOk(5, () -> driveTalonFX.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> turnTalonFX.getConfigurator().apply(turnConfig, 0.25));
   }
 }

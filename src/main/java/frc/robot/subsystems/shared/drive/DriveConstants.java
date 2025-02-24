@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -31,8 +32,13 @@ public class DriveConstants {
   public static final Gains GAINS;
   public static final AutoAlignGains AUTO_ALIGN_GAINS;
 
+  public static final AutoAlignGains AUTO_GAINS;
+
   public static final double ODOMETRY_FREQUENCY;
   public static final double DRIVER_DEADBAND;
+  public static final double OPERATOR_DEADBAND;
+
+  public static final AlignRobotToAprilTagConstants ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
 
   static {
     switch (Constants.ROBOT) {
@@ -54,7 +60,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -66,12 +74,19 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV0_Funky.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
-                new LoggedTunableNumber("Drive/Translation KP", 4.0),
+                new LoggedTunableNumber("Drive/Translation KP", 40.0),
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
-                new LoggedTunableNumber("Drive/Rotation KP", 5.0),
-                new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+                new LoggedTunableNumber("Drive/Rotation KP", 40.0),
+                new LoggedTunableNumber("Drive/Rotation KD", 0.00));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
       case V0_WHIPLASH:
       case V0_WHIPLASH_SIM:
@@ -91,7 +106,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -107,11 +124,18 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
                 new LoggedTunableNumber("Drive/Rotation KP", 10.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
-      case V1_GAMMA:
-      case V1_GAMMA_SIM:
+      case V1_STACKUP:
+      case V1_STACKUP_SIM:
       default:
         FRONT_LEFT = TunerConstantsV1_Gamma.FrontLeft;
         FRONT_RIGHT = TunerConstantsV1_Gamma.FrontRight;
@@ -129,7 +153,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -146,8 +172,16 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Rotation KP", 5.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
 
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
+
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
       case V2_DELTA:
       case V2_DELTA_SIM:
@@ -167,7 +201,9 @@ public class DriveConstants {
                 FRONT_LEFT,
                 FRONT_RIGHT,
                 BACK_LEFT,
-                BACK_RIGHT);
+                BACK_RIGHT,
+                Units.inchesToMeters(34.5),
+                Units.inchesToMeters(34.5));
 
         GAINS =
             new Gains(
@@ -183,10 +219,44 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Translation KD", 0.0),
                 new LoggedTunableNumber("Drive/Rotation KP", 5.0),
                 new LoggedTunableNumber("Drive/Rotation KD", 0.05));
+        AUTO_GAINS =
+            new AutoAlignGains(
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KP", 10.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Translation KD", 0.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KP", 5.0),
+                new LoggedTunableNumber("Drive/Auto Gains/Rotation KD", 0.00));
         ODOMETRY_FREQUENCY = 250.0;
         DRIVER_DEADBAND = 0.025;
+        OPERATOR_DEADBAND = 0.25;
         break;
     }
+    ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
+        new AlignRobotToAprilTagConstants(
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kP", 3.5),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kD", 0.15),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/tolerance", 0.03),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 3.5),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.15),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.03),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/kP", Math.PI),
+                new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/tolerance",
+                    Units.degreesToRadians(0.5)),
+                new LoggedTunableNumber(
+                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+            new LoggedTunableNumber(
+                "Drive/Align Robot To April Tag/positionThresholdMeters", 0.03));
   }
 
   public record DriveConfig(
@@ -203,7 +273,9 @@ public class DriveConstants {
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           backLeft,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
-          backRight) {
+          backRight,
+      double bumperWidth,
+      double bumperLength) {
     public double driveBaseRadius() {
       return Math.hypot(
           (Math.abs(frontLeft.LocationX) + Math.abs(frontRight.LocationX)) / 2.0,
@@ -241,4 +313,16 @@ public class DriveConstants {
       LoggedTunableNumber translation_Kd,
       LoggedTunableNumber rotation_Kp,
       LoggedTunableNumber rotation_Kd) {}
+
+  public record PIDControllerConstants(
+      LoggedTunableNumber kP,
+      LoggedTunableNumber kD,
+      LoggedTunableNumber tolerance,
+      LoggedTunableNumber maxVelocity) {}
+
+  public static record AlignRobotToAprilTagConstants(
+      PIDControllerConstants xPIDConstants,
+      PIDControllerConstants yPIDConstants,
+      PIDControllerConstants omegaPIDConstants,
+      LoggedTunableNumber positionThresholdMeters) {}
 }

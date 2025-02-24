@@ -1,6 +1,9 @@
 package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
 
@@ -24,19 +27,29 @@ public class CameraIOLimelight implements CameraIO {
 
   @Override
   public void updateInputs(CameraIOInputs inputs) {
-    inputs.xOffset = Rotation2d.fromDegrees(LimelightHelpers.getTX(name));
-    inputs.yOffset = Rotation2d.fromDegrees(LimelightHelpers.getTY(name));
-    inputs.targetAquired = LimelightHelpers.getTV(name);
-    inputs.totalTargets = LimelightHelpers.getTargetCount(name);
-    inputs.averageDistance = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist;
-    inputs.primaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
-    inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
-    inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
+    inputs.currentHeartbeat =
+        NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb").getDouble(-1);
+    inputs.isConnected = getIsConnected(inputs);
+
+    if (inputs.isConnected) {
+      inputs.xOffset = Rotation2d.fromDegrees(LimelightHelpers.getTX(name));
+      inputs.yOffset = Rotation2d.fromDegrees(LimelightHelpers.getTY(name));
+      inputs.targetAquired = LimelightHelpers.getTV(name);
+      inputs.totalTargets = LimelightHelpers.getTargetCount(name);
+      inputs.averageDistance =
+          LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist;
+      inputs.primaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
+      inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
+      inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
+      inputs.tagIDOfInterest = LimelightHelpers.getFiducialID(name);
+    }
   }
 
   @Override
-  public void setPipeline(int pipeline) {
-    LimelightHelpers.setPipelineIndex(name, pipeline);
+  public boolean getIsConnected(CameraIOInputs inputs) {
+    return inputs.currentHeartbeat != -1
+        && LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name) != null
+        && LimelightHelpers.getBotPoseEstimate_wpiBlue(name) != null;
   }
 
   @Override
@@ -47,5 +60,27 @@ public class CameraIOLimelight implements CameraIO {
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public void setPipeline(int pipeline) {
+    LimelightHelpers.setPipelineIndex(name, pipeline);
+  }
+
+  @Override
+  public void setValidTags(int... validIds) {
+    LimelightHelpers.SetFiducialIDFiltersOverride(name, validIds);
+  }
+
+  @Override
+  public void setCameraOffset(Transform3d cameraOffset) {
+    LimelightHelpers.setCameraPose_RobotSpace(
+        name,
+        cameraOffset.getX(),
+        cameraOffset.getY(),
+        cameraOffset.getZ(),
+        Units.radiansToDegrees(cameraOffset.getRotation().getX()),
+        Units.radiansToDegrees(cameraOffset.getRotation().getY()),
+        Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
   }
 }

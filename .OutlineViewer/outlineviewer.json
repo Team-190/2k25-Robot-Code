@@ -1,0 +1,51 @@
+{
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "10.1.90.2"
+  },
+  "Persistent Values": {
+    "open": false
+  },
+  "Retained Values": {
+    "open": false
+  },
+  "outlineviewer@2": {
+    "open": true
+  },
+  "retained": {
+    "SmartDashboard": {
+      "Autonomous Modes": {
+        "open": true
+      }
+    }
+  },
+  "transitory": {
+    "TunableNumbers": {
+      "Drive": {
+        "Align Robot To April Tag": {
+          "X Constants": {
+            "open": true
+          },
+          "Y Constants": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "Elevator": {
+        "Gains": {
+          "open": true
+        },
+        "open": true
+      },
+      "Funnel": {
+        "open": true
+      },
+      "Manipulator": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}
