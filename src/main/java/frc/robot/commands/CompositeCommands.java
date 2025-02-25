@@ -107,6 +107,16 @@ public class CompositeCommands {
   }
 
   public static class ScoreCommands {
+    public static final Command emergencyEject(
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+          elevator.setPosition(ReefHeight.L1),
+          Commands.waitSeconds(0.125),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.scoreCoral().withTimeout(0.4),
+          elevator.setPosition(ReefHeight.STOW));
+    }
+
     public static final Command scoreCoral(
         V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);

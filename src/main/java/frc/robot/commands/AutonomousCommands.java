@@ -33,27 +33,30 @@ public class AutonomousCommands {
                 A_LEFT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 A_LEFT_PATH1.cmd(),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH2.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH3.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5)));
 
     return autoALeft;
@@ -78,27 +81,30 @@ public class AutonomousCommands {
                 A_RIGHT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 A_RIGHT_PATH1.cmd(),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH2.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH3.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    elevator.setPosition(ReefHeight.L4)),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5)));
 
     return autoARight;

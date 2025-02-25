@@ -227,6 +227,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
+
+    operator
+        .start()
+        .or(operator.back())
+        .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
 
   private void configureAutos() {
