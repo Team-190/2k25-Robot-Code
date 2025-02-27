@@ -80,7 +80,9 @@ public class CompositeCommands {
                         case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
                         default -> ReefHeight.BOT_ALGAE;
                       })),
-          manipulator.removeAlgae());
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
     }
 
     public static final Command twerk(
@@ -92,7 +94,9 @@ public class CompositeCommands {
           manipulator.toggleAlgaeArm(),
           Commands.waitSeconds(0.1),
           Commands.deferredProxy(() -> elevator.setPosition(level)),
-          manipulator.removeAlgae());
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
     }
 
     public static final Command intakeCoralOverride(
