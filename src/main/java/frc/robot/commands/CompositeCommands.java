@@ -143,6 +143,7 @@ public class CompositeCommands {
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
+          elevator.setPosition(ReefHeight.L2),
           DriveCommands.alignRobotToAprilTag(drive, cameras),
           scoreCoralSequence(elevator, manipulator));
     }

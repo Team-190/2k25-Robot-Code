@@ -196,7 +196,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
     operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
     operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
 
     operator
         .y()
@@ -213,7 +213,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
 
     // Operator triggers
     operator
