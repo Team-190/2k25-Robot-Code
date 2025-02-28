@@ -97,7 +97,7 @@ public class V1_Gamma_LEDs extends Leds {
           } else {
             breath(
                 Color.kBlack,
-                Color.kDarkViolet,
+                new Color("#FFF700"),
                 Timer.getFPGATimestamp(),
                 LEFT_LENGTH_START,
                 LEFT_LENGTH_END);
