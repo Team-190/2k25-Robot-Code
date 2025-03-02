@@ -191,7 +191,14 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
 
-    driver.povUp().onTrue(Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d(new Translation2d(), RobotState.getRobotPoseReef().getRotation()))));
+    driver
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    RobotState.resetRobotPose(
+                        new Pose2d(
+                            new Translation2d(), RobotState.getRobotPoseReef().getRotation()))));
 
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
