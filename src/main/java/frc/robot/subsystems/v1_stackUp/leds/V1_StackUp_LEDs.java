@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.leds;
+package frc.robot.subsystems.v1_stackUp.leds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -9,7 +9,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.leds.Leds;
 import lombok.Setter;
 
-public class V1_Gamma_LEDs extends Leds {
+public class V1_StackUp_LEDs extends Leds {
   private static Leds instance;
 
   // Robot state tracking
@@ -31,13 +31,13 @@ public class V1_Gamma_LEDs extends Leds {
   @Setter private static boolean isIntaking = false;
   @Setter private static boolean isAutoAligning = false;
 
-  public V1_Gamma_LEDs() {
+  public V1_StackUp_LEDs() {
     super(LENGTH, PORT);
   }
 
   public static Leds getInstance() {
     if (instance == null) {
-      instance = new V1_Gamma_LEDs();
+      instance = new V1_StackUp_LEDs();
     }
     return instance;
   }
@@ -97,7 +97,7 @@ public class V1_Gamma_LEDs extends Leds {
           } else {
             breath(
                 Color.kBlack,
-                Color.kDarkViolet,
+                new Color("#FFF700"),
                 Timer.getFPGATimestamp(),
                 LEFT_LENGTH_START,
                 LEFT_LENGTH_END);

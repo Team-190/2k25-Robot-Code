@@ -1,9 +1,9 @@
-package frc.robot.subsystems.v1_gamma.manipulator;
+package frc.robot.subsystems.v1_stackUp.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_GammaManipulatorIO {
+public interface V1_StackUpManipulatorIO {
   @AutoLog
   public static class ManipulatorIOInputs {
     public Rotation2d position = new Rotation2d();

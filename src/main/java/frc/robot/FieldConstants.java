@@ -59,7 +59,9 @@ public class FieldConstants {
       L1,
       L2,
       L3,
-      L4
+      L4,
+      TOP_ALGAE,
+      BOT_ALGAE
     }
 
     public static record PostPair(Pose2d right, Pose2d left) {
@@ -190,7 +192,5 @@ public class FieldConstants {
         new Pose2d(Units.inchesToMeters(48), Units.inchesToMeters(86.5), new Rotation2d());
   }
 
-  public static final int[] validTags = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22
-  };
+  public static final int[] validTags = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 }

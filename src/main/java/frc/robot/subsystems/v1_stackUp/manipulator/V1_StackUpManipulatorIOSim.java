@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.manipulator;
+package frc.robot.subsystems.v1_stackUp.manipulator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,12 +7,12 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
-public class V1_GammaManipulatorIOSim implements V1_GammaManipulatorIO {
+public class V1_StackUpManipulatorIOSim implements V1_StackUpManipulatorIO {
   private final DCMotorSim sim;
 
   private double appliedVolts;
 
-  public V1_GammaManipulatorIOSim() {
+  public V1_StackUpManipulatorIOSim() {
     sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),

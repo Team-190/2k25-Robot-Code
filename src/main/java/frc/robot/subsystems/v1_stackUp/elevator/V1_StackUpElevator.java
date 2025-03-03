@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.elevator;
+package frc.robot.subsystems.v1_stackUp.elevator;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_GammaElevator extends SubsystemBase {
-  private final V1_GammaElevatorIO io;
+public class V1_StackUpElevator extends SubsystemBase {
+  private final V1_StackUpElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
@@ -25,7 +25,7 @@ public class V1_GammaElevator extends SubsystemBase {
   @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
-  public V1_GammaElevator(V1_GammaElevatorIO io) {
+  public V1_StackUpElevator(V1_StackUpElevatorIO io) {
     this.io = io;
     inputs = new ElevatorIOInputsAutoLogged();
 
@@ -82,6 +82,14 @@ public class V1_GammaElevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
+              break;
           }
         });
   }
@@ -115,6 +123,14 @@ public class V1_GammaElevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
+            case TOP_ALGAE:
+              this.position = ElevatorPositions.TOP_ALGAE;
+              break;
+            case BOT_ALGAE:
+              this.position = ElevatorPositions.BOT_ALGAE;
+              break;
+            default:
+              break;
           }
         });
   }
@@ -139,7 +155,7 @@ public class V1_GammaElevator extends SubsystemBase {
             runOnce(
                 () ->
                     io.setPosition(
-                        V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                        V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -175,8 +191,8 @@ public class V1_GammaElevator extends SubsystemBase {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.velocityMetersPerSecond
-        * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS);
+        * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -211,7 +227,7 @@ public class V1_GammaElevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= V1_GammaElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   public void changeSetpoint(ElevatorPositions position, double offset) {

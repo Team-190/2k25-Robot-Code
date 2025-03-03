@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.elevator;
+package frc.robot.subsystems.v1_stackUp.elevator;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 
-public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
+public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
   private final TalonFX talonFX;
   private final TalonFX[] followTalonFX = new TalonFX[3];
 
@@ -38,46 +38,46 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   private MotionMagicVoltage positionVoltageRequest;
   private VoltageOut voltageRequest;
 
-  public V1_GammaElevatorIOTalonFX() {
-    talonFX = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID);
-    followTalonFX[0] = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID + 1);
-    followTalonFX[1] = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID + 2);
-    followTalonFX[2] = new TalonFX(V1_GammaElevatorConstants.ELEVATOR_CAN_ID + 3);
+  public V1_StackUpElevatorIOTalonFX() {
+    talonFX = new TalonFX(V1_StackUpElevatorConstants.ELEVATOR_CAN_ID);
+    followTalonFX[0] = new TalonFX(V1_StackUpElevatorConstants.ELEVATOR_CAN_ID + 1);
+    followTalonFX[1] = new TalonFX(V1_StackUpElevatorConstants.ELEVATOR_CAN_ID + 2);
+    followTalonFX[2] = new TalonFX(V1_StackUpElevatorConstants.ELEVATOR_CAN_ID + 3);
 
     config = new TalonFXConfiguration();
-    config.Slot0.kP = V1_GammaElevatorConstants.GAINS.kP().get();
-    config.Slot0.kD = V1_GammaElevatorConstants.GAINS.kD().get();
-    config.Slot0.kS = V1_GammaElevatorConstants.GAINS.kS().get();
-    config.Slot0.kV = V1_GammaElevatorConstants.GAINS.kV().get();
-    config.Slot0.kA = V1_GammaElevatorConstants.GAINS.kA().get();
-    config.Slot0.kG = V1_GammaElevatorConstants.GAINS.kG().get();
+    config.Slot0.kP = V1_StackUpElevatorConstants.GAINS.kP().get();
+    config.Slot0.kD = V1_StackUpElevatorConstants.GAINS.kD().get();
+    config.Slot0.kS = V1_StackUpElevatorConstants.GAINS.kS().get();
+    config.Slot0.kV = V1_StackUpElevatorConstants.GAINS.kV().get();
+    config.Slot0.kA = V1_StackUpElevatorConstants.GAINS.kA().get();
+    config.Slot0.kG = V1_StackUpElevatorConstants.GAINS.kG().get();
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
     config.CurrentLimits.SupplyCurrentLimit =
-        V1_GammaElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
+        V1_StackUpElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit =
-        V1_GammaElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
+        V1_StackUpElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS()
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+        V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS()
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS()
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+        V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS()
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.MotionMagic.MotionMagicAcceleration =
-        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+        V1_StackUpElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.MotionMagic.MotionMagicCruiseVelocity =
-        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get()
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+        V1_StackUpElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get()
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
 
     talonFX.getConfigurator().apply(config);
     for (TalonFX follower : followTalonFX) {
@@ -103,7 +103,7 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     positionSetpointRotations = talonFX.getClosedLoopReference();
     positionErrorRotations = talonFX.getClosedLoopError();
 
-    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
+    for (int i = 0; i < V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
       appliedVolts.add(followTalonFX[i].getMotorVoltage());
       supplyCurrentAmps.add(followTalonFX[i].getSupplyCurrent());
       torqueCurrentAmps.add(followTalonFX[i].getTorqueCurrent());
@@ -150,17 +150,17 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     BaseStatusSignal.refreshAll(statusSignals).isOK();
 
     inputs.positionMeters =
-        (positionRotations.getValueAsDouble() / V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO)
+        (positionRotations.getValueAsDouble() / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
-            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * V1_StackUpElevatorConstants.DRUM_RADIUS
             * 2;
     inputs.velocityMetersPerSecond =
         (velocityRotationsPerSecond.getValueAsDouble()
-                / V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO)
+                / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
-            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * V1_StackUpElevatorConstants.DRUM_RADIUS
             * 2;
-    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
+    for (int i = 0; i < V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts.get(i).getValueAsDouble();
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps.get(i).getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps.get(i).getValueAsDouble();
@@ -169,14 +169,15 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
         (positionSetpointRotations.getValueAsDouble()
-                / V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO)
+                / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
-            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * V1_StackUpElevatorConstants.DRUM_RADIUS
             * 2;
     inputs.positionErrorMeters =
-        (positionErrorRotations.getValueAsDouble() / V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO)
+        (positionErrorRotations.getValueAsDouble()
+                / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
-            * V1_GammaElevatorConstants.DRUM_RADIUS
+            * V1_StackUpElevatorConstants.DRUM_RADIUS
             * 2;
   }
 
@@ -189,8 +190,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   public void setPosition(double meters) {
     talonFX.setPosition(
         meters
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO);
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO);
   }
 
   @Override
@@ -199,8 +200,8 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
     talonFX.setControl(
         positionVoltageRequest.withPosition(
             meters
-                / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-                * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO));
+                / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+                * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO));
   }
 
   @Override
@@ -221,12 +222,12 @@ public class V1_GammaElevatorIOTalonFX implements V1_GammaElevatorIO {
   public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
     config.MotionMagic.MotionMagicAcceleration =
         maxAcceleration
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.MotionMagic.MotionMagicCruiseVelocity =
         cruisingVelocity
-            / (2 * Math.PI * V1_GammaElevatorConstants.DRUM_RADIUS)
-            * V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO;
+            / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
+            * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config));
     for (TalonFX follow : followTalonFX) {
       PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(config));

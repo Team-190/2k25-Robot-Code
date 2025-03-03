@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.funnel;
+package frc.robot.subsystems.v1_stackUp.funnel;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_GammaFunnel extends SubsystemBase {
-  private final V1_GammaFunnelIO io;
+public class V1_StackUpFunnel extends SubsystemBase {
+  private final V1_StackUpFunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
@@ -24,7 +24,7 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   private boolean isClosedLoop;
 
-  public V1_GammaFunnel(V1_GammaFunnelIO io) {
+  public V1_StackUpFunnel(V1_StackUpFunnelIO io) {
     this.io = io;
     inputs = new FunnelIOInputsAutoLogged();
 
@@ -85,7 +85,7 @@ public class V1_GammaFunnel extends SubsystemBase {
                 Commands.waitUntil(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
-            setRollerVoltage(V1_GammaFunnelConstants.ROLLER_VOLTS + rollerVoltageOffset))
+            setRollerVoltage(V1_StackUpFunnelConstants.ROLLER_VOLTS + rollerVoltageOffset))
         .finallyDo(
             () -> {
               goal = FunnelState.OPENED;
