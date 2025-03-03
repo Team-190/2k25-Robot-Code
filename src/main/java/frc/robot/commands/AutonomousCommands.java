@@ -9,16 +9,16 @@ import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulator;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
       Drive drive,
-      V1_GammaElevator elevator,
-      V1_GammaFunnel funnel,
-      V1_GammaManipulator manipulator,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoALeft = drive.getAutoFactory().newRoutine("autoALeft");
 
@@ -64,9 +64,9 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoARight(
       Drive drive,
-      V1_GammaElevator elevator,
-      V1_GammaFunnel funnel,
-      V1_GammaManipulator manipulator,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoARight = drive.getAutoFactory().newRoutine("autoARight");
 
@@ -112,9 +112,9 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoBLeft(
       Drive drive,
-      V1_GammaElevator elevator,
-      V1_GammaFunnel funnel,
-      V1_GammaManipulator manipulator,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoBLeft = drive.getAutoFactory().newRoutine("autoBLeft");
 
@@ -148,9 +148,9 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoBRight(
       Drive drive,
-      V1_GammaElevator elevator,
-      V1_GammaFunnel funnel,
-      V1_GammaManipulator manipulator,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoBRight = drive.getAutoFactory().newRoutine("autoBRight");
 

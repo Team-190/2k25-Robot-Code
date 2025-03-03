@@ -1,9 +1,9 @@
-package frc.robot.subsystems.v1_gamma.manipulator;
+package frc.robot.subsystems.v1_stackUp.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.LoggedTunableNumber;
 
-public class V1_GammaManipulatorConstants {
+public class V1_StackUpManipulatorConstants {
   public static final int MANIPULATOR_CAN_ID;
   public static final double SUPPLY_CURRENT_LIMIT;
   public static final double MANIPULATOR_CURRENT_THRESHOLD;

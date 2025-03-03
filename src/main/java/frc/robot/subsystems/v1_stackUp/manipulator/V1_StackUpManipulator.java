@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.manipulator;
+package frc.robot.subsystems.v1_stackUp.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_GammaManipulator extends SubsystemBase {
-  private final V1_GammaManipulatorIO io;
+public class V1_StackUpManipulator extends SubsystemBase {
+  private final V1_StackUpManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
   private final Timer currentTimer;
@@ -18,7 +18,7 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   private boolean assAtSetoint;
 
-  public V1_GammaManipulator(V1_GammaManipulatorIO io) {
+  public V1_StackUpManipulator(V1_StackUpManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
 
@@ -39,7 +39,7 @@ public class V1_GammaManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
-        > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+        > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {
@@ -49,24 +49,24 @@ public class V1_GammaManipulator extends SubsystemBase {
   public Command intakeCoral() {
     return Commands.sequence(
         Commands.runOnce(() -> currentTimer.restart()),
-        runManipulator(V1_GammaManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get())
+        runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get())
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
   public Command scoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
   public Command removeAlgae() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.REMOVE_ALGAE().get());
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.REMOVE_ALGAE().get());
   }
 
   public Command halfScoreCoral() {
-    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }
 
   public Command unHalfScoreCoral() {
-    return runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+    return runManipulator(-V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
   }
 
   public boolean getManipulatorRotationsOut(Rotation2d rotations) {
@@ -85,14 +85,14 @@ public class V1_GammaManipulator extends SubsystemBase {
         Commands.runOnce(
             () -> {
               assAtSetoint = false;
-              desiredRotations = V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION;
+              desiredRotations = V1_StackUpManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION;
             }),
         Commands.runOnce(() -> this.previousPosition = inputs.position),
         runManipulator(-2)
             .until(
                 () ->
                     getManipulatorRotationsIn(
-                        V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
+                        V1_StackUpManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
         Commands.runOnce(() -> assAtSetoint = true));
   }
 }

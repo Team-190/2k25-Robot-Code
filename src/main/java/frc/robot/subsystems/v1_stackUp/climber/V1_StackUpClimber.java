@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.climber;
+package frc.robot.subsystems.v1_stackUp.climber;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_GammaClimber extends SubsystemBase {
-  private final V1_GammaClimberIO io;
+public class V1_StackUpClimber extends SubsystemBase {
+  private final V1_StackUpClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
   private Timer redundantSwitchesTimer;
@@ -25,7 +25,7 @@ public class V1_GammaClimber extends SubsystemBase {
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
 
-  public V1_GammaClimber(V1_GammaClimberIO io) {
+  public V1_StackUpClimber(V1_StackUpClimberIO io) {
     this.io = io;
     inputs = new ClimberIOInputsAutoLogged();
 
@@ -58,7 +58,7 @@ public class V1_GammaClimber extends SubsystemBase {
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
       if (redundantTrustTimer.hasElapsed(
-          V1_GammaClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+          V1_StackUpClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (inputs.redundantSwitchOne) {
@@ -80,7 +80,7 @@ public class V1_GammaClimber extends SubsystemBase {
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
       return inputs.redundantSwitchOne
           && inputs.redundantSwitchTwo
-          && redundantSwitchesTimer.hasElapsed(V1_GammaClimberConstants.REDUNDANCY_DELAY_SECONDS);
+          && redundantSwitchesTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchOne) {
       return inputs.redundantSwitchOne;
     } else if (trustRedundantSwitchTwo) {

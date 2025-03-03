@@ -3,10 +3,10 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -44,51 +44,51 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
-  public static final void updateElevator(V1_GammaElevator elevator) {
+  public static final void updateElevator(V1_StackUpElevator elevator) {
     LoggedTunableNumber.ifChanged(
         elevator.hashCode(),
         () -> {
           elevator.setGains(
-              V1_GammaElevatorConstants.GAINS.kP().get(),
-              V1_GammaElevatorConstants.GAINS.kD().get(),
-              V1_GammaElevatorConstants.GAINS.kS().get(),
-              V1_GammaElevatorConstants.GAINS.kV().get(),
-              V1_GammaElevatorConstants.GAINS.kA().get(),
-              V1_GammaElevatorConstants.GAINS.kG().get());
+              V1_StackUpElevatorConstants.GAINS.kP().get(),
+              V1_StackUpElevatorConstants.GAINS.kD().get(),
+              V1_StackUpElevatorConstants.GAINS.kS().get(),
+              V1_StackUpElevatorConstants.GAINS.kV().get(),
+              V1_StackUpElevatorConstants.GAINS.kA().get(),
+              V1_StackUpElevatorConstants.GAINS.kG().get());
           elevator.setConstraints(
-              V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get(),
-              V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
+              V1_StackUpElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get(),
+              V1_StackUpElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
         },
-        V1_GammaElevatorConstants.GAINS.kP(),
-        V1_GammaElevatorConstants.GAINS.kD(),
-        V1_GammaElevatorConstants.GAINS.kS(),
-        V1_GammaElevatorConstants.GAINS.kV(),
-        V1_GammaElevatorConstants.GAINS.kA(),
-        V1_GammaElevatorConstants.GAINS.kG(),
-        V1_GammaElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
-        V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+        V1_StackUpElevatorConstants.GAINS.kP(),
+        V1_StackUpElevatorConstants.GAINS.kD(),
+        V1_StackUpElevatorConstants.GAINS.kS(),
+        V1_StackUpElevatorConstants.GAINS.kV(),
+        V1_StackUpElevatorConstants.GAINS.kA(),
+        V1_StackUpElevatorConstants.GAINS.kG(),
+        V1_StackUpElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
+        V1_StackUpElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
   }
 
-  public static final void updateFunnel(V1_GammaFunnel funnel) {
+  public static final void updateFunnel(V1_StackUpFunnel funnel) {
     LoggedTunableNumber.ifChanged(
         funnel.hashCode(),
         () -> {
           funnel.updateGains(
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
           funnel.updateConstraints(
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
-              V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
         },
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
-        V1_GammaFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 }

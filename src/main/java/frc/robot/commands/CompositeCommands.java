@@ -8,13 +8,13 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberConstants;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
-import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimber;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberConstants;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
+import frc.robot.subsystems.v1_stackUp.leds.V1_StackUp_LEDs;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.util.AllianceFlipUtil;
 
 public class CompositeCommands {
@@ -30,7 +30,10 @@ public class CompositeCommands {
   }
 
   public static final Command climb(
-      V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaClimber climber, Drive drive) {
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpClimber climber,
+      Drive drive) {
     return Commands.sequence(
         elevator.setPosition(ReefHeight.STOW),
         Commands.waitSeconds(0.02),
@@ -38,7 +41,7 @@ public class CompositeCommands {
         funnel.setClapDaddyGoal(FunnelState.CLIMB),
         Commands.parallel(
             climber.releaseClimber(),
-            Commands.waitSeconds(V1_GammaClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
+            Commands.waitSeconds(V1_StackUpClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
         Commands.waitUntil(climber::climberReady),
         Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
   }
@@ -47,25 +50,25 @@ public class CompositeCommands {
     return Commands.runOnce(() -> RobotState.setReefHeight(height));
   }
 
-  public static final Command setDynamicReefHeight(ReefHeight height, V1_GammaElevator elevator) {
+  public static final Command setDynamicReefHeight(ReefHeight height, V1_StackUpElevator elevator) {
     return Commands.sequence(
         Commands.runOnce(() -> RobotState.setReefHeight(height)), elevator.setPosition());
   }
 
   public static class IntakeCommands {
     public static final Command intakeCoral(
-        V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpFunnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_Gamma_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
               elevator.setPosition(ReefHeight.INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
     }
 
     public static final Command twerk(
-        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+        Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
           Commands.parallel(
               DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
@@ -86,7 +89,10 @@ public class CompositeCommands {
     }
 
     public static final Command twerk(
-        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        ReefHeight level) {
       return Commands.sequence(
           Commands.parallel(
               DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
@@ -100,19 +106,19 @@ public class CompositeCommands {
     }
 
     public static final Command intakeCoralOverride(
-        V1_GammaElevator elevator, V1_GammaFunnel funnel, V1_GammaManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpFunnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_Gamma_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
               elevator.setPosition(ReefHeight.INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
-          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
     }
   }
 
   public static class ScoreCommands {
     public static final Command emergencyEject(
-        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(ReefHeight.L1),
           Commands.waitSeconds(0.125),
@@ -122,12 +128,12 @@ public class CompositeCommands {
     }
 
     public static final Command scoreCoral(
-        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
     }
 
     public static final Command scoreCoralSequence(
-        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
@@ -137,9 +143,9 @@ public class CompositeCommands {
 
     public static final Command autoScoreCoralSequence(
         Drive drive,
-        V1_GammaElevator elevator,
-        V1_GammaFunnel funnel,
-        V1_GammaManipulator manipulator,
+        V1_StackUpElevator elevator,
+        V1_StackUpFunnel funnel,
+        V1_StackUpManipulator manipulator,
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(

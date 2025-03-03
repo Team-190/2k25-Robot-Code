@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.manipulator;
+package frc.robot.subsystems.v1_stackUp.manipulator;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
-public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
+public class V1_StackUpManipulatorIOTalonFX implements V1_StackUpManipulatorIO {
   private final TalonFX talonFX;
 
   private final TalonFXConfiguration config;
@@ -31,12 +31,12 @@ public class V1_GammaManipulatorIOTalonFX implements V1_GammaManipulatorIO {
 
   private final VoltageOut voltageRequest;
 
-  public V1_GammaManipulatorIOTalonFX() {
-    talonFX = new TalonFX(V1_GammaManipulatorConstants.MANIPULATOR_CAN_ID);
+  public V1_StackUpManipulatorIOTalonFX() {
+    talonFX = new TalonFX(V1_StackUpManipulatorConstants.MANIPULATOR_CAN_ID);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.CurrentLimits.SupplyCurrentLimit = V1_GammaManipulatorConstants.SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = V1_StackUpManipulatorConstants.SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 

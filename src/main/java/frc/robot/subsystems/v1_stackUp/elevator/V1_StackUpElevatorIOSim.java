@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.elevator;
+package frc.robot.subsystems.v1_stackUp.elevator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -8,7 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
-public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
+public class V1_StackUpElevatorIOSim implements V1_StackUpElevatorIO {
   private final ElevatorSim sim;
 
   private final ProfiledPIDController controller;
@@ -17,36 +17,36 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
   private double appliedVolts;
   private boolean isClosedLoop;
 
-  public V1_GammaElevatorIOSim() {
+  public V1_StackUpElevatorIOSim() {
     sim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(
-                V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
+                V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
                 4,
-                V1_GammaElevatorConstants.DRUM_RADIUS,
-                V1_GammaElevatorConstants.ELEVATOR_GEAR_RATIO),
-            V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
-            V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS(),
-            V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
+                V1_StackUpElevatorConstants.DRUM_RADIUS,
+                V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO),
+            V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
+            V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS(),
+            V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
             true,
-            V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
+            V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
 
     controller =
         new ProfiledPIDController(
-            V1_GammaElevatorConstants.GAINS.kP().get(),
+            V1_StackUpElevatorConstants.GAINS.kP().get(),
             0,
-            V1_GammaElevatorConstants.GAINS.kD().get(),
+            V1_StackUpElevatorConstants.GAINS.kD().get(),
             new Constraints(
-                V1_GammaElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
-                V1_GammaElevatorConstants.CONSTRAINTS
+                V1_StackUpElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
+                V1_StackUpElevatorConstants.CONSTRAINTS
                     .maxAccelerationMetersPerSecondSquared()
                     .get()));
 
     feedforward =
         new ElevatorFeedforward(
-            V1_GammaElevatorConstants.GAINS.kS().get(),
-            V1_GammaElevatorConstants.GAINS.kG().get(),
-            V1_GammaElevatorConstants.GAINS.kV().get());
+            V1_StackUpElevatorConstants.GAINS.kS().get(),
+            V1_StackUpElevatorConstants.GAINS.kG().get(),
+            V1_StackUpElevatorConstants.GAINS.kV().get());
 
     appliedVolts = 0.0;
     isClosedLoop = true;
@@ -65,7 +65,7 @@ public class V1_GammaElevatorIOSim implements V1_GammaElevatorIO {
 
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
-    for (int i = 0; i < V1_GammaElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
+    for (int i = 0; i < V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts;
       inputs.supplyCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();

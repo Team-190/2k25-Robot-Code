@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma;
+package frc.robot.subsystems.v1_stackUp;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_GammaMechanism3d {
+public class V1_StackUpMechanism3d {
   private static final double ELEVATOR_STAGE_1_MIN_HEIGHT = 0.095250; // Meters off the ground
   private static final double ELEVATOR_STAGE_1_MAX_HEIGHT = 0.8509;
   private static final double ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT = 0.120650;

@@ -1,9 +1,9 @@
-package frc.robot.subsystems.v1_gamma.climber;
+package frc.robot.subsystems.v1_stackUp.climber;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
-public class V1_GammaClimberConstants {
+public class V1_StackUpClimberConstants {
   public static final int MOTOR_ID;
 
   public static final DCMotor MOTOR_CONFIG;
