@@ -1,8 +1,8 @@
-package frc.robot.subsystems.v1_gamma.elevator;
+package frc.robot.subsystems.v1_stackUp.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_GammaElevatorIO {
+public interface V1_StackUpElevatorIO {
   @AutoLog
   public static class ElevatorIOInputs {
     public double positionMeters = 0.0;

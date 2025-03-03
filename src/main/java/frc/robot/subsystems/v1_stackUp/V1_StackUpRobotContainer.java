@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma;
+package frc.robot.subsystems.v1_stackUp;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,39 +27,39 @@ import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIO;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOSim;
-import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberIOTalonFX;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIO;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOSim;
-import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorIOTalonFX;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIO;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOSim;
-import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelIOTalonFX;
-import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulator;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIO;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOSim;
-import frc.robot.subsystems.v1_gamma.manipulator.V1_GammaManipulatorIOTalonFX;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimber;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIO;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIOSim;
+import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIOTalonFX;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIO;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIOSim;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIOTalonFX;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIO;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIOSim;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIOTalonFX;
+import frc.robot.subsystems.v1_stackUp.leds.V1_StackUp_LEDs;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIO;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIOSim;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-public class V1_GammaRobotContainer implements RobotContainer {
+public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
 
-  private V1_GammaElevator elevator;
-  private V1_GammaFunnel funnel;
-  private V1_GammaManipulator manipulator;
-  private V1_GammaClimber climber;
+  private V1_StackUpElevator elevator;
+  private V1_StackUpFunnel funnel;
+  private V1_StackUpManipulator manipulator;
+  private V1_StackUpClimber climber;
 
-  private V1_Gamma_LEDs leds;
+  private V1_StackUp_LEDs leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -69,7 +69,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Modes");
 
-  public V1_GammaRobotContainer() {
+  public V1_StackUpRobotContainer() {
 
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
@@ -81,12 +81,12 @@ public class V1_GammaRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.v1_GammaCams);
-          elevator = new V1_GammaElevator(new V1_GammaElevatorIOTalonFX());
-          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOTalonFX());
-          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOTalonFX());
-          climber = new V1_GammaClimber(new V1_GammaClimberIOTalonFX());
-          leds = new V1_Gamma_LEDs();
+          vision = new Vision(RobotCameras.v1_StackUpCams);
+          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOTalonFX());
+          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOTalonFX());
+          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
+          climber = new V1_StackUpClimber(new V1_StackUpClimberIOTalonFX());
+          leds = new V1_StackUp_LEDs();
           break;
         case V1_STACKUP_SIM:
           drive =
@@ -97,10 +97,10 @@ public class V1_GammaRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new V1_GammaElevator(new V1_GammaElevatorIOSim());
-          funnel = new V1_GammaFunnel(new V1_GammaFunnelIOSim());
-          manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIOSim());
-          climber = new V1_GammaClimber(new V1_GammaClimberIOSim());
+          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOSim());
+          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOSim());
+          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
+          climber = new V1_StackUpClimber(new V1_StackUpClimberIOSim());
           break;
         default:
           break;
@@ -120,19 +120,19 @@ public class V1_GammaRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (elevator == null) {
-      elevator = new V1_GammaElevator(new V1_GammaElevatorIO() {});
+      elevator = new V1_StackUpElevator(new V1_StackUpElevatorIO() {});
     }
     if (funnel == null) {
-      funnel = new V1_GammaFunnel(new V1_GammaFunnelIO() {});
+      funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIO() {});
     }
     if (manipulator == null) {
-      manipulator = new V1_GammaManipulator(new V1_GammaManipulatorIO() {});
+      manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
     }
     if (leds == null) {
-      leds = new V1_Gamma_LEDs();
+      leds = new V1_StackUp_LEDs();
     }
     if (climber == null) {
-      climber = new V1_GammaClimber(new V1_GammaClimberIO() {});
+      climber = new V1_StackUpClimber(new V1_StackUpClimberIO() {});
     }
 
     configureButtonBindings();
@@ -182,7 +182,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 funnel,
                 manipulator,
                 RobotState.getOperatorInputData().currentReefHeight(),
-                RobotCameras.v1_GammaCams));
+                RobotCameras.v1_StackUpCams));
 
     // Driver bumpers
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
@@ -254,22 +254,22 @@ public class V1_GammaRobotContainer implements RobotContainer {
     autoChooser.addOption(
         "3 Piece Left",
         AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
     autoChooser.addOption(
         "3 Piece Right",
         AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Left",
         AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Right",
         AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
   }
 
@@ -290,7 +290,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
           "Component Poses",
-          V1_GammaMechanism3d.getPoses(elevator.getPositionMeters(), funnel.getAngle()));
+          V1_StackUpMechanism3d.getPoses(elevator.getPositionMeters(), funnel.getAngle()));
     }
   }
 

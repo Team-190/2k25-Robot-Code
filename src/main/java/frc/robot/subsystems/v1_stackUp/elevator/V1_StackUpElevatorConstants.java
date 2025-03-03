@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.elevator;
+package frc.robot.subsystems.v1_stackUp.elevator;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V1_GammaElevatorConstants {
+public class V1_StackUpElevatorConstants {
   public static final int ELEVATOR_CAN_ID;
   public static final double ELEVATOR_GEAR_RATIO;
   public static final double DRUM_RADIUS;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_gamma.funnel;
+package frc.robot.subsystems.v1_stackUp.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -7,7 +7,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V1_GammaFunnelConstants {
+public class V1_StackUpFunnelConstants {
   public static final int CLAP_DADDY_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;
