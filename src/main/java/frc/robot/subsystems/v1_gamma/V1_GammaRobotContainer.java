@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v1_gamma;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -188,6 +190,15 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
+
+    driver
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    RobotState.resetRobotPose(
+                        new Pose2d(
+                            new Translation2d(), RobotState.getRobotPoseReef().getRotation()))));
 
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
