@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v1_gamma;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -186,6 +188,18 @@ public class V1_GammaRobotContainer implements RobotContainer {
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
+    driver.back().onTrue(manipulator.toggleAlgaeArm());
+    driver.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
+
+    driver
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    RobotState.resetRobotPose(
+                        new Pose2d(
+                            new Translation2d(), RobotState.getRobotPoseReef().getRotation()))));
+
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
@@ -193,7 +207,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
     operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
     operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
 
     operator
         .y()
@@ -210,7 +224,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
 
     // Operator triggers
     operator
@@ -224,8 +238,11 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
-    operator.back().onTrue(manipulator.toggleAlgaeArm());
-    operator.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
+
+    operator
+        .start()
+        .or(operator.back())
+        .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
 
   private void configureAutos() {

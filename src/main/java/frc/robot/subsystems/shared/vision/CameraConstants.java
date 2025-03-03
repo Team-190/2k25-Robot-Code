@@ -52,7 +52,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyLeft =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -70,7 +70,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyRight =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
