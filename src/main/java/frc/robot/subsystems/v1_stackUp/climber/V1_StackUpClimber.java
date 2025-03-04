@@ -1,8 +1,10 @@
 package frc.robot.subsystems.v1_stackUp.climber;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.v1_stackUp.leds.V1_StackUp_LEDs;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -53,6 +55,10 @@ public class V1_StackUpClimber extends SubsystemBase {
     if (override) {
       return true;
     }
+    if (climberSwitchesBroken()) {
+      V1_StackUp_LEDs.setClimberSensorPanic(true);
+      return override;
+    }
     if (inputs.redundantSwitchOne != inputs.redundantSwitchOne) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
@@ -85,6 +91,16 @@ public class V1_StackUpClimber extends SubsystemBase {
       return inputs.redundantSwitchOne;
     } else if (trustRedundantSwitchTwo) {
       return inputs.redundantSwitchTwo;
+    } else {
+      return false;
+    }
+  }
+
+  private boolean climberSwitchesBroken() {
+    if (!inputs.redundantSwitchOne
+        && !inputs.redundantSwitchTwo
+        && DriverStation.getMatchTime() > 30) {
+      return true;
     } else {
       return false;
     }
