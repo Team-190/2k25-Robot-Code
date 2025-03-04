@@ -1,6 +1,5 @@
 package frc.robot.subsystems.v1_stackUp.climber;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -101,9 +100,7 @@ public class V1_StackUpClimber extends SubsystemBase {
   }
 
   private boolean climberSwitchesBroken() {
-    if (!inputs.redundantSwitchOne
-        && !inputs.redundantSwitchTwo
-        && climberDeployed) {
+    if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo && climberDeployed) {
       return true;
     } else {
       return false;
@@ -115,7 +112,9 @@ public class V1_StackUpClimber extends SubsystemBase {
   }
 
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1).finallyDo(()->climberDeployed = true);
+    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0))
+        .withTimeout(0.1)
+        .finallyDo(() -> climberDeployed = true);
   }
 
   public Command winchClimber() {
