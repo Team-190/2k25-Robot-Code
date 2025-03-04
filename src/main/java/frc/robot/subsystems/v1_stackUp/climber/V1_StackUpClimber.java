@@ -27,6 +27,9 @@ public class V1_StackUpClimber extends SubsystemBase {
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
 
+  @AutoLogOutput(key = "Climber/climberReleased")
+  private boolean climberDeployed;
+
   public V1_StackUpClimber(V1_StackUpClimberIO io) {
     this.io = io;
     inputs = new ClimberIOInputsAutoLogged();
@@ -37,6 +40,7 @@ public class V1_StackUpClimber extends SubsystemBase {
     trustRedundantSwitchOne = true;
     trustRedundantSwitchTwo = true;
     override = false;
+    climberDeployed = false;
   }
 
   @Override
@@ -99,7 +103,7 @@ public class V1_StackUpClimber extends SubsystemBase {
   private boolean climberSwitchesBroken() {
     if (!inputs.redundantSwitchOne
         && !inputs.redundantSwitchTwo
-        && DriverStation.getMatchTime() > 30) {
+        && climberDeployed) {
       return true;
     } else {
       return false;
@@ -111,7 +115,7 @@ public class V1_StackUpClimber extends SubsystemBase {
   }
 
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1);
+    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1).finallyDo(()->climberDeployed = true);
   }
 
   public Command winchClimber() {
