@@ -29,6 +29,5 @@ public class V1_StackUpManipulatorConstants {
       LoggedTunableNumber SCORE_VOLTS,
       LoggedTunableNumber REMOVE_ALGAE,
       LoggedTunableNumber HALF_VOLTS,
-      LoggedTunableNumber SCORE_OFFSET_INCREMENT) {
-}
+      LoggedTunableNumber SCORE_OFFSET_INCREMENT) {}
 }

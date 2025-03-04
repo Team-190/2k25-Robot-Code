@@ -389,12 +389,16 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                         ElevatorPositions.STOW,
                         -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
 
-    debugBoard.elevator().decreaseAlgaeSetPoint().onTrue(Commands.runOnce(
-        () ->
-            elevator.changeSetpoint(
-                ElevatorPositions.STOW,
-                -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
-    
+    debugBoard
+        .elevator()
+        .decreaseAlgaeSetPoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
     debugBoard
         .elevator()
         .increaseL1Setpoint()
@@ -440,19 +444,22 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                     elevator.changeSetpoint(
                         ElevatorPositions.STOW,
                         V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
-    
-    debugBoard.elevator().increaseAlgaeSetPoint().onTrue(Commands.runOnce(
-        () ->
-            elevator.changeSetpoint(
-                ElevatorPositions.STOW,
-                V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .increaseAlgaeSetPoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
     // Manipulator triggers
     debugBoard
         .endEffector()
         .wheelsIn()
         .whileTrue(
-            manipulator.runManipulator(
-                V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+            manipulator.runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
     debugBoard
         .endEffector()
         .wheelsOut()
@@ -478,8 +485,14 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                         -V1_StackUpManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT().get())));
     debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
     // Algae triggers
-    debugBoard.endEffector().blepUp().onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.TOP_ALGAE)); 
-    debugBoard.endEffector().blepDown().onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.BOT_ALGAE)); 
+    debugBoard
+        .endEffector()
+        .blepUp()
+        .onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.TOP_ALGAE));
+    debugBoard
+        .endEffector()
+        .blepDown()
+        .onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.BOT_ALGAE));
     debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
     // Climber triggers
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());

@@ -110,7 +110,7 @@ public class V1_StackUpElevatorConstants {
     L4(1.3864590139769697 + Units.inchesToMeters(0.5));
 
     private final double position;
-    private double offset;
+    private double offset = 0.0;
 
     public double getPosition() {
       return position + offset;

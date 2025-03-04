@@ -117,7 +117,7 @@ public class V1_StackUpFunnelConstants {
     CLIMB(Rotation2d.fromDegrees(0.0));
 
     private final Rotation2d angle;
-    private double offset;
+    private double offset = 0.0;
 
     public Rotation2d getAngle() {
       return Rotation2d.fromRadians(angle.getRadians() + offset);

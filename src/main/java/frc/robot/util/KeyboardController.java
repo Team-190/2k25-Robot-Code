@@ -205,7 +205,6 @@ public class KeyboardController {
     public Trigger toggleAss() {
       return controller.button(7, 2);
     }
-    
   }
 
   public static final record Elevator(KeyboardController controller) {

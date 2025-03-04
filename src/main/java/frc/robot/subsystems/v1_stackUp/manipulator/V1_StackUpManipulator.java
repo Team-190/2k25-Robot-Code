@@ -21,7 +21,6 @@ public class V1_StackUpManipulator extends SubsystemBase {
   private double scoreSpeedOffset;
   private boolean sensorOverride;
 
-
   public V1_StackUpManipulator(V1_StackUpManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -47,7 +46,8 @@ public class V1_StackUpManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
-        > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD || sensorOverride;
+            > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD
+        || sensorOverride;
   }
 
   public Command runManipulator(double volts) {
@@ -62,7 +62,7 @@ public class V1_StackUpManipulator extends SubsystemBase {
   }
 
   public Command scoreCoral() {
-    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get()+scoreSpeedOffset);
   }
 
   public Command removeAlgae() {
