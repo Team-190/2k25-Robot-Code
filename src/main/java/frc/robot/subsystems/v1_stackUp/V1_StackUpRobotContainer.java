@@ -32,19 +32,24 @@ import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIO;
 import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIOSim;
 import frc.robot.subsystems.v1_stackUp.climber.V1_StackUpClimberIOTalonFX;
 import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants;
 import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIO;
 import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIOSim;
 import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorIOTalonFX;
 import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants;
+import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIO;
 import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIOSim;
 import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelIOTalonFX;
 import frc.robot.subsystems.v1_stackUp.leds.V1_StackUp_LEDs;
 import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorConstants;
 import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
+import frc.robot.util.KeyboardController;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -64,6 +69,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
+  private final KeyboardController debugBoard = new KeyboardController(0);
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -243,6 +249,242 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .start()
         .or(operator.back())
         .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+
+    // Debug board
+    // Base triggers
+    debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
+    // TODO: Add Translate & rotate commands
+    debugBoard
+        .scoring()
+        .primeLeft()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
+    debugBoard
+        .scoring()
+        .primeRight()
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+    debugBoard.scoring().track().whileTrue(DriveCommands.alignRobotToAprilTag(drive));
+    // Funnel triggers
+    debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
+    debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
+    debugBoard
+        .funnel()
+        .rollerWheelsIn()
+        .whileTrue(
+            funnel.setRollerVoltage(
+                V1_StackUpFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset()));
+    debugBoard
+        .funnel()
+        .rollerWheelsOut()
+        .whileTrue(
+            funnel.setRollerVoltage(
+                -(V1_StackUpFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset())));
+    debugBoard
+        .funnel()
+        .incrementRollerWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(
+                        V1_StackUpFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .decrementRollerWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(
+                        -V1_StackUpFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .incrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED,
+                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .incrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED,
+                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED,
+                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED,
+                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
+
+    // Elevator triggers
+    debugBoard
+        .elevator()
+        .stow()
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.STOW, elevator));
+    debugBoard.elevator().raise().onTrue(elevator.setPosition());
+    debugBoard.elevator().primeL1().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    debugBoard.elevator().primeL2().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
+    debugBoard.elevator().primeL3().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
+    debugBoard.elevator().primeL4().onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
+    debugBoard
+        .elevator()
+        .decreaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .decreaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard.elevator().decreaseAlgaeSetPoint().onTrue(Commands.runOnce(
+        () ->
+            elevator.changeSetpoint(
+                ElevatorPositions.STOW,
+                -V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    
+    debugBoard
+        .elevator()
+        .increaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    
+    debugBoard.elevator().increaseAlgaeSetPoint().onTrue(Commands.runOnce(
+        () ->
+            elevator.changeSetpoint(
+                ElevatorPositions.STOW,
+                V1_StackUpElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    // Manipulator triggers
+    debugBoard
+        .endEffector()
+        .wheelsIn()
+        .whileTrue(
+            manipulator.runManipulator(
+                V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+    debugBoard
+        .endEffector()
+        .wheelsOut()
+        .whileTrue(
+            manipulator.runManipulator(
+                -V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+    debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+    debugBoard
+        .endEffector()
+        .incrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        V1_StackUpManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT().get())));
+    debugBoard
+        .endEffector()
+        .decrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        -V1_StackUpManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT().get())));
+    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
+    // Algae triggers
+    debugBoard.endEffector().blepUp().onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.TOP_ALGAE)); 
+    debugBoard.endEffector().blepDown().onTrue(IntakeCommands.twerk(drive, elevator, manipulator, ReefHeight.BOT_ALGAE)); 
+    debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
+    // Climber triggers
+    debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
+    debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
+    debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
   }
 
   private void configureAutos() {

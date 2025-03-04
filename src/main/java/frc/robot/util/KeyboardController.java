@@ -194,9 +194,18 @@ public class KeyboardController {
       return controller.button(7, 1);
     }
 
-    public Trigger blep() {
+    public Trigger blepUp() {
+      return controller.button(8, 1);
+    }
+
+    public Trigger blepDown() {
+      return controller.button(8, 2);
+    }
+
+    public Trigger toggleAss() {
       return controller.button(7, 2);
     }
+    
   }
 
   public static final record Elevator(KeyboardController controller) {

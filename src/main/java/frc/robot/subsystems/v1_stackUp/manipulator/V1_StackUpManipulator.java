@@ -18,6 +18,10 @@ public class V1_StackUpManipulator extends SubsystemBase {
 
   private boolean assAtSetoint;
 
+  private double scoreSpeedOffset;
+  private boolean sensorOverride;
+
+
   public V1_StackUpManipulator(V1_StackUpManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -25,6 +29,9 @@ public class V1_StackUpManipulator extends SubsystemBase {
     currentTimer = new Timer();
     previousPosition = inputs.position;
     desiredRotations = new Rotation2d();
+
+    scoreSpeedOffset = 0.0;
+    sensorOverride = false;
   }
 
   @Override
@@ -34,12 +41,13 @@ public class V1_StackUpManipulator extends SubsystemBase {
     Logger.recordOutput("ASS At Setpoint", assAtSetoint);
     Logger.recordOutput(
         "ASS Setpoint", previousPosition.getRadians() - desiredRotations.getRadians());
+    Logger.recordOutput("Manipulator/sensor override", sensorOverride);
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
     return Math.abs(inputs.torqueCurrentAmps)
-        > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+        > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD || sensorOverride;
   }
 
   public Command runManipulator(double volts) {
@@ -94,5 +102,13 @@ public class V1_StackUpManipulator extends SubsystemBase {
                     getManipulatorRotationsIn(
                         V1_StackUpManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
         Commands.runOnce(() -> assAtSetoint = true));
+  }
+
+  public void incrementScoreSpeed(double offset) {
+    this.scoreSpeedOffset += offset;
+  }
+
+  public Command toggleSensorOverride() {
+    return Commands.runOnce(() -> sensorOverride = !sensorOverride);
   }
 }
