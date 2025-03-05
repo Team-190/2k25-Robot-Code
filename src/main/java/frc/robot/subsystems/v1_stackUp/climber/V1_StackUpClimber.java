@@ -62,7 +62,9 @@ public class V1_StackUpClimber extends SubsystemBase {
       V1_StackUp_LEDs.setClimberSensorPanic(true);
       return override;
     }
-    if (inputs.redundantSwitchOne != inputs.redundantSwitchOne) {
+    if (!trustRedundantSwitchOne) return false;
+    if (!trustRedundantSwitchTwo) return false;
+    if (inputs.redundantSwitchOne != inputs.redundantSwitchTwo) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
