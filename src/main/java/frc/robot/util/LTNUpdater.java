@@ -3,10 +3,10 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevatorConstants;
-import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
-import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnelConstants;
+import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorConstants;
+import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
