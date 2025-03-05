@@ -55,11 +55,7 @@ public class V1_StackUpClimber extends SubsystemBase {
   }
 
   public boolean climberReady() {
-    if (override) {
-      return true;
-    }
-    if (climberSwitchesBroken()) {
-      V1_StackUp_LEDs.setClimberSensorPanic(true);
+    if (override || climberSwitchesBroken()) {
       return override;
     }
     if (!trustRedundantSwitchOne) return false;
@@ -102,7 +98,8 @@ public class V1_StackUpClimber extends SubsystemBase {
   }
 
   private boolean climberSwitchesBroken() {
-    if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo && climberDeployed) {
+    if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo && !climberDeployed) {
+      V1_StackUp_LEDs.setClimberSensorPanic(true);
       return true;
     } else {
       return false;
