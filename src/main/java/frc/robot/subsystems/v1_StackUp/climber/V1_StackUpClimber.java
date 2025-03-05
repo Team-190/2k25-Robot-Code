@@ -3,8 +3,6 @@ package frc.robot.subsystems.v1_StackUp.climber;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.v1_stackUp.climber.ClimberIOInputsAutoLogged;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 

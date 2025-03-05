@@ -3,8 +3,6 @@ package frc.robot.subsystems.v0_Funky.kitbot_roller;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.v0_funky.kitbot_roller.RollerIOInputsAutoLogged;
-
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 

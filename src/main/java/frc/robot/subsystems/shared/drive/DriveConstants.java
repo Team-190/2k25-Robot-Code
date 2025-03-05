@@ -248,7 +248,7 @@ public class DriveConstants {
                     "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
             new PIDControllerConstants(
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/kP", Math.PI),
+                    "Drive/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",

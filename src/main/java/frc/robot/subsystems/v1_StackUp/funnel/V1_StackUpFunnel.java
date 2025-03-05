@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
-import frc.robot.subsystems.v1_stackUp.funnel.FunnelIOInputsAutoLogged;
-
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
