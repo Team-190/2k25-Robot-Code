@@ -13,6 +13,7 @@ public class V1_StackUpClimber extends SubsystemBase {
 
   private Timer redundantSwitchesTimer;
   private Timer redundantTrustTimer;
+  private Timer redundantSwitchTimer;
 
   @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
   private boolean trustRedundantSwitchOne;
@@ -36,6 +37,7 @@ public class V1_StackUpClimber extends SubsystemBase {
     isClimbed = false;
     redundantSwitchesTimer = new Timer();
     redundantTrustTimer = new Timer();
+    redundantSwitchTimer = new Timer();
     trustRedundantSwitchOne = true;
     trustRedundantSwitchTwo = true;
     override = false;
@@ -58,8 +60,6 @@ public class V1_StackUpClimber extends SubsystemBase {
     if (override || climberSwitchesBroken()) {
       return override;
     }
-    if (!trustRedundantSwitchOne) return false;
-    if (!trustRedundantSwitchTwo) return false;
     if (inputs.redundantSwitchOne != inputs.redundantSwitchTwo) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
@@ -68,7 +68,7 @@ public class V1_StackUpClimber extends SubsystemBase {
           V1_StackUpClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
-        } else if (inputs.redundantSwitchOne) {
+        } else if (inputs.redundantSwitchTwo) {
           trustRedundantSwitchTwo = true;
         }
       }
@@ -78,10 +78,14 @@ public class V1_StackUpClimber extends SubsystemBase {
       redundantTrustTimer.reset();
     }
 
-    if (inputs.redundantSwitchOne && inputs.redundantSwitchOne) {
+    if (inputs.redundantSwitchOne && inputs.redundantSwitchTwo) {
       redundantSwitchesTimer.start();
-    } else {
+    } else if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo) {
       redundantSwitchesTimer.reset();
+    } else if ((inputs.redundantSwitchTwo && trustRedundantSwitchTwo) || (inputs.redundantSwitchOne && trustRedundantSwitchOne)) {
+      redundantSwitchTimer.start();
+    } else if ((!inputs.redundantSwitchTwo && trustRedundantSwitchTwo) || (!inputs.redundantSwitchOne && trustRedundantSwitchOne)) {
+      redundantSwitchTimer.reset();
     }
 
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
@@ -89,16 +93,16 @@ public class V1_StackUpClimber extends SubsystemBase {
           && inputs.redundantSwitchTwo
           && redundantSwitchesTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchOne) {
-      return inputs.redundantSwitchOne;
+      return inputs.redundantSwitchOne && redundantSwitchTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchTwo) {
-      return inputs.redundantSwitchTwo;
+      return inputs.redundantSwitchTwo && redundantSwitchTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else {
       return false;
     }
   }
 
   private boolean climberSwitchesBroken() {
-    if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo && !climberDeployed) {
+    if ((inputs.redundantSwitchOne && inputs.redundantSwitchTwo && !climberDeployed)) {
       V1_StackUp_LEDs.setClimberSensorPanic(true);
       return true;
     } else {
