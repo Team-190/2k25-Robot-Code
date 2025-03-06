@@ -25,6 +25,8 @@ public class AutonomousCommands {
     AutoTrajectory A_LEFT_PATH1 = autoALeft.trajectory("A_LEFT_PATH1");
     AutoTrajectory A_LEFT_PATH2 = autoALeft.trajectory("A_LEFT_PATH2");
     AutoTrajectory A_LEFT_PATH3 = autoALeft.trajectory("A_LEFT_PATH3");
+    AutoTrajectory A_LEFT_PATH4 = autoALeft.trajectory("A_LEFT_PATH4");
+
 
     autoALeft
         .active()
@@ -57,6 +59,16 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    A_LEFT_PATH4.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.alignRobotToAprilTag(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
                 manipulator.scoreCoral().withTimeout(0.5)));
 
     return autoALeft;
@@ -73,6 +85,8 @@ public class AutonomousCommands {
     AutoTrajectory A_RIGHT_PATH1 = autoARight.trajectory("A_RIGHT_PATH1");
     AutoTrajectory A_RIGHT_PATH2 = autoARight.trajectory("A_RIGHT_PATH2");
     AutoTrajectory A_RIGHT_PATH3 = autoARight.trajectory("A_RIGHT_PATH3");
+    AutoTrajectory A_RIGHT_PATH4 = autoARight.trajectory("A_RIGHT_PATH4");
+
 
     autoARight
         .active()
@@ -99,6 +113,16 @@ public class AutonomousCommands {
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH3.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.alignRobotToAprilTag(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    A_RIGHT_PATH4.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
                 elevator.setPosition(ReefHeight.L4),
