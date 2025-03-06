@@ -238,21 +238,21 @@ public class DriveConstants {
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/X Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 2.5)),
             new PIDControllerConstants(
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 3),
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.15),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 2.5)),
             new PIDControllerConstants(
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",
-                    Units.degreesToRadians(0.5)),
+                    Units.degreesToRadians(0.25)),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
             new LoggedTunableNumber(
