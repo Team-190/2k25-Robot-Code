@@ -3,7 +3,7 @@ package frc.robot.subsystems.v1_StackUp.climber;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.v1_stackUp.leds.V1_StackUp_LEDs;
+import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -66,8 +66,6 @@ public class V1_StackUpClimber extends SubsystemBase {
       return override;
     }
 
-    boolean oldTrustRedundantSwitchOne = trustRedundantSwitchOne;
-    boolean oldTrustRedundantSwitchTwo = trustRedundantSwitchTwo;
     if (inputs.redundantSwitchOne != inputs.redundantSwitchTwo) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
@@ -75,14 +73,14 @@ public class V1_StackUpClimber extends SubsystemBase {
       if (redundantTrustTimer.hasElapsed(
           V1_StackUpClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (!inputs.redundantSwitchOne) {
-          trustRedundantSwitchOne = oldTrustRedundantSwitchOne;
+          trustRedundantSwitchOne = true;
         } else if (!inputs.redundantSwitchTwo) {
-          trustRedundantSwitchTwo = oldTrustRedundantSwitchTwo;
+          trustRedundantSwitchTwo = true;
         }
       }
     } else {
-      trustRedundantSwitchOne = oldTrustRedundantSwitchOne;
-      trustRedundantSwitchTwo = oldTrustRedundantSwitchTwo;
+      trustRedundantSwitchOne = true;
+      trustRedundantSwitchTwo = true;
       redundantTrustTimer.reset();
     }
 
