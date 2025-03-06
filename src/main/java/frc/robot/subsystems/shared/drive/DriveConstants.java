@@ -38,7 +38,10 @@ public class DriveConstants {
   public static final double DRIVER_DEADBAND;
   public static final double OPERATOR_DEADBAND;
 
-  public static final AlignRobotToAprilTagConstants ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
+  public static final AlignRobotToAprilTagConstants FAR_ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
+  public static final AlignRobotToAprilTagConstants CLOSE_ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS;
+
+  public static final LoggedTunableNumber AUTO_ALIGN_PRECISE_DISTANCE_TOLERANCE;
 
   static {
     switch (Constants.ROBOT) {
@@ -230,33 +233,68 @@ public class DriveConstants {
         OPERATOR_DEADBAND = 0.25;
         break;
     }
-    ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
+    FAR_ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
         new AlignRobotToAprilTagConstants(
             new PIDControllerConstants(
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kP", 3),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/X Constants/kD", 0.15),
+                new LoggedTunableNumber("Drive/Far/Align Robot To April Tag/X Constants/kP", 3),
+                new LoggedTunableNumber("Drive/Far/Align Robot To April Tag/X Constants/kD", 0.15),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/tolerance", 0.03),
+                    "Drive/Far/Align Robot To April Tag/X Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+                    "Drive/Far/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
             new PIDControllerConstants(
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 3),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.15),
+                new LoggedTunableNumber("Drive/Far/Align Robot To April Tag/Y Constants/kP", 3),
+                new LoggedTunableNumber("Drive/Far/Align Robot To April Tag/Y Constants/kD", 0.15),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.03),
+                    "Drive/Far/Align Robot To April Tag/Y Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+                    "Drive/Far/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
             new PIDControllerConstants(
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
-                new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                    "Drive/Far/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/tolerance",
+                    "Drive/Far/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Far/Align Robot To April Tag/Omega Constants/tolerance",
                     Units.degreesToRadians(0.5)),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+                    "Drive/Far/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
             new LoggedTunableNumber(
-                "Drive/Align Robot To April Tag/positionThresholdMeters", 0.03));
+                "Drive/Far/Align Robot To April Tag/positionThresholdMeters", 0.03));
+
+    CLOSE_ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS =
+        new AlignRobotToAprilTagConstants(
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Close/Align Robot To April Tag/X Constants/kP", 3),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/X Constants/kD", 0.15),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/X Constants/tolerance", 0.03),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber("Drive/Close/Align Robot To April Tag/Y Constants/kP", 3),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Y Constants/kD", 0.15),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Y Constants/tolerance", 0.03),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+            new PIDControllerConstants(
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Omega Constants/kD", 0.05),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Omega Constants/tolerance",
+                    Units.degreesToRadians(0.5)),
+                new LoggedTunableNumber(
+                    "Drive/Close/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+            new LoggedTunableNumber(
+                "Drive/Close/Align Robot To April Tag/positionThresholdMeters", 0.03));
+
+    AUTO_ALIGN_PRECISE_DISTANCE_TOLERANCE =
+        new LoggedTunableNumber("Drive/Auto Align Precision Distance", 1);
   }
 
   public record DriveConfig(

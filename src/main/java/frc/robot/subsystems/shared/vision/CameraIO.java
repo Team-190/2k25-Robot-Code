@@ -19,6 +19,7 @@ public interface CameraIO {
     public double frameTimestamp = 0.0;
     public Pose2d primaryPose = new Pose2d();
     public Pose2d secondaryPose = new Pose2d();
+    public Pose2d targetPose = new Pose2d();
     public double tagIDOfInterest = -1;
   }
 
@@ -57,6 +58,10 @@ public interface CameraIO {
   }
 
   public default Pose2d getSecondaryPose() {
+    return new Pose2d();
+  }
+
+  public default Pose2d getTargetPose() {
     return new Pose2d();
   }
 

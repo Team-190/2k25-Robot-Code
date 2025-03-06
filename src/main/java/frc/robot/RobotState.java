@@ -159,7 +159,9 @@ public class RobotState {
             .getDistance(autoAlignSetpoint.getTranslation());
     boolean atSetpoint =
         Math.abs(distanceToSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+            <= DriveConstants.FAR_ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                .positionThresholdMeters()
+                .get();
 
     reefAlignData =
         new ReefAlignData(

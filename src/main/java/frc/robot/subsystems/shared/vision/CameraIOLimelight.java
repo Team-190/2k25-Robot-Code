@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shared.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -40,6 +41,12 @@ public class CameraIOLimelight implements CameraIO {
           LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist;
       inputs.primaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
       inputs.secondaryPose = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose;
+      Pose2d targetPose = LimelightHelpers.getTargetPose3d_RobotSpace(name).toPose2d();
+      inputs.targetPose =
+          new Pose2d(
+              targetPose.getX(),
+              -targetPose.getY(),
+              targetPose.getRotation()); // Flip y-axis as LL sets right as positive
       inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
       inputs.tagIDOfInterest = LimelightHelpers.getFiducialID(name);
     }
