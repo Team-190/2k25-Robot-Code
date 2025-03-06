@@ -30,6 +30,7 @@ public class V1_StackUp_LEDs extends Leds {
 
   @Setter private static boolean isIntaking = false;
   @Setter private static boolean isAutoAligning = false;
+  @Setter private static boolean climberSensorPanic = false;
 
   public V1_StackUp_LEDs() {
     super(LENGTH, PORT);
@@ -88,30 +89,34 @@ public class V1_StackUp_LEDs extends Leds {
         rainbow(LENGTH, 5.0);
       }
     } else if (DriverStation.isEnabled()) {
-      if (isAutoAligning) {
-        rainbow(LENGTH, 0.5);
+      if (climberSensorPanic) {
+        strobe(Color.kRed, Color.kBlack, STROBE_FAST_DURATION);
       } else {
-        if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
-          if (isIntaking) {
-            solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
-          } else {
-            breath(
-                Color.kBlack,
-                new Color("#FFF700"),
-                Timer.getFPGATimestamp(),
-                LEFT_LENGTH_START,
-                LEFT_LENGTH_END);
-          }
-        } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
-          if (isIntaking) {
-            solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
-          } else {
-            breath(
-                Color.kBlack,
-                Color.kDarkViolet,
-                Timer.getFPGATimestamp(),
-                RIGHT_LENGTH_START,
-                RIGHT_LENGTH_END);
+        if (isAutoAligning) {
+          rainbow(LENGTH, 0.5);
+        } else {
+          if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
+            if (isIntaking) {
+              solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
+            } else {
+              breath(
+                  Color.kBlack,
+                  new Color("#FFF700"),
+                  Timer.getFPGATimestamp(),
+                  LEFT_LENGTH_START,
+                  LEFT_LENGTH_END);
+            }
+          } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
+            if (isIntaking) {
+              solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
+            } else {
+              breath(
+                  Color.kBlack,
+                  Color.kDarkViolet,
+                  Timer.getFPGATimestamp(),
+                  RIGHT_LENGTH_START,
+                  RIGHT_LENGTH_END);
+            }
           }
         }
       }
