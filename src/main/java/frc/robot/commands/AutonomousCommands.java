@@ -9,9 +9,9 @@ import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.v1_stackUp.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_stackUp.funnel.V1_StackUpFunnel;
-import frc.robot.subsystems.v1_stackUp.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
