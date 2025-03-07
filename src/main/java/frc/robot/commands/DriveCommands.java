@@ -275,8 +275,7 @@ public final class DriveCommands {
                     })));
   }
 
-  public static Command alignRobotToAprilTag(Drive drive, Camera... cameras) {
-
+  public static Command autoAlignReefCoral(Drive drive, Camera... cameras) {
     alignXController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
     alignYController.setTolerance(
@@ -300,10 +299,10 @@ public final class DriveCommands {
                         double ySpeed = 0.0;
 
                         double ex =
-                            RobotState.getReefAlignData().setpoint().getX()
+                            RobotState.getReefAlignData().coralSetpoint().getX()
                                 - RobotState.getRobotPoseReef().getX();
                         double ey =
-                            RobotState.getReefAlignData().setpoint().getY()
+                            RobotState.getReefAlignData().coralSetpoint().getY()
                                 - RobotState.getRobotPoseReef().getY();
 
                         // Rotate errors into the reef post's coordinate frame
@@ -311,26 +310,26 @@ public final class DriveCommands {
                             ex
                                     * Math.cos(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians())
                                 + ey
                                     * Math.sin(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
                         double ey_prime =
                             -ex
                                     * Math.sin(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians())
                                 + ey
                                     * Math.cos(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
 
@@ -349,26 +348,26 @@ public final class DriveCommands {
                             xSpeed
                                     * Math.cos(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians())
                                 - ySpeed
                                     * Math.sin(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
                         double adjustedYSpeed =
                             xSpeed
                                     * Math.sin(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians())
                                 + ySpeed
                                     * Math.cos(
                                         RobotState.getReefAlignData()
-                                            .setpoint()
+                                            .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
 
@@ -386,7 +385,132 @@ public final class DriveCommands {
                       drive.runVelocity(speeds);
                     },
                     drive)
-                .until(() -> RobotState.getReefAlignData().atSetpoint())
+                .until(() -> RobotState.getReefAlignData().atCoralSetpoint())
+                .finallyDo(
+                    () -> {
+                      drive.runVelocity(new ChassisSpeeds());
+                      alignHeadingController.reset(
+                          RobotState.getRobotPoseReef().getRotation().getRadians());
+                      alignXController.reset(RobotState.getRobotPoseReef().getX());
+                      alignYController.reset(RobotState.getRobotPoseReef().getY());
+                      for (Camera camera : cameras) {
+                        camera.setValidTags(FieldConstants.validTags);
+                      }
+                      V1_StackUp_LEDs.setAutoAligning(false);
+                    }));
+  }
+
+  public static Command autoAlignReefAlgae(Drive drive, Camera... cameras) {
+    alignXController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
+    alignYController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
+
+    return Commands.runOnce(
+            () -> {
+              for (Camera camera : cameras) {
+                if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
+                  camera.setValidTags(RobotState.getReefAlignData().closestReefTag());
+                }
+              }
+              V1_StackUp_LEDs.setAutoAligning(true);
+            })
+        .andThen(
+            Commands.run(
+                    () -> {
+                      ChassisSpeeds speeds;
+                      if (RobotState.getReefAlignData().closestReefTag() != -1) {
+                        double xSpeed = 0.0;
+                        double ySpeed = 0.0;
+
+                        double ex =
+                            RobotState.getReefAlignData().algaeSetpoint().getX()
+                                - RobotState.getRobotPoseReef().getX();
+                        double ey =
+                            RobotState.getReefAlignData().algaeSetpoint().getY()
+                                - RobotState.getRobotPoseReef().getY();
+
+                        // Rotate errors into the reef post's coordinate frame
+                        double ex_prime =
+                            ex
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double ey_prime =
+                            -ex
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ey
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        if (!alignXController.atSetpoint())
+                          xSpeed = alignXController.calculate(0, ex_prime);
+                        else alignXController.reset(ex_prime);
+                        if (!alignYController.atSetpoint())
+                          ySpeed = alignYController.calculate(0, ey_prime);
+                        else alignYController.reset(ey_prime);
+
+                        Logger.recordOutput("xSpeed", -xSpeed);
+                        Logger.recordOutput("ySpeed", -ySpeed);
+
+                        // Re-rotate the speeds into field relative coordinate frame
+                        double adjustedXSpeed =
+                            xSpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                - ySpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+                        double adjustedYSpeed =
+                            xSpeed
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + ySpeed
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        speeds =
+                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                -adjustedXSpeed,
+                                -adjustedYSpeed,
+                                thetaSpeedCalculate(),
+                                RobotState.getRobotPoseReef()
+                                    .getRotation()
+                                    .plus(new Rotation2d(Math.PI)));
+                      } else {
+                        speeds = new ChassisSpeeds();
+                      }
+                      drive.runVelocity(speeds);
+                    },
+                    drive)
+                .until(() -> RobotState.getReefAlignData().atAlgaeSetpoint())
                 .finallyDo(
                     () -> {
                       drive.runVelocity(new ChassisSpeeds());
@@ -413,7 +537,7 @@ public final class DriveCommands {
       thetaSpeed =
           omegaController.calculate(
               RobotState.getRobotPoseReef().getRotation().getRadians(),
-              RobotState.getReefAlignData().setpoint().getRotation().getRadians());
+              RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
     else omegaController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("thetaSpeed", thetaSpeed);

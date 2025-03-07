@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.leds.Leds;
 import lombok.Setter;
@@ -91,7 +91,7 @@ public class V1_StackUp_LEDs extends Leds {
       if (isAutoAligning) {
         rainbow(LENGTH, 0.5);
       } else {
-        if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.RIGHT)) {
+        if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
           if (isIntaking) {
             solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
           } else {
@@ -102,7 +102,7 @@ public class V1_StackUp_LEDs extends Leds {
                 LEFT_LENGTH_START,
                 LEFT_LENGTH_END);
           }
-        } else if (RobotState.getOperatorInputData().currentReefPost().equals(ReefPost.LEFT)) {
+        } else if (RobotState.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
           if (isIntaking) {
             solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
           } else {

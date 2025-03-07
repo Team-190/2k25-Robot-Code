@@ -12,17 +12,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
+import frc.robot.util.NTPrefixes;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
-
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
   private static SwerveModulePosition[] modulePositions;
@@ -32,7 +32,7 @@ public class RobotState {
   private static final SwerveDriveOdometry odometry;
 
   @Getter private static ReefAlignData reefAlignData;
-  @Getter private static OperatorInputData operatorInputData;
+  @Getter private static OperatorInputData OIData;
 
   static {
     switch (Constants.ROBOT) {
@@ -50,7 +50,7 @@ public class RobotState {
         break;
     }
 
-    operatorInputData = new OperatorInputData(ReefPost.LEFT, ReefHeight.STOW);
+    OIData = new OperatorInputData(ReefPose.LEFT, ReefHeight.STOW);
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -76,7 +76,7 @@ public class RobotState {
         new SwerveDriveOdometry(
             DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
 
-    reefAlignData = new ReefAlignData(-1, new Pose2d(), 0.0, false);
+    reefAlignData = new ReefAlignData(-1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false);
   }
 
   public RobotState() {}
@@ -151,34 +151,54 @@ public class RobotState {
       }
     }
 
-    Pose2d autoAlignSetpoint =
-        Reef.reefMap.get(closestReefTag).getPost(operatorInputData.currentReefPost());
-    double distanceToSetpoint =
+    Pose2d autoAlignCoralSetpoint =
+        Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
+    Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+
+    double distanceToCoralSetpoint =
         RobotState.getRobotPoseReef()
             .getTranslation()
-            .getDistance(autoAlignSetpoint.getTranslation());
-    boolean atSetpoint =
-        Math.abs(distanceToSetpoint)
+            .getDistance(autoAlignCoralSetpoint.getTranslation());
+    double distanceToAlgaeSetpoint =
+        RobotState.getRobotPoseReef()
+            .getTranslation()
+            .getDistance(autoAlignAlgaeSetpoint.getTranslation());
+
+    boolean atCoralSetpoint =
+        Math.abs(distanceToCoralSetpoint)
+            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+    boolean atAlgaeSetpoint =
+        Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
     reefAlignData =
         new ReefAlignData(
-            closestReefTag, autoAlignSetpoint, distanceToSetpoint, atSetpoint, cameras);
+            closestReefTag,
+            autoAlignCoralSetpoint,
+            autoAlignAlgaeSetpoint,
+            distanceToCoralSetpoint,
+            distanceToAlgaeSetpoint,
+            atCoralSetpoint,
+            atAlgaeSetpoint,
+            cameras);
 
-    Logger.recordOutput(
-        "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
-    Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
-    Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
-    Logger.recordOutput(
-        "RobotState/Reef Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
-    Logger.recordOutput(
-        "RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
-    Logger.recordOutput(
-        "RobotState/Reef Data/Current Reef Height", operatorInputData.currentReefHeight());
-    Logger.recordOutput("RobotState/Reef Data/Closest Reef Tag", closestReefTag);
-    Logger.recordOutput("RobotState/Reef Data/Reef Setpoint", autoAlignSetpoint);
-    Logger.recordOutput("RobotState/Reef Data/Distance to Post", distanceToSetpoint);
-    Logger.recordOutput("RobotState/Reef Data/At Setpoint", atSetpoint);
+    Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
+    Logger.recordOutput(NTPrefixes.POSE_DATA + "Odometry Pose", odometry.getPoseMeters());
+    Logger.recordOutput(NTPrefixes.POSE_DATA + "Heading Offset", headingOffset);
+
+    Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Post", OIData.currentReefPost());
+    Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Height", OIData.currentReefHeight());
+
+    Logger.recordOutput(NTPrefixes.REEF_DATA + "Reef Pose", reefLocalizer.getEstimatedPosition());
+    Logger.recordOutput(NTPrefixes.REEF_DATA + "Closest Reef April Tag", closestReefTag);
+
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Coral Setpoint", autoAlignCoralSetpoint);
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Coral Setpoint Error", distanceToCoralSetpoint);
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "At Coral Setpoint", atCoralSetpoint);
+
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.CORAL_DATA + "At Algae Setpoint", atAlgaeSetpoint);
   }
 
   public static Pose2d getRobotPoseField() {
@@ -261,23 +281,26 @@ public class RobotState {
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
-  public static void setReefPost(ReefPost post) {
-    ReefHeight height = operatorInputData.currentReefHeight();
-    operatorInputData = new OperatorInputData(post, height);
+  public static void setReefPost(ReefPose post) {
+    ReefHeight height = OIData.currentReefHeight();
+    OIData = new OperatorInputData(post, height);
   }
 
   public static void setReefHeight(ReefHeight height) {
-    ReefPost post = operatorInputData.currentReefPost();
-    operatorInputData = new OperatorInputData(post, height);
+    ReefPose post = OIData.currentReefPost();
+    OIData = new OperatorInputData(post, height);
   }
 
   public static final record ReefAlignData(
       int closestReefTag,
-      Pose2d setpoint,
-      double distance,
-      boolean atSetpoint,
+      Pose2d coralSetpoint,
+      Pose2d algaeSetpoint,
+      double distanceToCoralSetpoint,
+      double distanceToAlgaeSetpoint,
+      boolean atCoralSetpoint,
+      boolean atAlgaeSetpoint,
       Camera... cameras) {}
 
   public static final record OperatorInputData(
-      ReefPost currentReefPost, ReefHeight currentReefHeight) {}
+      ReefPose currentReefPost, ReefHeight currentReefHeight) {}
 }
