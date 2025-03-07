@@ -232,7 +232,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
-    operator.povDown().whileTrue(ScoreCommands.scoreL1Coral(drive, elevator, manipulator));
+    operator.povDown().whileTrue(climber.winchClimber());
 
     operator
         .start()
