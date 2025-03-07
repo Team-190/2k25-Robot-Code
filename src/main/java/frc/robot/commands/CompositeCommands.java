@@ -179,8 +179,8 @@ public class CompositeCommands {
               Commands.sequence(
                   Commands.waitSeconds(0.05),
                   Commands.either(
-                      DriveCommands.inchMovement(drive, -1.2, 0.37),
-                      DriveCommands.inchMovement(drive, 1.2, 0.37),
+                      DriveCommands.inchMovement(drive, -1, 0.1),
+                      DriveCommands.inchMovement(drive, 1, 0.1),
                       () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
   }
