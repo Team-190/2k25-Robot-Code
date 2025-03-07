@@ -198,9 +198,9 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.CORAL_DATA + "Coral Setpoint Error", distanceToCoralSetpoint);
     Logger.recordOutput(NTPrefixes.CORAL_DATA + "At Coral Setpoint", atCoralSetpoint);
 
-    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
-    Logger.recordOutput(NTPrefixes.CORAL_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
-    Logger.recordOutput(NTPrefixes.CORAL_DATA + "At Algae Setpoint", atAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
   }
 
   public static Pose2d getRobotPoseField() {
