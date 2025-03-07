@@ -169,7 +169,7 @@ public class CompositeCommands {
     public static final Command scoreL1Coral(
         Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-          elevator.setPosition(ReefHeight.L1),
+          elevator.setPosition(),
           Commands.waitSeconds(0.02),
           Commands.waitUntil(elevator::atGoal),
           Commands.parallel(

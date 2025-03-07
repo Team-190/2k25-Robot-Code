@@ -152,7 +152,9 @@ public class RobotState {
     }
 
     Pose2d autoAlignCoralSetpoint =
-        Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
+        OIData.currentReefHeight().equals(ReefHeight.L1)
+            ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
+            : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =

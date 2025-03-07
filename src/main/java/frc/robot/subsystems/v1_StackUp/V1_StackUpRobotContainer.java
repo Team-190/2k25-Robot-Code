@@ -176,11 +176,12 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver
         .rightTrigger(0.5)
         .whileTrue(
-            ScoreCommands.autoScoreCoralSequence(
-                drive,
-                elevator,
-                manipulator,
-                RobotCameras.v1_StackUpCams));
+            Commands.either(
+                ScoreCommands.autoScoreL1CoralSequence(
+                    drive, elevator, manipulator, RobotCameras.v1_StackUpCams),
+                ScoreCommands.autoScoreCoralSequence(
+                    drive, elevator, manipulator, RobotCameras.v1_StackUpCams),
+                () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1)));
 
     // Driver bumpers
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));

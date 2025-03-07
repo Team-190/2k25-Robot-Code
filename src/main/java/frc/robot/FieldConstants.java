@@ -51,7 +51,8 @@ public class FieldConstants {
     public static enum ReefPose {
       RIGHT,
       LEFT,
-      ALGAE
+      ALGAE,
+      CENTER
     }
 
     public static enum ReefHeight {
