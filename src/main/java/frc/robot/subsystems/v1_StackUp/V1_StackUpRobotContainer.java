@@ -179,9 +179,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             ScoreCommands.autoScoreCoralSequence(
                 drive,
                 elevator,
-                funnel,
                 manipulator,
-                RobotState.getOperatorInputData().currentReefHeight(),
                 RobotCameras.v1_StackUpCams));
 
     // Driver bumpers
@@ -230,14 +228,14 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator
         .leftTrigger(0.5)
         .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
-    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(elevator, manipulator));
+    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
-    operator.povDown().whileTrue(climber.winchClimber());
+    operator.povDown().whileTrue(ScoreCommands.scoreL1Coral(drive, elevator, manipulator));
 
     operator
         .start()

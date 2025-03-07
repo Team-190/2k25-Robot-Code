@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefPost;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -127,8 +128,7 @@ public class CompositeCommands {
           elevator.setPosition(ReefHeight.STOW));
     }
 
-    public static final Command scoreCoral(
-        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
+    public static final Command scoreCoral( V1_StackUpManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
     }
 
@@ -144,13 +144,40 @@ public class CompositeCommands {
     public static final Command autoScoreCoralSequence(
         Drive drive,
         V1_StackUpElevator elevator,
-        V1_StackUpFunnel funnel,
         V1_StackUpManipulator manipulator,
-        ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.alignRobotToAprilTag(drive, cameras),
           scoreCoralSequence(elevator, manipulator));
+    }
+
+    public static final Command autoScoreL1CoralSequence(
+      Drive drive,  V1_StackUpElevator elevator,
+      V1_StackUpManipulator manipulator,
+      Camera... cameras
+    ) {
+        return Commands.sequence(
+          DriveCommands.alignRobotToAprilTag(drive, cameras),
+          scoreL1Coral(drive, elevator, manipulator)
+        );
+    }
+
+    public static final Command scoreL1Coral(
+        Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
+      return Commands.sequence(
+          elevator.setPosition(ReefHeight.L1),
+          Commands.waitSeconds(0.02),
+          Commands.waitUntil(elevator::atGoal),
+          Commands.parallel(
+              manipulator.scoreL1Coral().withTimeout(0.8),
+              Commands.sequence(
+                  Commands.waitSeconds(0.05),
+                  Commands.either(
+                      DriveCommands.inchMovement(drive, -1.2, 0.37
+                      ),
+                      DriveCommands.inchMovement(drive, 1.2, 0.37),
+                      () ->
+                          RobotState.getOperatorInputData().currentReefPost() == ReefPost.LEFT))));
     }
   }
 }
