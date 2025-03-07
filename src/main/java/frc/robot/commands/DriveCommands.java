@@ -544,12 +544,6 @@ public final class DriveCommands {
     return thetaSpeed;
   }
 
-  public static double absMax(double a, double b) {
-    double ans = Math.max(Math.abs(a), Math.abs(b));
-    if (ans == Math.abs(a)) return Math.copySign(ans, a);
-    else return Math.copySign(ans, b);
-  }
-
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
