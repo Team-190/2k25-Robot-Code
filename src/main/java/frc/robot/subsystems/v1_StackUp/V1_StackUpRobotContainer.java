@@ -184,7 +184,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     driver.back().onTrue(manipulator.toggleAlgaeArm());
-    driver.start().onTrue(ScoreCommands.descoreAlgae(drive, elevator, manipulator));
+    driver.start().onTrue(ScoreCommands.twerk(drive, elevator, manipulator));
 
     driver
         .povUp()

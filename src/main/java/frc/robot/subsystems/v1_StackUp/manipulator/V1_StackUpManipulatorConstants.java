@@ -21,7 +21,7 @@ public class V1_StackUpManipulatorConstants {
             new LoggedTunableNumber("Manipulator/Score Volts", 4.0),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
-            new LoggedTunableNumber("Manipulator/L1 Volts", 2.0));
+            new LoggedTunableNumber("Manipulator/L1 Volts", 3.5));
   }
 
   public static final record Voltages(

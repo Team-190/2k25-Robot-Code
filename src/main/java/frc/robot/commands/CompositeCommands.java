@@ -116,31 +116,26 @@ public class CompositeCommands {
           () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
-    public static final Command descoreAlgae(
+    public static final Command twerk(
         Drive drive,
         V1_StackUpElevator elevator,
         V1_StackUpManipulator manipulator,
         Camera... cameras) {
-      return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          elevator.setPosition(ReefHeight.L4),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.toggleAlgaeArm(),
-          Commands.waitSeconds(0.1),
-          Commands.deferredProxy(
-              () ->
-                  elevator.setPosition(
-                      switch (RobotState.getReefAlignData().closestReefTag()) {
-                        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-                        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-                        default -> ReefHeight.BOT_ALGAE;
-                      })),
-          manipulator.removeAlgae().until(elevator::atGoal),
-          manipulator.removeAlgae().withTimeout(0.35),
-          manipulator.toggleAlgaeArm());
+      return Commands.deferredProxy(
+          () ->
+              twerk(
+                  drive,
+                  elevator,
+                  manipulator,
+                  switch (RobotState.getReefAlignData().closestReefTag()) {
+                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+                    default -> ReefHeight.BOT_ALGAE;
+                  },
+                  cameras));
     }
 
-    public static final Command descoreAlgae(
+    public static final Command twerk(
         Drive drive,
         V1_StackUpElevator elevator,
         V1_StackUpManipulator manipulator,
@@ -152,7 +147,7 @@ public class CompositeCommands {
           Commands.waitUntil(elevator::atGoal),
           manipulator.toggleAlgaeArm(),
           Commands.waitSeconds(0.1),
-          Commands.deferredProxy(() -> elevator.setPosition(level)),
+          elevator.setPosition(level),
           manipulator.removeAlgae().until(elevator::atGoal),
           manipulator.removeAlgae().withTimeout(0.35),
           manipulator.toggleAlgaeArm());
