@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -68,44 +68,6 @@ public class CompositeCommands {
           .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
     }
 
-    public static final Command twerk(
-        Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
-      return Commands.sequence(
-          Commands.parallel(
-              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.toggleAlgaeArm(),
-          Commands.waitSeconds(0.1),
-          Commands.deferredProxy(
-              () ->
-                  elevator.setPosition(
-                      switch (RobotState.getReefAlignData().closestReefTag()) {
-                        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-                        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-                        default -> ReefHeight.BOT_ALGAE;
-                      })),
-          manipulator.removeAlgae().until(elevator::atGoal),
-          manipulator.removeAlgae().withTimeout(0.35),
-          manipulator.toggleAlgaeArm());
-    }
-
-    public static final Command twerk(
-        Drive drive,
-        V1_StackUpElevator elevator,
-        V1_StackUpManipulator manipulator,
-        ReefHeight level) {
-      return Commands.sequence(
-          Commands.parallel(
-              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.toggleAlgaeArm(),
-          Commands.waitSeconds(0.1),
-          Commands.deferredProxy(() -> elevator.setPosition(level)),
-          manipulator.removeAlgae().until(elevator::atGoal),
-          manipulator.removeAlgae().withTimeout(0.35),
-          manipulator.toggleAlgaeArm());
-    }
-
     public static final Command intakeCoralOverride(
         V1_StackUpElevator elevator, V1_StackUpFunnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
@@ -147,8 +109,50 @@ public class CompositeCommands {
         V1_StackUpManipulator manipulator,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.alignRobotToAprilTag(drive, cameras),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
           scoreCoralSequence(elevator, manipulator));
+    }
+
+    public static final Command descoreAlgae(
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        Camera... cameras) {
+      return Commands.sequence(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          elevator.setPosition(ReefHeight.L4),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(
+              () ->
+                  elevator.setPosition(
+                      switch (RobotState.getReefAlignData().closestReefTag()) {
+                        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+                        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+                        default -> ReefHeight.BOT_ALGAE;
+                      })),
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
+    }
+
+    public static final Command descoreAlgae(
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        ReefHeight level,
+        Camera... cameras) {
+      return Commands.sequence(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          elevator.setPosition(ReefHeight.L4),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(() -> elevator.setPosition(level)),
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
     }
 
     public static final Command autoScoreL1CoralSequence(
@@ -157,7 +161,7 @@ public class CompositeCommands {
       Camera... cameras
     ) {
         return Commands.sequence(
-          DriveCommands.alignRobotToAprilTag(drive, cameras),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
           scoreL1Coral(drive, elevator, manipulator)
         );
     }
@@ -177,7 +181,7 @@ public class CompositeCommands {
                       ),
                       DriveCommands.inchMovement(drive, 1.2, 0.37),
                       () ->
-                          RobotState.getOperatorInputData().currentReefPost() == ReefPost.LEFT))));
+                          RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
   }
 }

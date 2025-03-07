@@ -48,9 +48,10 @@ public class FieldConstants {
   }
 
   public static class Reef {
-    public static enum ReefPost {
+    public static enum ReefPose {
+      RIGHT,
       LEFT,
-      RIGHT
+      ALGAE
     }
 
     public static enum ReefHeight {
@@ -64,9 +65,13 @@ public class FieldConstants {
       BOT_ALGAE
     }
 
-    public static record PostPair(Pose2d right, Pose2d left) {
-      public Pose2d getPost(ReefPost post) {
-        return post == ReefPost.LEFT ? left : right;
+    public static record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae) {
+      public Pose2d getPostSetpoint(ReefPose post) {
+        return post == ReefPose.LEFT ? left : right;
+      }
+
+      public Pose2d getAlgaeSetpoint() {
+        return algae;
       }
     }
 
@@ -78,7 +83,7 @@ public class FieldConstants {
     public static final Pose2d[] centerFaces =
         new Pose2d[6]; // Starting facing the driver station in clockwise order
 
-    public static final Map<Integer, PostPair> reefMap = new HashMap<Integer, PostPair>();
+    public static final Map<Integer, FaceSetpoints> reefMap = new HashMap<Integer, FaceSetpoints>();
 
     static {
       // Initialize faces
@@ -113,72 +118,108 @@ public class FieldConstants {
               Units.inchesToMeters(130.144),
               Rotation2d.fromDegrees(-120));
 
-      double adjustY =
-          Units.inchesToMeters(6.469); // Offset Y setpoint by center of tag to reef post
-      double adjustX =
+      double adjustYBranch =
+          Units.inchesToMeters(6.469); // Offset Y setpoint by center of tag to reef branch
+      double adjustXBranch =
+          DriveConstants.DRIVE_CONFIG.bumperWidth()
+              / 2.0; // Offset X setpoint by center of robot to bumper
+
+      double adjustYAlgae =
+          Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
+      double adjustXAlgae =
           DriveConstants.DRIVE_CONFIG.bumperWidth()
               / 2.0; // Offset X setpoint by center of robot to bumper
 
       reefMap.put(
           18,
-          new PostPair(
-              centerFaces[0].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[0].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[0].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[0].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[0].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           19,
-          new PostPair(
-              centerFaces[1].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[1].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[1].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[1].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[1].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           20,
-          new PostPair(
-              centerFaces[2].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[2].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[2].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[2].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[2].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           21,
-          new PostPair(
-              centerFaces[3].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[3].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[3].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[3].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[3].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           22,
-          new PostPair(
-              centerFaces[4].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[4].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[4].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[4].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[4].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           17,
-          new PostPair(
-              centerFaces[5].transformBy(new Transform2d(adjustX, adjustY, new Rotation2d())),
-              centerFaces[5].transformBy(new Transform2d(adjustX, -adjustY, new Rotation2d()))));
+          new FaceSetpoints(
+              centerFaces[5].transformBy(
+                  new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
+              centerFaces[5].transformBy(
+                  new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
+              centerFaces[5].transformBy(
+                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d()))));
       reefMap.put(
           7,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(18).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(18).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(18).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(18).algae)));
       reefMap.put(
           6,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(19).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(19).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(19).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(19).algae)));
       reefMap.put(
           11,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(20).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(20).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(20).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(20).algae)));
       reefMap.put(
           10,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(21).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(21).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(21).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(21).algae)));
       reefMap.put(
           9,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(22).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(22).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(22).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(22).algae)));
       reefMap.put(
           8,
-          new PostPair(
+          new FaceSetpoints(
               AllianceFlipUtil.overrideApply(reefMap.get(17).right),
-              AllianceFlipUtil.overrideApply(reefMap.get(17).left)));
+              AllianceFlipUtil.overrideApply(reefMap.get(17).left),
+              AllianceFlipUtil.overrideApply(reefMap.get(17).algae)));
     }
   }
 
