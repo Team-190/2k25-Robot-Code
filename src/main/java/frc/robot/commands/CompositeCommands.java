@@ -9,7 +9,6 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimber;
 import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimberConstants;
 import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
@@ -91,7 +90,7 @@ public class CompositeCommands {
           elevator.setPosition(ReefHeight.STOW));
     }
 
-    public static final Command scoreCoral( V1_StackUpManipulator manipulator) {
+    public static final Command scoreCoral(V1_StackUpManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
     }
 
@@ -109,11 +108,12 @@ public class CompositeCommands {
         V1_StackUpElevator elevator,
         V1_StackUpManipulator manipulator,
         Camera... cameras) {
-      return Commands.either(autoScoreL1CoralSequence(
-                    drive, elevator, manipulator, cameras), 
-      Commands.sequence(
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          scoreCoralSequence(elevator, manipulator)),   () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
+      return Commands.either(
+          autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
+          Commands.sequence(
+              DriveCommands.autoAlignReefCoral(drive, cameras),
+              scoreCoralSequence(elevator, manipulator)),
+          () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
     public static final Command descoreAlgae(
@@ -159,14 +159,13 @@ public class CompositeCommands {
     }
 
     public static final Command autoScoreL1CoralSequence(
-      Drive drive,  V1_StackUpElevator elevator,
-      V1_StackUpManipulator manipulator,
-      Camera... cameras
-    ) {
-        return Commands.sequence(
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        Camera... cameras) {
+      return Commands.sequence(
           DriveCommands.autoAlignReefCoral(drive, cameras),
-          scoreL1Coral(drive, elevator, manipulator)
-        );
+          scoreL1Coral(drive, elevator, manipulator));
     }
 
     public static final Command scoreL1Coral(
@@ -180,11 +179,9 @@ public class CompositeCommands {
               Commands.sequence(
                   Commands.waitSeconds(0.05),
                   Commands.either(
-                      DriveCommands.inchMovement(drive, -1.2, 0.37
-                      ),
+                      DriveCommands.inchMovement(drive, -1.2, 0.37),
                       DriveCommands.inchMovement(drive, 1.2, 0.37),
-                      () ->
-                          RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
+                      () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
   }
 }
