@@ -9,6 +9,7 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimber;
 import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimberConstants;
 import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
@@ -108,9 +109,11 @@ public class CompositeCommands {
         V1_StackUpElevator elevator,
         V1_StackUpManipulator manipulator,
         Camera... cameras) {
-      return Commands.sequence(
+      return Commands.either(autoScoreL1CoralSequence(
+                    drive, elevator, manipulator, cameras), 
+      Commands.sequence(
           DriveCommands.autoAlignReefCoral(drive, cameras),
-          scoreCoralSequence(elevator, manipulator));
+          scoreCoralSequence(elevator, manipulator)),   () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
     public static final Command descoreAlgae(
