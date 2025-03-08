@@ -32,14 +32,14 @@ public class V1_StackUpElevator extends SubsystemBase {
     characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(1),
-                Seconds.of(5),
-                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
+                Volts.of(1).per(Second),
+                Volts.of(6),
+                Seconds.of(10),
+                (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
     position = ElevatorPositions.STOW;
-    isClosedLoop = true;
+    isClosedLoop = false;
   }
 
   @Override
@@ -159,20 +159,25 @@ public class V1_StackUpElevator extends SubsystemBase {
   }
 
   /**
-   * Runs the SysId routine for the elevator.
+   * Runs the elevator characterization routine.
    *
-   * @return A command to run the SysId routine.
+   * @return A command that runs the elevator characterization routine.
    */
-  public Command sysIdRoutine() {
+  public Command runSysID() {
     return Commands.sequence(
-        runOnce(() -> isClosedLoop = false),
-        characterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(2),
-        characterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(2),
-        characterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(2),
-        characterizationRoutine.dynamic(Direction.kReverse));
+        characterizationRoutine
+            .quasistatic(Direction.kForward)
+            .until(() -> atGoal(ElevatorPositions.L4.getPosition())),
+        characterizationRoutine
+            .quasistatic(Direction.kReverse)
+            .until(() -> atGoal(ElevatorPositions.STOW.getPosition())),
+        characterizationRoutine
+            .dynamic(Direction.kForward)
+            .until(() -> atGoal(ElevatorPositions.L4.getPosition())),
+        characterizationRoutine
+            .dynamic(Direction.kReverse)
+            .until(() -> atGoal(ElevatorPositions.STOW.getPosition())),
+        setPosition(ReefHeight.STOW));
   }
 
   /**
@@ -220,13 +225,24 @@ public class V1_StackUpElevator extends SubsystemBase {
   }
 
   /**
+   * Checks if the elevator is at the goal position within a specified tolerance.
+   *
+   * @param position The target position in meters.
+   * @return true if the current position is within the goal tolerance of the target position, false
+   *     otherwise.
+   */
+  private boolean atGoal(double position) {
+    return Math.abs(position - inputs.positionMeters)
+        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+  }
+
+  /**
    * Checks if the elevator is at the goal position.
    *
    * @return True if the elevator is at the goal position, false otherwise.
    */
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
-    return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+    return atGoal(inputs.positionGoalMeters);
   }
 }

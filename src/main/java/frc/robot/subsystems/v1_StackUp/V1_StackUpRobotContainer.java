@@ -243,16 +243,17 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .start()
         .or(operator.back())
         .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
-
-    driver.start().whileTrue(elevator.sysIdRoutine());
   }
 
   private void configureAutos() {
     autoChooser.addDefaultOption("None", Commands.none());
-    autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    if (Constants.TUNING_MODE) {
+      autoChooser.addOption(
+          "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+      autoChooser.addOption(
+          "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+      autoChooser.addOption("Elevator FF Characterization", elevator.runSysID());
+    }
     autoChooser.addOption(
         "3 Piece Left",
         AutonomousCommands.autoALeft(
