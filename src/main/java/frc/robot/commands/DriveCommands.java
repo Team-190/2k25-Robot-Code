@@ -172,9 +172,7 @@ public final class DriveCommands {
                   fieldRelativeYVel,
                   rotateToReef.getAsBoolean()
                       ? thetaSpeedCalculate(true)
-                      : rotateToCoralStation.getAsBoolean()
-                          ? thetaSpeedCalculate(false)
-                          : angular,
+                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
