@@ -567,8 +567,14 @@ public final class DriveCommands {
               <= RobotState.getRobotPoseField()
                   .getTranslation()
                   .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-          ? FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()
-          : FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians();
+          ? FieldConstants.CoralStation.leftCenterFace
+              .getRotation()
+              .plus(new Rotation2d(Math.PI))
+              .getRadians()
+          : FieldConstants.CoralStation.rightCenterFace
+              .getRotation()
+              .plus(new Rotation2d(Math.PI))
+              .getRadians();
     }
   }
 }
