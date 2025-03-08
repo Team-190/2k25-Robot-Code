@@ -52,7 +52,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyLeft =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -70,7 +70,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyRight =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -86,7 +86,7 @@ public class CameraConstants {
                 .22,
                 new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
 
-    private static final Camera v1_GammaCenter =
+    private static final Camera v1_StackUpCenter =
         new Camera(
             new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -101,7 +101,7 @@ public class CameraConstants {
             new Transform3d(
                 -0.211842, 0.0, 0.226176, new Rotation3d(0, 0, Units.degreesToRadians(-180))));
 
-    private static final Camera v1_GammaLeft =
+    private static final Camera v1_StackUpLeft =
         new Camera(
             new CameraIOLimelight("left", CameraType.LIMELIGHT_3),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -119,7 +119,7 @@ public class CameraConstants {
                 0.237475,
                 new Rotation3d(0.0, 0, Units.degreesToRadians(225))));
 
-    private static final Camera v1_GammaRight =
+    private static final Camera v1_StackUpRight =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_3),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -135,7 +135,9 @@ public class CameraConstants {
                 -0.203974, 0.281026, 0.237475, new Rotation3d(0, 0, Units.degreesToRadians(-225))));
 
     public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
-    public static final Camera[] v1_GammaCams = {v1_GammaCenter, v1_GammaLeft, v1_GammaRight};
+    public static final Camera[] v1_StackUpCams = {
+      v1_StackUpCenter, v1_StackUpLeft, v1_StackUpRight
+    };
   }
 
   public static class ReplayCameras {}
