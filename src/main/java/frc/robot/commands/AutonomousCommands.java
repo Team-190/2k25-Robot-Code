@@ -38,7 +38,7 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5),
+                manipulator.scoreCoral().withTimeout(0.25),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH2.cmd(),
@@ -48,7 +48,7 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5),
+                manipulator.scoreCoral().withTimeout(0.25),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH3.cmd(),
@@ -58,7 +58,7 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5),
+                manipulator.scoreCoral().withTimeout(0.25),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_LEFT_PATH4.cmd(),
@@ -68,7 +68,7 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                manipulator.scoreCoral().withTimeout(0.25)));
 
     return autoALeft;
   }
