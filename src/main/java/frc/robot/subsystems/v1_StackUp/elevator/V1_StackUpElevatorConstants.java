@@ -28,7 +28,7 @@ public class V1_StackUpElevatorConstants {
         DRUM_RADIUS = Units.inchesToMeters(2.256 / 2.0);
 
         ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
-        ELEVATOR_STATOR_CURRENT_LIMIT = 40;
+        ELEVATOR_STATOR_CURRENT_LIMIT = 50;
 
         ELEVATOR_PARAMETERS =
             new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43, 4);
@@ -42,7 +42,7 @@ public class V1_StackUpElevatorConstants {
                 new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
         CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
+                new LoggedTunableNumber("Elevator/Max Acceleration", 17.0),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
         break;

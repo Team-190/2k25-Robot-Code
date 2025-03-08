@@ -34,7 +34,7 @@ public class V1_StackUpElevator extends SubsystemBase {
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(1),
-                Seconds.of(0.5),
+                Seconds.of(5),
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
