@@ -161,7 +161,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.getHID()::getBButton));
+            driver.getHID()::getBButton,
+            driver.leftTrigger(0.5)));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));

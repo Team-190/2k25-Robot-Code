@@ -111,7 +111,8 @@ public final class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      BooleanSupplier rotateToReef) {
+      BooleanSupplier rotateToReef,
+      BooleanSupplier rotateToCoralStation) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -153,7 +154,11 @@ public final class DriveCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
                   fieldRelativeYVel,
-                  rotateToReef.getAsBoolean() ? thetaSpeedCalculate() : angular,
+                  rotateToReef.getAsBoolean()
+                      ? thetaSpeedCalculate(true)
+                      : rotateToCoralStation.getAsBoolean()
+                          ? thetaSpeedCalculate(false)
+                          : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -360,7 +365,7 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
                                 -adjustedYSpeed,
-                                thetaSpeedCalculate(),
+                                thetaSpeedCalculate(true),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
@@ -385,7 +390,7 @@ public final class DriveCommands {
                     }));
   }
 
-  private static double thetaSpeedCalculate() {
+  private static double thetaSpeedCalculate(boolean goingToReef) {
     double thetaSpeed = 0.0;
 
     alignHeadingController.setTolerance(
@@ -393,12 +398,26 @@ public final class DriveCommands {
 
     alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    if (!alignHeadingController.atSetpoint())
+    if (!alignHeadingController.atSetpoint() && goingToReef)
       thetaSpeed =
           alignHeadingController.calculate(
               RobotState.getRobotPoseReef().getRotation().getRadians(),
               RobotState.getReefAlignData().setpoint().getRotation().getRadians());
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+
+    if (!alignHeadingController.atSetpoint() && !goingToReef)
+      thetaSpeed =
+          alignHeadingController.calculate(
+              RobotState.getRobotPoseField().getRotation().getRadians(),
+              RobotState.getRobotPoseField()
+                          .getTranslation()
+                          .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
+                      <= RobotState.getRobotPoseField()
+                          .getTranslation()
+                          .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
+                  ? FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()
+                  : FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians());
+    else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
 
     Logger.recordOutput("thetaSpeed", thetaSpeed);
     return thetaSpeed;

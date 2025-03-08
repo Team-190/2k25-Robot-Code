@@ -85,6 +85,7 @@ public class V2_DeltaRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
+            () -> false,
             () -> false));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
