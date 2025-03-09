@@ -46,7 +46,6 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
-import frc.robot.util.ResetHeadingUtil;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -288,8 +287,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     LTNUpdater.updateElevator(elevator);
     LTNUpdater.updateFunnel(funnel);
 
-    ResetHeadingUtil.resetPosePeriodic();
-
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
           "Component Poses",
@@ -299,6 +296,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get().finallyDo(ResetHeadingUtil::finishedAuto);
+    return autoChooser.get();
   }
 }

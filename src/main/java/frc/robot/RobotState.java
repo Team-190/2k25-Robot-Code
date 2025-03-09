@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -28,9 +29,9 @@ public class RobotState {
   private static SwerveModulePosition[] modulePositions;
 
   private static final SwerveDrivePoseEstimator fieldLocalizer;
-  private static final SwerveDrivePoseEstimator fieldMT1Localizer;
   private static final SwerveDrivePoseEstimator reefLocalizer;
   private static final SwerveDriveOdometry odometry;
+  private static Pose2d estimatedFieldPose;
 
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData operatorInputData;
@@ -73,17 +74,12 @@ public class RobotState {
             new Rotation2d(),
             modulePositions,
             new Pose2d());
-    fieldMT1Localizer =
-        new SwerveDrivePoseEstimator(
-            DriveConstants.DRIVE_CONFIG.kinematics(),
-            new Rotation2d(),
-            modulePositions,
-            new Pose2d());
     odometry =
         new SwerveDriveOdometry(
             DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
 
     reefAlignData = new ReefAlignData(-1, new Pose2d(), 0.0, false);
+    estimatedFieldPose = new Pose2d();
   }
 
   public RobotState() {}
@@ -127,10 +123,6 @@ public class RobotState {
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
-        fieldMT1Localizer.addVisionMeasurement(
-            camera.getSecondaryPose(),
-            camera.getFrameTimestamp(),
-            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
         if (camera.getTotalTargets() > 1) {
           double xyStddevSecondary =
               camera.getSecondaryXYStandardDeviationCoefficient()
@@ -138,10 +130,6 @@ public class RobotState {
                   / camera.getTotalTargets()
                   * camera.getHorizontalFOV();
           fieldLocalizer.addVisionMeasurement(
-              camera.getSecondaryPose(),
-              camera.getFrameTimestamp(),
-              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
-          fieldMT1Localizer.addVisionMeasurement(
               camera.getSecondaryPose(),
               camera.getFrameTimestamp(),
               VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
@@ -180,8 +168,24 @@ public class RobotState {
         new ReefAlignData(
             closestReefTag, autoAlignSetpoint, distanceToSetpoint, atSetpoint, cameras);
 
-    Logger.recordOutput(
-        "RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
+    if (DriverStation.isDisabled()) {
+      for (Camera camera : cameras) {
+        if (camera.getName().contains("center")
+            && !GeometryUtil.isZero(camera.getSecondaryPose())) {
+          estimatedFieldPose = camera.getSecondaryPose();
+          resetRobotPose(camera.getSecondaryPose());
+          break;
+        } else if (!GeometryUtil.isZero(camera.getSecondaryPose())) {
+          estimatedFieldPose = camera.getSecondaryPose();
+          resetRobotPose(camera.getSecondaryPose());
+          break;
+        } else continue;
+      }
+    } else {
+      estimatedFieldPose = fieldLocalizer.getEstimatedPosition();
+    }
+
+    Logger.recordOutput("RobotState/Pose Data/Estimated Field Pose", estimatedFieldPose);
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
@@ -197,11 +201,7 @@ public class RobotState {
   }
 
   public static Pose2d getRobotPoseField() {
-    return fieldLocalizer.getEstimatedPosition();
-  }
-
-  public static Pose2d getMT1RobotPoseField() {
-    return fieldMT1Localizer.getEstimatedPosition();
+    return estimatedFieldPose;
   }
 
   public static Pose2d getRobotPoseReef() {

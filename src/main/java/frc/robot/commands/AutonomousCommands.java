@@ -184,7 +184,6 @@ public class AutonomousCommands {
     AutoTrajectory B_RIGHT_PATH1 = autoBRight.trajectory("B_RIGHT_PATH1");
     AutoTrajectory B_RIGHT_PATH2 = autoBRight.trajectory("B_RIGHT_PATH2");
 
-
     autoBRight
         .active()
         .onTrue(
