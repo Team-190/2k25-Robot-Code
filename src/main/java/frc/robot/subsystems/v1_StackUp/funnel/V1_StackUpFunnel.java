@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_StackUp.funnel;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
+  private final Timer debounceTimer;
   private FunnelState goal;
 
   private boolean isClosedLoop;
@@ -35,6 +37,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
+                debounceTimer = new Timer();
     goal = FunnelState.OPENED;
 
     isClosedLoop = true;
@@ -47,6 +50,13 @@ public class V1_StackUpFunnel extends SubsystemBase {
 
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
+    }
+
+    if (inputs.hasCoral) {
+      debounceTimer.start();
+    } else if (debounceTimer.isRunning() && !hasCoral()) {
+      debounceTimer.stop();
+      debounceTimer.reset();
     }
   }
 
@@ -78,7 +88,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
     return Commands.race(
             Commands.sequence(
                 setClapDaddyGoal(FunnelState.OPENED),
-                Commands.waitUntil(() -> hasCoral()),
+                Commands.waitUntil(() -> hasCoral() && debounceTimer.get() >= 0.05),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
             setRollerVoltage(12.0))
