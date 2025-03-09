@@ -99,6 +99,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
+            () -> false,
             () -> false));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
 

@@ -36,6 +36,7 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
+import frc.robot.util.AllianceFlipUtil;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
@@ -51,18 +52,6 @@ public final class DriveCommands {
   @Getter private static final PIDController autoXController;
   @Getter private static final PIDController autoYController;
   @Getter private static final PIDController autoHeadingController;
-
-  private static final ProfiledPIDController omegaController =
-      new ProfiledPIDController(
-          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kP().get(),
-          0.0,
-          DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().kD().get(),
-          new TrapezoidProfile.Constraints(
-              DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
-                  .omegaPIDConstants()
-                  .maxVelocity()
-                  .get(),
-              Double.POSITIVE_INFINITY));
 
   static {
     alignXController =
@@ -127,7 +116,8 @@ public final class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      BooleanSupplier rotateToReef) {
+      BooleanSupplier rotateToReef,
+      BooleanSupplier rotateToCoralStation) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -169,7 +159,9 @@ public final class DriveCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
                   fieldRelativeYVel,
-                  rotateToReef.getAsBoolean() ? thetaSpeedCalculate() : angular,
+                  rotateToReef.getAsBoolean()
+                      ? thetaSpeedCalculate(true)
+                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -375,7 +367,7 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
                                 -adjustedYSpeed,
-                                thetaSpeedCalculate(),
+                                thetaSpeedCalculate(true),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
@@ -500,7 +492,7 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
                                 -adjustedYSpeed,
-                                thetaSpeedCalculate(),
+                                thetaSpeedCalculate(true),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
@@ -525,20 +517,28 @@ public final class DriveCommands {
                     }));
   }
 
-  private static double thetaSpeedCalculate() {
+  private static double thetaSpeedCalculate(boolean goingToReef) {
     double thetaSpeed = 0.0;
 
-    omegaController.setTolerance(
+    alignHeadingController.setTolerance(
         DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
-    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    if (!omegaController.atSetpoint())
-      thetaSpeed =
-          omegaController.calculate(
-              RobotState.getRobotPoseReef().getRotation().getRadians(),
-              RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
-    else omegaController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+    if (goingToReef) {
+      if (!alignHeadingController.atSetpoint())
+        thetaSpeed =
+            alignHeadingController.calculate(
+                RobotState.getRobotPoseReef().getRotation().getRadians(),
+                RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
+      else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+    } else {
+      if (!alignHeadingController.atSetpoint())
+        thetaSpeed =
+            alignHeadingController.calculate(
+                RobotState.getRobotPoseField().getRotation().getRadians(), chooseSource());
+      else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
+    }
 
     Logger.recordOutput("thetaSpeed", thetaSpeed);
     return thetaSpeed;
@@ -548,5 +548,33 @@ public final class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  private static double chooseSource() {
+    if (AllianceFlipUtil.shouldFlip()) {
+      return RobotState.getRobotPoseField()
+                  .getTranslation()
+                  .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
+              >= RobotState.getRobotPoseField()
+                  .getTranslation()
+                  .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
+          ? FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()
+          : FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians();
+    } else {
+      return RobotState.getRobotPoseField()
+                  .getTranslation()
+                  .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
+              <= RobotState.getRobotPoseField()
+                  .getTranslation()
+                  .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
+          ? FieldConstants.CoralStation.leftCenterFace
+              .getRotation()
+              .plus(new Rotation2d(Math.PI))
+              .getRadians()
+          : FieldConstants.CoralStation.rightCenterFace
+              .getRotation()
+              .plus(new Rotation2d(Math.PI))
+              .getRadians();
+    }
   }
 }
