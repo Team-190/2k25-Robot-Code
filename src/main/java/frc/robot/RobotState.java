@@ -28,6 +28,7 @@ public class RobotState {
   private static SwerveModulePosition[] modulePositions;
 
   private static final SwerveDrivePoseEstimator fieldLocalizer;
+  private static final SwerveDrivePoseEstimator fieldMT1Localizer;
   private static final SwerveDrivePoseEstimator reefLocalizer;
   private static final SwerveDriveOdometry odometry;
 
@@ -67,6 +68,12 @@ public class RobotState {
             modulePositions,
             new Pose2d());
     reefLocalizer =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.DRIVE_CONFIG.kinematics(),
+            new Rotation2d(),
+            modulePositions,
+            new Pose2d());
+    fieldMT1Localizer =
         new SwerveDrivePoseEstimator(
             DriveConstants.DRIVE_CONFIG.kinematics(),
             new Rotation2d(),
@@ -120,6 +127,10 @@ public class RobotState {
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+        fieldMT1Localizer.addVisionMeasurement(
+            camera.getSecondaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
         if (camera.getTotalTargets() > 1) {
           double xyStddevSecondary =
               camera.getSecondaryXYStandardDeviationCoefficient()
@@ -127,6 +138,10 @@ public class RobotState {
                   / camera.getTotalTargets()
                   * camera.getHorizontalFOV();
           fieldLocalizer.addVisionMeasurement(
+              camera.getSecondaryPose(),
+              camera.getFrameTimestamp(),
+              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+          fieldMT1Localizer.addVisionMeasurement(
               camera.getSecondaryPose(),
               camera.getFrameTimestamp(),
               VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
@@ -183,6 +198,10 @@ public class RobotState {
 
   public static Pose2d getRobotPoseField() {
     return fieldLocalizer.getEstimatedPosition();
+  }
+
+  public static Pose2d getMT1RobotPoseField() {
+    return fieldMT1Localizer.getEstimatedPosition();
   }
 
   public static Pose2d getRobotPoseReef() {

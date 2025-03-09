@@ -3,7 +3,6 @@ package frc.robot.subsystems.v1_StackUp;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -289,7 +288,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     LTNUpdater.updateElevator(elevator);
     LTNUpdater.updateFunnel(funnel);
 
-    ResetHeadingUtil.resetPosePeriodic(autoChooser);
+    ResetHeadingUtil.resetPosePeriodic();
 
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
