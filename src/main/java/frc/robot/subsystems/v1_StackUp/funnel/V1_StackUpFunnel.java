@@ -37,7 +37,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
-                debounceTimer = new Timer();
+    debounceTimer = new Timer();
     goal = FunnelState.OPENED;
 
     isClosedLoop = true;
