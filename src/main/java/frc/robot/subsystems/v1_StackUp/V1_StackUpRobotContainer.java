@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_StackUp;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,6 +47,7 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.ResetHeadingUtil;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -287,6 +289,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     LTNUpdater.updateElevator(elevator);
     LTNUpdater.updateFunnel(funnel);
 
+    ResetHeadingUtil.resetPosePeriodic(autoChooser);
+
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
           "Component Poses",
@@ -296,6 +300,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooser.get().finallyDo(ResetHeadingUtil::finishedAuto);
   }
 }

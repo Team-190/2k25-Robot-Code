@@ -12,6 +12,7 @@ import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
 import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
+import frc.robot.util.ResetHeadingUtil;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
@@ -27,11 +28,13 @@ public class AutonomousCommands {
     AutoTrajectory A_LEFT_PATH3 = autoALeft.trajectory("A_LEFT_PATH3");
     AutoTrajectory A_LEFT_PATH4 = autoALeft.trajectory("A_LEFT_PATH4");
 
+    ResetHeadingUtil.addDefault(A_LEFT_PATH1);
+    ResetHeadingUtil.add("3 Piece Left", A_LEFT_PATH1);
+
     autoALeft
         .active()
         .onTrue(
             Commands.sequence(
-                A_LEFT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 A_LEFT_PATH1.cmd(),
                 elevator.setPosition(ReefHeight.L4),
@@ -86,11 +89,12 @@ public class AutonomousCommands {
     AutoTrajectory A_RIGHT_PATH3 = autoARight.trajectory("A_RIGHT_PATH3");
     AutoTrajectory A_RIGHT_PATH4 = autoARight.trajectory("A_RIGHT_PATH4");
 
+    ResetHeadingUtil.add("3 Piece Right", A_RIGHT_PATH1);
+
     autoARight
         .active()
         .onTrue(
             Commands.sequence(
-                A_RIGHT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 A_RIGHT_PATH1.cmd(),
                 Commands.parallel(
@@ -151,11 +155,12 @@ public class AutonomousCommands {
     AutoTrajectory B_LEFT_PATH1 = autoBLeft.trajectory("B_LEFT_PATH1");
     AutoTrajectory B_LEFT_PATH2 = autoBLeft.trajectory("B_LEFT_PATH2");
 
+    ResetHeadingUtil.add("2 Piece Left", B_LEFT_PATH1);
+
     autoBLeft
         .active()
         .onTrue(
             Commands.sequence(
-                B_LEFT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 B_LEFT_PATH1.cmd(),
                 Commands.parallel(
@@ -187,11 +192,12 @@ public class AutonomousCommands {
     AutoTrajectory B_RIGHT_PATH1 = autoBRight.trajectory("B_RIGHT_PATH1");
     AutoTrajectory B_RIGHT_PATH2 = autoBRight.trajectory("B_RIGHT_PATH2");
 
+    ResetHeadingUtil.add("2 Piece Right", B_RIGHT_PATH1);
+
     autoBRight
         .active()
         .onTrue(
             Commands.sequence(
-                B_RIGHT_PATH1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)),
                 B_RIGHT_PATH1.cmd(),
                 Commands.parallel(
