@@ -110,7 +110,8 @@ public class RobotState {
           && !GeometryUtil.isZero(camera.getPrimaryPose())
           && !GeometryUtil.isZero(camera.getSecondaryPose())
           && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
-          && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0) {
+          && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
+          && camera.getTotalTargets() > 0) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
@@ -138,7 +139,8 @@ public class RobotState {
 
     for (Camera camera : cameras) {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
-          && !GeometryUtil.isZero(camera.getPrimaryPose())) {
+          && !GeometryUtil.isZero(camera.getPrimaryPose())
+          && camera.getTotalTargets() > 0) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
