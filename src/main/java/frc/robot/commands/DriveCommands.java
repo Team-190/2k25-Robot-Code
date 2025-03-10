@@ -117,7 +117,8 @@ public final class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       BooleanSupplier rotateToReef,
-      BooleanSupplier rotateToCoralStation) {
+      BooleanSupplier rotateToCoralStation,
+      BooleanSupplier climbLaneAssist) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -158,10 +159,10 @@ public final class DriveCommands {
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
-                  fieldRelativeYVel,
+                  climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistY() : fieldRelativeYVel,
                   rotateToReef.getAsBoolean()
                       ? thetaSpeedCalculate(true)
-                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : angular,
+                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistTheta() : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -580,9 +581,9 @@ public final class DriveCommands {
 
   public static double autoClimberLaneAssistY() {
     double setpoint = switch (RobotState.getOIData().climbLane()) {
-      case LEFT -> FieldConstants.Barge.farCage.getY();
-      case RIGHT -> FieldConstants.Barge.closeCage.getY();
-      case CENTER -> FieldConstants.Barge.middleCage.getY();
+      case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getY();
+      case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage).getY();
+      case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage).getY();
     };
     double speed = 0.0;
     if (!alignYController.atSetpoint()) speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
@@ -593,9 +594,9 @@ public final class DriveCommands {
 
   public static double autoClimberLaneAssistTheta() {
     double setpoint = switch (RobotState.getOIData().climbLane()) {
-      case LEFT -> FieldConstants.Barge.farCage.getAngle().getRadians();
-      case RIGHT -> FieldConstants.Barge.closeCage.getAngle().getRadians();
-      case CENTER -> FieldConstants.Barge.middleCage.getAngle().getRadians();
+      case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getAngle().getRadians();
+      case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage).getAngle().getRadians();
+      case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage).getAngle().getRadians();
     };
     double speed = 0.0;
     if (!alignHeadingController.atSetpoint()) speed = autoHeadingController.calculate(RobotState.getRobotPoseField().getRotation().getRadians(), setpoint);

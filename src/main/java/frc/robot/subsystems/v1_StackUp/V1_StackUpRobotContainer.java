@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_StackUp;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -164,7 +165,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.getHID()::getBButton,
-            driver.leftTrigger(0.5)));
+            driver.leftTrigger(0.5),
+            ()->false)); //TODO: Decide on what trigger to use for climber lane assist
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
