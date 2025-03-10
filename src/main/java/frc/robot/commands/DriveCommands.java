@@ -577,4 +577,36 @@ public final class DriveCommands {
               .getRadians();
     }
   }
+
+  public static double autoClimberLaneAssistY() {
+    double setpoint = switch (RobotState.getOIData().climbLane()) {
+      case LEFT -> FieldConstants.Barge.farCage.getY();
+      case RIGHT -> FieldConstants.Barge.closeCage.getY();
+      case CENTER -> FieldConstants.Barge.middleCage.getY();
+    };
+    double speed = 0.0;
+    if (!alignYController.atSetpoint()) speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
+    else alignYController.reset(setpoint);
+
+    return speed;
+  }
+
+  public static double autoClimberLaneAssistTheta() {
+    double setpoint = switch (RobotState.getOIData().climbLane()) {
+      case LEFT -> FieldConstants.Barge.farCage.getAngle().getRadians();
+      case RIGHT -> FieldConstants.Barge.closeCage.getAngle().getRadians();
+      case CENTER -> FieldConstants.Barge.middleCage.getAngle().getRadians();
+    };
+    double speed = 0.0;
+    if (!alignHeadingController.atSetpoint()) speed = autoHeadingController.calculate(RobotState.getRobotPoseField().getRotation().getRadians(), setpoint);
+    else alignHeadingController.reset(setpoint);
+
+    return speed;
+  }
+
+  public enum ClimberLane {
+    LEFT,
+    RIGHT,
+    CENTER
+  }
 }
