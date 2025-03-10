@@ -54,8 +54,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
 
     if (inputs.hasCoral) {
       debounceTimer.start();
-    } else if (debounceTimer.isRunning() && !hasCoral()) {
-      debounceTimer.stop();
+    } else if (debounceTimer.isRunning() && !inputs.hasCoral) {
       debounceTimer.reset();
     }
   }
@@ -88,7 +87,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
     return Commands.race(
             Commands.sequence(
                 setClapDaddyGoal(FunnelState.OPENED),
-                Commands.waitUntil(() -> hasCoral() && debounceTimer.get() >= 0.05),
+                Commands.waitUntil(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
             setRollerVoltage(12.0))
@@ -131,7 +130,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return inputs.hasCoral;
+    return inputs.hasCoral && debounceTimer.hasElapsed(0.05);
   }
 
   /**
