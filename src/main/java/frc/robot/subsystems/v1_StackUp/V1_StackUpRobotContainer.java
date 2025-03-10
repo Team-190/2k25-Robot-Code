@@ -252,12 +252,12 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
-        "3 Piece Left",
+        "4 Piece Left",
         AutonomousCommands.autoALeft(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
     autoChooser.addOption(
-        "3 Piece Right",
+        "4 Piece Right",
         AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
