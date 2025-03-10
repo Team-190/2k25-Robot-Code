@@ -3,7 +3,6 @@ package frc.robot.subsystems.v1_StackUp;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,6 +17,7 @@ import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
+import frc.robot.commands.DriveCommands.ClimberLane;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -69,6 +69,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Modes");
+  
+  private final LoggedDashboardChooser<ClimberLane> climberLaneChooser =
+      new LoggedDashboardChooser<>("Climber Lane");
 
   public V1_StackUpRobotContainer() {
 
@@ -241,6 +244,12 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .start()
         .or(operator.back())
         .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+
+  // Add climber lane chooser options
+  climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
+  climberLaneChooser.addOption("Right", ClimberLane.RIGHT);
+  climberLaneChooser.addOption("Left", ClimberLane.LEFT);
+  climberLaneChooser.getSendableChooser().onChange((l) -> RobotState.setClimbLane(climberLaneChooser.get()));
   }
 
   private void configureAutos() {
