@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
-import frc.robot.subsystems.v2_delta.V2_DeltaRobotContainer;
+import frc.robot.subsystems.v2_Delta.V2_DeltaRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.VirtualSubsystem;
