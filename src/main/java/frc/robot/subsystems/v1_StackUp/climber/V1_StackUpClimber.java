@@ -134,8 +134,8 @@ public class V1_StackUpClimber extends SubsystemBase {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
-  public Command manualDeployOverride(boolean override) { // set using debug board button
-    return this.runOnce(() -> this.override = override);
+  public Command manualDeployOverride() { 
+    return this.runOnce(() -> this.override = !override);
   }
 
   public Command incrementWinchClimber() {

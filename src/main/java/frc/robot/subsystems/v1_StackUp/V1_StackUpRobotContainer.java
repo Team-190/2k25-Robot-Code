@@ -2,6 +2,7 @@ package frc.robot.subsystems.v1_StackUp;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -250,16 +251,16 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
     // Debug board
     // Base triggers
-    debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
+    debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive).ignoringDisable(true));
     // TODO: Add Translate & rotate commands
     debugBoard
         .scoring()
         .primeLeft()
-        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)).ignoringDisable(true));
     debugBoard
         .scoring()
         .primeRight()
-        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
+        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)).ignoringDisable(true));
     debugBoard.scoring().track().whileTrue(DriveCommands.autoAlignReefCoral(drive));
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
@@ -465,6 +466,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             manipulator.runManipulator(
                 -V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
     debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+    debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
+    debugBoard.endEffector().blepUp().onTrue(ScoreCommands.twerk(drive, elevator, manipulator,ReefHeight.TOP_ALGAE, RobotCameras.v1_StackUpCams));
+    debugBoard.endEffector().blepDown().onTrue(ScoreCommands.twerk(drive, elevator, manipulator,ReefHeight.BOT_ALGAE, RobotCameras.v1_StackUpCams));
     debugBoard
         .endEffector()
         .incrementSpeed()
@@ -496,6 +500,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
     debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
     debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
+    debugBoard.climber().sensorOverride().onTrue(climber.manualDeployOverride());
 
     // Add climber lane chooser options
     climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
@@ -509,6 +514,40 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                     l.equals("Center")
                         ? ClimberLane.CENTER
                         : l.equals("Right") ? ClimberLane.RIGHT : ClimberLane.LEFT));
+
+    debugBoard
+        .climber()
+        .shiftLaneLeft()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    NetworkTableInstance.getDefault()
+                        .getTable("SmartDashboard/Climber Lane")
+                        .getStringTopic("selected")
+                        .publish()
+                        .set(
+                            RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+                                ? "Left"
+                                : RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
+                                    ? "Center"
+                                    : "Left")).ignoringDisable(true));
+
+    debugBoard
+        .climber()
+        .shiftLaneRight()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    NetworkTableInstance.getDefault()
+                        .getTable("SmartDashboard/Climber Lane")
+                        .getStringTopic("selected")
+                        .publish()
+                        .set(
+                            RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+                                ? "Right"
+                                : RobotState.getOIData().climbLane().equals(ClimberLane.LEFT)
+                                    ? "Center"
+                                    : "Right")).ignoringDisable(true));
   }
 
   private void configureAutos() {

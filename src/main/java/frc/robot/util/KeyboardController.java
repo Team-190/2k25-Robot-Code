@@ -290,8 +290,8 @@ public class KeyboardController {
       return controller.button(6, 8);
     }
 
-    public Trigger stingerOut() {
-      return controller.button(7, 8);
+    public Trigger sensorOverride() {
+      return controller.button(7, 10);
     }
 
     public Trigger incrementWintchOut() {
@@ -300,6 +300,14 @@ public class KeyboardController {
 
     public Trigger incrementWintchIn() {
       return controller.button(6, 10);
+    }
+
+    public Trigger shiftLaneLeft() {
+      return controller.button(7, 8);
+    }
+
+    public Trigger shiftLaneRight() {
+      return controller.button(7, 9);
     }
   }
 
