@@ -123,6 +123,10 @@ public class KeyboardController {
     return button(2, 10);
   }
 
+  public Trigger resetHeadingCameras() {
+    return button(2, 9);
+  }
+
   public static final record Funnel(KeyboardController controller) {
     public Trigger wingsClose() {
       return controller.button(2, 1);

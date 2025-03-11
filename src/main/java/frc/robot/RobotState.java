@@ -107,23 +107,7 @@ public class RobotState {
     NetworkTableInstance.getDefault().flush();
 
     if (DriverStation.isDisabled()) {
-      for (Camera camera : cameras) {
-        if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
-            && camera.getTargetAquired()
-            && !GeometryUtil.isZero(camera.getSecondaryPose())
-            && camera.getTotalTargets() > 1) {
-          double xyStddevPrimary =
-              camera.getPrimaryXYStandardDeviationCoefficient()
-                  * Math.pow(camera.getAverageDistance(), 2.0)
-                  / camera.getTotalTargets()
-                  * camera.getHorizontalFOV();
-          fieldLocalizer.addVisionMeasurement(
-              camera.getSecondaryPose(),
-              camera.getFrameTimestamp(),
-              VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, 0.05));
-        }
-      }
-      resetRobotPose(fieldLocalizer.getEstimatedPosition());
+      fieldPoseResetMT1(cameras);
     } else {
       for (Camera camera : cameras) {
         if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
@@ -300,6 +284,25 @@ public class RobotState {
     return minDistanceTag;
   }
 
+  public static void fieldPoseResetMT1(Camera... cameras) {
+    for (Camera camera : cameras) {
+      if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+          && camera.getTargetAquired()
+          && !GeometryUtil.isZero(camera.getSecondaryPose())
+          && camera.getTotalTargets() > 1) {
+        double xyStddevPrimary =
+            camera.getPrimaryXYStandardDeviationCoefficient()
+                * Math.pow(camera.getAverageDistance(), 2.0)
+                / camera.getTotalTargets()
+                * camera.getHorizontalFOV();
+        fieldLocalizer.addVisionMeasurement(
+            camera.getSecondaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, 0.05));
+      }
+    }
+    resetRobotPose(fieldLocalizer.getEstimatedPosition());
+  }
   public static void resetRobotPose(Pose2d pose) {
     headingOffset = robotHeading.minus(pose.getRotation());
     fieldLocalizer.resetPosition(robotHeading, modulePositions, pose);

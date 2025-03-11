@@ -252,6 +252,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     // Debug board
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive).ignoringDisable(true));
+    debugBoard.resetHeadingCameras().onTrue(Commands.runOnce(()->RobotState.fieldPoseResetMT1(RobotCameras.v1_StackUpCams)).ignoringDisable(true));
     // TODO: Add Translate & rotate commands
     debugBoard
         .scoring()
