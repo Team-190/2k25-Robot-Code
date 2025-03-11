@@ -169,7 +169,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getRightX(),
             driver.getHID()::getBButton,
             driver.leftTrigger(0.5),
-            ()->false)); //TODO: Decide on what trigger to use for climber lane assist
+            driver.povRight()));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
