@@ -137,17 +137,17 @@ public class DriveConstants {
       case V1_STACKUP:
       case V1_STACKUP_SIM:
       default:
-        FRONT_LEFT = TunerConstantsV1_Gamma.FrontLeft;
-        FRONT_RIGHT = TunerConstantsV1_Gamma.FrontRight;
-        BACK_LEFT = TunerConstantsV1_Gamma.BackLeft;
-        BACK_RIGHT = TunerConstantsV1_Gamma.BackRight;
+        FRONT_LEFT = TunerConstantsV1_StackUp.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV1_StackUp.FrontRight;
+        BACK_LEFT = TunerConstantsV1_StackUp.BackLeft;
+        BACK_RIGHT = TunerConstantsV1_StackUp.BackRight;
 
         DRIVE_CONFIG =
             new DriveConfig(
-                TunerConstantsV1_Gamma.DrivetrainConstants.CANBusName,
-                TunerConstantsV1_Gamma.DrivetrainConstants.Pigeon2Id,
-                TunerConstantsV1_Gamma.kSpeedAt12Volts.in(MetersPerSecond),
-                TunerConstantsV1_Gamma.kWheelRadius.in(Meters),
+                TunerConstantsV1_StackUp.DrivetrainConstants.CANBusName,
+                TunerConstantsV1_StackUp.DrivetrainConstants.Pigeon2Id,
+                TunerConstantsV1_StackUp.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV1_StackUp.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -159,12 +159,12 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV1_Gamma.driveGains.kS),
-                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV1_Gamma.driveGains.kV),
-                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV1_Gamma.driveGains.kP),
-                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV1_Gamma.driveGains.kD),
-                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV1_Gamma.steerGains.kP),
-                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV1_Gamma.steerGains.kD));
+                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV1_StackUp.driveGains.kS),
+                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV1_StackUp.driveGains.kV),
+                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV1_StackUp.driveGains.kP),
+                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV1_StackUp.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV1_StackUp.steerGains.kP),
+                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV1_StackUp.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),
@@ -238,21 +238,21 @@ public class DriveConstants {
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/X Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 3.0)),
+                    "Drive/Align Robot To April Tag/X Constants/maxVelocity", 2.5)),
             new PIDControllerConstants(
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kP", 3),
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Y Constants/kD", 0.15),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Y Constants/tolerance", 0.03),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 3.0)),
+                    "Drive/Align Robot To April Tag/Y Constants/maxVelocity", 2.5)),
             new PIDControllerConstants(
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/kP", Math.PI),
+                    "Drive/Align Robot To April Tag/Omega Constants/kP", 2 * Math.PI),
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",
-                    Units.degreesToRadians(0.5)),
+                    Units.degreesToRadians(0.25)),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
             new LoggedTunableNumber(
