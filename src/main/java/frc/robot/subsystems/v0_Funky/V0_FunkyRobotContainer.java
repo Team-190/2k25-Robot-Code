@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands;
@@ -95,20 +95,16 @@ public class V0_FunkyRobotContainer implements RobotContainer {
   public void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> false));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
 
     roller.setDefaultCommand(
         roller.runRoller(() -> driver.getLeftTriggerAxis(), () -> driver.getRightTriggerAxis()));
 
-    driver.a().whileTrue(DriveCommands.alignRobotToAprilTag(drive, vision.getCameras()));
+    driver.a().whileTrue(DriveCommands.autoAlignReefCoral(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
   }
 
   public void configureAutos() {

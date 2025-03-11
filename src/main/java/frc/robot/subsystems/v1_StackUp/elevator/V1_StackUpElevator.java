@@ -63,7 +63,7 @@ public class V1_StackUpElevator extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          switch (RobotState.getOperatorInputData().currentReefHeight()) {
+          switch (RobotState.getOIData().currentReefHeight()) {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;

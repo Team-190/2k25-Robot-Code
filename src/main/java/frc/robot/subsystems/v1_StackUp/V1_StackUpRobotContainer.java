@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.FieldConstants.Reef.ReefPost;
+import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
@@ -18,6 +18,7 @@ import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveCommands.ClimberLane;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -68,6 +69,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Modes");
+
+  private final LoggedDashboardChooser<ClimberLane> climberLaneChooser =
+      new LoggedDashboardChooser<>("Climber Lane");
 
   public V1_StackUpRobotContainer() {
 
@@ -163,7 +167,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.getHID()::getBButton));
+            driver.getHID()::getBButton,
+            driver.leftTrigger(0.5),
+            () -> driver.getHID().getPOV() == 90));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
@@ -177,19 +183,14 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
-                drive,
-                elevator,
-                funnel,
-                manipulator,
-                RobotState.getOperatorInputData().currentReefHeight(),
-                RobotCameras.v1_StackUpCams));
+                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
 
     // Driver bumpers
     driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     driver.back().onTrue(manipulator.toggleAlgaeArm());
-    driver.start().onTrue(IntakeCommands.twerk(drive, elevator, manipulator));
+    driver.start().onTrue(ScoreCommands.twerk(drive, elevator, manipulator));
 
     driver
         .povUp()
@@ -207,7 +208,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
     operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
     operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
+    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
 
     operator
         .y()
@@ -224,17 +225,17 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
     operator
         .leftTrigger(0.5)
         .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
-    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(elevator, manipulator));
+    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
 
     // Operator bumpers
-    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)));
-    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT)));
+    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
+    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
@@ -243,6 +244,19 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .start()
         .or(operator.back())
         .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+
+    // Add climber lane chooser options
+    climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
+    climberLaneChooser.addOption("Right", ClimberLane.RIGHT);
+    climberLaneChooser.addOption("Left", ClimberLane.LEFT);
+    climberLaneChooser
+        .getSendableChooser()
+        .onChange(
+            (l) ->
+                RobotState.setClimbLane(
+                    l.equals("Center")
+                        ? ClimberLane.CENTER
+                        : l.equals("Right") ? ClimberLane.RIGHT : ClimberLane.LEFT));
   }
 
   private void configureAutos() {
