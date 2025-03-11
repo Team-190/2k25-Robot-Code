@@ -175,6 +175,101 @@ public class AutonomousCommands {
     return autoBLeft;
   }
 
+  public static final AutoRoutine autoCLeft(
+      Drive drive,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
+      Camera... cameras) {
+    AutoRoutine autoCLeft = drive.getAutoFactory().newRoutine("autoCLeft");
+
+    AutoTrajectory C_LEFT_PATH1 = autoCLeft.trajectory("C_LEFT_PATH1");
+    AutoTrajectory C_LEFT_PATH2 = autoCLeft.trajectory("C_LEFT_PATH2");
+    AutoTrajectory C_LEFT_PATH3 = autoCLeft.trajectory("C_LEFT_PATH3");
+
+    autoCLeft
+        .active()
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                C_LEFT_PATH1.cmd(),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    C_LEFT_PATH2.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    C_LEFT_PATH3.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5)));
+
+    return autoCLeft;
+  }
+
+  public static final AutoRoutine autoCRight(
+      Drive drive,
+      V1_StackUpElevator elevator,
+      V1_StackUpFunnel funnel,
+      V1_StackUpManipulator manipulator,
+      Camera... cameras) {
+    AutoRoutine autoCRight = drive.getAutoFactory().newRoutine("autoCRight");
+
+    AutoTrajectory C_RIGHT_PATH1 = autoCRight.trajectory("C_RIGHT_PATH1");
+    AutoTrajectory C_RIGHT_PATH2 = autoCRight.trajectory("C_RIGHT_PATH2");
+    AutoTrajectory C_RIGHT_PATH3 = autoCRight.trajectory("C_RIGHT_PATH3");
+
+    autoCRight
+        .active()
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                C_RIGHT_PATH1.cmd(),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    C_RIGHT_PATH2.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                elevator.setPosition(ReefHeight.STOW),
+                Commands.deadline(
+                    C_RIGHT_PATH3.cmd(),
+                    IntakeCommands.intakeCoral(elevator, funnel, manipulator),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.5)));
+
+    return autoCRight;
+  }
+
+
   public static final AutoRoutine autoBRight(
       Drive drive,
       V1_StackUpElevator elevator,
