@@ -252,16 +252,22 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     // Debug board
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive).ignoringDisable(true));
-    debugBoard.resetHeadingCameras().onTrue(Commands.runOnce(()->RobotState.fieldPoseResetMT1(RobotCameras.v1_StackUpCams)).ignoringDisable(true));
+    debugBoard
+        .resetHeadingCameras()
+        .onTrue(
+            Commands.runOnce(() -> RobotState.fieldPoseResetMT1(RobotCameras.v1_StackUpCams))
+                .ignoringDisable(true));
     // TODO: Add Translate & rotate commands
     debugBoard
         .scoring()
         .primeLeft()
-        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)).ignoringDisable(true));
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)).ignoringDisable(true));
     debugBoard
         .scoring()
         .primeRight()
-        .onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)).ignoringDisable(true));
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)).ignoringDisable(true));
     debugBoard.scoring().track().whileTrue(DriveCommands.autoAlignReefCoral(drive));
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
@@ -468,8 +474,18 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                 -V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
     debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
     debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
-    debugBoard.endEffector().blepUp().onTrue(ScoreCommands.twerk(drive, elevator, manipulator,ReefHeight.TOP_ALGAE, RobotCameras.v1_StackUpCams));
-    debugBoard.endEffector().blepDown().onTrue(ScoreCommands.twerk(drive, elevator, manipulator,ReefHeight.BOT_ALGAE, RobotCameras.v1_StackUpCams));
+    debugBoard
+        .endEffector()
+        .blepUp()
+        .onTrue(
+            ScoreCommands.twerk(
+                drive, elevator, manipulator, ReefHeight.TOP_ALGAE, RobotCameras.v1_StackUpCams));
+    debugBoard
+        .endEffector()
+        .blepDown()
+        .onTrue(
+            ScoreCommands.twerk(
+                drive, elevator, manipulator, ReefHeight.BOT_ALGAE, RobotCameras.v1_StackUpCams));
     debugBoard
         .endEffector()
         .incrementSpeed()
@@ -521,34 +537,36 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .shiftLaneLeft()
         .onTrue(
             Commands.runOnce(
-                () ->
-                    NetworkTableInstance.getDefault()
-                        .getTable("SmartDashboard/Climber Lane")
-                        .getStringTopic("selected")
-                        .publish()
-                        .set(
-                            RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
-                                ? "Left"
-                                : RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
-                                    ? "Center"
-                                    : "Left")).ignoringDisable(true));
+                    () ->
+                        NetworkTableInstance.getDefault()
+                            .getTable("SmartDashboard/Climber Lane")
+                            .getStringTopic("selected")
+                            .publish()
+                            .set(
+                                RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+                                    ? "Left"
+                                    : RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
+                                        ? "Center"
+                                        : "Left"))
+                .ignoringDisable(true));
 
     debugBoard
         .climber()
         .shiftLaneRight()
         .onTrue(
             Commands.runOnce(
-                () ->
-                    NetworkTableInstance.getDefault()
-                        .getTable("SmartDashboard/Climber Lane")
-                        .getStringTopic("selected")
-                        .publish()
-                        .set(
-                            RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
-                                ? "Right"
-                                : RobotState.getOIData().climbLane().equals(ClimberLane.LEFT)
-                                    ? "Center"
-                                    : "Right")).ignoringDisable(true));
+                    () ->
+                        NetworkTableInstance.getDefault()
+                            .getTable("SmartDashboard/Climber Lane")
+                            .getStringTopic("selected")
+                            .publish()
+                            .set(
+                                RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+                                    ? "Right"
+                                    : RobotState.getOIData().climbLane().equals(ClimberLane.LEFT)
+                                        ? "Center"
+                                        : "Right"))
+                .ignoringDisable(true));
   }
 
   private void configureAutos() {

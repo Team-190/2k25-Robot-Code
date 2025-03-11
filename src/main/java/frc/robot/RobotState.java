@@ -303,6 +303,7 @@ public class RobotState {
     }
     resetRobotPose(fieldLocalizer.getEstimatedPosition());
   }
+
   public static void resetRobotPose(Pose2d pose) {
     headingOffset = robotHeading.minus(pose.getRotation());
     fieldLocalizer.resetPosition(robotHeading, modulePositions, pose);
