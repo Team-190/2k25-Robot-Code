@@ -162,7 +162,9 @@ public final class DriveCommands {
                   climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistY() : fieldRelativeYVel,
                   rotateToReef.getAsBoolean()
                       ? thetaSpeedCalculate(true)
-                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistTheta() : angular,
+                      : rotateToCoralStation.getAsBoolean()
+                          ? thetaSpeedCalculate(false)
+                          : climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistTheta() : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -171,6 +173,14 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
+  }
+
+  public static final Command joystickDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return joystickDrive(drive, xSupplier, ySupplier, omegaSupplier, ()->false, ()->false, ()->false);
   }
 
   public static final Command inchMovement(Drive drive, double velocity, double time) {
@@ -580,26 +590,36 @@ public final class DriveCommands {
   }
 
   public static double autoClimberLaneAssistY() {
-    double setpoint = switch (RobotState.getOIData().climbLane()) {
-      case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getY();
-      case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage).getY();
-      case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage).getY();
-    };
+    double setpoint =
+        switch (RobotState.getOIData().climbLane()) {
+          case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getY();
+          case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage).getY();
+          case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage).getY();
+        };
     double speed = 0.0;
-    if (!alignYController.atSetpoint()) speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
+    if (!alignYController.atSetpoint())
+      speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
     else alignYController.reset(setpoint);
 
     return speed;
   }
 
   public static double autoClimberLaneAssistTheta() {
-    double setpoint = switch (RobotState.getOIData().climbLane()) {
-      case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getAngle().getRadians();
-      case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage).getAngle().getRadians();
-      case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage).getAngle().getRadians();
-    };
+    double setpoint =
+        switch (RobotState.getOIData().climbLane()) {
+          case LEFT -> AllianceFlipUtil.apply(FieldConstants.Barge.farCage).getAngle().getRadians();
+          case RIGHT -> AllianceFlipUtil.apply(FieldConstants.Barge.closeCage)
+              .getAngle()
+              .getRadians();
+          case CENTER -> AllianceFlipUtil.apply(FieldConstants.Barge.middleCage)
+              .getAngle()
+              .getRadians();
+        };
     double speed = 0.0;
-    if (!alignHeadingController.atSetpoint()) speed = autoHeadingController.calculate(RobotState.getRobotPoseField().getRotation().getRadians(), setpoint);
+    if (!alignHeadingController.atSetpoint())
+      speed =
+          autoHeadingController.calculate(
+              RobotState.getRobotPoseField().getRotation().getRadians(), setpoint);
     else alignHeadingController.reset(setpoint);
 
     return speed;

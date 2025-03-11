@@ -84,9 +84,7 @@ public class V0_WhiplashRobotContainer implements RobotContainer {
             drive,
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> false,
-            () -> false));
+            () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
 
