@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_delta;
+package frc.robot.subsystems.v2_Delta;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;

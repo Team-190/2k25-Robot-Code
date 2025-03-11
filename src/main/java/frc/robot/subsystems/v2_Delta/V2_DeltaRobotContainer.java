@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_delta;
+package frc.robot.subsystems.v2_Delta;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
