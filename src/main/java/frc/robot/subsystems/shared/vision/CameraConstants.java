@@ -31,6 +31,13 @@ public class CameraConstants {
     public static final double MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT = 0.00015;
   }
 
+  public static class Limelight4Constants {
+    public static final double HORIZONTAL_FOV = Units.degreesToRadians(82.0);
+    public static final double VERTICAL_FOV = Units.degreesToRadians(46.2);
+    public static final double MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT = 0.05;
+    public static final double MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT = 0.00015;
+  }
+
   public static class RobotCameras {
     private static final Camera v0_FunkyCenter =
         new Camera(
@@ -52,7 +59,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyLeft =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -70,7 +77,7 @@ public class CameraConstants {
 
     private static final Camera v0_FunkyRight =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
             Limelight2PlusConstants.VERTICAL_FOV,
             Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -103,11 +110,11 @@ public class CameraConstants {
 
     private static final Camera v1_StackUpLeft =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_3),
-            Limelight2PlusConstants.HORIZONTAL_FOV,
-            Limelight2PlusConstants.VERTICAL_FOV,
-            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
             NetworkTableInstance.getDefault()
                 .getTable("limelight-left")
                 .getDoubleArrayTopic("robot_orientation_set")
@@ -121,11 +128,11 @@ public class CameraConstants {
 
     private static final Camera v1_StackUpRight =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_3),
-            Limelight2PlusConstants.HORIZONTAL_FOV,
-            Limelight2PlusConstants.VERTICAL_FOV,
-            Limelight2PlusConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight2PlusConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
             NetworkTableInstance.getDefault()
                 .getTable("limelight-right")
                 .getDoubleArrayTopic("robot_orientation_set")
