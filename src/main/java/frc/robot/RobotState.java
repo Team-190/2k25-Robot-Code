@@ -188,6 +188,8 @@ public class RobotState {
             atAlgaeSetpoint,
             cameras);
 
+
+
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Heading Offset", headingOffset);
@@ -206,39 +208,10 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
-    if (DriverStation.isDisabled()) {
-      for (Camera camera : cameras) {
-        if (camera.getName().contains("center")
-            && !GeometryUtil.isZero(camera.getSecondaryPose())) {
-          estimatedFieldPose = camera.getSecondaryPose();
-          resetRobotPose(camera.getSecondaryPose());
-          break;
-        } else if (!GeometryUtil.isZero(camera.getSecondaryPose())) {
-          estimatedFieldPose = camera.getSecondaryPose();
-          resetRobotPose(camera.getSecondaryPose());
-          break;
-        } else continue;
-      }
-    } else {
-    }
-
-    Logger.recordOutput("RobotState/Pose Data/Estimated Field Pose", fieldLocalizer.getEstimatedPosition());
-    Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
-    Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
-    Logger.recordOutput(
-        "RobotState/Reef Data/Estimated Reef Pose", reefLocalizer.getEstimatedPosition());
-    Logger.recordOutput(
-        "RobotState/Reef Data/Current Reef Post", operatorInputData.currentReefPost());
-    Logger.recordOutput(
-        "RobotState/Reef Data/Current Reef Height", operatorInputData.currentReefHeight());
-    Logger.recordOutput("RobotState/Reef Data/Closest Reef Tag", closestReefTag);
-    Logger.recordOutput("RobotState/Reef Data/Reef Setpoint", autoAlignSetpoint);
-    Logger.recordOutput("RobotState/Reef Data/Distance to Post", distanceToSetpoint);
-    Logger.recordOutput("RobotState/Reef Data/At Setpoint", atSetpoint);
   }
 
   public static Pose2d getRobotPoseField() {
-    return estimatedFieldPose;
+    return fieldLocalizer.getEstimatedPosition();
   }
 
   public static Pose2d getRobotPoseReef() {
