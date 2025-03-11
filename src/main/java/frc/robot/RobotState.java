@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -105,37 +106,56 @@ public class RobotState {
     }
     NetworkTableInstance.getDefault().flush();
 
-    for (Camera camera : cameras) {
-      if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
-          && camera.getTargetAquired()
-          && !GeometryUtil.isZero(camera.getPrimaryPose())
-          && !GeometryUtil.isZero(camera.getSecondaryPose())
-          && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
-          && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
-          && camera.getTotalTargets() > 0) {
-        double xyStddevPrimary =
-            camera.getPrimaryXYStandardDeviationCoefficient()
-                * Math.pow(camera.getAverageDistance(), 2.0)
-                / camera.getTotalTargets()
-                * camera.getHorizontalFOV();
-        fieldLocalizer.addVisionMeasurement(
-            camera.getPrimaryPose(),
-            camera.getFrameTimestamp(),
-            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
-        if (camera.getTotalTargets() > 1) {
-          double xyStddevSecondary =
-              camera.getSecondaryXYStandardDeviationCoefficient()
+    if (DriverStation.isDisabled()) {
+      for (Camera camera : cameras) {
+        if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+            && camera.getTargetAquired()
+            && !GeometryUtil.isZero(camera.getSecondaryPose())
+            && camera.getTotalTargets() > 1) {
+          double xyStddevPrimary =
+              camera.getPrimaryXYStandardDeviationCoefficient()
                   * Math.pow(camera.getAverageDistance(), 2.0)
                   / camera.getTotalTargets()
                   * camera.getHorizontalFOV();
           fieldLocalizer.addVisionMeasurement(
               camera.getSecondaryPose(),
               camera.getFrameTimestamp(),
-              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+              VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, 0.05));
+        }
+      }
+      resetRobotPose(fieldLocalizer.getEstimatedPosition());
+    } else {
+      for (Camera camera : cameras) {
+        if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+            && camera.getTargetAquired()
+            && !GeometryUtil.isZero(camera.getPrimaryPose())
+            && !GeometryUtil.isZero(camera.getSecondaryPose())
+            && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
+            && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
+            && camera.getTotalTargets() > 0) {
+          double xyStddevPrimary =
+              camera.getPrimaryXYStandardDeviationCoefficient()
+                  * Math.pow(camera.getAverageDistance(), 2.0)
+                  / camera.getTotalTargets()
+                  * camera.getHorizontalFOV();
+          fieldLocalizer.addVisionMeasurement(
+              camera.getPrimaryPose(),
+              camera.getFrameTimestamp(),
+              VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+          if (camera.getTotalTargets() > 1) {
+            double xyStddevSecondary =
+                camera.getSecondaryXYStandardDeviationCoefficient()
+                    * Math.pow(camera.getAverageDistance(), 2.0)
+                    / camera.getTotalTargets()
+                    * camera.getHorizontalFOV();
+            fieldLocalizer.addVisionMeasurement(
+                camera.getSecondaryPose(),
+                camera.getFrameTimestamp(),
+                VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+          }
         }
       }
     }
-
     int closestReefTag = getMinDistanceReefTag();
 
     for (Camera camera : cameras) {
