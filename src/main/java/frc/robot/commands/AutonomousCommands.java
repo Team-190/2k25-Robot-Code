@@ -67,7 +67,7 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.25)));
+                manipulator.scoreCoral().withTimeout(0.5)));
 
     return autoALeft;
   }
@@ -91,49 +91,41 @@ public class AutonomousCommands {
             Commands.sequence(
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT)),
                 A_RIGHT_PATH1.cmd(),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    Commands.sequence(
-                        Commands.waitUntil(() -> RobotState.getReefAlignData().distance() < 0.25),
-                        elevator.setPosition(ReefHeight.L4),
-                        Commands.waitUntil(elevator::atGoal))),
-                manipulator.scoreCoral().withTimeout(0.5),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.3),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH2.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    Commands.sequence(
-                        Commands.waitUntil(() -> RobotState.getReefAlignData().distance() < 0.25),
-                        elevator.setPosition(ReefHeight.L4),
-                        Commands.waitUntil(elevator::atGoal))),
-                manipulator.scoreCoral().withTimeout(0.5),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.35),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH3.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPost.LEFT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    Commands.sequence(
-                        Commands.waitUntil(() -> RobotState.getReefAlignData().distance() < 0.25),
-                        elevator.setPosition(ReefHeight.L4),
-                        Commands.waitUntil(elevator::atGoal))),
-                manipulator.scoreCoral().withTimeout(0.5),
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.3),
                 elevator.setPosition(ReefHeight.STOW),
                 Commands.deadline(
                     A_RIGHT_PATH4.cmd(),
                     IntakeCommands.intakeCoral(elevator, funnel, manipulator),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPost.RIGHT))),
+                elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
                     DriveCommands.alignRobotToAprilTag(drive, cameras),
-                    Commands.sequence(
-                        Commands.waitUntil(() -> RobotState.getReefAlignData().distance() < 0.25),
-                        elevator.setPosition(ReefHeight.L4),
-                        Commands.waitUntil(elevator::atGoal))),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                    Commands.waitUntil(elevator::atGoal)),
+                manipulator.scoreCoral().withTimeout(0.3)));
 
     return autoARight;
   }
