@@ -20,7 +20,6 @@ import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.NTPrefixes;
-import frc.robot.util.KeyboardController.Climber;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -194,6 +193,7 @@ public class RobotState {
 
     Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Post", OIData.currentReefPost());
     Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Height", OIData.currentReefHeight());
+    Logger.recordOutput(NTPrefixes.OI_DATA + "Climb Lane", OIData.climbLane());
 
     Logger.recordOutput(NTPrefixes.REEF_DATA + "Reef Pose", reefLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.REEF_DATA + "Closest Reef April Tag", closestReefTag);

@@ -17,8 +17,8 @@ import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
-import frc.robot.commands.DriveCommands.ClimberLane;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveCommands.ClimberLane;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -69,7 +69,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Autonomous Modes");
-  
+
   private final LoggedDashboardChooser<ClimberLane> climberLaneChooser =
       new LoggedDashboardChooser<>("Climber Lane");
 
@@ -169,7 +169,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getRightX(),
             driver.getHID()::getBButton,
             driver.leftTrigger(0.5),
-            driver.povRight()));
+            () -> driver.getHID().getPOV() == 90));
 
     // Driver face buttons
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
@@ -245,11 +245,18 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .or(operator.back())
         .whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
 
-  // Add climber lane chooser options
-  climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
-  climberLaneChooser.addOption("Right", ClimberLane.RIGHT);
-  climberLaneChooser.addOption("Left", ClimberLane.LEFT);
-  climberLaneChooser.getSendableChooser().onChange((l) -> RobotState.setClimbLane(climberLaneChooser.get()));
+    // Add climber lane chooser options
+    climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
+    climberLaneChooser.addOption("Right", ClimberLane.RIGHT);
+    climberLaneChooser.addOption("Left", ClimberLane.LEFT);
+    climberLaneChooser
+        .getSendableChooser()
+        .onChange(
+            (l) ->
+                RobotState.setClimbLane(
+                    l.equals("Center")
+                        ? ClimberLane.CENTER
+                        : l.equals("Right") ? ClimberLane.RIGHT : ClimberLane.LEFT));
   }
 
   private void configureAutos() {

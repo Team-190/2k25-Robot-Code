@@ -95,10 +95,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
   public void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
 
     roller.setDefaultCommand(
