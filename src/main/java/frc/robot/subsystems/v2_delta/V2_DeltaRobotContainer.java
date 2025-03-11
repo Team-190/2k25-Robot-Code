@@ -81,12 +81,7 @@ public class V2_DeltaRobotContainer implements RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> false,
-            () -> false));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
   }
 

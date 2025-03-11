@@ -42,6 +42,7 @@ import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
@@ -117,7 +118,8 @@ public final class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       BooleanSupplier rotateToReef,
-      BooleanSupplier rotateToCoralStation) {
+      BooleanSupplier rotateToCoralStation,
+      BooleanSupplier climbLaneAssist) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -158,18 +160,32 @@ public final class DriveCommands {
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
-                  fieldRelativeYVel,
+                  climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistY() : fieldRelativeYVel,
                   rotateToReef.getAsBoolean()
                       ? thetaSpeedCalculate(true)
-                      : rotateToCoralStation.getAsBoolean() ? thetaSpeedCalculate(false) : angular,
+                      : rotateToCoralStation.getAsBoolean()
+                          ? thetaSpeedCalculate(false)
+                          : climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistTheta() : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
-
+          Logger.recordOutput("Drive/JoystickDrive/xSpeed", chassisSpeeds.vxMetersPerSecond);
+          Logger.recordOutput("Drive/JoystickDrive/ySpeed", chassisSpeeds.vyMetersPerSecond);
+          Logger.recordOutput(
+              "Drive/JoystickDrive/thetaSpeed", chassisSpeeds.omegaRadiansPerSecond);
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);
         },
         drive);
+  }
+
+  public static final Command joystickDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return joystickDrive(
+        drive, xSupplier, ySupplier, omegaSupplier, () -> false, () -> false, () -> false);
   }
 
   public static final Command inchMovement(Drive drive, double velocity, double time) {
@@ -332,9 +348,6 @@ public final class DriveCommands {
                           ySpeed = alignYController.calculate(0, ey_prime);
                         else alignYController.reset(ey_prime);
 
-                        Logger.recordOutput("xSpeed", -xSpeed);
-                        Logger.recordOutput("ySpeed", -ySpeed);
-
                         // Re-rotate the speeds into field relative coordinate frame
                         double adjustedXSpeed =
                             xSpeed
@@ -374,6 +387,9 @@ public final class DriveCommands {
                       } else {
                         speeds = new ChassisSpeeds();
                       }
+                      Logger.recordOutput("Drive/Coral/xSpeed", -speeds.vxMetersPerSecond);
+                      Logger.recordOutput("Drive/Coral/ySpeed", -speeds.vyMetersPerSecond);
+                      Logger.recordOutput("Drive/Coral/thetaSpeed", speeds.omegaRadiansPerSecond);
                       drive.runVelocity(speeds);
                     },
                     drive)
@@ -457,9 +473,6 @@ public final class DriveCommands {
                           ySpeed = alignYController.calculate(0, ey_prime);
                         else alignYController.reset(ey_prime);
 
-                        Logger.recordOutput("xSpeed", -xSpeed);
-                        Logger.recordOutput("ySpeed", -ySpeed);
-
                         // Re-rotate the speeds into field relative coordinate frame
                         double adjustedXSpeed =
                             xSpeed
@@ -499,6 +512,9 @@ public final class DriveCommands {
                       } else {
                         speeds = new ChassisSpeeds();
                       }
+                      Logger.recordOutput("Drive/Algae/xSpeed", -speeds.vxMetersPerSecond);
+                      Logger.recordOutput("Drive/Algae/ySpeed", -speeds.vyMetersPerSecond);
+                      Logger.recordOutput("Drive/Algae/thetaSpeed", speeds.omegaRadiansPerSecond);
                       drive.runVelocity(speeds);
                     },
                     drive)
@@ -540,7 +556,7 @@ public final class DriveCommands {
       else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
     }
 
-    Logger.recordOutput("thetaSpeed", thetaSpeed);
+    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
     return thetaSpeed;
   }
 
@@ -575,6 +591,48 @@ public final class DriveCommands {
               .getRotation()
               .plus(new Rotation2d(Math.PI))
               .getRadians();
+    }
+  }
+
+  public static double autoClimberLaneAssistY() {
+    double setpoint = RobotState.getOIData().climbLane().getY();
+    double speed = 0.0;
+    if (!alignYController.atSetpoint())
+      speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
+    else alignYController.reset(setpoint);
+    return AllianceFlipUtil.shouldFlip() ? -speed : speed;
+  }
+
+  public static double autoClimberLaneAssistTheta() {
+    double speed = 0.0;
+    if (!alignHeadingController.atSetpoint())
+      speed =
+          autoHeadingController.calculate(
+              RobotState.getRobotPoseField().getRotation().getRadians(),
+              AllianceFlipUtil.shouldFlip() ? Math.PI : 0);
+    else alignHeadingController.reset(AllianceFlipUtil.shouldFlip() ? Math.PI : 0);
+
+    return speed;
+  }
+
+  @RequiredArgsConstructor
+  public enum ClimberLane {
+    LEFT(FieldConstants.Barge.farCage),
+    RIGHT(FieldConstants.Barge.closeCage),
+    CENTER(FieldConstants.Barge.middleCage);
+
+    private final Translation2d translation;
+
+    public Translation2d getTranslation() {
+      return translation;
+    }
+
+    public double getY() {
+      if (AllianceFlipUtil.shouldFlip()) {
+        return (FieldConstants.fieldWidth - translation.getY());
+      } else {
+        return translation.getY();
+      }
     }
   }
 }
