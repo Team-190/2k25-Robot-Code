@@ -34,15 +34,15 @@ public class V1_StackUpElevatorConstants {
             new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43, 4);
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
-                new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
-                new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
-                new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
-                new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
-                new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
+                new LoggedTunableNumber("Elevator/Gains/kP", 2.5),
+                new LoggedTunableNumber("Elevator/Gains/kD", 0.15),
+                new LoggedTunableNumber("Elevator/Gains/kS", 0.12613),
+                new LoggedTunableNumber("Elevator/Gains/kG", 0.28525),
+                new LoggedTunableNumber("Elevator/Gains/kV", 0),
+                new LoggedTunableNumber("Elevator/Gains/kA", 0));
         CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Elevator/Max Acceleration", 17.0),
+                new LoggedTunableNumber("Elevator/Max Acceleration", 25.0),
                 new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
                 new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
         break;
