@@ -246,12 +246,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator
-        .start()
-        .or(operator.back())
-        .whileTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+    operator.start().or(operator.back()).whileTrue(ScoreCommands.ejectCoral(elevator, manipulator));
 
-        // Debug board
+    // Debug board
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive));
     // TODO: Add Translate & rotate commands

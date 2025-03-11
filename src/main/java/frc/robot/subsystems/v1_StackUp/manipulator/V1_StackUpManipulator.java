@@ -62,7 +62,8 @@ public class V1_StackUpManipulator extends SubsystemBase {
   }
 
   public Command scoreCoral() {
-    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get()+scoreSpeedOffset);
+    return runManipulator(
+        V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get() + scoreSpeedOffset);
   }
 
   public Command scoreL1Coral() {
