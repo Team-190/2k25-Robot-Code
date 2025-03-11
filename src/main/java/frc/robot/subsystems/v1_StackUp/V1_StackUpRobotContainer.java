@@ -275,8 +275,16 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
-    autoChooser.addOption("3 Piece Left", AutonomousCommands.autoCLeft(drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams).cmd());
-    autoChooser.addOption("3 Piece Right", AutonomousCommands.autoCRight(drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams).cmd());
+    autoChooser.addOption(
+        "3 Piece Left",
+        AutonomousCommands.autoCLeft(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
+            .cmd());
+    autoChooser.addOption(
+        "3 Piece Right",
+        AutonomousCommands.autoCRight(
+                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
+            .cmd());
     autoChooser.addOption(
         "2 Piece Left",
         AutonomousCommands.autoBLeft(
