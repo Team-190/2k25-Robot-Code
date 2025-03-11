@@ -81,14 +81,18 @@ public class CompositeCommands {
   }
 
   public static class ScoreCommands {
-    public static final Command emergencyEject(
+
+    public static final Command ejectCoral(
         V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
-      return Commands.sequence(
-          elevator.setPosition(ReefHeight.L1),
-          Commands.waitSeconds(0.125),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.4),
-          elevator.setPosition(ReefHeight.STOW));
+      return Commands.either(
+          Commands.sequence(
+              elevator.setPosition(ReefHeight.L1),
+              manipulator.scoreCoral().withTimeout(2),
+              elevator.setPosition(ReefHeight.STOW)),
+          manipulator.scoreCoral().withTimeout(2),
+          () ->
+              elevator.getPosition() == ElevatorPositions.STOW
+                  || elevator.getPosition() == ElevatorPositions.INTAKE);
     }
 
     public static final Command scoreCoral(V1_StackUpManipulator manipulator) {
@@ -178,19 +182,6 @@ public class CompositeCommands {
                       DriveCommands.inchMovement(drive, -1, 0.1),
                       DriveCommands.inchMovement(drive, 1, 0.1),
                       () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
-    }
-
-    public static final Command ejectCoral(
-        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
-      return Commands.either(
-          Commands.sequence(
-              elevator.setPosition(ReefHeight.L1),
-              manipulator.scoreCoral().withTimeout(2),
-              elevator.setPosition(ReefHeight.STOW)),
-          manipulator.scoreCoral().withTimeout(2),
-          () ->
-              elevator.getPosition() == ElevatorPositions.STOW
-                  || elevator.getPosition() == ElevatorPositions.INTAKE);
     }
   }
 }
