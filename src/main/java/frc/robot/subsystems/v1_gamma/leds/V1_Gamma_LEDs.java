@@ -30,6 +30,7 @@ public class V1_Gamma_LEDs extends Leds {
 
   @Setter private static boolean isIntaking = false;
   @Setter private static boolean isAutoAligning = false;
+  @Setter private static boolean climberSensorPanic = false;
 
   public V1_Gamma_LEDs() {
     super(LENGTH, PORT);
@@ -91,27 +92,31 @@ public class V1_Gamma_LEDs extends Leds {
       if (isAutoAligning) {
         rainbow(LENGTH, 0.5);
       } else {
-        if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
-          if (isIntaking) {
-            solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
-          } else {
-            breath(
-                Color.kBlack,
-                Color.kDarkViolet,
-                Timer.getFPGATimestamp(),
-                LEFT_LENGTH_START,
-                LEFT_LENGTH_END);
-          }
-        } else if (RobotState.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
-          if (isIntaking) {
-            solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
-          } else {
-            breath(
-                Color.kBlack,
-                Color.kDarkViolet,
-                Timer.getFPGATimestamp(),
-                RIGHT_LENGTH_START,
-                RIGHT_LENGTH_END);
+        if (climberSensorPanic) {
+          strobe(Color.kRed, Color.kBlack, STROBE_FAST_DURATION);
+        } else {
+          if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
+            if (isIntaking) {
+              solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
+            } else {
+              breath(
+                  Color.kBlack,
+                  Color.kDarkViolet,
+                  Timer.getFPGATimestamp(),
+                  LEFT_LENGTH_START,
+                  LEFT_LENGTH_END);
+            }
+          } else if (RobotState.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
+            if (isIntaking) {
+              solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
+            } else {
+              breath(
+                  Color.kBlack,
+                  Color.kDarkViolet,
+                  Timer.getFPGATimestamp(),
+                  RIGHT_LENGTH_START,
+                  RIGHT_LENGTH_END);
+            }
           }
         }
       }
