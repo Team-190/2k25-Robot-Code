@@ -24,6 +24,9 @@ public class V1_GammaFunnelConstants {
   public static final FunnelParams CLAP_DADDY_PARAMS;
   public static final FunnelParams ROLLER_PARAMS;
 
+  public static final double ROLLER_OFFSET_INCREMENT_VOLTS;
+  public static final double CLAP_DADDY_OFFSET_INCREMENT_RADIANS;
+
   static {
     CLAP_DADDY_MOTOR_ID = 41;
     ROLLER_MOTOR_ID = 40;
@@ -54,6 +57,8 @@ public class V1_GammaFunnelConstants {
                 new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_OFFSET_INCREMENT_VOLTS = 0.1;
+        CLAP_DADDY_OFFSET_INCREMENT_RADIANS = Units.degreesToRadians(1);
         break;
 
       case SIM:
@@ -73,6 +78,8 @@ public class V1_GammaFunnelConstants {
                 new LoggedTunableNumber("Funnel/Goal Tolerance", 0.0));
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_OFFSET_INCREMENT_VOLTS = 0.1;
+        CLAP_DADDY_OFFSET_INCREMENT_RADIANS = Units.degreesToRadians(1);
         break;
     }
   }
@@ -108,8 +115,14 @@ public class V1_GammaFunnelConstants {
 
     private final Rotation2d angle;
 
+    private double offset = 0.0;
+
     public Rotation2d getAngle() {
-      return angle;
+      return Rotation2d.fromRadians(angle.getRadians() + offset);
+    }
+
+    public void setOffset(double offset) {
+      this.offset += offset;
     }
   }
 }

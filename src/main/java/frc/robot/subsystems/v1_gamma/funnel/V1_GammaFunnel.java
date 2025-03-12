@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_gamma.funnel;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,7 +19,10 @@ public class V1_GammaFunnel extends SubsystemBase {
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
+  private final Timer debounceTimer;
   private FunnelState goal;
+  private double rollerVoltageOffset;
+  private boolean sensorOverride;
 
   private boolean isClosedLoop;
 
@@ -35,7 +39,10 @@ public class V1_GammaFunnel extends SubsystemBase {
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
+    debounceTimer = new Timer();
     goal = FunnelState.OPENED;
+    rollerVoltageOffset = 0.0;
+    sensorOverride = false;
 
     isClosedLoop = true;
   }
@@ -47,6 +54,11 @@ public class V1_GammaFunnel extends SubsystemBase {
 
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
+    }
+    if (inputs.hasCoral) {
+      debounceTimer.start();
+    } else if (debounceTimer.isRunning() && !inputs.hasCoral) {
+      debounceTimer.reset();
     }
   }
 
@@ -70,8 +82,12 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
-    return Commands.run(() -> io.setRollerVoltage(volts));
+  public Command setRollerVoltage(double volts) {
+    return Commands.deferredProxy(
+        () ->
+            runEnd(
+                () -> io.setRollerVoltage(volts + Math.copySign(rollerVoltageOffset, volts)),
+                () -> io.setRollerVoltage(0.0)));
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
@@ -81,11 +97,10 @@ public class V1_GammaFunnel extends SubsystemBase {
                 Commands.waitUntil(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
-            setRollerVoltage(12.0))
+            setRollerVoltage(12))
         .finallyDo(
             () -> {
               goal = FunnelState.OPENED;
-              io.setRollerVoltage(0.0);
             });
   }
 
@@ -121,7 +136,10 @@ public class V1_GammaFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return inputs.hasCoral;
+    if (sensorOverride) {
+      return false;
+    }
+    return (inputs.hasCoral && debounceTimer.hasElapsed(0.05));
   }
 
   /**
@@ -163,5 +181,17 @@ public class V1_GammaFunnel extends SubsystemBase {
 
   public Command setFunnelVoltage(double volts) {
     return Commands.run(() -> io.setClapDaddyVoltage(volts));
+  }
+
+  public void setRollerVoltageOffset(double offset) {
+    rollerVoltageOffset += offset;
+  }
+
+  public void setFunnelPositionOffset(FunnelState state, double offset) {
+    state.setOffset(offset);
+  }
+
+  public void toggleSensorOverride() {
+    sensorOverride = !sensorOverride;
   }
 }

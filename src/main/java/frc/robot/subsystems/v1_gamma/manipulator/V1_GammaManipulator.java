@@ -18,6 +18,9 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   private boolean assAtSetoint;
 
+  private double scoreSpeedOffset;
+  private boolean sensorOverride;
+
   public V1_GammaManipulator(V1_GammaManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -25,6 +28,9 @@ public class V1_GammaManipulator extends SubsystemBase {
     currentTimer = new Timer();
     previousPosition = inputs.position;
     desiredRotations = new Rotation2d();
+
+    scoreSpeedOffset = 0.0;
+    sensorOverride = false;
   }
 
   @Override
@@ -38,12 +44,17 @@ public class V1_GammaManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
+    if (sensorOverride) return false;
     return Math.abs(inputs.torqueCurrentAmps)
         > V1_GammaManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {
-    return this.runEnd(() -> io.setVoltage(volts), () -> io.setVoltage(0));
+    return Commands.deferredProxy(
+        () ->
+            runEnd(
+                () -> io.setVoltage(volts + Math.copySign(scoreSpeedOffset, volts)),
+                () -> io.setVoltage(0)));
   }
 
   public Command intakeCoral() {
@@ -98,5 +109,13 @@ public class V1_GammaManipulator extends SubsystemBase {
                     getManipulatorRotationsIn(
                         V1_GammaManipulatorConstants.MANIPULATOR_TOGGLE_ARM_ROTATION)),
         Commands.runOnce(() -> assAtSetoint = true));
+  }
+
+  public void incrementScoreSpeed(double offset) {
+    this.scoreSpeedOffset += offset;
+  }
+
+  public Command toggleSensorOverride() {
+    return Commands.runOnce(() -> sensorOverride = !sensorOverride);
   }
 }

@@ -102,7 +102,15 @@ public class V1_GammaClimber extends SubsystemBase {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
-  public Command manualDeployOverride(boolean override) { // set using debug board button
-    return this.runOnce(() -> this.override = override);
+  public Command manualDeployOverride() { // set using debug board button
+    return this.runOnce(() -> override = !override);
+  }
+
+  public Command incrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).withTimeout(0.04);
+  }
+
+  public Command decrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(-12), () -> io.setVoltage(0)).withTimeout(0.04);
   }
 }
