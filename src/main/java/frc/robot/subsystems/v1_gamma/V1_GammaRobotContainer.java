@@ -242,29 +242,31 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   private void configureAutos() {
     autoChooser.addDefaultOption("None", Commands.none());
+    if (Constants.TUNING_MODE) {
+      autoChooser.addOption(
+          "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+      autoChooser.addOption(
+          "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    }
     autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        "4 Piece Left",
+        AutonomousCommands.Left4(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
     autoChooser.addOption(
         "3 Piece Left",
-        AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Left3(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "3 Piece Right",
-        AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Right3(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Left",
-        AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Left2(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Right",
-        AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Right2(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
   }
 
