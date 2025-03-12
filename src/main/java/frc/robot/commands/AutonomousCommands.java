@@ -8,16 +8,16 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 
 public class AutonomousCommands {
   public static final AutoRoutine autoALeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoALeft = drive.getAutoFactory().newRoutine("autoALeft");
@@ -74,8 +74,8 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoARight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoARight = drive.getAutoFactory().newRoutine("autoARight");
@@ -132,8 +132,8 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoBLeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoBLeft = drive.getAutoFactory().newRoutine("autoBLeft");
@@ -167,8 +167,8 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoCLeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoCLeft = drive.getAutoFactory().newRoutine("autoCLeft");
@@ -214,8 +214,8 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoCRight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoCRight = drive.getAutoFactory().newRoutine("autoCRight");
@@ -261,8 +261,8 @@ public class AutonomousCommands {
 
   public static final AutoRoutine autoBRight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      Elevator elevator,
+      Funnel funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
     AutoRoutine autoBRight = drive.getAutoFactory().newRoutine("autoBRight");

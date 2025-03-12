@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.climber;
+package frc.robot.subsystems.shared.climber;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,8 +7,8 @@ import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_StackUpClimber extends SubsystemBase {
-  private final V1_StackUpClimberIO io;
+public class Climber extends SubsystemBase {
+  private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
   private Timer redundantSwitchesTimer;
@@ -33,7 +33,7 @@ public class V1_StackUpClimber extends SubsystemBase {
   @AutoLogOutput(key = "Climber/climberReleased")
   private boolean climberDeployed;
 
-  public V1_StackUpClimber(V1_StackUpClimberIO io) {
+  public Climber(ClimberIO io) {
     this.io = io;
     inputs = new ClimberIOInputsAutoLogged();
 
@@ -70,8 +70,7 @@ public class V1_StackUpClimber extends SubsystemBase {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(
-          V1_StackUpClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+      if (redundantTrustTimer.hasElapsed(ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (!inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (!inputs.redundantSwitchTwo) {
@@ -99,13 +98,13 @@ public class V1_StackUpClimber extends SubsystemBase {
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
       return inputs.redundantSwitchOne
           && inputs.redundantSwitchTwo
-          && redundantSwitchesTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
+          && redundantSwitchesTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchOne) {
       return inputs.redundantSwitchOne
-          && redundantSwitchTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
+          && redundantSwitchTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchTwo) {
       return inputs.redundantSwitchTwo
-          && redundantSwitchTimer.hasElapsed(V1_StackUpClimberConstants.REDUNDANCY_DELAY_SECONDS);
+          && redundantSwitchTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else {
       return false;
     }

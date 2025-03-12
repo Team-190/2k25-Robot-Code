@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.elevator;
+package frc.robot.subsystems.shared.elevator;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_StackUpElevator extends SubsystemBase {
-  private final V1_StackUpElevatorIO io;
+public class Elevator extends SubsystemBase {
+  private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
@@ -25,7 +25,7 @@ public class V1_StackUpElevator extends SubsystemBase {
   @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
-  public V1_StackUpElevator(V1_StackUpElevatorIO io) {
+  public Elevator(ElevatorIO io) {
     this.io = io;
     inputs = new ElevatorIOInputsAutoLogged();
 
@@ -35,7 +35,7 @@ public class V1_StackUpElevator extends SubsystemBase {
                 Volts.of(0.2).per(Second),
                 Volts.of(1),
                 Seconds.of(0.5),
-                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
+                (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
     position = ElevatorPositions.STOW;
@@ -153,9 +153,7 @@ public class V1_StackUpElevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () ->
-                    io.setPosition(
-                        V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -191,8 +189,8 @@ public class V1_StackUpElevator extends SubsystemBase {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.velocityMetersPerSecond
-        * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS);
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -227,6 +225,6 @@ public class V1_StackUpElevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 }

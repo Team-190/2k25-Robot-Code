@@ -35,7 +35,7 @@ public class V1_DeltaMechanism3d {
           0.104775,
           0.603223,
           new Rotation3d(0.0, 0.0, Units.degreesToRadians(57.687084)));
-    private static final Pose3d ALGAE_ARM = new Pose3d(0.0, 0.0, 0.0, new Rotation3d());
+  private static final Pose3d ALGAE_ARM = new Pose3d(0.0, 0.0, 0.0, new Rotation3d());
 
   /**
    * Calculates and returns an array of Pose3d objects representing the positions of various
@@ -48,7 +48,8 @@ public class V1_DeltaMechanism3d {
    * @return An array of Pose3d objects representing the transformed poses of the elevator stage 1,
    *     elevator carriage, left funnel, and right funnel.
    */
-  public static final Pose3d[] getPoses(double elevatorExtensionMeters, Rotation2d funnelAngle, Rotation2d armAngle) {
+  public static final Pose3d[] getPoses(
+      double elevatorExtensionMeters, Rotation2d funnelAngle, Rotation2d armAngle) {
     double extensionMeters =
         MathUtil.clamp(elevatorExtensionMeters, MIN_EXTENSION_METERS, MAX_EXTENSION_METERS);
 
@@ -75,7 +76,8 @@ public class V1_DeltaMechanism3d {
                 0, 0, carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT, new Rotation3d()));
 
     Logger.recordOutput(
-        "Zero Poses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
+        "Zero Poses",
+        new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
@@ -97,7 +99,7 @@ public class V1_DeltaMechanism3d {
               new Transform3d(
                   new Translation3d(),
                   new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))),
-        ALGAE_ARM.rotateBy(new Rotation3d(0.0, armAngle.getRadians(), 0.0))
+      ALGAE_ARM.rotateBy(new Rotation3d(0.0, armAngle.getRadians(), 0.0))
     };
   }
 }

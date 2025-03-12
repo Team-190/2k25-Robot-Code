@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
-public class V1_StackUpFunnelIOSim implements V1_StackUpFunnelIO {
+public class FunnelIOSim implements FunnelIO {
   public final SingleJointedArmSim clapDaddySim;
   public final DCMotorSim rollerSim;
 
@@ -21,41 +21,41 @@ public class V1_StackUpFunnelIOSim implements V1_StackUpFunnelIO {
   private double rollerAppliedVolts;
   private boolean clapDaddyClosedLoop;
 
-  public V1_StackUpFunnelIOSim() {
+  public FunnelIOSim() {
     clapDaddySim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
-                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
-                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
-                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
-            V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
+                FunnelConstants.CLAP_DADDY_PARAMS.motor(),
+                FunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
+                FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
+            FunnelConstants.CLAP_DADDY_PARAMS.motor(),
+            FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
             1.0,
             Double.NEGATIVE_INFINITY,
             Double.POSITIVE_INFINITY,
             false,
-            V1_StackUpFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
+            FunnelConstants.FunnelState.OPENED.getAngle().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                V1_StackUpFunnelConstants.ROLLER_PARAMS.motor(),
-                V1_StackUpFunnelConstants.ROLLER_PARAMS.momentOfInertia(),
-                V1_StackUpFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
-            V1_StackUpFunnelConstants.ROLLER_PARAMS.motor());
+                FunnelConstants.ROLLER_PARAMS.motor(),
+                FunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
+            FunnelConstants.ROLLER_PARAMS.motor());
 
     clapDaddyController =
         new ProfiledPIDController(
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
             0.0,
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
     clapDaddyFeedforward =
         new SimpleMotorFeedforward(
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
 
     clapDaddyAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;

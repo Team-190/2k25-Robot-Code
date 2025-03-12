@@ -19,6 +19,10 @@ import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveCommands.ClimberLane;
+import frc.robot.subsystems.shared.climber.Climber;
+import frc.robot.subsystems.shared.climber.ClimberIO;
+import frc.robot.subsystems.shared.climber.ClimberIOSim;
+import frc.robot.subsystems.shared.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -26,21 +30,17 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.shared.elevator.ElevatorIO;
+import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
+import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.FunnelIO;
+import frc.robot.subsystems.shared.funnel.FunnelIOSim;
+import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimber;
-import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimberIO;
-import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimberIOSim;
-import frc.robot.subsystems.v1_StackUp.climber.V1_StackUpClimberIOTalonFX;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorIO;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorIOSim;
-import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevatorIOTalonFX;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnel;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelIO;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelIOSim;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelIOTalonFX;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
@@ -55,10 +55,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private Drive drive;
   private Vision vision;
 
-  private V1_StackUpElevator elevator;
-  private V1_StackUpFunnel funnel;
+  private Elevator elevator;
+  private Funnel funnel;
   private V1_StackUpManipulator manipulator;
-  private V1_StackUpClimber climber;
+  private Climber climber;
 
   private V1_StackUp_LEDs leds;
 
@@ -86,10 +86,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.v1_StackUpCams);
-          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOTalonFX());
-          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX());
+          funnel = new Funnel(new FunnelIOTalonFX());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
-          climber = new V1_StackUpClimber(new V1_StackUpClimberIOTalonFX());
+          climber = new Climber(new ClimberIOTalonFX());
           leds = new V1_StackUp_LEDs();
           break;
         case V1_STACKUP_SIM:
@@ -101,10 +101,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOSim());
-          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOSim());
+          elevator = new Elevator(new ElevatorIOSim());
+          funnel = new Funnel(new FunnelIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
-          climber = new V1_StackUpClimber(new V1_StackUpClimberIOSim());
+          climber = new Climber(new ClimberIOSim());
           break;
         default:
           break;
@@ -124,10 +124,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (elevator == null) {
-      elevator = new V1_StackUpElevator(new V1_StackUpElevatorIO() {});
+      elevator = new Elevator(new ElevatorIO() {});
     }
     if (funnel == null) {
-      funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIO() {});
+      funnel = new Funnel(new FunnelIO() {});
     }
     if (manipulator == null) {
       manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
@@ -136,7 +136,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       leds = new V1_StackUp_LEDs();
     }
     if (climber == null) {
-      climber = new V1_StackUpClimber(new V1_StackUpClimberIO() {});
+      climber = new Climber(new ClimberIO() {});
     }
 
     configureButtonBindings();

@@ -1,9 +1,9 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_StackUpFunnelIO {
+public interface FunnelIO {
   @AutoLog
   public static class FunnelIOInputs {
     public Rotation2d clapDaddyPosition = new Rotation2d();

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.climber;
+package frc.robot.subsystems.shared.climber;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
 import frc.robot.util.PhoenixUtil;
 
-public class V1_StackUpClimberIOTalonFX implements V1_StackUpClimberIO {
+public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX talonFX;
   private final DigitalInput redundantSwitchOne;
   private final DigitalInput redundantSwitchTwo;
@@ -32,18 +32,16 @@ public class V1_StackUpClimberIOTalonFX implements V1_StackUpClimberIO {
 
   private final VoltageOut voltageRequest;
 
-  public V1_StackUpClimberIOTalonFX() {
-    talonFX = new TalonFX(V1_StackUpClimberConstants.MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
+  public ClimberIOTalonFX() {
+    talonFX = new TalonFX(ClimberConstants.MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
     redundantSwitchOne = new DigitalInput(1);
     redundantSwitchTwo = new DigitalInput(2);
 
     config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit =
-        V1_StackUpClimberConstants.CLIMBER_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit =
-        V1_StackUpClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
@@ -97,6 +95,6 @@ public class V1_StackUpClimberIOTalonFX implements V1_StackUpClimberIO {
   @Override
   public boolean isClimbed() {
     return positionRotations.getValueAsDouble()
-        >= Units.radiansToRotations(V1_StackUpClimberConstants.CLIMBER_CLIMBED_RADIANS);
+        >= Units.radiansToRotations(ClimberConstants.CLIMBER_CLIMBED_RADIANS);
   }
 }
