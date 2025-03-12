@@ -21,6 +21,7 @@ public class V1_GammaManipulatorConstants {
             new LoggedTunableNumber("Manipulator/Score Volts", 4.0),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
+            new LoggedTunableNumber("Manipulator/Score Offset Increment", 0.1),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5));
   }
 
@@ -29,5 +30,6 @@ public class V1_GammaManipulatorConstants {
       LoggedTunableNumber SCORE_VOLTS,
       LoggedTunableNumber REMOVE_ALGAE,
       LoggedTunableNumber HALF_VOLTS,
+      LoggedTunableNumber SCORE_OFFSET_INCREMENT,
       LoggedTunableNumber L1_VOLTS) {}
 }

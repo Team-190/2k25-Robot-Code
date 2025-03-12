@@ -12,6 +12,7 @@ import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimber;
 import frc.robot.subsystems.v1_gamma.climber.V1_GammaClimberConstants;
 import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevator;
+import frc.robot.subsystems.v1_gamma.elevator.V1_GammaElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnel;
 import frc.robot.subsystems.v1_gamma.funnel.V1_GammaFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_gamma.leds.V1_Gamma_LEDs;
@@ -77,14 +78,17 @@ public class CompositeCommands {
   }
 
   public static class ScoreCommands {
-    public static final Command emergencyEject(
+    public static final Command ejectCoral(
         V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
-      return Commands.sequence(
-          elevator.setPosition(ReefHeight.L1),
-          Commands.waitSeconds(0.125),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.4),
-          elevator.setPosition(ReefHeight.STOW));
+      return Commands.either(
+          Commands.sequence(
+              elevator.setPosition(ReefHeight.L1),
+              manipulator.scoreCoral().withTimeout(2),
+              elevator.setPosition(ReefHeight.STOW)),
+          manipulator.scoreCoral().withTimeout(2),
+          () ->
+              elevator.getPosition() == ElevatorPositions.STOW
+                  || elevator.getPosition() == ElevatorPositions.INTAKE);
     }
 
     public static final Command scoreCoral(V1_GammaManipulator manipulator) {
