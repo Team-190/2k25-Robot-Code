@@ -47,11 +47,15 @@ public class V1_StackUpManipulator extends SubsystemBase {
   public boolean hasCoral() {
     if (sensorOverride) return false;
     return Math.abs(inputs.torqueCurrentAmps)
-            > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+        > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {
-    return this.runEnd(() -> io.setVoltage(volts), () -> io.setVoltage(0));
+    return Commands.deferredProxy(
+        () ->
+            runEnd(
+                () -> io.setVoltage(volts + Math.copySign(scoreSpeedOffset, volts)),
+                () -> io.setVoltage(0)));
   }
 
   public Command intakeCoral() {
@@ -62,8 +66,7 @@ public class V1_StackUpManipulator extends SubsystemBase {
   }
 
   public Command scoreCoral() {
-    return runManipulator(
-        V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get() + scoreSpeedOffset);
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
   public Command scoreL1Coral() {

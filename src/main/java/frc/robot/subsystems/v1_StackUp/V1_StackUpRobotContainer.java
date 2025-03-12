@@ -275,15 +275,11 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     debugBoard
         .funnel()
         .rollerWheelsIn()
-        .whileTrue(
-            funnel.setRollerVoltage(
-                V1_StackUpFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset()));
+        .whileTrue(funnel.setRollerVoltage(V1_StackUpFunnelConstants.ROLLER_VOLTS));
     debugBoard
         .funnel()
         .rollerWheelsOut()
-        .whileTrue(
-            funnel.setRollerVoltage(
-                -(V1_StackUpFunnelConstants.ROLLER_VOLTS + funnel.rollerVoltageOffset())));
+        .whileTrue(funnel.setRollerVoltage(-(V1_StackUpFunnelConstants.ROLLER_VOLTS)));
     debugBoard
         .funnel()
         .incrementRollerWheelsSpeed()
