@@ -57,6 +57,10 @@ public class V1_GammaManipulator extends SubsystemBase {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
 
+  public Command scoreL1Coral() {
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.L1_VOLTS().get());
+  }
+
   public Command removeAlgae() {
     return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.REMOVE_ALGAE().get());
   }

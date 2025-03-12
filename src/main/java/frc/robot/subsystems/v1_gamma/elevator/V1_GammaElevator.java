@@ -57,13 +57,14 @@ public class V1_GammaElevator extends SubsystemBase {
   /**
    * Sets the position of the elevator.
    *
+   * @param l2
    * @return A command that sets the elevator position.
    */
   public Command setPosition() {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          switch (RobotState.getOperatorInputData().currentReefHeight()) {
+          switch (RobotState.getOIData().currentReefHeight()) {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;
