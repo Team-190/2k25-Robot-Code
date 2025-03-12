@@ -45,9 +45,9 @@ public class V1_StackUpManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
+    if (sensorOverride) return false;
     return Math.abs(inputs.torqueCurrentAmps)
-            > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD
-        || sensorOverride;
+            > V1_StackUpManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {

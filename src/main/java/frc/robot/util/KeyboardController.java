@@ -133,7 +133,7 @@ public class KeyboardController {
     }
 
     public Trigger wingsIntake() {
-      return controller.button(3, 2);
+      return controller.button(3, 1);
     }
 
     public Trigger rollerWheelsIn() {

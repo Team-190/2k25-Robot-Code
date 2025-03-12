@@ -308,7 +308,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                 () ->
                     funnel.setFunnelPositionOffset(
                         FunnelState.CLOSED,
-                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .incrementIntakeSetpoint()
@@ -317,7 +317,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                 () ->
                     funnel.setFunnelPositionOffset(
                         FunnelState.OPENED,
-                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .decrementClosedSetpoint()
@@ -326,7 +326,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                 () ->
                     funnel.setFunnelPositionOffset(
                         FunnelState.CLOSED,
-                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard
         .funnel()
         .decrementIntakeSetpoint()
@@ -335,7 +335,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                 () ->
                     funnel.setFunnelPositionOffset(
                         FunnelState.OPENED,
-                        -V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+                        V1_StackUpFunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
     debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
 
     // Elevator triggers

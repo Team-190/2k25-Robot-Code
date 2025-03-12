@@ -83,7 +83,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerVoltage(double volts) {
-    return Commands.run(() -> io.setRollerVoltage(volts));
+    return Commands.deferredProxy(()->runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0.0)));
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
@@ -97,7 +97,6 @@ public class V1_StackUpFunnel extends SubsystemBase {
         .finallyDo(
             () -> {
               goal = FunnelState.OPENED;
-              io.setRollerVoltage(0.0);
             });
   }
 
@@ -133,7 +132,10 @@ public class V1_StackUpFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return (inputs.hasCoral && debounceTimer.hasElapsed(0.05)) || sensorOverride;
+    if (sensorOverride) {
+      return false;
+    }
+    return (inputs.hasCoral && debounceTimer.hasElapsed(0.05));
   }
 
   /**
