@@ -254,7 +254,7 @@ public class DriveConstants {
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",
                     Units.degreesToRadians(0.25)),
                 new LoggedTunableNumber(
-                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
+                    "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", 2 * Math.PI)),
             new LoggedTunableNumber(
                 "Drive/Align Robot To April Tag/positionThresholdMeters", 0.03));
   }

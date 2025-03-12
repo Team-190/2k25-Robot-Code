@@ -66,7 +66,42 @@ public class CompositeCommands {
               Commands.waitUntil(elevator::atGoal),
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
+          .finallyDo(() -> V1_Gamma_LEDs.setIntaking(false));
+    }
+
+    public static final Command twerk(
+        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
+      return Commands.sequence(
+          Commands.parallel(
+              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(
+              () ->
+                  elevator.setPosition(
+                      switch (RobotState.getReefAlignData().closestReefTag()) {
+                        case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+                        case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+                        default -> ReefHeight.BOT_ALGAE;
+                      })),
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
+    }
+
+    public static final Command twerk(
+        Drive drive, V1_GammaElevator elevator, V1_GammaManipulator manipulator, ReefHeight level) {
+      return Commands.sequence(
+          Commands.parallel(
+              DriveCommands.inchMovement(drive, -1.4, 0.1), elevator.setPosition(ReefHeight.L4)),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.toggleAlgaeArm(),
+          Commands.waitSeconds(0.1),
+          Commands.deferredProxy(() -> elevator.setPosition(level)),
+          manipulator.removeAlgae().until(elevator::atGoal),
+          manipulator.removeAlgae().withTimeout(0.35),
+          manipulator.toggleAlgaeArm());
     }
 
     public static final Command intakeCoralOverride(
@@ -95,7 +130,8 @@ public class CompositeCommands {
                   || elevator.getPosition() == ElevatorPositions.INTAKE);
     }
 
-    public static final Command scoreCoral(V1_StackUpManipulator manipulator) {
+    public static final Command scoreCoral(
+        V1_GammaElevator elevator, V1_GammaManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
     }
 
@@ -110,78 +146,14 @@ public class CompositeCommands {
 
     public static final Command autoScoreCoralSequence(
         Drive drive,
-        V1_StackUpElevator elevator,
-        V1_StackUpManipulator manipulator,
-        Camera... cameras) {
-      return Commands.either(
-          autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
-          Commands.sequence(
-              DriveCommands.autoAlignReefCoral(drive, cameras),
-              scoreCoralSequence(elevator, manipulator)),
-          () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
-    }
-
-    public static final Command twerk(
-        Drive drive,
-        V1_StackUpElevator elevator,
-        V1_StackUpManipulator manipulator,
-        Camera... cameras) {
-      return Commands.deferredProxy(
-          () ->
-              twerk(
-                  drive,
-                  elevator,
-                  manipulator,
-                  switch (RobotState.getReefAlignData().closestReefTag()) {
-                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-                    default -> ReefHeight.BOT_ALGAE;
-                  },
-                  cameras));
-    }
-
-    public static final Command twerk(
-        Drive drive,
-        V1_StackUpElevator elevator,
-        V1_StackUpManipulator manipulator,
+        V1_GammaElevator elevator,
+        V1_GammaFunnel funnel,
+        V1_GammaManipulator manipulator,
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          elevator.setPosition(ReefHeight.L4),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.toggleAlgaeArm(),
-          Commands.waitSeconds(0.1),
-          elevator.setPosition(level),
-          manipulator.removeAlgae().until(elevator::atGoal),
-          manipulator.removeAlgae().withTimeout(0.35),
-          manipulator.toggleAlgaeArm());
-    }
-
-    public static final Command autoScoreL1CoralSequence(
-        Drive drive,
-        V1_StackUpElevator elevator,
-        V1_StackUpManipulator manipulator,
-        Camera... cameras) {
-      return Commands.sequence(
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          scoreL1Coral(drive, elevator, manipulator));
-    }
-
-    public static final Command scoreL1Coral(
-        Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
-      return Commands.sequence(
-          elevator.setPosition(),
-          Commands.waitSeconds(0.02),
-          Commands.waitUntil(elevator::atGoal),
-          Commands.parallel(
-              manipulator.scoreL1Coral().withTimeout(0.8),
-              Commands.sequence(
-                  Commands.waitSeconds(0.05),
-                  Commands.either(
-                      DriveCommands.inchMovement(drive, -1, 0.1),
-                      DriveCommands.inchMovement(drive, 1, 0.1),
-                      () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
+          DriveCommands.alignRobotToAprilTag(drive, cameras),
+          scoreCoralSequence(elevator, manipulator));
     }
   }
 }

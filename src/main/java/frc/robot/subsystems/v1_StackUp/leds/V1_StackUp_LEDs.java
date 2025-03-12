@@ -98,7 +98,7 @@ public class V1_StackUp_LEDs extends Leds {
           } else {
             breath(
                 Color.kBlack,
-                new Color("#FFF700"),
+                Color.kDarkViolet,
                 Timer.getFPGATimestamp(),
                 LEFT_LENGTH_START,
                 LEFT_LENGTH_END);

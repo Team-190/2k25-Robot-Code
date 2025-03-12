@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
-import frc.robot.commands.DriveCommands.ClimberLane;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
@@ -52,7 +51,7 @@ public class RobotState {
         break;
     }
 
-    OIData = new OperatorInputData(ReefPose.LEFT, ReefHeight.STOW, ClimberLane.CENTER);
+    OIData = new OperatorInputData(ReefPose.LEFT, ReefHeight.STOW);
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -197,7 +196,6 @@ public class RobotState {
 
     Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Post", OIData.currentReefPost());
     Logger.recordOutput(NTPrefixes.OI_DATA + "Reef Height", OIData.currentReefHeight());
-    Logger.recordOutput(NTPrefixes.OI_DATA + "Climb Lane", OIData.climbLane());
 
     Logger.recordOutput(NTPrefixes.REEF_DATA + "Reef Pose", reefLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.REEF_DATA + "Closest Reef April Tag", closestReefTag);
@@ -313,20 +311,12 @@ public class RobotState {
 
   public static void setReefPost(ReefPose post) {
     ReefHeight height = OIData.currentReefHeight();
-    ClimberLane lane = OIData.climbLane();
-    OIData = new OperatorInputData(post, height, lane);
+    OIData = new OperatorInputData(post, height);
   }
 
   public static void setReefHeight(ReefHeight height) {
     ReefPose post = OIData.currentReefPost();
-    ClimberLane lane = OIData.climbLane();
-    OIData = new OperatorInputData(post, height, lane);
-  }
-
-  public static void setClimbLane(ClimberLane lane) {
-    ReefPose post = OIData.currentReefPost();
-    ReefHeight height = OIData.currentReefHeight();
-    OIData = new OperatorInputData(post, height, lane);
+    OIData = new OperatorInputData(post, height);
   }
 
   public static final record ReefAlignData(
@@ -340,5 +330,5 @@ public class RobotState {
       Camera... cameras) {}
 
   public static final record OperatorInputData(
-      ReefPose currentReefPost, ReefHeight currentReefHeight, ClimberLane climbLane) {}
+      ReefPose currentReefPost, ReefHeight currentReefHeight) {}
 }

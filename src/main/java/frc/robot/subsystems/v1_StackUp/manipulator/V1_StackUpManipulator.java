@@ -73,6 +73,10 @@ public class V1_StackUpManipulator extends SubsystemBase {
     return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.L1_VOLTS().get());
   }
 
+  public Command scoreL1Coral() {
+    return runManipulator(V1_GammaManipulatorConstants.VOLTAGES.L1_VOLTS().get());
+  }
+
   public Command removeAlgae() {
     return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.REMOVE_ALGAE().get());
   }
