@@ -1,8 +1,5 @@
 package frc.robot.subsystems.v1_gamma;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -257,7 +254,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
     operator.start().onTrue(CompositeCommands.resetHeading(drive));
     operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
 
-  // Debug board
+    // Debug board
     // Base triggers
     debugBoard.resetHeading().onTrue(CompositeCommands.resetHeading(drive).ignoringDisable(true));
     // debugBoard
@@ -279,14 +276,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
     // Funnel triggers
     debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
     debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
-    debugBoard
-        .funnel()
-        .rollerWheelsIn()
-        .whileTrue(funnel.setRollerVoltage(12));
-    debugBoard
-        .funnel()
-        .rollerWheelsOut()
-        .whileTrue(funnel.setRollerVoltage(-(12)));
+    debugBoard.funnel().rollerWheelsIn().whileTrue(funnel.setRollerVoltage(12));
+    debugBoard.funnel().rollerWheelsOut().whileTrue(funnel.setRollerVoltage(-(12)));
     debugBoard
         .funnel()
         .incrementRollerWheelsSpeed()
@@ -294,7 +285,7 @@ public class V1_GammaRobotContainer implements RobotContainer {
             Commands.runOnce(
                 () ->
                     funnel.setRollerVoltageOffset(
-                      V1_GammaFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+                        V1_GammaFunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
     debugBoard
         .funnel()
         .decrementRollerWheelsSpeed()
@@ -473,9 +464,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
         .endEffector()
         .wheelsOut()
         .whileTrue(
-            manipulator.runManipulator(
-                -V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
-    debugBoard.endEffector().eject().onTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+            manipulator.runManipulator(-V1_GammaManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+    debugBoard.endEffector().eject().onTrue(ScoreCommands.emergencyEject(elevator, manipulator));
     debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
     debugBoard
         .endEffector()
@@ -547,7 +537,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
     //                         .set(
     //                             RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
     //                                 ? "Left"
-    //                                 : RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
+    //                                 :
+    // RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
     //                                     ? "Center"
     //                                     : "Left"))
     //             .ignoringDisable(true));

@@ -116,7 +116,7 @@ public class V1_GammaClimber extends SubsystemBase {
   private boolean climberSwitchesBroken() {
     if ((inputs.redundantSwitchOne && inputs.redundantSwitchTwo && !climberDeployed)) {
       brokenTimer.start();
-      if (brokenTimer.hasElapsed(0.5)&&!climberDeployed) {
+      if (brokenTimer.hasElapsed(0.5) && !climberDeployed) {
         V1_Gamma_LEDs.setClimberSensorPanic(true);
         return true;
       }
