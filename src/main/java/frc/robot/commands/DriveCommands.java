@@ -36,13 +36,11 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
-import frc.robot.util.AllianceFlipUtil;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
@@ -117,9 +115,7 @@ public final class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      BooleanSupplier rotateToReef,
-      BooleanSupplier rotateToCoralStation,
-      BooleanSupplier climbLaneAssist) {
+      BooleanSupplier rotateToReef) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -160,12 +156,8 @@ public final class DriveCommands {
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
-                  climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistY() : fieldRelativeYVel,
-                  rotateToReef.getAsBoolean()
-                      ? thetaSpeedCalculate(true)
-                      : rotateToCoralStation.getAsBoolean()
-                          ? thetaSpeedCalculate(false)
-                          : climbLaneAssist.getAsBoolean() ? autoClimberLaneAssistTheta() : angular,
+                  fieldRelativeYVel,
+                  rotateToReef.getAsBoolean() ? reefThetaSpeedCalculate() : angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -177,15 +169,6 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
-  }
-
-  public static final Command joystickDrive(
-      Drive drive,
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
-    return joystickDrive(
-        drive, xSupplier, ySupplier, omegaSupplier, () -> false, () -> false, () -> false);
   }
 
   public static final Command inchMovement(Drive drive, double velocity, double time) {
@@ -380,7 +363,7 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
                                 -adjustedYSpeed,
-                                thetaSpeedCalculate(true),
+                                reefThetaSpeedCalculate(),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
@@ -505,7 +488,7 @@ public final class DriveCommands {
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
                                 -adjustedYSpeed,
-                                thetaSpeedCalculate(true),
+                                reefThetaSpeedCalculate(),
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
@@ -533,7 +516,7 @@ public final class DriveCommands {
                     }));
   }
 
-  private static double thetaSpeedCalculate(boolean goingToReef) {
+  private static double reefThetaSpeedCalculate() {
     double thetaSpeed = 0.0;
 
     alignHeadingController.setTolerance(
@@ -541,20 +524,12 @@ public final class DriveCommands {
 
     alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    if (goingToReef) {
-      if (!alignHeadingController.atSetpoint())
-        thetaSpeed =
-            alignHeadingController.calculate(
-                RobotState.getRobotPoseReef().getRotation().getRadians(),
-                RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
-      else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
-    } else {
-      if (!alignHeadingController.atSetpoint())
-        thetaSpeed =
-            alignHeadingController.calculate(
-                RobotState.getRobotPoseField().getRotation().getRadians(), chooseSource());
-      else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
-    }
+    if (!alignHeadingController.atSetpoint())
+      thetaSpeed =
+          alignHeadingController.calculate(
+              RobotState.getRobotPoseReef().getRotation().getRadians(),
+              RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
+    else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
     return thetaSpeed;
@@ -564,75 +539,5 @@ public final class DriveCommands {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
-  }
-
-  private static double chooseSource() {
-    if (AllianceFlipUtil.shouldFlip()) {
-      return RobotState.getRobotPoseField()
-                  .getTranslation()
-                  .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
-              >= RobotState.getRobotPoseField()
-                  .getTranslation()
-                  .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-          ? FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()
-          : FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians();
-    } else {
-      return RobotState.getRobotPoseField()
-                  .getTranslation()
-                  .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
-              <= RobotState.getRobotPoseField()
-                  .getTranslation()
-                  .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-          ? FieldConstants.CoralStation.leftCenterFace
-              .getRotation()
-              .plus(new Rotation2d(Math.PI))
-              .getRadians()
-          : FieldConstants.CoralStation.rightCenterFace
-              .getRotation()
-              .plus(new Rotation2d(Math.PI))
-              .getRadians();
-    }
-  }
-
-  public static double autoClimberLaneAssistY() {
-    double setpoint = RobotState.getOIData().climbLane().getY();
-    double speed = 0.0;
-    if (!alignYController.atSetpoint())
-      speed = autoYController.calculate(RobotState.getRobotPoseField().getY(), setpoint);
-    else alignYController.reset(setpoint);
-    return AllianceFlipUtil.shouldFlip() ? -speed : speed;
-  }
-
-  public static double autoClimberLaneAssistTheta() {
-    double speed = 0.0;
-    if (!alignHeadingController.atSetpoint())
-      speed =
-          autoHeadingController.calculate(
-              RobotState.getRobotPoseField().getRotation().getRadians(),
-              AllianceFlipUtil.shouldFlip() ? Math.PI : 0);
-    else alignHeadingController.reset(AllianceFlipUtil.shouldFlip() ? Math.PI : 0);
-
-    return speed;
-  }
-
-  @RequiredArgsConstructor
-  public enum ClimberLane {
-    LEFT(FieldConstants.Barge.farCage),
-    RIGHT(FieldConstants.Barge.closeCage),
-    CENTER(FieldConstants.Barge.middleCage);
-
-    private final Translation2d translation;
-
-    public Translation2d getTranslation() {
-      return translation;
-    }
-
-    public double getY() {
-      if (AllianceFlipUtil.shouldFlip()) {
-        return (FieldConstants.fieldWidth - translation.getY());
-      } else {
-        return translation.getY();
-      }
-    }
   }
 }

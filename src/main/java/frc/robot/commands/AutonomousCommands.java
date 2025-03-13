@@ -7,6 +7,7 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
+import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.elevator.V1_StackUpElevator;
@@ -207,7 +208,8 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                manipulator.scoreCoral().withTimeout(0.5),
+                ScoreCommands.twerk(drive, elevator, manipulator, cameras)));
 
     return autoCLeft;
   }
@@ -254,7 +256,8 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                manipulator.scoreCoral().withTimeout(0.5),
+                ScoreCommands.twerk(drive, elevator, manipulator, cameras)));
 
     return autoCRight;
   }
