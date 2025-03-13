@@ -18,7 +18,7 @@ public class V1_GammaManipulatorConstants {
     VOLTAGES =
         new Voltages(
             new LoggedTunableNumber("Manipulator/Intake Volts", 6.0),
-            new LoggedTunableNumber("Manipulator/Score Volts", 4.0),
+            new LoggedTunableNumber("Manipulator/Score Volts", 4.5),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
             new LoggedTunableNumber("Manipulator/Score Offset Increment", 0.1),

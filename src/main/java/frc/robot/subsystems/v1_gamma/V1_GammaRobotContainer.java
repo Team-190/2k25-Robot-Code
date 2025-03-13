@@ -170,13 +170,30 @@ public class V1_GammaRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            driver.getHID()::getBButton));
+            () -> driver.povUp().getAsBoolean()));
 
     // Driver face buttons
-    driver.y().onTrue(CompositeCommands.resetHeading(drive));
-    driver.x().onTrue(elevator.setPosition());
-    driver.b().onTrue(elevator.setPosition());
-    driver.a().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
+    driver.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
+    driver.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
+    driver.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+
+    driver
+        .y()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+    driver
+        .x()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+    driver
+        .b()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+    driver
+        .a()
+        .and(elevatorNotStow)
+        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Driver triggers
     driver.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
@@ -187,21 +204,18 @@ public class V1_GammaRobotContainer implements RobotContainer {
                 drive, elevator, manipulator, RobotCameras.v1_GammaCams));
 
     // Driver bumpers
-    driver.leftBumper().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
-    driver.rightBumper().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
+    driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
+    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
+    // Driver algae
     driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver.start().onTrue(ScoreCommands.descoreAlgae(drive, elevator, manipulator));
 
-    driver
-        .povUp()
-        .onTrue(
-            Commands.runOnce(
-                () ->
-                    RobotState.resetRobotPose(
-                        new Pose2d(
-                            new Translation2d(), RobotState.getRobotPoseReef().getRotation()))));
-
+    // Driver POV
+    driver.povUp().onTrue(elevator.setPosition());
+    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
+    driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
@@ -240,11 +254,8 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
-
-    operator
-        .start()
-        .or(operator.back())
-        .whileTrue(ScoreCommands.ejectCoral(elevator, manipulator));
+    operator.start().onTrue(CompositeCommands.resetHeading(drive));
+    operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
 
   // Debug board
     // Base triggers
@@ -562,29 +573,31 @@ public class V1_GammaRobotContainer implements RobotContainer {
 
   private void configureAutos() {
     autoChooser.addDefaultOption("None", Commands.none());
+    if (Constants.TUNING_MODE) {
+      autoChooser.addOption(
+          "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+      autoChooser.addOption(
+          "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    }
     autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        "4 Piece Left",
+        AutonomousCommands.Left4(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+            .cmd());
     autoChooser.addOption(
         "3 Piece Left",
-        AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Left3(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "3 Piece Right",
-        AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Right3(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Left",
-        AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Left2(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
     autoChooser.addOption(
         "2 Piece Right",
-        AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
+        AutonomousCommands.Right2(drive, elevator, funnel, manipulator, RobotCameras.v1_GammaCams)
             .cmd());
   }
 
