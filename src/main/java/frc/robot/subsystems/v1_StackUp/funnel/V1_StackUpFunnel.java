@@ -52,7 +52,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
       io.setClapDaddyGoal(goal.getAngle());
     }
 
-    if (inputs.hasCoral) {
+    if (!inputs.hasCoral) {
       debounceTimestamp = Timer.getFPGATimestamp();
     }
   }
