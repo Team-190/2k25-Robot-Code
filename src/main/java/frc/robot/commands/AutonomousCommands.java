@@ -296,4 +296,28 @@ public class AutonomousCommands {
 
     return autoBRight;
   }
+
+  public static final AutoRoutine autoDCenter(
+    Drive drive,
+      V1_StackUpElevator elevator,
+      V1_StackUpManipulator manipulator,
+      Camera... cameras
+  ) {
+    AutoRoutine autoDCenter = drive.getAutoFactory().newRoutine("autoDCenter");
+
+    AutoTrajectory path = autoDCenter.trajectory("D_CENTER_PATH");
+    
+    autoDCenter.active().onTrue(
+        Commands.sequence(
+            Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+            path.cmd(),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    elevator.setPosition(ReefHeight.L4)),
+                manipulator.scoreCoral().withTimeout(0.5),
+                ScoreCommands.twerk(drive, elevator, manipulator, cameras)
+        )
+    );
+    return autoDCenter;
+  }
 }
