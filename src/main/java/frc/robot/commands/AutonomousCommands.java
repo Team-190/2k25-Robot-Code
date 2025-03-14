@@ -182,9 +182,7 @@ public class AutonomousCommands {
         .active()
         .onTrue(
             Commands.sequence(
-                Commands.parallel(
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
-                    Commands.waitSeconds(1)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 C_LEFT_PATH1.cmd(),
                 elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
@@ -210,7 +208,8 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                manipulator.scoreCoral().withTimeout(0.5),
+                ScoreCommands.twerk(drive, elevator, manipulator, cameras)));
 
     return autoCLeft;
   }
@@ -231,9 +230,7 @@ public class AutonomousCommands {
         .active()
         .onTrue(
             Commands.sequence(
-                Commands.parallel(
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
-                    Commands.waitSeconds(1)),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                 C_RIGHT_PATH1.cmd(),
                 elevator.setPosition(ReefHeight.L4),
                 Commands.parallel(
@@ -259,7 +256,8 @@ public class AutonomousCommands {
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(elevator::atGoal)),
-                manipulator.scoreCoral().withTimeout(0.5)));
+                manipulator.scoreCoral().withTimeout(0.5),
+                ScoreCommands.twerk(drive, elevator, manipulator, cameras)));
 
     return autoCRight;
   }
