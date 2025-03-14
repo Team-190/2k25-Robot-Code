@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v1_StackUp;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -206,7 +207,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver.povDown().whileTrue(Commands.runOnce(()->RobotState.resetRobotPose(new Pose2d())).alongWith(CompositeCommands.resetHeading(drive)));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
@@ -248,7 +249,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator.start().onTrue(CompositeCommands.resetHeading(drive));
+    operator.start().onTrue(CompositeCommands.resetHeading(drive).alongWith(Commands.runOnce(()->RobotState.resetRobotPose(new Pose2d()))));
 
     operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
