@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
@@ -45,6 +46,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     super(Constants.LOOP_PERIOD_SECONDS);
+    
   }
 
   /**
@@ -158,12 +160,12 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    // autonomousCommand = robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
-    }
+    // // schedule the autonomous command (example)
+    // if (autonomousCommand != null) {
+    //   autonomousCommand.schedule();
+    // }
 
     Shuffleboard.selectTab("Autonomous");
   }
@@ -179,9 +181,9 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
-    }
+    // if (autonomousCommand != null) {
+    //   autonomousCommand.cancel();
+    // }
 
     Shuffleboard.selectTab("Teleoperated");
   }
