@@ -136,7 +136,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     configureButtonBindings();
     configureAutos();
 
-    SmartDashboard.putData("Autonomous Modes",autoChooser);
+    SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
   private void configureButtonBindings() {
