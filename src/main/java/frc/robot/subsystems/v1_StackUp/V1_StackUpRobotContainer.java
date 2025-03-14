@@ -3,6 +3,7 @@ package frc.robot.subsystems.v1_StackUp;
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -68,7 +69,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private final AutoChooser autoChooser = new AutoChooser();
 
   public V1_StackUpRobotContainer() {
-
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V1_STACKUP:
@@ -135,6 +135,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
     configureButtonBindings();
     configureAutos();
+
+    SmartDashboard.putData(autoChooser);
   }
 
   private void configureButtonBindings() {
