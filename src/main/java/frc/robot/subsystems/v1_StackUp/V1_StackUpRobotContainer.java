@@ -1,13 +1,10 @@
 package frc.robot.subsystems.v1_StackUp;
 
-import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -68,7 +65,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<Command>("Autonomous Modes");
+  private final LoggedDashboardChooser<Command> autoChooser =
+      new LoggedDashboardChooser<Command>("Autonomous Modes");
 
   public V1_StackUpRobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
@@ -276,31 +274,30 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     autoChooser.addOption(
         "4 Piece Left",
         AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "4 Piece Right",
         AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "3 Piece Left",
         AutonomousCommands.autoCLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "3 Piece Right",
         AutonomousCommands.autoCRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "2 Piece Left",
         AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "2 Piece Right",
         AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "1 Piece Center",
-        AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+        AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
   }
 
   @Override
