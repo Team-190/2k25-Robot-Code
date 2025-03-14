@@ -300,7 +300,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         AutonomousCommands.autoBRight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
             .cmd());
-    autoChooser.addOption("1 Piece Center", AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams).cmd());
+    autoChooser.addOption(
+        "1 Piece Center",
+        AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams)
+            .cmd());
   }
 
   @Override
