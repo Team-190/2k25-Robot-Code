@@ -49,6 +49,7 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
@@ -67,7 +68,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final AutoChooser autoChooser = new AutoChooser();
+  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<Command>("Autonomous Modes");
 
   public V1_StackUpRobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
@@ -136,9 +137,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
     configureButtonBindings();
     configureAutos();
-
-    SmartDashboard.putData("Autonomous Modes", autoChooser);
-    RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
   }
 
   private void configureButtonBindings() {
@@ -268,45 +266,40 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
-    autoChooser.addCmd("None", () -> Commands.none());
-    autoChooser.addCmd(
-        "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addCmd(
-        "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addRoutine(
+    AutonomousCommands.loadAutoTrajectories(drive);
+
+    autoChooser.addDefaultOption("None", Commands.none());
+    autoChooser.addOption(
+        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
         "4 Piece Left",
-        () ->
-            AutonomousCommands.autoALeft(
+        AutonomousCommands.autoALeft(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "4 Piece Right",
-        () ->
-            AutonomousCommands.autoARight(
+        AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "3 Piece Left",
-        () ->
-            AutonomousCommands.autoCLeft(
+        AutonomousCommands.autoCLeft(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "3 Piece Right",
-        () ->
-            AutonomousCommands.autoCRight(
+        AutonomousCommands.autoCRight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "2 Piece Left",
-        () ->
-            AutonomousCommands.autoBLeft(
+        AutonomousCommands.autoBLeft(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "2 Piece Right",
-        () ->
-            AutonomousCommands.autoBRight(
+        AutonomousCommands.autoBRight(
                 drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addRoutine(
+    autoChooser.addOption(
         "1 Piece Center",
-        () ->
-            AutonomousCommands.autoDCenter(
+        AutonomousCommands.autoDCenter(
                 drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
   }
 
@@ -333,6 +326,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommandScheduler();
+    return autoChooser.get();
   }
 }

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
@@ -39,6 +40,7 @@ public class Robot extends LoggedRobot {
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.WARNING);
 
+  private Command autonomousCommand;
   private RobotContainer robotContainer;
 
   public Robot() {
@@ -156,12 +158,12 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
-    // // schedule the autonomous command (example)
-    // if (autonomousCommand != null) {
-    //   autonomousCommand.schedule();
-    // }
+    // schedule the autonomous command (example)
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
+    }
 
     Shuffleboard.selectTab("Autonomous");
   }
@@ -177,9 +179,9 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    // if (autonomousCommand != null) {
-    //   autonomousCommand.cancel();
-    // }
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
+    }
 
     Shuffleboard.selectTab("Teleoperated");
   }
