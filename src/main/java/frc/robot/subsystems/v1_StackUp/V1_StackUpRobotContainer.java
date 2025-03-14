@@ -253,7 +253,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator.start().onTrue((Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d()))));
+    operator.start().onTrue((Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d(0,0,RobotState.getRobotPoseField().getRotation())))));
 
     operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
