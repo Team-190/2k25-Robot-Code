@@ -90,12 +90,18 @@ public class RobotState {
       SwerveModulePosition[] modulePositions,
       Camera[] cameras) {
 
+    double one = Timer.getFPGATimestamp();
+
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
+
+    double two = Timer.getFPGATimestamp();
 
     fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
+
+    double three = Timer.getFPGATimestamp();
 
     for (Camera camera : cameras) {
       double[] limelightHeadingData = {
@@ -103,8 +109,15 @@ public class RobotState {
       };
       camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
     }
+
+    double four = Timer.getFPGATimestamp();
+
     NetworkTableInstance.getDefault().flush();
 
+    double five = Timer.getFPGATimestamp();
+
+    double six = Timer.getFPGATimestamp();
+    double seven = Timer.getFPGATimestamp();
     if (DriverStation.isDisabled()) {
       for (Camera camera : cameras) {
         if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
@@ -123,7 +136,9 @@ public class RobotState {
         }
       }
       resetRobotPose(fieldLocalizer.getEstimatedPosition());
+      six = Timer.getFPGATimestamp();
     } else {
+      seven = Timer.getFPGATimestamp();
       for (Camera camera : cameras) {
         if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
             && camera.getTargetAquired()
@@ -155,7 +170,12 @@ public class RobotState {
         }
       }
     }
+
+    double eight = Timer.getFPGATimestamp();
+
     int closestReefTag = getMinDistanceReefTag();
+
+    double nine = Timer.getFPGATimestamp();
 
     for (Camera camera : cameras) {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
@@ -173,11 +193,15 @@ public class RobotState {
       }
     }
 
+    double ten = Timer.getFPGATimestamp();
+
     Pose2d autoAlignCoralSetpoint =
         OIData.currentReefHeight().equals(ReefHeight.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+
+    double eleven = Timer.getFPGATimestamp();
 
     double distanceToCoralSetpoint =
         RobotState.getRobotPoseReef()
@@ -188,12 +212,16 @@ public class RobotState {
             .getTranslation()
             .getDistance(autoAlignAlgaeSetpoint.getTranslation());
 
+    double twelve = Timer.getFPGATimestamp();
+
     boolean atCoralSetpoint =
         Math.abs(distanceToCoralSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
     boolean atAlgaeSetpoint =
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+
+    double thirteen = Timer.getFPGATimestamp();
 
     reefAlignData =
         new ReefAlignData(
@@ -205,6 +233,8 @@ public class RobotState {
             atCoralSetpoint,
             atAlgaeSetpoint,
             cameras);
+
+    double fourteen = Timer.getFPGATimestamp();
 
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Odometry Pose", odometry.getPoseMeters());
@@ -223,6 +253,22 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
+
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "1-2", (two - one) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "2-3", (three - two) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "3-4", (four - three) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "4-5", (five - four) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "5-6", (six - five) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "6-7", (seven - six) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "7-8", (eight - seven) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "8-9", (nine - eight) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "9-10", (ten - nine) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "10-11", (eleven - ten) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "11-12", (twelve - eleven) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "12-13", (thirteen - twelve) * 1000.0);
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "13-14", (fourteen - thirteen) * 1000.0);
+
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Total", (fourteen - one) * 1000.0);
   }
 
   public static Pose2d getRobotPoseField() {
