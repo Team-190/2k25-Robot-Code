@@ -273,11 +273,7 @@ public class AutonomousCommands {
   }
 
   public static final Command autoDCenter(
-      Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpManipulator manipulator,
-      Camera... cameras) {
-
+      Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
     return Commands.sequence(
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         D_CENTER_PATH1,
