@@ -19,7 +19,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
-  private final Timer debounceTimer;
+  private double debounceTimestamp;
   private FunnelState goal;
 
   private boolean isClosedLoop;
@@ -37,7 +37,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
                 (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
-    debounceTimer = new Timer();
+    debounceTimestamp = Timer.getFPGATimestamp();
     goal = FunnelState.OPENED;
 
     isClosedLoop = true;
@@ -52,10 +52,8 @@ public class V1_StackUpFunnel extends SubsystemBase {
       io.setClapDaddyGoal(goal.getAngle());
     }
 
-    if (inputs.hasCoral) {
-      debounceTimer.start();
-    } else if (debounceTimer.isRunning() && !inputs.hasCoral) {
-      debounceTimer.reset();
+    if (!inputs.hasCoral) {
+      debounceTimestamp = Timer.getFPGATimestamp();
     }
   }
 
@@ -130,7 +128,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
-    return inputs.hasCoral && debounceTimer.hasElapsed(0.05);
+    return inputs.hasCoral && Timer.getFPGATimestamp() > debounceTimestamp + 0.05;
   }
 
   /**
