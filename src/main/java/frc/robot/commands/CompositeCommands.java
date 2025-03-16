@@ -111,7 +111,13 @@ public class CompositeCommands {
       return Commands.either(
           autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
           Commands.sequence(
-              elevator.setPosition(ReefHeight.L2),
+              Commands.either(
+                  elevator.setPosition(ReefHeight.L2),
+                  Commands.none(),
+                  () ->
+                      RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1)
+                          || RobotState.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                          || RobotState.getOIData().currentReefHeight().equals(ReefHeight.INTAKE)),
               DriveCommands.autoAlignReefCoral(drive, cameras),
               scoreCoralSequence(elevator, manipulator)),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));

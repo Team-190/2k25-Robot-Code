@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v1_StackUp;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -65,10 +66,9 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<>("Autonomous Modes");
+      new LoggedDashboardChooser<Command>("Autonomous Modes");
 
   public V1_StackUpRobotContainer() {
-
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V1_STACKUP:
@@ -206,7 +206,11 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver
+        .povDown()
+        .whileTrue(
+            Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d()))
+                .alongWith(CompositeCommands.resetHeading(drive)));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
@@ -248,12 +252,20 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator.start().onTrue(CompositeCommands.resetHeading(drive));
+    operator
+        .start()
+        .onTrue(
+            (Commands.runOnce(
+                () ->
+                    RobotState.resetRobotPose(
+                        new Pose2d(0, 0, RobotState.getRobotPoseField().getRotation())))));
 
     operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
 
   private void configureAutos() {
+    AutonomousCommands.loadAutoTrajectories(drive);
+
     autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
@@ -262,33 +274,30 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     autoChooser.addOption(
         "4 Piece Left",
         AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "4 Piece Right",
         AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "3 Piece Left",
         AutonomousCommands.autoCLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "3 Piece Right",
         AutonomousCommands.autoCRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "2 Piece Left",
         AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
     autoChooser.addOption(
         "2 Piece Right",
         AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams)
-            .cmd());
+            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+    autoChooser.addOption(
+        "1 Piece Center",
+        AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
   }
 
   @Override
