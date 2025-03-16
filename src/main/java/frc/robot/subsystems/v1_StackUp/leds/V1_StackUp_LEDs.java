@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.leds.Leds;
 import lombok.Setter;
 
@@ -46,10 +47,10 @@ public class V1_StackUp_LEDs extends Leds {
   public synchronized void periodic() {
     lowBatteryAlert = RobotController.getBatteryVoltage() <= 11.5;
     // Update auto state
-    if (DriverStation.isDisabled()) {
+    if (RobotMode.disabled()) {
       autoFinished = false;
     } else {
-      lastEnabledAuto = DriverStation.isAutonomous();
+      lastEnabledAuto = RobotMode.auto();
       lastEnabledTime = Timer.getFPGATimestamp();
     }
 
@@ -78,7 +79,7 @@ public class V1_StackUp_LEDs extends Leds {
     solid(Color.kBlack); // Default to off
     if (estopped) {
       solid(Color.kRed);
-    } else if (DriverStation.isDisabled()) {
+    } else if (RobotMode.disabled()) {
       if (lastEnabledAuto && Timer.getFPGATimestamp() - lastEnabledTime < AUTO_FADE_MAX_TIME) {
         // Auto fade
         solid(1.0 - ((Timer.getFPGATimestamp() - lastEnabledTime) / AUTO_FADE_TIME), Color.kGreen);
@@ -88,7 +89,7 @@ public class V1_StackUp_LEDs extends Leds {
       } else {
         rainbow(LENGTH, 5.0);
       }
-    } else if (DriverStation.isEnabled()) {
+    } else if (RobotMode.enabled()) {
       if (climberSensorPanic) {
         strobe(Color.kRed, Color.kBlack, STROBE_FAST_DURATION);
       } else {

@@ -140,7 +140,7 @@ public class Robot extends LoggedRobot {
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
 
     // Update low battery alert
-    if (DriverStation.isEnabled()) {
+    if (RobotState.RobotMode.enabled()) {
       disabledTimer.reset();
     }
     if (RobotController.getBatteryVoltage() < lowBatteryVoltage
@@ -151,7 +151,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    RobotState.setMode(RobotState.RobotMode.DISABLED);
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -160,6 +162,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotState.setMode(RobotState.RobotMode.AUTO);
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -184,7 +187,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-
+    RobotState.setMode(RobotState.RobotMode.TELEOP);
     Shuffleboard.selectTab("Teleoperated");
   }
 

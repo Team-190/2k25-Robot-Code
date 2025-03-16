@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -21,6 +20,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.NTPrefixes;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
@@ -34,6 +34,8 @@ public class RobotState {
 
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData OIData;
+
+  @Setter @Getter private static RobotMode mode;
 
   static {
     switch (Constants.ROBOT) {
@@ -105,7 +107,7 @@ public class RobotState {
     }
     NetworkTableInstance.getDefault().flush();
 
-    if (DriverStation.isDisabled()) {
+    if (RobotMode.disabled()) {
       for (Camera camera : cameras) {
         if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
             && camera.getTargetAquired()
@@ -327,4 +329,42 @@ public class RobotState {
 
   public static final record OperatorInputData(
       ReefPose currentReefPost, ReefHeight currentReefHeight) {}
+
+  public enum RobotMode {
+    DISABLED,
+    TELEOP,
+    AUTO;
+
+    public static boolean enabled(RobotMode mode) {
+      return mode.equals(TELEOP) || mode.equals(AUTO);
+    }
+
+    public static boolean disabled(RobotMode mode) {
+      return mode.equals(DISABLED);
+    }
+
+    public static boolean teleop(RobotMode mode) {
+      return mode.equals(TELEOP);
+    }
+
+    public static boolean auto(RobotMode mode) {
+      return mode.equals(AUTO);
+    }
+
+    public static boolean enabled() {
+      return enabled(RobotState.getMode());
+    }
+
+    public static boolean disabled() {
+      return disabled(RobotState.getMode());
+    }
+
+    public static boolean teleop() {
+      return teleop(RobotState.getMode());
+    }
+
+    public static boolean auto() {
+      return auto(RobotState.getMode());
+    }
+  }
 }
