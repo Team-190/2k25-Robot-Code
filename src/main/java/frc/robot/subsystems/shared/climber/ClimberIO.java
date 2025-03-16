@@ -1,8 +1,8 @@
-package frc.robot.subsystems.v1_StackUp.climber;
+package frc.robot.subsystems.shared.climber;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_StackUpClimberIO {
+public interface ClimberIO {
   @AutoLog
   public static class ClimberIOInputs {
     public double positionRadians = 0.0;

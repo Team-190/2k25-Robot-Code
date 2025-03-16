@@ -1,6 +1,5 @@
-package frc.robot.subsystems.v1_StackUp;
+package frc.robot.subsystems.v2_Redundancy;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,7 +11,6 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
@@ -39,24 +37,23 @@ import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
+import frc.robot.subsystems.v1_StackUp.V1_StackUpMechanism3d;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-public class V1_StackUpRobotContainer implements RobotContainer {
+public class V2_RedundancyRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
   private Elevator elevator;
   private Funnel funnel;
   private Climber climber;
-  private V1_StackUpManipulator manipulator;
-  private V1_StackUp_LEDs leds;
+  private V2_RedundancyManipulator manipulator;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -64,12 +61,13 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   // Auto chooser
   private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<Command>("Autonomous Modes");
+      new LoggedDashboardChooser<>("Autonomous Modes");
 
-  public V1_StackUpRobotContainer() {
+  public V2_RedundancyRobotContainer() {
+
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case V1_STACKUP:
+        case V2_REDUNDANCY:
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -77,14 +75,13 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.v1_StackUpCams);
+          vision = new Vision();
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
-          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
-          leds = new V1_StackUp_LEDs();
+          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           break;
-        case V1_STACKUP_SIM:
+        case V2_REDUNDANCY_SIM:
           drive =
               new Drive(
                   new GyroIO() {},
@@ -96,7 +93,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOSim());
           funnel = new Funnel(new FunnelIOSim());
           climber = new Climber(new ClimberIOSim());
-          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
+          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           break;
         default:
           break;
@@ -115,20 +112,17 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     if (vision == null) {
       vision = new Vision();
     }
-    if (elevator == null) {
-      elevator = new Elevator(new ElevatorIO() {});
-    }
     if (funnel == null) {
       funnel = new Funnel(new FunnelIO() {});
     }
-    if (climber == null) {
-      climber = new Climber(new ClimberIO() {});
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {});
     }
     if (manipulator == null) {
-      manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
+      manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
     }
-    if (leds == null) {
-      leds = new V1_StackUp_LEDs();
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
     }
 
     configureButtonBindings();
@@ -196,21 +190,15 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    // Driver algae
-    driver.back().onTrue(manipulator.toggleAlgaeArm());
-    driver
-        .start()
-        .onTrue(ScoreCommands.twerk(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
-
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver
-        .povDown()
-        .whileTrue(
-            Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d()))
-                .alongWith(CompositeCommands.resetHeading(drive)));
+    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
+
+    driver.start().whileTrue(manipulator.intakeCoral());
+    driver.back().whileTrue(funnel.intakeCoral(() -> false));
+
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
@@ -250,52 +238,16 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator
-        .start()
-        .onTrue(
-            (Commands.runOnce(
-                () ->
-                    RobotState.resetRobotPose(
-                        new Pose2d(0, 0, RobotState.getRobotPoseField().getRotation())))));
+    operator.start().onTrue(CompositeCommands.resetHeading(drive));
 
     operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
   }
 
   private void configureAutos() {
-    AutonomousCommands.loadAutoTrajectories(drive);
-
-    autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "4 Piece Left",
-        AutonomousCommands.autoALeft(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "4 Piece Right",
-        AutonomousCommands.autoARight(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "3 Piece Left",
-        AutonomousCommands.autoCLeft(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "3 Piece Right",
-        AutonomousCommands.autoCRight(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "2 Piece Left",
-        AutonomousCommands.autoBLeft(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "2 Piece Right",
-        AutonomousCommands.autoBRight(
-            drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
-        "1 Piece Center",
-        AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
   }
 
   @Override

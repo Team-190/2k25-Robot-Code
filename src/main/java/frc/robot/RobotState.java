@@ -46,8 +46,8 @@ public class RobotState {
       case V1_STACKUP:
       case V1_STACKUP_SIM:
         break;
-      case V2_DELTA:
-      case V2_DELTA_SIM:
+      case V2_REDUNDANCY:
+      case V2_REDUNDANCY_SIM:
         break;
     }
 

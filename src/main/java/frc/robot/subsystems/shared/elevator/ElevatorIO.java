@@ -1,8 +1,8 @@
-package frc.robot.subsystems.v1_StackUp.elevator;
+package frc.robot.subsystems.shared.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_StackUpElevatorIO {
+public interface ElevatorIO {
   @AutoLog
   public static class ElevatorIOInputs {
     public double positionMeters = 0.0;
