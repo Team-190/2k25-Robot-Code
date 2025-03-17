@@ -99,9 +99,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
   }
 
   /**
-   * Checks if the intake has coral.
+   * Checks if the intake has algae.
    *
-   * @return True if the intake has coral, false otherwise.
+   * @return True if the intake has algae, false otherwise.
    */
   public boolean hasAlgae() {
     return false;
@@ -147,4 +147,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
   public Command setIntakeVoltage(double volts) {
     return Commands.run(() -> io.setExtensionVoltage(volts));
   }
+
+  public Command intakeAlgae(double volts) {
+    return Commands.sequence(setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(volts).until(() -> hasAlgae()));
+} 
+
 }

@@ -80,13 +80,33 @@ public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
     extensionSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.extensionPositionMeters = extensionSim.getAngleRads()/(2*Math.PI) * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO*V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
-    inputs.extensionVelocityMetersPerSecond = extensionSim.getVelocityRadPerSec()/(2*Math.PI) * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO*V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionPositionMeters =
+        extensionSim.getAngleRads()
+            / (2 * Math.PI)
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionVelocityMetersPerSecond =
+        extensionSim.getVelocityRadPerSec()
+            / (2 * Math.PI)
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
     inputs.extensionAppliedVolts = extensionAppliedVolts;
     inputs.extensionSupplyCurrentAmps = extensionSim.getCurrentDrawAmps();
-    inputs.extensionGoal = (extensionController.getGoal().position)/(2*Math.PI) * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO*V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
-    inputs.extensionPositionSetpoint = (extensionController.getSetpoint().position)/(2*Math.PI) * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO*V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
-    inputs.extensionPositionError = (extensionController.getPositionError())/(2*Math.PI) * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO*V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionGoal =
+        (extensionController.getGoal().position)
+            / (2 * Math.PI)
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionPositionSetpoint =
+        (extensionController.getSetpoint().position)
+            / (2 * Math.PI)
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionPositionError =
+        (extensionController.getPositionError())
+            / (2 * Math.PI)
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();
