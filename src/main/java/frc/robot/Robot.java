@@ -57,6 +57,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     SignalLogger.enableAutoLogging(false);
+    LiveWindow.disableAllTelemetry();
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -124,7 +125,6 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-    LiveWindow.disableAllTelemetry();
   }
 
   /** This function is called periodically during all modes. */
