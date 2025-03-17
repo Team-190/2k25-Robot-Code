@@ -4,9 +4,11 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
@@ -122,6 +124,7 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+    LiveWindow.disableAllTelemetry();
   }
 
   /** This function is called periodically during all modes. */
@@ -152,7 +155,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    RobotState.setMode(RobotState.RobotMode.DISABLED);
+    RobotState.setMode(RobotMode.DISABLED);
   }
 
   /** This function is called periodically when disabled. */
@@ -187,7 +190,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    RobotState.setMode(RobotState.RobotMode.TELEOP);
+    RobotState.setMode(RobotMode.TELEOP);
     Shuffleboard.selectTab("Teleoperated");
   }
 
