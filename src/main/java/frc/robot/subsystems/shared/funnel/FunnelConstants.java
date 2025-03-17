@@ -38,7 +38,7 @@ public class FunnelConstants {
         CLAP_DADDY_CANCODER_ID = 40;
         CLAP_DADDY_MOTOR_GEAR_RATIO = 17.0;
         ROLLER_MOTOR_GEAR_RATIO = 2.5;
-        CLAP_DADDY_CANCODER_GEAR_RATIO = 1.2;
+        CLAP_DADDY_CANCODER_GEAR_RATIO = 3;
         CANCODER_ABSOLUTE_OFFSET_RADIANS = Rotation2d.fromRadians(4.95);
         CLAP_DADDY_INVERTED = InvertedValue.Clockwise_Positive;
         ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
