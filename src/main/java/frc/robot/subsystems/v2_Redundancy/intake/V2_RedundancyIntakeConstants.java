@@ -24,7 +24,7 @@ public class V2_RedundancyIntakeConstants {
     EXTENSION_MOTOR_ID = 60;
     ROLLER_MOTOR_ID = 61;
     EXTENSION_MOTOR_GEAR_RATIO = 3;
-    EXTENSION_MOTOR_METERS_PER_REV = .0266;
+    EXTENSION_MOTOR_METERS_PER_REV = .0266 * EXTENSION_MOTOR_GEAR_RATIO;
     ROLLER_MOTOR_GEAR_RATIO = 2.5;
 
     switch (Constants.getMode()) {
@@ -34,12 +34,12 @@ public class V2_RedundancyIntakeConstants {
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
         EXTENSION_MOTOR_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 125.0),
-                new LoggedTunableNumber("Intake/Extension Motor Gains/kD", 5.0),
-                new LoggedTunableNumber("Intake/Extension Motor Gains/kS", 0.224),
+                new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 10.0),
+                new LoggedTunableNumber("Intake/Extension Motor Gains/kD", 0.0),
+                new LoggedTunableNumber("Intake/Extension Motor Gains/kS", 0.5),
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kV", 0.0),
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kA", 0.0));
-        ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
+        ANGLE_THRESHOLDS = new Thresholds(4.4, 0.0);
         EXTENSION_MOTOR_CONSTRAINTS =
             new Constraints(
                 new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 100.0),
@@ -83,7 +83,8 @@ public class V2_RedundancyIntakeConstants {
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public static final record Thresholds(double MAX_ANGLE_RADIANS, double MIN_ANGLE_RADIANS) {}
+  public static final record Thresholds(
+      double MAX_EXTENSION_ROTATIONS, double MIN_EXTENSION_ROTATIONS) {}
 
   public static final record Constraints(
       LoggedTunableNumber MAX_ACCELERATION,
@@ -95,7 +96,7 @@ public class V2_RedundancyIntakeConstants {
   @RequiredArgsConstructor
   public enum IntakeState {
     STOW(0),
-    INTAKE(1);
+    INTAKE(0.3496120605);
 
     private final double distanceMeters;
 

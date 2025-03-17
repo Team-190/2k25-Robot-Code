@@ -14,7 +14,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
-import frc.robot.subsystems.shared.drive.TunerConstantsV2_Redundancy;
 
 public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   private final TalonFX extensionTalonFX;
@@ -46,9 +45,7 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   private NeutralOut neutralRequest;
 
   public V2_RedundancyIntakeIOTalonFX() {
-    extensionTalonFX =
-        new TalonFX(
-            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_ID, TunerConstantsV2_Redundancy.kCANBus);
+    extensionTalonFX = new TalonFX(V2_RedundancyIntakeConstants.EXTENSION_MOTOR_ID);
     rollerTalonFX = new TalonFX(V2_RedundancyIntakeConstants.ROLLER_MOTOR_ID);
 
     extensionConfig = new TalonFXConfiguration();
@@ -66,10 +63,10 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     extensionConfig.Slot0.kV = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV().get();
     extensionConfig.Slot0.kA = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA().get();
     extensionConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        Units.radiansToRotations(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS());
+        (V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
     extensionConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     extensionConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        Units.radiansToRotations(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
+        (V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
     extensionConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     extensionConfig.MotionMagic.MotionMagicAcceleration =
@@ -127,6 +124,9 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     voltageRequest = new VoltageOut(0.0);
     neutralRequest = new NeutralOut();
     positionControlRequest = new MotionMagicVoltage(0.0);
+
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
   }
 
   @Override

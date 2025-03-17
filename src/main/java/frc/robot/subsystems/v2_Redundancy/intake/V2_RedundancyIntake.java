@@ -29,7 +29,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Second),
                 Volts.of(3.5),
-                Seconds.of(1),
+                Seconds.of(8),
                 (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setExtensionVoltage(volts.in(Volts)), null, this));
@@ -89,13 +89,13 @@ public class V2_RedundancyIntake extends SubsystemBase {
   public Command sysIdRoutine() {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
-        characterizationRoutine.quasistatic(Direction.kForward),
+        characterizationRoutine.quasistatic(Direction.kForward).until(this::atGoal),
         Commands.waitSeconds(4),
-        characterizationRoutine.quasistatic(Direction.kReverse),
+        characterizationRoutine.quasistatic(Direction.kReverse).until(this::atGoal),
         Commands.waitSeconds(4),
-        characterizationRoutine.dynamic(Direction.kForward),
+        characterizationRoutine.dynamic(Direction.kForward).until(this::atGoal),
         Commands.waitSeconds(4),
-        characterizationRoutine.dynamic(Direction.kReverse));
+        characterizationRoutine.dynamic(Direction.kReverse).until(this::atGoal));
   }
 
   /**
