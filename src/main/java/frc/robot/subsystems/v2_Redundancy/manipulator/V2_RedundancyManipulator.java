@@ -28,34 +28,47 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
-    return Math.abs(inputs.torqueCurrentAmps)
-        > V2_RedundancyManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+    return Math.abs(inputs.rollerTorqueCurrentAmps)
+        > V2_RedundancyManipulatorConstants.ROLLER_CURRENT_THRESHOLD;
+  }
+
+  @AutoLogOutput(key = "Manipulator/Has Algae")
+  public boolean hasAlgae() {
+    return Math.abs(inputs.rollerTorqueCurrentAmps)
+        > V2_RedundancyManipulatorConstants.ROLLER_CURRENT_THRESHOLD;
   }
 
   public Command runManipulator(double volts) {
-    return this.runEnd(() -> io.setVoltage(volts), () -> io.setVoltage(0));
+    return this.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
   public Command intakeCoral() {
     return Commands.sequence(
         Commands.runOnce(() -> currentTimer.restart()),
-        runManipulator(V2_RedundancyManipulatorConstants.VOLTAGES.INTAKE_VOLTS().get())
+        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
+            .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
+  }
+
+    public Command intakeAlgae() {
+    return Commands.sequence(
+        Commands.runOnce(() -> currentTimer.restart()),
+        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
   public Command scoreCoral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get());
   }
 
   public Command scoreL1Coral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.VOLTAGES.L1_VOLTS().get());
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get());
   }
 
   public Command halfScoreCoral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
   }
 
   public Command unHalfScoreCoral() {
-    return runManipulator(-V2_RedundancyManipulatorConstants.VOLTAGES.HALF_VOLTS().get());
+    return runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
   }
 }
