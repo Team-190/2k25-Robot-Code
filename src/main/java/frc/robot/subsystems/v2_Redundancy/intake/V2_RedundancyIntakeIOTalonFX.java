@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.inkake;
+package frc.robot.subsystems.v2_Redundancy.intake;
 
 import static frc.robot.util.PhoenixUtil.*;
 

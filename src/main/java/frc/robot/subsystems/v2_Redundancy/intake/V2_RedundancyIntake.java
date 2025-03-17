@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.inkake;
+package frc.robot.subsystems.v2_Redundancy.intake;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -149,7 +149,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
   }
 
   public Command intakeAlgae(double volts) {
-    return Commands.sequence(setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(volts).until(() -> hasAlgae()));
-} 
-
+    return Commands.sequence(
+        setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(volts).until(() -> hasAlgae()));
+  }
 }
