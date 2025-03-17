@@ -183,19 +183,19 @@ public class DriveConstants {
         DRIVER_DEADBAND = 0.025;
         OPERATOR_DEADBAND = 0.25;
         break;
-      case V2_DELTA:
-      case V2_DELTA_SIM:
-        FRONT_LEFT = TunerConstantsV2_Delta.FrontLeft;
-        FRONT_RIGHT = TunerConstantsV2_Delta.FrontRight;
-        BACK_LEFT = TunerConstantsV2_Delta.BackLeft;
-        BACK_RIGHT = TunerConstantsV2_Delta.BackRight;
+      case V2_REDUNDANCY:
+      case V2_REDUNDANCY_SIM:
+        FRONT_LEFT = TunerConstantsV2_Redundancy.FrontLeft;
+        FRONT_RIGHT = TunerConstantsV2_Redundancy.FrontRight;
+        BACK_LEFT = TunerConstantsV2_Redundancy.BackLeft;
+        BACK_RIGHT = TunerConstantsV2_Redundancy.BackRight;
 
         DRIVE_CONFIG =
             new DriveConfig(
-                TunerConstantsV2_Delta.DrivetrainConstants.CANBusName,
-                TunerConstantsV2_Delta.DrivetrainConstants.Pigeon2Id,
-                TunerConstantsV2_Delta.kSpeedAt12Volts.in(MetersPerSecond),
-                TunerConstantsV2_Delta.kWheelRadius.in(Meters),
+                TunerConstantsV2_Redundancy.DrivetrainConstants.CANBusName,
+                TunerConstantsV2_Redundancy.DrivetrainConstants.Pigeon2Id,
+                TunerConstantsV2_Redundancy.kSpeedAt12Volts.in(MetersPerSecond),
+                TunerConstantsV2_Redundancy.kWheelRadius.in(Meters),
                 DCMotor.getKrakenX60Foc(1),
                 DCMotor.getKrakenX60Foc(1),
                 FRONT_LEFT,
@@ -207,12 +207,17 @@ public class DriveConstants {
 
         GAINS =
             new Gains(
-                new LoggedTunableNumber("Drive/Drive KS", TunerConstantsV2_Delta.driveGains.kS),
-                new LoggedTunableNumber("Drive/Drive KV", TunerConstantsV2_Delta.driveGains.kV),
-                new LoggedTunableNumber("Drive/Drive KP", TunerConstantsV2_Delta.driveGains.kP),
-                new LoggedTunableNumber("Drive/Drive KD", TunerConstantsV2_Delta.driveGains.kD),
-                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV2_Delta.steerGains.kP),
-                new LoggedTunableNumber("Drive/Turn KD", TunerConstantsV2_Delta.steerGains.kD));
+                new LoggedTunableNumber(
+                    "Drive/Drive KS", TunerConstantsV2_Redundancy.driveGains.kS),
+                new LoggedTunableNumber(
+                    "Drive/Drive KV", TunerConstantsV2_Redundancy.driveGains.kV),
+                new LoggedTunableNumber(
+                    "Drive/Drive KP", TunerConstantsV2_Redundancy.driveGains.kP),
+                new LoggedTunableNumber(
+                    "Drive/Drive KD", TunerConstantsV2_Redundancy.driveGains.kD),
+                new LoggedTunableNumber("Drive/Turn KP", TunerConstantsV2_Redundancy.steerGains.kP),
+                new LoggedTunableNumber(
+                    "Drive/Turn KD", TunerConstantsV2_Redundancy.steerGains.kD));
         AUTO_ALIGN_GAINS =
             new AutoAlignGains(
                 new LoggedTunableNumber("Drive/Translation KP", 4.0),

@@ -1,23 +1,21 @@
-package frc.robot.subsystems.v1_StackUp.climber;
+package frc.robot.subsystems.shared.climber;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
-public class V1_StackUpClimberIOSim implements V1_StackUpClimberIO {
+public class ClimberIOSim implements ClimberIO {
   private final DCMotorSim sim;
 
   private double appliedVolts;
 
-  public V1_StackUpClimberIOSim() {
+  public ClimberIOSim() {
     sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                V1_StackUpClimberConstants.MOTOR_CONFIG,
-                0.004,
-                V1_StackUpClimberConstants.GEAR_RATIO),
-            V1_StackUpClimberConstants.MOTOR_CONFIG);
+                ClimberConstants.MOTOR_CONFIG, 0.004, ClimberConstants.GEAR_RATIO),
+            ClimberConstants.MOTOR_CONFIG);
 
     appliedVolts = 0.0;
   }
@@ -31,8 +29,7 @@ public class V1_StackUpClimberIOSim implements V1_StackUpClimberIO {
     inputs.positionRadians = sim.getAngularPositionRad();
     inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps =
-        sim.getCurrentDrawAmps() / V1_StackUpClimberConstants.GEARBOX_EFFICIENCY;
+    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps() / ClimberConstants.GEARBOX_EFFICIENCY;
     inputs.torqueCurrentAmps = sim.getCurrentDrawAmps();
   }
 

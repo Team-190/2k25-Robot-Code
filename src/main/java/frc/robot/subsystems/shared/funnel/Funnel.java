@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_StackUpFunnel extends SubsystemBase {
-  private final V1_StackUpFunnelIO io;
+public class Funnel extends SubsystemBase {
+  private final FunnelIO io;
   private final FunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
@@ -24,7 +24,7 @@ public class V1_StackUpFunnel extends SubsystemBase {
 
   private boolean isClosedLoop;
 
-  public V1_StackUpFunnel(V1_StackUpFunnelIO io) {
+  public Funnel(FunnelIO io) {
     this.io = io;
     inputs = new FunnelIOInputsAutoLogged();
 
