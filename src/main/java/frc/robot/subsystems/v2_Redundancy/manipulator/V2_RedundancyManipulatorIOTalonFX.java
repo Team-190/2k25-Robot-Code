@@ -6,7 +6,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -46,7 +45,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   private final MotionMagicVoltage positionControlRequest;
   private final VoltageOut voltageRequest;
-  private final NeutralOut neutralRequest;
 
   public V2_RedundancyManipulatorIOTalonFX() {
     armTalonFX = new TalonFX(V2_RedundancyManipulatorConstants.ARM_CAN_ID);
@@ -109,7 +107,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     positionControlRequest = new MotionMagicVoltage(0);
     voltageRequest = new VoltageOut(0);
-    neutralRequest = new NeutralOut();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
