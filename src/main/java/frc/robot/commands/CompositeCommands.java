@@ -99,15 +99,6 @@ public class CompositeCommands {
   }
 
   public static class ScoreCommands {
-    public static final Command emergencyEject(
-        Elevator elevator, V1_StackUpManipulator manipulator) {
-      return Commands.sequence(
-          elevator.setPosition(ReefHeight.L1),
-          Commands.waitSeconds(0.125),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.4),
-          elevator.setPosition(ReefHeight.STOW));
-    }
 
     public static final Command scoreCoral(V1_StackUpManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
@@ -160,6 +151,15 @@ public class CompositeCommands {
                       DriveCommands.inchMovement(drive, -1, 0.1),
                       DriveCommands.inchMovement(drive, 1, 0.1),
                       () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
+    }
+    public static final Command emergencyEject(
+        Elevator elevator, V1_StackUpManipulator manipulator) {
+      return Commands.sequence(
+          elevator.setPosition(ReefHeight.L1),
+          Commands.waitSeconds(0.125),
+          Commands.waitUntil(elevator::atGoal),
+          manipulator.scoreCoral().withTimeout(0.4),
+          elevator.setPosition(ReefHeight.STOW));
     }
 
     public static final Command emergencyEject(
@@ -218,39 +218,40 @@ public class CompositeCommands {
                       DriveCommands.inchMovement(drive, 1, 0.1),
                       () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
-
+  }
+  public static class AlgaeCommands {
     public static final Command twerk(
-        Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
-      return Commands.deferredProxy(
-          () ->
-              twerk(
-                  drive,
-                  elevator,
-                  manipulator,
-                  switch (RobotState.getReefAlignData().closestReefTag()) {
-                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-                    default -> ReefHeight.BOT_ALGAE;
-                  },
-                  cameras));
-    }
+      Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
+    return Commands.deferredProxy(
+        () ->
+            twerk(
+                drive,
+                elevator,
+                manipulator,
+                switch (RobotState.getReefAlignData().closestReefTag()) {
+                  case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
+                  case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
+                  default -> ReefHeight.BOT_ALGAE;
+                },
+                cameras));
+  }
 
-    public static final Command twerk(
-        Drive drive,
-        Elevator elevator,
-        V1_StackUpManipulator manipulator,
-        ReefHeight level,
-        Camera... cameras) {
-      return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          elevator.setPosition(ReefHeight.L4),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.toggleAlgaeArm(),
-          Commands.waitSeconds(0.1),
-          elevator.setPosition(level),
-          manipulator.removeAlgae().until(elevator::atGoal),
-          manipulator.removeAlgae().withTimeout(0.35),
-          manipulator.toggleAlgaeArm());
-    }
+  public static final Command twerk(
+      Drive drive,
+      Elevator elevator,
+      V1_StackUpManipulator manipulator,
+      ReefHeight level,
+      Camera... cameras) {
+    return Commands.sequence(
+        DriveCommands.autoAlignReefAlgae(drive, cameras),
+        elevator.setPosition(ReefHeight.L4),
+        Commands.waitUntil(elevator::atGoal),
+        manipulator.toggleAlgaeArm(),
+        Commands.waitSeconds(0.1),
+        elevator.setPosition(level),
+        manipulator.removeAlgae().until(elevator::atGoal),
+        manipulator.removeAlgae().withTimeout(0.35),
+        manipulator.toggleAlgaeArm());
+  }
   }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -210,7 +211,7 @@ public class AutonomousCommands {
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), Commands.waitUntil(elevator::atGoal)),
         manipulator.scoreCoral().withTimeout(0.5),
-        ScoreCommands.twerk(drive, elevator, manipulator, cameras));
+        AlgaeCommands.twerk(drive, elevator, manipulator, cameras));
   }
 
   public static final Command autoCRight(
@@ -245,7 +246,7 @@ public class AutonomousCommands {
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), Commands.waitUntil(elevator::atGoal)),
         manipulator.scoreCoral().withTimeout(0.5),
-        ScoreCommands.twerk(drive, elevator, manipulator, cameras));
+        AlgaeCommands.twerk(drive, elevator, manipulator, cameras));
   }
 
   public static final Command autoBRight(
@@ -280,6 +281,6 @@ public class AutonomousCommands {
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), elevator.setPosition(ReefHeight.L4)),
         manipulator.scoreCoral().withTimeout(0.5),
-        ScoreCommands.twerk(drive, elevator, manipulator, cameras));
+        AlgaeCommands.twerk(drive, elevator, manipulator, cameras));
   }
 }

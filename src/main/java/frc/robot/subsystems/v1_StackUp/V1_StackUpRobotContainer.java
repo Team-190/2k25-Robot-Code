@@ -14,6 +14,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
@@ -200,7 +201,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver
         .start()
-        .onTrue(ScoreCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
+        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
