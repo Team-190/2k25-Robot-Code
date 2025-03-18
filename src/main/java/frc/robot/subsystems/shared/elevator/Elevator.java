@@ -69,7 +69,7 @@ public class Elevator extends SubsystemBase {
               this.position = ElevatorPositions.STOW;
               break;
             case INTAKE:
-              this.position = ElevatorPositions.INTAKE;
+              this.position = ElevatorPositions.CORAL_INTAKE;
               break;
             case L1:
               this.position = ElevatorPositions.L1;
@@ -110,7 +110,7 @@ public class Elevator extends SubsystemBase {
               this.position = ElevatorPositions.STOW;
               break;
             case INTAKE:
-              this.position = ElevatorPositions.INTAKE;
+              this.position = ElevatorPositions.CORAL_INTAKE;
               break;
             case L1:
               this.position = ElevatorPositions.L1;

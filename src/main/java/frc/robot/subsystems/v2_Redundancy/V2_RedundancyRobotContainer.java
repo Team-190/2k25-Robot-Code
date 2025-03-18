@@ -144,12 +144,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     Trigger elevatorStow =
         new Trigger(
             () ->
-                elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     || elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger elevatorNotStow =
         new Trigger(
             () ->
-                !elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger halfScoreTrigger =
         new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);

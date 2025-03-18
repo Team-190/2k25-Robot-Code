@@ -195,7 +195,9 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(0.0),
-    INTAKE(0.0),
+    CORAL_INTAKE(0.0),
+    ALGAE_INTAKE(0.1361583093038944),
+    ALGAE_MID(0.4673684509805078),
     TOP_ALGAE(1.2),
     BOT_ALGAE(0.82),
     L1(0.11295250319916351),
