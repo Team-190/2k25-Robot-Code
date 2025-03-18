@@ -69,7 +69,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   private Command setRollerVoltage(double volts) {
-    return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
+    return Commands.runEnd(() -> io.setRollerVoltage(0), () -> io.setRollerVoltage(0));
   }
 
   /**
@@ -148,8 +148,13 @@ public class V2_RedundancyIntake extends SubsystemBase {
     return Commands.run(() -> io.setExtensionVoltage(volts));
   }
 
-  public Command intakeAlgae(double volts) {
+  public Command intakeAlgae() {
     return Commands.sequence(
-        setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(volts).until(() -> hasAlgae()));
+        setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(9).until(() -> hasAlgae()));
+  }
+
+  public Command retractAlgae() {
+    return Commands.sequence(setExtensionGoal(IntakeState.STOW), setRollerVoltage(-2))
+        .withTimeout(0.5);
   }
 }

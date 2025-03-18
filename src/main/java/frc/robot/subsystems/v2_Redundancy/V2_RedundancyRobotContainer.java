@@ -35,9 +35,12 @@ import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpMechanism3d;
+import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIO;
+import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOSim;
+import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
@@ -54,6 +57,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private Funnel funnel;
   private Climber climber;
   private V2_RedundancyManipulator manipulator;
+  private V2_RedundancyIntake intake;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -80,6 +84,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
+          intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
           break;
         case V2_REDUNDANCY_SIM:
           drive =
@@ -94,6 +99,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           funnel = new Funnel(new FunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
+          intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
           break;
         default:
           break;
@@ -123,6 +129,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
+    }
+    if (intake == null) {
+      intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIO() {});
     }
 
     configureButtonBindings();
@@ -185,6 +194,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
                 drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+
+    // driver.leftTrigger(0.5).whileTrue(intake.intakeAlgae());
+    // driver.leftTrigger(0.5).onFalse(intake.retractAlgae());
 
     // Driver bumpers
     driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));

@@ -34,7 +34,7 @@ public class V2_RedundancyIntakeConstants {
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
         EXTENSION_MOTOR_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 10.0),
+                new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 100.0),
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kD", 0.0),
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kS", 0.5),
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kV", 0.0),
@@ -42,8 +42,8 @@ public class V2_RedundancyIntakeConstants {
         ANGLE_THRESHOLDS = new Thresholds(4.4, 0.0);
         EXTENSION_MOTOR_CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 100.0),
-                new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 100.0),
+                new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 500.0),
+                new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 500.0),
                 new LoggedTunableNumber("Intake/Goal Tolerance", 0.0));
         EXTENSION_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
