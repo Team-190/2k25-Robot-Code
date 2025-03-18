@@ -312,6 +312,15 @@ public class RobotState {
     OIData = new OperatorInputData(post, height);
   }
 
+  public static void toggleReefPost() {
+    ReefHeight height = OIData.currentReefHeight();
+    if (OIData.currentReefPost().equals(ReefPose.LEFT)) {
+      OIData = new OperatorInputData(ReefPose.RIGHT, height);
+    } else {
+      OIData = new OperatorInputData(ReefPose.LEFT, height);
+    }
+  }
+
   public static void setReefHeight(ReefHeight height) {
     ReefPose post = OIData.currentReefPost();
     OIData = new OperatorInputData(post, height);
