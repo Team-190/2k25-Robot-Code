@@ -48,6 +48,8 @@ import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import choreo.auto.AutoChooser;
+
 public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
@@ -63,8 +65,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<Command>("Autonomous Modes");
+
+      private final AutoChooser autoChooser = new AutoChooser();
 
   public V1_StackUpRobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
@@ -264,38 +266,38 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   private void configureAutos() {
     AutonomousCommands.loadAutoTrajectories(drive);
 
-    autoChooser.addDefaultOption("None", Commands.none());
-    autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
+    autoChooser.addCmd("None", Commands::none);
+    autoChooser.addCmd(
+        "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addCmd(
+        "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addCmd(
         "4 Piece Left",
-        AutonomousCommands.autoALeft(
+        () -> AutonomousCommands.autoALeft(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "4 Piece Right",
-        AutonomousCommands.autoARight(
+        () -> AutonomousCommands.autoARight(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "3 Piece Left",
-        AutonomousCommands.autoCLeft(
+        () -> AutonomousCommands.autoCLeft(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "3 Piece Right",
-        AutonomousCommands.autoCRight(
+        () -> AutonomousCommands.autoCRight(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "2 Piece Left",
-        AutonomousCommands.autoBLeft(
+        () -> AutonomousCommands.autoBLeft(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "2 Piece Right",
-        AutonomousCommands.autoBRight(
+        () -> AutonomousCommands.autoBRight(
             drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
-    autoChooser.addOption(
+    autoChooser.addCmd(
         "1 Piece Center",
-        AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+        () -> AutonomousCommands.autoDCenter(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
   }
 
   @Override
@@ -321,6 +323,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooser.selectedCommand();
   }
 }
