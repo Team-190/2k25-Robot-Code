@@ -21,8 +21,6 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
   private final ProfiledPIDController feedback;
   private ArmFeedforward feedforward;
 
-  private boolean isClosedLoop;
-
   public V2_RedundancyManipulatorIOSim() {
     armSim =
         new SingleJointedArmSim(
@@ -62,10 +60,6 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
             V2_RedundancyManipulatorConstants.GAINS.kS().get(),
             V2_RedundancyManipulatorConstants.GAINS.kV().get(),
             V2_RedundancyManipulatorConstants.GAINS.kA().get());
-
-    isClosedLoop = false;
-
-    armSim.setState(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(), 0.0);
   }
 
   @Override
@@ -100,7 +94,6 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
 
   @Override
   public void setArmPositionGoal(Rotation2d position) {
-    isClosedLoop = true;
     feedback.setGoal(position.getRadians());
   }
 

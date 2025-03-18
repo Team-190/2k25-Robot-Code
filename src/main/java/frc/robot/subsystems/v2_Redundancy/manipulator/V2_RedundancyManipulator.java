@@ -1,9 +1,14 @@
 package frc.robot.subsystems.v2_Redundancy.manipulator;
 
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -11,12 +16,22 @@ import org.littletonrobotics.junction.Logger;
 public class V2_RedundancyManipulator extends SubsystemBase {
   private final V2_RedundancyManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
-
+  private boolean isClosedLoop;
+  private final SysIdRoutine algaeCharacterizationRoutine;
   private final Timer currentTimer;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
+    isClosedLoop = true;
+    algaeCharacterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(5),
+                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     currentTimer = new Timer();
   }
@@ -25,6 +40,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
+
+    if (isClosedLoop) io.setArmPositionGoal(new Rotation2d());
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -78,5 +95,17 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command unHalfScoreCoral() {
     return runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
+  }
+
+  public Command sysIdRoutine() {
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
+        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(4),
+        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(4),
+        algaeCharacterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(4),
+        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 }
