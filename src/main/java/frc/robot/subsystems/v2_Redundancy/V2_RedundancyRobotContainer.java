@@ -196,12 +196,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             ScoreCommands.autoScoreCoralSequence(
                 drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
 
-    // driver.leftTrigger(0.5).whileTrue(intake.intakeAlgae());
-    // driver.leftTrigger(0.5).onFalse(intake.retractAlgae());
+    driver.leftBumper().whileTrue(intake.intakeAlgae()).whileFalse(intake.retractAlgae());
 
     // Driver bumpers
-    driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
-    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
+    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
