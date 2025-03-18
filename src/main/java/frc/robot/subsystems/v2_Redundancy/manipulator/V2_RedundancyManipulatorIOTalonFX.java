@@ -127,6 +127,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     armTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
+
+    armTalonFX.setPosition(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
   }
 
   @Override

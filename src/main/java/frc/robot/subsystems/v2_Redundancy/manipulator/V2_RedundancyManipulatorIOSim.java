@@ -64,6 +64,8 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
             V2_RedundancyManipulatorConstants.GAINS.kA().get());
 
     isClosedLoop = false;
+
+    armSim.setState(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(), 0.0);
   }
 
   @Override
