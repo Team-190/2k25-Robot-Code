@@ -57,7 +57,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command runManipulator(double volts) {
-    return this.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
+    return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
   public Command intakeCoral() {
@@ -98,14 +98,16 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command sysIdRoutine() {
-    return Commands.sequence(
-        Commands.runOnce(() -> isClosedLoop = false),
-        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(4),
-        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(4),
-        algaeCharacterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(4),
-        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
+    return Commands.parallel(
+        runManipulator(-0.5),
+        Commands.sequence(
+            Commands.runOnce(() -> isClosedLoop = false),
+            algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+            Commands.waitSeconds(4),
+            algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+            Commands.waitSeconds(4),
+            algaeCharacterizationRoutine.dynamic(Direction.kForward),
+            Commands.waitSeconds(4),
+            algaeCharacterizationRoutine.dynamic(Direction.kReverse)));
   }
 }

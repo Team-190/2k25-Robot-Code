@@ -64,11 +64,10 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
-    if (isClosedLoop) {
-      armAppliedVolts =
-          feedback.calculate(armSim.getAngleRads())
-              + feedforward.calculate(feedback.getSetpoint().position, feedback.getSetpoint().velocity);
-    }
+    armAppliedVolts =
+        feedback.calculate(armSim.getAngleRads())
+            + feedforward.calculate(
+                feedback.getSetpoint().position, feedback.getSetpoint().velocity);
 
     armAppliedVolts = MathUtil.clamp(armAppliedVolts, -12.0, 12.0);
     rollerAppliedVolts = MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0);

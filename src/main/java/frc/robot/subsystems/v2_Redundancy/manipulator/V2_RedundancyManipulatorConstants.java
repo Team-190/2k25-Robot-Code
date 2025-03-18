@@ -24,7 +24,12 @@ public class V2_RedundancyManipulatorConstants {
     ARM_SUPPLY_CURRENT_LIMIT = 40;
     ARM_PARAMETERS =
         new ArmParameters(
-            DCMotor.getKrakenX60Foc(1), Rotation2d.fromDegrees(-77.0), Rotation2d.fromDegrees(75.0), 1, 90.0, 0.5);
+            DCMotor.getKrakenX60Foc(1),
+            Rotation2d.fromDegrees(-77.0),
+            Rotation2d.fromDegrees(75.0),
+            1,
+            90.0,
+            0.5);
     GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/Arm/kP", 0.0),

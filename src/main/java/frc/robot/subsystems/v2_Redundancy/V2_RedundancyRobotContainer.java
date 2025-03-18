@@ -259,7 +259,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption("Poot algae in the barge", manipulator.sysIdRoutine());
+    autoChooser.addOption(
+        "Poot algae in the barge",
+        Commands.parallel(elevator.setPosition(ReefHeight.L3), elevator.waitUntilAtGoal())
+            .andThen(manipulator.sysIdRoutine()));
   }
 
   @Override

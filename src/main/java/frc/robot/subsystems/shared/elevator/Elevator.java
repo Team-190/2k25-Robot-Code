@@ -245,4 +245,8 @@ public class Elevator extends SubsystemBase {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
         <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
+
+  public Command waitUntilAtGoal() {
+    return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(this::atGoal));
+  }
 }
