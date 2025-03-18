@@ -18,7 +18,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.shared.funnel.FunnelIO.FunnelIOInputs;
 
 public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulatorIO {
   private final TalonFX armTalonFX;
@@ -159,48 +158,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     inputs.armTorqueCurrentAmps = armTorqueCurrentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
     inputs.armPositionGoal = armPositionGoal;
-    inputs.armPositionSetpoint =
-        Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
-    inputs.armPositionError =
-        Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
-
-    inputs.rollerPosition = Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
-    inputs.rollerVelocityRadiansPerSecond =
-        Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
-    inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
-    inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
-    inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
-  }
-
-  @Override
-  public void updateInputs(FunnelIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        armPositionRotations,
-        armVelocityRotationsPerSecond,
-        armAppliedVolts,
-        armSupplyCurrentAmps,
-        armTorqueCurrentAmps,
-        armTemperatureCelsius,
-        armPositionSetpointRotations,
-        armPositionErrorRotations);
-
-    BaseStatusSignal.refreshAll(
-        rollerPositionRotations,
-        rollerVelocityRotationsPerSecond,
-        rollerAppliedVoltage,
-        rollerSupplyCurrentAmps,
-        rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius);
-
-    inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
-
-    inputs.armV = Units.rotationsToRadians(armVelocityRotationsPerSecond.getValueAsDouble());
-    inputs.armAppliedVolts = armAppliedVolts.getValueAsDouble();
-    inputs.armSupplyCurrentAmps = armSupplyCurrentAmps.getValueAsDouble();
-    inputs.armTorqueCurrentAmps = armTorqueCurrentAmps.getValueAsDouble();
-    inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
-    inputs.armGoal = armGoal;
     inputs.armPositionSetpoint =
         Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
     inputs.armPositionError =

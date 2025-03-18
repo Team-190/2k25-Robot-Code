@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -49,15 +50,22 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
-    public Command intakeAlgae() {
+  public Command intakeAlgae() {
     return Commands.sequence(
         Commands.runOnce(() -> currentTimer.restart()),
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
-            .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
+            .until(() -> hasAlgae() && currentTimer.hasElapsed(0.25)),
+        Commands.runOnce(() -> RobotState.setHasAlgae(true)));
   }
 
   public Command scoreCoral() {
     return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get());
+  }
+
+  public Command scoreAlgae() {
+    return Commands.sequence(
+        runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get()),
+        Commands.runOnce(() -> RobotState.setHasAlgae(false)));
   }
 
   public Command scoreL1Coral() {

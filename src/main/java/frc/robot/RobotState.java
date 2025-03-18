@@ -21,6 +21,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.NTPrefixes;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
@@ -34,6 +35,8 @@ public class RobotState {
 
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData OIData;
+
+  @Getter @Setter private static boolean hasAlgae;
 
   static {
     switch (Constants.ROBOT) {
