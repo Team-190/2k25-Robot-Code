@@ -2,7 +2,6 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,6 +19,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
   private final Timer currentTimer;
+  private ArmState state;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -34,6 +35,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     currentTimer = new Timer();
+
+    state = ArmState.DOWN;
   }
 
   @Override
@@ -41,7 +44,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
 
-    if (isClosedLoop) io.setArmPositionGoal(new Rotation2d());
+    if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -71,6 +74,9 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Commands.sequence(
         Commands.runOnce(() -> currentTimer.restart()),
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
+            .alongWith(
+                Commands.sequence(
+                    Commands.parallel(setAlgaeArmGoal(ArmState.DOWN)), waitUntilAlgaeArmAtGoal()))
             .until(() -> hasAlgae() && currentTimer.hasElapsed(0.25)),
         Commands.runOnce(() -> RobotState.setHasAlgae(true)));
   }
@@ -81,6 +87,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command scoreAlgae() {
     return Commands.sequence(
+        Commands.sequence(
+            Commands.parallel(setAlgaeArmGoal(ArmState.UP)), waitUntilAlgaeArmAtGoal()),
         runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get()),
         Commands.runOnce(() -> RobotState.setHasAlgae(false)));
   }
@@ -98,16 +106,52 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command sysIdRoutine() {
-    return Commands.parallel(
-        runManipulator(-0.5),
-        Commands.sequence(
-            Commands.runOnce(() -> isClosedLoop = false),
-            algaeCharacterizationRoutine.quasistatic(Direction.kForward),
-            Commands.waitSeconds(4),
-            algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
-            Commands.waitSeconds(4),
-            algaeCharacterizationRoutine.dynamic(Direction.kForward),
-            Commands.waitSeconds(4),
-            algaeCharacterizationRoutine.dynamic(Direction.kReverse)));
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
+        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
+  }
+
+  public Command setAlgaeArmGoal(ArmState goal) {
+    return Commands.runOnce(
+        () -> {
+          isClosedLoop = true;
+          state = goal;
+        });
+  }
+
+  public void updateArmGains(
+      double kP0,
+      double kD0,
+      double kS0,
+      double kV0,
+      double kA0,
+      double kG0,
+      double kP1,
+      double kD1,
+      double kS1,
+      double kV1,
+      double kA1,
+      double kG1) {
+    io.updateSlot0ArmGains(kP0, kD0, kS0, kV0, kA0, kG0);
+    io.updateSlot1ArmGains(kP1, kD1, kS1, kV1, kA1, kG1);
+  }
+
+  public void updateArmConstraints(double maxAcceleration, double maxVelocity) {
+    io.updateArmConstraints(maxAcceleration, maxVelocity);
+  }
+
+  public boolean algaeArmAtGoal() {
+    return inputs.armPosition.getRadians() - this.state.getAngle().getRadians()
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
+  }
+
+  public Command waitUntilAlgaeArmAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::algaeArmAtGoal));
   }
 }

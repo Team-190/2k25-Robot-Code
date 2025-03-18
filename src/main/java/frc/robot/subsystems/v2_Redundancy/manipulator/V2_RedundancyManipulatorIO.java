@@ -62,7 +62,10 @@ public interface V2_RedundancyManipulatorIO {
    * @param kA The acceleration gain.
    * @param kG The gravity gain.
    */
-  public default void updateArmGains(
+  public default void updateSlot0ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {}
+
+  public default void updateSlot1ArmGains(
       double kP, double kD, double kS, double kV, double kA, double kG) {}
 
   /**

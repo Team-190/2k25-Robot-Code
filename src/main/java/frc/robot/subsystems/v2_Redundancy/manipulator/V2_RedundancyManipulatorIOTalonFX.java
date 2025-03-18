@@ -58,11 +58,18 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armConfig.CurrentLimits.withStatorCurrentLimit(
         V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.GAINS.kP().get();
-    armConfig.Slot0.kD = V2_RedundancyManipulatorConstants.GAINS.kD().get();
-    armConfig.Slot0.kS = V2_RedundancyManipulatorConstants.GAINS.kS().get();
-    armConfig.Slot0.kV = V2_RedundancyManipulatorConstants.GAINS.kV().get();
-    armConfig.Slot0.kA = V2_RedundancyManipulatorConstants.GAINS.kA().get();
+    armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
+    armConfig.Slot0.kD = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get();
+    armConfig.Slot0.kS = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get();
+    armConfig.Slot0.kV = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get();
+    armConfig.Slot0.kA = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get();
+    armConfig.Slot1.kP = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kP().get();
+    armConfig.Slot1.kD = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kD().get();
+    armConfig.Slot1.kS = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kS().get();
+    armConfig.Slot1.kV = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV().get();
+    armConfig.Slot1.kA = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA().get();
+
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
         V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations();
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -84,6 +91,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
         V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    rollerConfig.CurrentLimits.StatorCurrentLimit =
+        V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
@@ -186,11 +195,26 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
   public void setArmPositionGoal(Rotation2d position) {
     armPositionGoal = position;
     armTalonFX.setControl(
-        positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
+        positionControlRequest
+            .withPosition(position.getRotations())
+            .withEnableFOC(true)
+            .withSlot(false ? 1 : 0));
   }
 
   @Override
-  public void updateArmGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+  public void updateSlot0ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot0.kP = kP;
+    armConfig.Slot0.kD = kD;
+    armConfig.Slot0.kS = kS;
+    armConfig.Slot0.kV = kV;
+    armConfig.Slot0.kA = kA;
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  @Override
+  public void updateSlot1ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
     armConfig.Slot0.kP = kP;
     armConfig.Slot0.kD = kD;
     armConfig.Slot0.kS = kS;

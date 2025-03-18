@@ -45,9 +45,9 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
 
     feedback =
         new ProfiledPIDController(
-            V2_RedundancyManipulatorConstants.GAINS.kP().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
             0.0,
-            V2_RedundancyManipulatorConstants.GAINS.kD().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
             new Constraints(
                 V2_RedundancyManipulatorConstants.CONSTRAINTS
                     .cruisingVelocityRadiansPerSecond()
@@ -57,9 +57,9 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
                     .get()));
     feedforward =
         new ArmFeedforward(
-            V2_RedundancyManipulatorConstants.GAINS.kS().get(),
-            V2_RedundancyManipulatorConstants.GAINS.kV().get(),
-            V2_RedundancyManipulatorConstants.GAINS.kA().get());
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get());
   }
 
   @Override
@@ -102,7 +102,8 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
   }
 
   @Override
-  public void updateArmGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+  public void updateSlot0ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
     feedback.setPID(kP, 0, kD);
     feedforward = new ArmFeedforward(kS, kG, kV);
   }
