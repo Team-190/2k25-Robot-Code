@@ -279,6 +279,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     LTNUpdater.updateElevator(elevator);
     LTNUpdater.updateFunnel(funnel);
     LTNUpdater.updateAlgaeArm(manipulator);
+    LTNUpdater.updateIntake(intake);
 
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(
