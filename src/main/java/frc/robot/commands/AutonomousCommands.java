@@ -95,7 +95,7 @@ public class AutonomousCommands {
     C_RIGHT_PATH2 = Choreo.loadTrajectory("C_RIGHT_PATH2");
     C_RIGHT_PATH3 = Choreo.loadTrajectory("C_RIGHT_PATH3");
 
-    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH1");
+    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH");
   }
 
   public static void loadAutoTrajectories(Drive drive) {
