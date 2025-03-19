@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -107,6 +108,10 @@ public class V2_RedundancyIntake extends SubsystemBase {
     return false;
   }
 
+  public boolean hasCoral() {
+    return Math.abs(inputs.extensionTorqueCurrentAmps) >= 30.0;
+  }
+
   /**
    * Checks if the extension motor is at the goal position.
    *
@@ -150,7 +155,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   public Command intakeAlgae() {
     return Commands.sequence(
-        setExtensionGoal(IntakeState.INTAKE), setRollerVoltage(9).until(() -> hasAlgae()));
+        setExtensionGoal(IntakeState.INTAKE),
+        setRollerVoltage(6).until(() -> RobotState.isHasAlgae()));
   }
 
   public Command retractAlgae() {

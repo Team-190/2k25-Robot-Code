@@ -16,6 +16,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
@@ -78,7 +79,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.v1_StackUpCams);
+          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
@@ -141,12 +142,12 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     Trigger elevatorStow =
         new Trigger(
             () ->
-                elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     || elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger elevatorNotStow =
         new Trigger(
             () ->
-                !elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger halfScoreTrigger =
         new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
@@ -191,7 +192,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
-                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
 
     // Driver bumpers
     driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
@@ -201,7 +202,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver
         .start()
-        .onTrue(ScoreCommands.twerk(drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());

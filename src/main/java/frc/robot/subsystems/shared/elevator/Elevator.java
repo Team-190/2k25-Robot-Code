@@ -68,8 +68,26 @@ public class Elevator extends SubsystemBase {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;
-            case INTAKE:
-              this.position = ElevatorPositions.INTAKE;
+            case CORAL_INTAKE:
+              this.position = ElevatorPositions.CORAL_INTAKE;
+              break;
+            case ALGAE_INTAKE:
+              this.position = ElevatorPositions.ALGAE_INTAKE;
+              break;
+            case ALGAE_MID:
+              this.position = ElevatorPositions.ALGAE_MID;
+              break;
+            case ASS_TOP:
+              this.position = ElevatorPositions.ASS_TOP;
+              break;
+            case ASS_BOT:
+              this.position = ElevatorPositions.ASS_BOT;
+              break;
+            case ALGAE_INTAKE_TOP:
+              this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
+              break;
+            case ALGAE_INTAKE_BOTTOM:
+              this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
               this.position = ElevatorPositions.L1;
@@ -83,12 +101,8 @@ public class Elevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
-            case TOP_ALGAE:
-              this.position = ElevatorPositions.TOP_ALGAE;
-              break;
-            case BOT_ALGAE:
-              this.position = ElevatorPositions.BOT_ALGAE;
-              break;
+            case ALGAE_SCORE:
+              this.position = ElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
@@ -109,8 +123,26 @@ public class Elevator extends SubsystemBase {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;
-            case INTAKE:
-              this.position = ElevatorPositions.INTAKE;
+            case CORAL_INTAKE:
+              this.position = ElevatorPositions.CORAL_INTAKE;
+              break;
+            case ALGAE_INTAKE:
+              this.position = ElevatorPositions.ALGAE_INTAKE;
+              break;
+            case ALGAE_MID:
+              this.position = ElevatorPositions.ALGAE_MID;
+              break;
+            case ASS_TOP:
+              this.position = ElevatorPositions.ASS_TOP;
+              break;
+            case ASS_BOT:
+              this.position = ElevatorPositions.ASS_BOT;
+              break;
+            case ALGAE_INTAKE_TOP:
+              this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
+              break;
+            case ALGAE_INTAKE_BOTTOM:
+              this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
               this.position = ElevatorPositions.L1;
@@ -124,12 +156,8 @@ public class Elevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
-            case TOP_ALGAE:
-              this.position = ElevatorPositions.TOP_ALGAE;
-              break;
-            case BOT_ALGAE:
-              this.position = ElevatorPositions.BOT_ALGAE;
-              break;
+            case ALGAE_SCORE:
+              this.position = ElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
@@ -244,5 +272,9 @@ public class Elevator extends SubsystemBase {
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
         <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+  }
+
+  public Command waitUntilAtGoal() {
+    return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(this::atGoal));
   }
 }

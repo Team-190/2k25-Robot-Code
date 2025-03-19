@@ -11,7 +11,7 @@ import frc.robot.Constants;
 public class ElevatorIOSim implements ElevatorIO {
   private final ElevatorSim sim;
 
-  private final ProfiledPIDController controller;
+  private final ProfiledPIDController feedback;
   private ElevatorFeedforward feedforward;
 
   private double appliedVolts;
@@ -31,7 +31,7 @@ public class ElevatorIOSim implements ElevatorIO {
             true,
             ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
 
-    controller =
+    feedback =
         new ProfiledPIDController(
             ElevatorConstants.GAINS.kP().get(),
             0,
@@ -54,8 +54,8 @@ public class ElevatorIOSim implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     if (isClosedLoop) {
       appliedVolts =
-          controller.calculate(sim.getPositionMeters())
-              + feedforward.calculate(controller.getSetpoint().position);
+          feedback.calculate(sim.getPositionMeters())
+              + feedforward.calculate(feedback.getSetpoint().position);
     }
     appliedVolts = MathUtil.clamp(appliedVolts, -12.0, 12.0);
     sim.setInputVoltage(appliedVolts);
@@ -69,9 +69,9 @@ public class ElevatorIOSim implements ElevatorIO {
       inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.temperatureCelsius[i] = 0.0;
     }
-    inputs.positionGoalMeters = controller.getGoal().position;
-    inputs.positionSetpointMeters = controller.getSetpoint().position;
-    inputs.positionErrorMeters = controller.getPositionError();
+    inputs.positionGoalMeters = feedback.getGoal().position;
+    inputs.positionSetpointMeters = feedback.getSetpoint().position;
+    inputs.positionErrorMeters = feedback.getPositionError();
   }
 
   @Override
@@ -88,17 +88,17 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void setPositionGoal(double position) {
     isClosedLoop = true;
-    controller.setGoal(position);
+    feedback.setGoal(position);
   }
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA, double kG) {
-    controller.setPID(kP, 0, kD);
+    feedback.setPID(kP, 0, kD);
     feedforward = new ElevatorFeedforward(kS, kG, kV);
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
-    controller.setConstraints(new Constraints(cruisingVelocity, maxAcceleration));
+    feedback.setConstraints(new Constraints(cruisingVelocity, maxAcceleration));
   }
 }

@@ -95,7 +95,7 @@ public class FunnelConstants {
         CLAP_DADDY_INVERTED = InvertedValue.CounterClockwise_Positive;
         ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
 
-        CURRENT_LIMITS = new FunnelCurrentLimits(20.0, 20.0, 20.0, 20.0);
+        CURRENT_LIMITS = new FunnelCurrentLimits(20.0, 20.0, 40.0, 40.0);
         ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);

@@ -37,6 +37,8 @@ public class RobotState {
 
   @Setter @Getter private static RobotMode mode;
 
+  @Getter @Setter private static boolean hasAlgae;
+
   static {
     switch (Constants.ROBOT) {
       case V0_FUNKY:
@@ -238,6 +240,8 @@ public class RobotState {
 
     double fourteen = Timer.getFPGATimestamp();
 
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
+
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Heading Offset", headingOffset);
@@ -356,6 +360,15 @@ public class RobotState {
   public static void setReefPost(ReefPose post) {
     ReefHeight height = OIData.currentReefHeight();
     OIData = new OperatorInputData(post, height);
+  }
+
+  public static void toggleReefPost() {
+    ReefHeight height = OIData.currentReefHeight();
+    if (OIData.currentReefPost().equals(ReefPose.LEFT)) {
+      OIData = new OperatorInputData(ReefPose.RIGHT, height);
+    } else {
+      OIData = new OperatorInputData(ReefPose.LEFT, height);
+    }
   }
 
   public static void setReefHeight(ReefHeight height) {

@@ -11,7 +11,9 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
@@ -80,7 +82,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
+          vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
@@ -144,17 +146,17 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     Trigger elevatorStow =
         new Trigger(
             () ->
-                elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     || elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger elevatorNotStow =
         new Trigger(
             () ->
-                !elevator.getPosition().equals(ElevatorPositions.INTAKE)
+                !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
-    Trigger halfScoreTrigger =
-        new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
-    Trigger unHalfScoreTrigger =
-        new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
+    // Trigger halfScoreTrigger =
+    //     new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
+    // Trigger unHalfScoreTrigger =
+    //     new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
 
     // Default drive command
     drive.setDefaultCommand(
@@ -189,31 +191,36 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Driver triggers
-    driver.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    driver
+        .leftTrigger(0.5)
+        .whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator, intake));
     driver
         .rightTrigger(0.5)
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
-                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
 
     // driver.leftTrigger(0.5).whileTrue(intake.intakeAlgae());
     // driver.leftTrigger(0.5).onFalse(intake.retractAlgae());
 
     // Driver bumpers
-    driver.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
-    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
-
+    // driver
+    //     .leftBumper()
+    //     .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
+    //     .whileFalse(intake.retractAlgae());
+    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
+    driver.leftBumper().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver.povDown().onTrue(CompositeCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
-    driver.start().whileTrue(manipulator.intakeCoral());
-    driver.back().whileTrue(funnel.intakeCoral(() -> false));
-
-    halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
-    unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
+    driver
+        .start()
+        .whileTrue(
+            AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, driver.start()));
+    driver.back().whileTrue(AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
@@ -251,16 +258,46 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator.start().onTrue(CompositeCommands.resetHeading(drive));
-
-    operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+    operator.start().onTrue(manipulator.scoreAlgae());
+    operator.back().whileTrue(manipulator.scoreAlgae());
   }
 
   private void configureAutos() {
+    AutonomousCommands.loadAutoTrajectories(drive);
+
+    autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "4 Piece Left",
+        AutonomousCommands.autoALeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "4 Piece Right",
+        AutonomousCommands.autoARight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "3 Piece Left",
+        AutonomousCommands.autoCLeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "3 Piece Right",
+        AutonomousCommands.autoCRight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "2 Piece Left",
+        AutonomousCommands.autoBLeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "2 Piece Right",
+        AutonomousCommands.autoBRight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "1 Piece Center",
+        AutonomousCommands.autoDCenter(
+            drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
   }
 
   @Override
@@ -276,6 +313,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     LTNUpdater.updateDrive(drive);
     LTNUpdater.updateElevator(elevator);
     LTNUpdater.updateFunnel(funnel);
+    LTNUpdater.updateAlgaeArm(manipulator);
+    LTNUpdater.updateIntake(intake);
 
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(

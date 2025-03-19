@@ -57,13 +57,18 @@ public class FieldConstants {
 
     public static enum ReefHeight {
       STOW,
-      INTAKE,
+      CORAL_INTAKE,
+      ALGAE_INTAKE,
+      ALGAE_MID,
+      ASS_TOP,
+      ASS_BOT,
+      ALGAE_INTAKE_TOP,
+      ALGAE_INTAKE_BOTTOM,
       L1,
       L2,
       L3,
       L4,
-      TOP_ALGAE,
-      BOT_ALGAE
+      ALGAE_SCORE
     }
 
     public static record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae, Pose2d center) {
@@ -138,8 +143,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[0].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[0].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[0].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[0].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           19,
@@ -148,8 +152,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[1].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[1].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[1].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[1].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           20,
@@ -158,8 +161,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[2].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[2].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[2].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[2].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           21,
@@ -168,8 +170,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[3].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[3].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[3].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[3].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           22,
@@ -178,8 +179,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[4].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[4].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[4].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[4].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           17,
@@ -188,8 +188,7 @@ public class FieldConstants {
                   new Transform2d(adjustXBranch, adjustYBranch, new Rotation2d())),
               centerFaces[5].transformBy(
                   new Transform2d(adjustXBranch, -adjustYBranch, new Rotation2d())),
-              centerFaces[5].transformBy(
-                  new Transform2d(adjustXAlgae, adjustYAlgae, new Rotation2d())),
+              centerFaces[5].transformBy(new Transform2d(adjustXAlgae, 0.0, new Rotation2d())),
               centerFaces[5].transformBy(new Transform2d(adjustXBranch, 0, new Rotation2d()))));
       reefMap.put(
           7,

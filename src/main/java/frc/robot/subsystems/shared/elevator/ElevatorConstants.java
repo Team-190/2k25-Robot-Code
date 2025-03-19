@@ -195,13 +195,18 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(0.0),
-    INTAKE(0.0),
-    TOP_ALGAE(1.2),
-    BOT_ALGAE(0.82),
+    CORAL_INTAKE(0.0),
+    ALGAE_INTAKE(0.2161583093038944),
+    ALGAE_MID(0.6073684509805078),
+    ASS_TOP(1.2),
+    ASS_BOT(0.82),
+    ALGAE_INTAKE_TOP(1.17),
+    ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(2)),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
-    L4(1.3864590139769697 + Units.inchesToMeters(0.5));
+    L4(1.3864590139769697 + Units.inchesToMeters(0.5)),
+    ALGAE_SCORE(1.3864590139769697 + Units.inchesToMeters(0.5));
 
     private final double position;
 
