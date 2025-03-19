@@ -12,6 +12,7 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
@@ -151,10 +152,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () ->
                 !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
                     && !elevator.getPosition().equals(ElevatorPositions.STOW));
-    Trigger halfScoreTrigger =
-        new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
-    Trigger unHalfScoreTrigger =
-        new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
+    // Trigger halfScoreTrigger =
+    //     new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
+    // Trigger unHalfScoreTrigger =
+    //     new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
 
     // Default drive command
     drive.setDefaultCommand(
@@ -189,29 +190,36 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Driver triggers
-    driver.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    driver
+        .leftTrigger(0.5)
+        .whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator, intake));
     driver
         .rightTrigger(0.5)
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
                 drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
 
-    driver.leftBumper().whileTrue(intake.intakeAlgae()).whileFalse(intake.retractAlgae());
-
     // Driver bumpers
+    driver
+        .leftBumper()
+        .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
+        .whileFalse(intake.retractAlgae());
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver.povDown().whileTrue(elevator.setPosition(ReefHeight.STOW));
+    driver.povDown().onTrue(CompositeCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
-    driver.start().whileTrue(manipulator.intakeCoral());
-    driver.back().whileTrue(funnel.intakeCoral(() -> false));
-
-    halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
-    unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
+    driver
+        .start()
+        .whileTrue(
+            AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive, driver.start()));
+    driver
+        .back()
+        .whileTrue(
+            AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, driver.back()));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
@@ -249,9 +257,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    operator.start().onTrue(CompositeCommands.resetHeading(drive));
+    driver.start().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(true)));
+    operator.back().whileTrue(manipulator.scoreAlgae());
 
-    operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+    driver.leftStick().onTrue(AlgaeCommands.stowAll(manipulator, elevator));
+    driver.rightStick().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(false)));
   }
 
   private void configureAutos() {

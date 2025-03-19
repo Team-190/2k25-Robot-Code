@@ -198,7 +198,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         positionControlRequest
             .withPosition(position.getRotations())
             .withEnableFOC(true)
-            .withSlot(false ? 1 : 0));
+            .withSlot(0));
   }
 
   @Override

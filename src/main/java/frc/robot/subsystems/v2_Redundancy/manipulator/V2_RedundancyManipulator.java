@@ -2,7 +2,6 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,7 +17,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private final ManipulatorIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
-  private final Timer currentTimer;
   private ArmState state;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
@@ -34,8 +32,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
-    currentTimer = new Timer();
-
     state = ArmState.DOWN;
   }
 
@@ -45,6 +41,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
+
+    if (RobotState.isHasAlgae()) {
+      io.setRollerVoltage(3);
+    }
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -65,19 +65,17 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command intakeCoral() {
     return Commands.sequence(
-        Commands.runOnce(() -> currentTimer.restart()),
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
-            .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
+            .until(() -> hasCoral()));
   }
 
   public Command intakeAlgae() {
     return Commands.sequence(
-        Commands.runOnce(() -> currentTimer.restart()),
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
             .alongWith(
                 Commands.sequence(
                     Commands.parallel(setAlgaeArmGoal(ArmState.DOWN)), waitUntilAlgaeArmAtGoal()))
-            .until(() -> hasAlgae() && currentTimer.hasElapsed(0.25)),
+            .until(() -> hasAlgae()),
         Commands.runOnce(() -> RobotState.setHasAlgae(true)));
   }
 

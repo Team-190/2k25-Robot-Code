@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_RedundancyMechanism3d {
+public class V2_RedundancyMechanism3d {
   private static final double ELEVATOR_STAGE_1_MIN_HEIGHT = 0.095250; // Meters off the ground
   private static final double ELEVATOR_STAGE_1_MAX_HEIGHT = 0.8509;
   private static final double ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT = 0.120650;

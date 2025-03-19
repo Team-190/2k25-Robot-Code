@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 public class V2_RedundancyManipulatorConstants {
   public static final int ARM_CAN_ID;
-  public static final double ARM_SUPPLY_CURRENT_LIMIT;
   public static final ArmParameters ARM_PARAMETERS;
   public static final Gains WITHOUT_ALGAE_GAINS;
   public static final Gains WITH_ALGAE_GAINS;
@@ -23,7 +22,6 @@ public class V2_RedundancyManipulatorConstants {
 
   static {
     ARM_CAN_ID = 31;
-    ARM_SUPPLY_CURRENT_LIMIT = 40;
     ARM_PARAMETERS =
         new ArmParameters(
             DCMotor.getKrakenX60Foc(1),
@@ -66,7 +64,7 @@ public class V2_RedundancyManipulatorConstants {
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5));
 
-    CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 20, 20);
+    CURRENT_LIMITS = new ManipulatorCurrentLimits(20, 20, 40, 40);
   }
 
   public static record ArmParameters(

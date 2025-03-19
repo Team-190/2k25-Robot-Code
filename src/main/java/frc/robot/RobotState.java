@@ -209,6 +209,8 @@ public class RobotState {
             atAlgaeSetpoint,
             cameras);
 
+    Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
+
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Heading Offset", headingOffset);

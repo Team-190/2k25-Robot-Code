@@ -117,8 +117,8 @@ public class LTNUpdater {
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA(),
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
-      }
-      
+  }
+
   public static final void updateAlgaeArm(V2_RedundancyManipulator manipulator) {
     LoggedTunableNumber.ifChanged(
         manipulator.hashCode(),

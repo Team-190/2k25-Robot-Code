@@ -57,13 +57,16 @@ public class FieldConstants {
 
     public static enum ReefHeight {
       STOW,
-      INTAKE,
+      CORAL_INTAKE,
+      ALGAE_INTAKE,
+      ALGAE_MID,
+      TOP_ALGAE,
+      BOT_ALGAE,
       L1,
       L2,
       L3,
       L4,
-      TOP_ALGAE,
-      BOT_ALGAE
+      ALGAE_SCORE
     }
 
     public static record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae, Pose2d center) {
