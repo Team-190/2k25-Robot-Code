@@ -53,7 +53,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision(CameraConstants.RobotCameras.v0_FunkyCams);
+          vision = new Vision(CameraConstants.RobotCameras.V0_FUNKY_CAMS);
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
           break;
         case V0_FUNKY_SIM:

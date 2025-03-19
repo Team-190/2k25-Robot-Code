@@ -39,7 +39,7 @@ public class CameraConstants {
   }
 
   public static class RobotCameras {
-    private static final Camera v0_FunkyCenter =
+    private static final Camera V0_FUNKY_CENTER =
         new Camera(
             new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -57,7 +57,7 @@ public class CameraConstants {
                 .2,
                 new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-90))));
 
-    private static final Camera v0_FunkyLeft =
+    private static final Camera V0_FUNKY_LEFT =
         new Camera(
             new CameraIOLimelight("left", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -75,7 +75,7 @@ public class CameraConstants {
                 .22,
                 new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-135))));
 
-    private static final Camera v0_FunkyRight =
+    private static final Camera V0_FUNKY_RIGHT =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_2_PLUS),
             Limelight2PlusConstants.HORIZONTAL_FOV,
@@ -93,7 +93,7 @@ public class CameraConstants {
                 .22,
                 new Rotation3d(Units.degreesToRadians(180), 0, Units.degreesToRadians(-45))));
 
-    private static final Camera v1_StackUpCenter =
+    private static final Camera V1_STACKUP_CENTER =
         new Camera(
             new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -108,7 +108,7 @@ public class CameraConstants {
             new Transform3d(
                 -0.211842, 0.0, 0.226176, new Rotation3d(0, 0, Units.degreesToRadians(-180))));
 
-    private static final Camera v1_StackUpLeft =
+    private static final Camera V1_STACKUP_LEFT =
         new Camera(
             new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -126,7 +126,7 @@ public class CameraConstants {
                 0.237475,
                 new Rotation3d(0.0, 0, Units.degreesToRadians(225))));
 
-    private static final Camera v1_StackUpRight =
+    private static final Camera V1_STACKUP_RIGHT =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
@@ -141,9 +141,63 @@ public class CameraConstants {
             new Transform3d(
                 -0.203974, 0.281026, 0.237475, new Rotation3d(0, 0, Units.degreesToRadians(-225))));
 
-    public static final Camera[] v0_FunkyCams = {v0_FunkyCenter, v0_FunkyLeft, v0_FunkyRight};
-    public static final Camera[] v1_StackUpCams = {
-      v1_StackUpCenter, v1_StackUpLeft, v1_StackUpRight
+    private static final Camera V2_REDUNDANCY_CENTER =
+        new Camera(
+            new CameraIOLimelight("center", CameraType.LIMELIGHT_3G),
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-center")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                -0.211842,
+                -0.004974,
+                0.221448,
+                new Rotation3d(0, 0, Units.degreesToRadians(-180))));
+
+    private static final Camera V2_REDUNDANCY_LEFT =
+        new Camera(
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
+            Limelight4Constants.HORIZONTAL_FOV,
+            Limelight4Constants.VERTICAL_FOV,
+            Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-left")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                -0.204072,
+                -0.280928,
+                0.231125,
+                new Rotation3d(0.0, 0, Units.degreesToRadians(225))));
+
+    private static final Camera V2_REDUNDANCY_RIGHT =
+        new Camera(
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
+            Limelight4Constants.HORIZONTAL_FOV,
+            Limelight4Constants.VERTICAL_FOV,
+            Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault()
+                .getTable("limelight-right")
+                .getDoubleArrayTopic("robot_orientation_set")
+                .publish(),
+            List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION),
+            new Transform3d(
+                -0.204072, 0.280928, 0.231125, new Rotation3d(0, 0, Units.degreesToRadians(-225))));
+
+    public static final Camera[] V0_FUNKY_CAMS = {V0_FUNKY_CENTER, V0_FUNKY_LEFT, V0_FUNKY_RIGHT};
+    public static final Camera[] V1_STACKUP_CAMS = {
+      V1_STACKUP_CENTER, V1_STACKUP_LEFT, V1_STACKUP_RIGHT
+    };
+    public static final Camera[] V2_REDUNDANCY_CAMS = {
+      V2_REDUNDANCY_CENTER, V2_REDUNDANCY_LEFT, V2_REDUNDANCY_RIGHT
     };
   }
 

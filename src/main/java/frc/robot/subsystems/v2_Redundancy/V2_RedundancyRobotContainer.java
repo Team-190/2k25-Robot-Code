@@ -80,7 +80,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
+          vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
@@ -194,7 +194,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             ScoreCommands.autoScoreCoralSequence(
-                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
 
     driver.leftBumper().whileTrue(intake.intakeAlgae()).whileFalse(intake.retractAlgae());
 
