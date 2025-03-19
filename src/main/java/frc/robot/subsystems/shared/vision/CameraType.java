@@ -3,6 +3,7 @@ package frc.robot.subsystems.shared.vision;
 import frc.robot.subsystems.shared.vision.CameraConstants.Limelight2PlusConstants;
 import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3Constants;
 import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3GConstants;
+import frc.robot.subsystems.shared.vision.CameraConstants.Limelight4Constants;
 
 public enum CameraType {
   LIMELIGHT_2_PLUS(
@@ -20,6 +21,11 @@ public enum CameraType {
       Limelight3GConstants.VERTICAL_FOV,
       Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
       Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT),
+  LIMELIGHT_4(
+      Limelight4Constants.HORIZONTAL_FOV,
+      Limelight4Constants.VERTICAL_FOV,
+      Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+      Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT),
   DEFAULT();
 
   public final double horizontalFOV;

@@ -161,7 +161,7 @@ public class CameraConstants {
 
     private static final Camera V2_REDUNDANCY_LEFT =
         new Camera(
-            new CameraIOLimelight("left", CameraType.LIMELIGHT_3G),
+            new CameraIOLimelight("left", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
             Limelight4Constants.VERTICAL_FOV,
             Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -179,7 +179,7 @@ public class CameraConstants {
 
     private static final Camera V2_REDUNDANCY_RIGHT =
         new Camera(
-            new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
+            new CameraIOLimelight("right", CameraType.LIMELIGHT_4),
             Limelight4Constants.HORIZONTAL_FOV,
             Limelight4Constants.VERTICAL_FOV,
             Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
