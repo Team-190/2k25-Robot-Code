@@ -200,10 +200,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Driver bumpers
-    driver
-        .leftBumper()
-        .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
-        .whileFalse(intake.retractAlgae());
+    // driver
+    //     .leftBumper()
+    //     .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
+    //     .whileFalse(intake.retractAlgae());
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -215,11 +215,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver
         .start()
         .whileTrue(
-            AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive, driver.start()));
+            AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, driver.start()));
     driver
         .back()
         .whileTrue(
-            AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, driver.back()));
+            AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive, driver.back()));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
