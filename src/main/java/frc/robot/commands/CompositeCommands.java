@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +21,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.In
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.AllianceFlipUtil;
+import java.util.function.BooleanSupplier;
 
 public class CompositeCommands {
   public static final Command resetHeading(Drive drive) {
@@ -269,8 +268,13 @@ public class CompositeCommands {
           .andThen(elevator.setPosition(ReefHeight.STOW));
     }
 
-    public static final Command reefAlgaeFinishSequence() {
-      return Commands.runOnce(() -> RobotState.setHasAlgae(false));
+    public static final Command reefAlgaeFinishSequence(
+        Elevator elevator, V2_RedundancyManipulator arm) {
+      return Commands.sequence(
+          arm.setAlgaeArmGoal(ArmState.UP),
+          arm.waitUntilAlgaeArmAtGoal(),
+          elevator.setPosition(ReefHeight.STOW),
+          elevator.waitUntilAtGoal());
     }
 
     public static final Command reefIntakeSubsequence(
@@ -323,7 +327,8 @@ public class CompositeCommands {
                       .schedule());
     }
 
-    public static final Command scoreNetSequence(Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier waitForSpit) {
+    public static final Command scoreNetSequence(
+        Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier waitForSpit) {
       return Commands.sequence(
           elevator.setPosition(ReefHeight.L1),
           elevator.waitUntilAtGoal(),
@@ -331,5 +336,20 @@ public class CompositeCommands {
           manipulator.runManipulator(-5),
           elevator.setPosition(ReefHeight.STOW));
     }
+
+    public static final Command intakeFromReefSequence( //With onTrue, and pass in button
+        V2_RedundancyManipulator arm,
+        Elevator elevator,
+        Drive drive,
+        BooleanSupplier waitForButton,
+        Camera... cameras) {
+      return Commands.sequence(
+          Commands.deadline(
+              Commands.waitUntil(() -> !waitForButton.getAsBoolean()),
+              reefIntakeSubsequence(arm, elevator, drive, cameras)),
+              Commands.either(reefAlgaeFinishSequence(elevator, arm), reefNoAlgaeFinishSequence(arm, elevator), arm::hasAlgae));
+    }
+
+    public static final Command dropFromReefSequence() {}
   }
 }
