@@ -11,6 +11,7 @@ import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
@@ -205,7 +206,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     //     .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
     //     .whileFalse(intake.retractAlgae());
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
-
+    driver.leftBumper().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
     driver.povDown().onTrue(CompositeCommands.resetHeading(drive));
@@ -259,14 +260,41 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
+    AutonomousCommands.loadAutoTrajectories(drive);
+
+    autoChooser.addDefaultOption("None", Commands.none());
     autoChooser.addOption(
         "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
         "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
-        "Poot algae in the barge",
-        Commands.parallel(elevator.setPosition(ReefHeight.L3), elevator.waitUntilAtGoal())
-            .andThen(manipulator.sysIdRoutine()));
+        "4 Piece Left",
+        AutonomousCommands.autoALeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "4 Piece Right",
+        AutonomousCommands.autoARight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "3 Piece Left",
+        AutonomousCommands.autoCLeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "3 Piece Right",
+        AutonomousCommands.autoCRight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "2 Piece Left",
+        AutonomousCommands.autoBLeft(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "2 Piece Right",
+        AutonomousCommands.autoBRight(
+            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addOption(
+        "1 Piece Center",
+        AutonomousCommands.autoDCenter(
+            drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
   }
 
   @Override

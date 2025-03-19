@@ -88,7 +88,10 @@ public class CompositeCommands {
         V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
-              AlgaeCommands.stowAll(manipulator, elevator),
+              Commands.either(
+                  Commands.none(),
+                  AlgaeCommands.stowAll(manipulator, elevator),
+                  () -> manipulator.getState().equals(ArmState.DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(manipulator.intakeCoral(), funnel.intakeCoral(() -> intake.hasCoral())))
@@ -334,5 +337,13 @@ public class CompositeCommands {
           moveAlgaeArm(manipulator, elevator, ArmState.DOWN),
           elevator.setPosition(ReefHeight.STOW));
     }
+  }
+
+  public static Command testAlgae(Elevator elevator, V2_RedundancyManipulator manipulator) {
+    return Commands.sequence(
+      elevator.setPosition(ReefHeight.ALGAE_MID),
+      elevator.waitUntilAtGoal(),
+      manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE)
+    );
   }
 }

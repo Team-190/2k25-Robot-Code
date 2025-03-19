@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,7 +18,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private final ManipulatorIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
-  private ArmState state;
+  @Getter private ArmState state;
   private boolean isIntakingAlgae;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
