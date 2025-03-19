@@ -77,11 +77,11 @@ public class Elevator extends SubsystemBase {
             case ALGAE_MID:
               this.position = ElevatorPositions.ALGAE_MID;
               break;
-            case TOP_ALGAE:
-              this.position = ElevatorPositions.TOP_ALGAE;
+            case ASS_TOP:
+              this.position = ElevatorPositions.ASS_TOP;
               break;
-            case BOT_ALGAE:
-              this.position = ElevatorPositions.BOT_ALGAE;
+            case ASS_BOT:
+              this.position = ElevatorPositions.ASS_BOT;
               break;
             case L1:
               this.position = ElevatorPositions.L1;
@@ -124,11 +124,17 @@ public class Elevator extends SubsystemBase {
             case ALGAE_MID:
               this.position = ElevatorPositions.ALGAE_MID;
               break;
-            case TOP_ALGAE:
-              this.position = ElevatorPositions.TOP_ALGAE;
+            case ASS_TOP:
+              this.position = ElevatorPositions.ASS_TOP;
               break;
-            case BOT_ALGAE:
-              this.position = ElevatorPositions.BOT_ALGAE;
+            case ASS_BOT:
+              this.position = ElevatorPositions.ASS_BOT;
+              break;
+            case ALGAE_INTAKE_TOP:
+              this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
+              break;
+            case ALGAE_INTAKE_BOTTOM:
+              this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
               this.position = ElevatorPositions.L1;

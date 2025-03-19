@@ -239,9 +239,9 @@ public class CompositeCommands {
                   elevator,
                   manipulator,
                   switch (RobotState.getReefAlignData().closestReefTag()) {
-                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.BOT_ALGAE;
-                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.TOP_ALGAE;
-                    default -> ReefHeight.BOT_ALGAE;
+                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.ASS_BOT;
+                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.ASS_TOP;
+                    default -> ReefHeight.ASS_BOT;
                   },
                   cameras));
     }
@@ -275,24 +275,7 @@ public class CompositeCommands {
                   >= ElevatorConstants.ElevatorPositions.ALGAE_MID.getPosition());
     }
 
-    public static final Command floorIntakeSequence(
-        V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
-      return Commands.sequence(
-          Commands.parallel(
-                  elevator.setPosition(ReefHeight.ALGAE_MID),
-                  intake.intakeAlgae(),
-                  manipulator.intakeAlgae())
-              .until(() -> RobotState.isHasAlgae()),
-          moveAlgaeArm(manipulator, elevator, ArmState.UP),
-          elevator.setPosition(ReefHeight.STOW));
-    }
-
-    public static final Command scoreNetSequence(
-        Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier waitForSpit) {
-      return Commands.none();
-    }
-
-    public static final Command intakeFromReefSequence( // With onTrue, and pass in button
+    public static final Command intakeFromReefSequence(
         V2_RedundancyManipulator manipulator,
         Elevator elevator,
         Drive drive,
@@ -307,7 +290,18 @@ public class CompositeCommands {
         Drive drive,
         BooleanSupplier waitForButton,
         Camera... cameras) {
-      return Commands.none();
+      return Commands.sequence(
+        Commands.parallel(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+        moveAlgaeArm(manipulator, elevator, ArmState.REEF_INTAKE)),
+        Commands.sequence(
+          elevator.setPosition(switch (RobotState.getReefAlignData().closestReefTag()) {
+            case 10, 6, 8, 21, 17, 19 -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+            case 9, 11, 7, 22, 20, 18 -> ReefHeight.ALGAE_INTAKE_TOP;
+            default -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+          })
+        )
+      );
     }
 
     public static final Command stowAll(V2_RedundancyManipulator manipulator, Elevator elevator) {

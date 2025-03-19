@@ -257,11 +257,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
-    driver.start().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(true)));
+    operator.start().onTrue(manipulator.scoreAlgae());
     operator.back().whileTrue(manipulator.scoreAlgae());
-
-    driver.leftStick().onTrue(AlgaeCommands.stowAll(manipulator, elevator));
-    driver.rightStick().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(false)));
   }
 
   private void configureAutos() {

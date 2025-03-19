@@ -55,8 +55,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.CurrentLimits.withSupplyCurrentLimit(
         V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
-    armConfig.CurrentLimits.withStatorCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
+    // armConfig.CurrentLimits.withStatorCurrentLimit(
+    //     V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
