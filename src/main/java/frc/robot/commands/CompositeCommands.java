@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
@@ -87,6 +88,7 @@ public class CompositeCommands {
         V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
+              AlgaeCommands.stowAll(manipulator, elevator),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(manipulator.intakeCoral(), funnel.intakeCoral(() -> intake.hasCoral())))
@@ -267,9 +269,12 @@ public class CompositeCommands {
     public static final Command moveAlgaeArm(
         V2_RedundancyManipulator manipulator, Elevator elevator, ArmState armState) {
       return Commands.either(
-          manipulator.setAlgaeArmGoal(armState),
           Commands.sequence(
-              elevator.setPosition(ReefHeight.ALGAE_MID), manipulator.setAlgaeArmGoal(armState)),
+              manipulator.setAlgaeArmGoal(armState), manipulator.waitUntilAlgaeArmAtGoal()),
+          Commands.sequence(
+              Commands.sequence(
+                  elevator.setPosition(ReefHeight.ALGAE_MID), elevator.waitUntilAtGoal()),
+              manipulator.setAlgaeArmGoal(armState)),
           () ->
               elevator.getPosition().getPosition()
                   >= ElevatorConstants.ElevatorPositions.ALGAE_MID.getPosition());
@@ -288,19 +293,40 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         Elevator elevator,
         Drive drive,
-        BooleanSupplier waitForButton,
+        ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-          Commands.parallel(
-              DriveCommands.autoAlignReefAlgae(drive, cameras),
-              moveAlgaeArm(manipulator, elevator, ArmState.REEF_INTAKE)),
-          Commands.sequence(
-              elevator.setPosition(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          Commands.deadline(
+              Commands.sequence(
+                  elevator.setPosition(level),
+                  elevator.waitUntilAtGoal(),
+                  manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
+                  manipulator.waitUntilAlgaeArmAtGoal(),
+                  Commands.waitSeconds(.5),
+                  Commands.runEnd(
+                          () -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0)),
+                          () -> drive.stop())
+                      .withTimeout(0.5)),
+              manipulator.runManipulator(6)),
+          manipulator.runManipulator(-3).withTimeout(0.5),
+          stowAll(manipulator, elevator));
+    }
+
+    public static final Command dropFromReefSequence(
+        V2_RedundancyManipulator manipulator, Elevator elevator, Drive drive, Camera... cameras) {
+      return Commands.deferredProxy(
+          () ->
+              dropFromReefSequence(
+                  manipulator,
+                  elevator,
+                  drive,
                   switch (RobotState.getReefAlignData().closestReefTag()) {
                     case 10, 6, 8, 21, 17, 19 -> ReefHeight.ALGAE_INTAKE_BOTTOM;
                     case 9, 11, 7, 22, 20, 18 -> ReefHeight.ALGAE_INTAKE_TOP;
                     default -> ReefHeight.ALGAE_INTAKE_BOTTOM;
-                  })));
+                  },
+                  cameras));
     }
 
     public static final Command stowAll(V2_RedundancyManipulator manipulator, Elevator elevator) {
