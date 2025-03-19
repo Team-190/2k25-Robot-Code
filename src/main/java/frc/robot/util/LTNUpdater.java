@@ -11,8 +11,6 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -97,30 +95,6 @@ public class LTNUpdater {
         FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
         FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
-
-  public static final void updateIntake(V2_RedundancyIntake intake) {
-    LoggedTunableNumber.ifChanged(
-        intake.hashCode(),
-        () -> {
-          intake.updateGains(
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA().get());
-          intake.updateConstraints(
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
-        },
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
-  }
-
   public static final void updateAlgaeArm(V2_RedundancyManipulator manipulator) {
     LoggedTunableNumber.ifChanged(
         manipulator.hashCode(),

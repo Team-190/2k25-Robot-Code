@@ -275,37 +275,37 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "4 Piece Right",
         () ->
             AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "2 Piece Left",
         () ->
             AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "2 Piece Right",
         () ->
             AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, funnel, manipulator, RobotCameras.V1_STACKUP_CAMS));
     autoChooser.addCmd(
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, RobotCameras.v1_StackUpCams));
+                drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
     SmartDashboard.putData("Autonomous Mode", autoChooser);
   }
 
