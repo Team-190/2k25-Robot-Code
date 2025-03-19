@@ -291,17 +291,16 @@ public class CompositeCommands {
         BooleanSupplier waitForButton,
         Camera... cameras) {
       return Commands.sequence(
-        Commands.parallel(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-        moveAlgaeArm(manipulator, elevator, ArmState.REEF_INTAKE)),
-        Commands.sequence(
-          elevator.setPosition(switch (RobotState.getReefAlignData().closestReefTag()) {
-            case 10, 6, 8, 21, 17, 19 -> ReefHeight.ALGAE_INTAKE_BOTTOM;
-            case 9, 11, 7, 22, 20, 18 -> ReefHeight.ALGAE_INTAKE_TOP;
-            default -> ReefHeight.ALGAE_INTAKE_BOTTOM;
-          })
-        )
-      );
+          Commands.parallel(
+              DriveCommands.autoAlignReefAlgae(drive, cameras),
+              moveAlgaeArm(manipulator, elevator, ArmState.REEF_INTAKE)),
+          Commands.sequence(
+              elevator.setPosition(
+                  switch (RobotState.getReefAlignData().closestReefTag()) {
+                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.ALGAE_INTAKE_TOP;
+                    default -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+                  })));
     }
 
     public static final Command stowAll(V2_RedundancyManipulator manipulator, Elevator elevator) {
