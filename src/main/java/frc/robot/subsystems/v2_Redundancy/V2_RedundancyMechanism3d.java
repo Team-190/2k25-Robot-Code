@@ -36,6 +36,7 @@ public class V2_RedundancyMechanism3d {
           0.603223,
           new Rotation3d(0.0, 0.0, Units.degreesToRadians(57.687084)));
   private static final Pose3d ALGAE_ARM = new Pose3d(0.0, 0.0, 0.0, new Rotation3d());
+  private static final Pose3d ALGAE_INTAKE = new Pose3d(0.0, 0.0, 0.0, new Rotation3d());
 
   /**
    * Calculates and returns an array of Pose3d objects representing the positions of various
@@ -49,7 +50,10 @@ public class V2_RedundancyMechanism3d {
    *     elevator carriage, left funnel, and right funnel.
    */
   public static final Pose3d[] getPoses(
-      double elevatorExtensionMeters, Rotation2d funnelAngle, Rotation2d armAngle) {
+      double elevatorExtensionMeters,
+      Rotation2d funnelAngle,
+      Rotation2d armAngle,
+      double intakePosition) {
     double extensionMeters =
         MathUtil.clamp(elevatorExtensionMeters, MIN_EXTENSION_METERS, MAX_EXTENSION_METERS);
 
@@ -77,7 +81,9 @@ public class V2_RedundancyMechanism3d {
 
     Logger.recordOutput(
         "Zero Poses",
-        new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
+        new Pose3d[] {
+          new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()
+        });
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
@@ -99,7 +105,8 @@ public class V2_RedundancyMechanism3d {
               new Transform3d(
                   new Translation3d(),
                   new Rotation3d(0.0, 0.0, funnelAngle.unaryMinus().getRadians()))),
-      ALGAE_ARM.rotateBy(new Rotation3d(0.0, armAngle.getRadians(), 0.0))
+      ALGAE_ARM.rotateBy(new Rotation3d(0.0, armAngle.getRadians(), 0.0)),
+      ALGAE_INTAKE.transformBy(new Transform3d(intakePosition, 0.0, 0.0, new Rotation3d()))
     };
   }
 }
