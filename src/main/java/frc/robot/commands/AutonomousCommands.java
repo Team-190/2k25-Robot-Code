@@ -15,9 +15,10 @@ import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
-import java.util.Optional;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
+import frc.robot.util.AllianceFlipUtil;
+import java.util.Optional;
 
 public class AutonomousCommands {
   private static Optional<Trajectory<SwerveSample>> A_LEFT_PATH1;
@@ -136,6 +137,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    A_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         A_LEFT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -179,6 +184,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    A_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         A_RIGHT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -222,6 +231,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    B_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         B_LEFT_PATH1_CMD,
         Commands.parallel(
@@ -246,6 +259,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    C_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         C_LEFT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -281,6 +298,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    C_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         C_RIGHT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -316,6 +337,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    B_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         B_RIGHT_PATH1_CMD,
         Commands.parallel(
@@ -335,6 +360,10 @@ public class AutonomousCommands {
   public static final Command autoDCenter(
       Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    D_CENTER_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         D_CENTER_PATH1_CMD,
         Commands.parallel(
@@ -354,6 +383,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    A_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         A_LEFT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -398,6 +431,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    A_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         A_RIGHT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -442,6 +479,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    B_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         B_LEFT_PATH1_CMD,
         Commands.parallel(
@@ -467,6 +508,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    C_LEFT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         C_LEFT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -502,6 +547,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    C_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         C_RIGHT_PATH1_CMD,
         elevator.setPosition(ReefHeight.L4),
@@ -537,6 +586,10 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    B_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         B_RIGHT_PATH1_CMD,
         Commands.parallel(
@@ -556,6 +609,10 @@ public class AutonomousCommands {
   public static final Command autoDCenter(
       Drive drive, Elevator elevator, V2_RedundancyManipulator manipulator, Camera... cameras) {
     return Commands.sequence(
+        Commands.runOnce(
+            () ->
+                RobotState.resetRobotPose(
+                    D_CENTER_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
         D_CENTER_PATH1_CMD,
         Commands.parallel(

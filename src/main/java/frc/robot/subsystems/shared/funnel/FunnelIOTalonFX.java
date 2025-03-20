@@ -91,8 +91,8 @@ public class FunnelIOTalonFX implements FunnelIO {
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
         FunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
-    rollerConfig.CurrentLimits.withStatorCurrentLimit(
-        FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
+    // rollerConfig.CurrentLimits.withStatorCurrentLimit(
+    //     FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
     rollerConfig.MotorOutput.Inverted = FunnelConstants.ROLLER_INVERTED;

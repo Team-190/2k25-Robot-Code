@@ -341,9 +341,8 @@ public class CompositeCommands {
 
   public static Command testAlgae(Elevator elevator, V2_RedundancyManipulator manipulator) {
     return Commands.sequence(
-      elevator.setPosition(ReefHeight.ALGAE_MID),
-      elevator.waitUntilAtGoal(),
-      manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE)
-    );
+        elevator.setPosition(ReefHeight.ALGAE_MID),
+        elevator.waitUntilAtGoal(),
+        manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE));
   }
 }

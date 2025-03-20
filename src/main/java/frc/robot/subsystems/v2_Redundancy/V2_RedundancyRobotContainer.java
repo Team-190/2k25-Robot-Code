@@ -1,6 +1,8 @@
 package frc.robot.subsystems.v2_Redundancy;
 
+import choreo.auto.AutoChooser;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -50,7 +52,6 @@ import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
   // Subsystems
@@ -67,8 +68,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<>("Autonomous Modes");
+  private final AutoChooser autoChooser = new AutoChooser();
 
   public V2_RedundancyRobotContainer() {
 
@@ -265,39 +265,47 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private void configureAutos() {
     AutonomousCommands.loadAutoTrajectories(drive);
 
-    autoChooser.addDefaultOption("None", Commands.none());
-    autoChooser.addOption(
-        "Drive FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
+    autoChooser.addCmd("None", Commands::none);
+    autoChooser.addCmd(
+        "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addCmd(
+        "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addCmd(
         "4 Piece Left",
-        AutonomousCommands.autoALeft(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoALeft(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "4 Piece Right",
-        AutonomousCommands.autoARight(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoARight(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "3 Piece Left",
-        AutonomousCommands.autoCLeft(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoCLeft(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "3 Piece Right",
-        AutonomousCommands.autoCRight(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoCRight(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "2 Piece Left",
-        AutonomousCommands.autoBLeft(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoBLeft(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "2 Piece Right",
-        AutonomousCommands.autoBRight(
-            drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addOption(
+        () ->
+            AutonomousCommands.autoBRight(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "1 Piece Center",
-        AutonomousCommands.autoDCenter(
-            drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+        () ->
+            AutonomousCommands.autoDCenter(
+                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+    SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
   @Override
@@ -325,6 +333,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return autoChooser.selectedCommand();
   }
 }

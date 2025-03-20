@@ -306,7 +306,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoDCenter(
                 drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
-    SmartDashboard.putData("Autonomous Mode", autoChooser);
+    SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
   @Override
