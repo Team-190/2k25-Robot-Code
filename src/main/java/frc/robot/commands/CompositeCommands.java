@@ -13,6 +13,7 @@ import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -204,12 +205,16 @@ public class CompositeCommands {
       return Commands.either(
           autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
           Commands.sequence(
-              elevator.setPosition(ReefHeight.L2),
+              elevator
+                  .setPosition(ReefHeight.L2)
+                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.STOW)),
               DriveCommands.autoAlignReefCoral(drive, cameras),
               scoreCoralSequence(elevator, manipulator),
               Commands.waitSeconds(0.25),
-              elevator.setPosition(ReefHeight.L4_PLUS),
-              manipulator.scoreCoral().withTimeout(0.5)),
+              Commands.sequence(
+                      elevator.setPosition(ReefHeight.L4_PLUS),
+                      manipulator.scoreCoral().withTimeout(0.5))
+                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 

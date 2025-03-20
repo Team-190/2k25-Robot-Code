@@ -32,7 +32,8 @@ public class ElevatorConstants {
         ELEVATOR_STATOR_CURRENT_LIMIT = 40;
 
         ELEVATOR_PARAMETERS =
-            new ElevatorParameters(DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43, 4);
+            new ElevatorParameters(
+                DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43 + Units.inchesToMeters(0.5), 4);
 
         switch (Constants.getMode()) {
           case REAL:
@@ -206,7 +207,7 @@ public class ElevatorConstants {
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
     L4(1.3864590139769697 + Units.inchesToMeters(0.5)),
-    L4_PLUS(1.3864590139769697 + Units.inchesToMeters(2.5)),
+    L4_PLUS(1.3864590139769697 + Units.inchesToMeters(2.0)),
     ALGAE_SCORE(1.3864590139769697 + Units.inchesToMeters(0.5));
 
     private final double position;

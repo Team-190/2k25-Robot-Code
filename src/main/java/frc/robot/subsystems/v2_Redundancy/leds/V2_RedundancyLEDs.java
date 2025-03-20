@@ -22,16 +22,15 @@ public class V2_RedundancyLEDs extends Leds {
   private double lastEnabledTime = 0.0;
   private boolean estopped = false;
 
-  private static final int LENGTH = 28;
+  private static final int LENGTH = 29;
   private static final int PORT = 0;
   private static final int LEFT_LENGTH_START = 0;
-  private static final int LEFT_LENGTH_END = 13;
-  private static final int RIGHT_LENGTH_START = 14;
-  private static final int RIGHT_LENGTH_END = 28;
+  private static final int LEFT_LENGTH_END = 14;
+  private static final int RIGHT_LENGTH_START = 15;
+  private static final int RIGHT_LENGTH_END = 29;
 
   @Setter private static boolean isIntaking = false;
   @Setter private static boolean isAutoAligning = false;
-  @Setter private static boolean climberSensorPanic = false;
 
   public V2_RedundancyLEDs() {
     super(LENGTH, PORT);
@@ -92,8 +91,6 @@ public class V2_RedundancyLEDs extends Leds {
     } else if (RobotMode.enabled()) {
       if (isAutoAligning) {
         rainbow(LENGTH, 0.25);
-      } else if (climberSensorPanic) {
-        strobe(Color.kRed, Color.kBlack, STROBE_FAST_DURATION);
       } else {
         if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
           if (isIntaking) {
