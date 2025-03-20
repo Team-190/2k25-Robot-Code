@@ -22,7 +22,6 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.AllianceFlipUtil;
-import java.util.function.BooleanSupplier;
 
 public class CompositeCommands {
   public static final Command resetHeading(Drive drive) {
@@ -290,15 +289,6 @@ public class CompositeCommands {
                   >= ElevatorConstants.ElevatorPositions.ALGAE_MID.getPosition());
     }
 
-    public static final Command intakeFromReefSequence(
-        V2_RedundancyManipulator manipulator,
-        Elevator elevator,
-        Drive drive,
-        BooleanSupplier waitForButton,
-        Camera... cameras) {
-      return Commands.none();
-    }
-
     public static final Command dropFromReefSequence(
         V2_RedundancyManipulator manipulator,
         Elevator elevator,
@@ -357,13 +347,11 @@ public class CompositeCommands {
               manipulator.intakeAlgae()),
           Commands.either(
               Commands.sequence(
-                  manipulator.setAlgaeArmGoal(ArmState.UP),
-                  manipulator.waitUntilAlgaeArmAtGoal(),
+                  moveAlgaeArm(manipulator, elevator, ArmState.UP),
                   elevator.setPosition(ReefHeight.STOW)),
               Commands.sequence(
-                  elevator.setPosition(ReefHeight.ALGAE_MID),
-                  elevator.waitUntilAtGoal(),
-                  manipulator.setAlgaeArmGoal(ArmState.DOWN)),
+                  moveAlgaeArm(manipulator, elevator, ArmState.DOWN),
+                  elevator.setPosition(ReefHeight.STOW)),
               RobotState::isHasAlgae));
     }
 
