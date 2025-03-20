@@ -101,6 +101,9 @@ public class Elevator extends SubsystemBase {
             case L4:
               this.position = ElevatorPositions.L4;
               break;
+            case L4_PLUS:
+              this.position = ElevatorPositions.L4_PLUS;
+              break;
             case ALGAE_SCORE:
               this.position = ElevatorPositions.ALGAE_SCORE;
             default:
@@ -155,6 +158,9 @@ public class Elevator extends SubsystemBase {
               break;
             case L4:
               this.position = ElevatorPositions.L4;
+              break;
+            case L4_PLUS:
+              this.position = ElevatorPositions.L4_PLUS;
               break;
             case ALGAE_SCORE:
               this.position = ElevatorPositions.ALGAE_SCORE;

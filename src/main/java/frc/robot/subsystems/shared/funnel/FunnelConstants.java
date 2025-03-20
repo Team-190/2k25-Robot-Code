@@ -160,7 +160,7 @@ public class FunnelConstants {
 
   @RequiredArgsConstructor
   public enum FunnelState {
-    STOW(Rotation2d.fromDegrees(60.0)),
+    STOW(Rotation2d.fromDegrees(65.0)),
     OPENED(Rotation2d.fromDegrees(60.0)),
     CLOSED(Rotation2d.fromDegrees(100.0)),
     CLIMB(Rotation2d.fromDegrees(0.0));

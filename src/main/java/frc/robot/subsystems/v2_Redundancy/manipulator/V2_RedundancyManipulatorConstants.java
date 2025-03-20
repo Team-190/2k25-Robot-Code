@@ -58,11 +58,11 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
     ROLLER_VOLTAGES =
         new Voltages(
-            new LoggedTunableNumber("Manipulator/Intake Volts", 6.0),
-            new LoggedTunableNumber("Manipulator/Score Volts", 4.0),
+            new LoggedTunableNumber("Manipulator/Intake Volts", 6.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/Score Volts", 4.0 * 1.56),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
-            new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
-            new LoggedTunableNumber("Manipulator/L1 Volts", 3.5));
+            new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
     CURRENT_LIMITS = new ManipulatorCurrentLimits(20, 20, 40, 40);
   }

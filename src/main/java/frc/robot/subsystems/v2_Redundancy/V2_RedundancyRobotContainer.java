@@ -46,6 +46,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIO;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOSim;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOTalonFX;
+import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
@@ -62,6 +63,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private Climber climber;
   private V2_RedundancyManipulator manipulator;
   private V2_RedundancyIntake intake;
+  private V2_RedundancyLEDs leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -88,6 +90,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
+          leds = new V2_RedundancyLEDs();
           break;
         case V2_REDUNDANCY_SIM:
           drive =
@@ -135,6 +138,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     }
     if (intake == null) {
       intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIO() {});
+    }
+    if (leds == null) {
+      leds = new V2_RedundancyLEDs();
     }
 
     configureButtonBindings();
@@ -286,9 +292,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             AutonomousCommands.autoCLeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addCmd(
+        "3 Piece Left Push",
+        () ->
+            AutonomousCommands.autoCLeftPush(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
+        "3 Piece Right Push",
+        () ->
+            AutonomousCommands.autoCRightPush(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addCmd(
         "2 Piece Left",

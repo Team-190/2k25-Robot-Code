@@ -68,6 +68,7 @@ public class FieldConstants {
       L2,
       L3,
       L4,
+      L4_PLUS,
       ALGAE_SCORE
     }
 
