@@ -36,8 +36,10 @@ public class RobotState {
   @Getter private static OperatorInputData OIData;
 
   @Setter @Getter private static RobotMode mode;
-
   @Getter @Setter private static boolean hasAlgae;
+
+  @Getter @Setter private static boolean isIntakingCoral;
+  @Getter @Setter private static boolean isAutoAligning;
 
   static {
     switch (Constants.ROBOT) {

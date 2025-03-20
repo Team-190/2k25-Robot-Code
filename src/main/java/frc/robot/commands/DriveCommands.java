@@ -29,13 +29,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.shared.vision.CameraDuty;
-import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
@@ -274,12 +271,7 @@ public final class DriveCommands {
 
     return Commands.runOnce(
             () -> {
-              for (Camera camera : cameras) {
-                if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-                  camera.setValidTags(RobotState.getReefAlignData().closestReefTag());
-                }
-              }
-              V1_StackUp_LEDs.setAutoAligning(true);
+              RobotState.setAutoAligning(true);
             })
         .andThen(
             Commands.run(
@@ -384,10 +376,7 @@ public final class DriveCommands {
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
-                      for (Camera camera : cameras) {
-                        camera.setValidTags(FieldConstants.validTags);
-                      }
-                      V1_StackUp_LEDs.setAutoAligning(false);
+                      RobotState.setAutoAligning(false);
                     }));
   }
 
@@ -399,12 +388,7 @@ public final class DriveCommands {
 
     return Commands.runOnce(
             () -> {
-              for (Camera camera : cameras) {
-                if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)) {
-                  camera.setValidTags(RobotState.getReefAlignData().closestReefTag());
-                }
-              }
-              V1_StackUp_LEDs.setAutoAligning(true);
+              RobotState.setAutoAligning(true);
             })
         .andThen(
             Commands.run(
@@ -509,10 +493,7 @@ public final class DriveCommands {
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
-                      for (Camera camera : cameras) {
-                        camera.setValidTags(FieldConstants.validTags);
-                      }
-                      V1_StackUp_LEDs.setAutoAligning(false);
+                      RobotState.setAutoAligning(false);
                     }));
   }
 

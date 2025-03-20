@@ -17,7 +17,6 @@ import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
@@ -64,22 +63,22 @@ public class CompositeCommands {
     public static final Command intakeCoral(
         Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
+          .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralOverride(
         Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
-          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
+          .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
     public static final Command intakeCoral(
@@ -88,7 +87,7 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               Commands.either(
                   Commands.none(),
                   AlgaeCommands.stowAll(manipulator, elevator),
@@ -96,17 +95,17 @@ public class CompositeCommands {
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(manipulator.intakeCoral(), funnel.intakeCoral(() -> intake.hasCoral())))
-          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
+          .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralOverride(
         Elevator elevator, Funnel funnel, V2_RedundancyManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> V1_StackUp_LEDs.setIntaking(true)),
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
-          .finallyDo(() -> V1_StackUp_LEDs.setIntaking(false));
+          .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
   }
 
@@ -320,8 +319,7 @@ public class CompositeCommands {
                           () -> drive.stop())
                       .withTimeout(0.5)),
               manipulator.runManipulator(6)),
-          manipulator.runManipulator(-3).withTimeout(0.5),
-          stowAll(manipulator, elevator));
+          manipulator.runManipulator(-3).withTimeout(0.5)).finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
     }
 
     public static final Command dropFromReefSequence(

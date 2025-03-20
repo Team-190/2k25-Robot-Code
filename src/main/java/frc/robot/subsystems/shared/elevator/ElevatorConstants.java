@@ -107,7 +107,8 @@ public class ElevatorConstants {
         ELEVATOR_STATOR_CURRENT_LIMIT = 80;
 
         ELEVATOR_PARAMETERS =
-            new ElevatorParameters(DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, 1.43, 2);
+            new ElevatorParameters(
+                DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, 1.43 + Units.inchesToMeters(0.5), 2);
 
         switch (Constants.getMode()) {
           case REAL:

@@ -8,7 +8,6 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.leds.Leds;
-import lombok.Setter;
 
 public class V2_RedundancyLEDs extends Leds {
   private static Leds instance;
@@ -28,9 +27,6 @@ public class V2_RedundancyLEDs extends Leds {
   private static final int LEFT_LENGTH_END = 14;
   private static final int RIGHT_LENGTH_START = 15;
   private static final int RIGHT_LENGTH_END = 29;
-
-  @Setter private static boolean isIntaking = false;
-  @Setter private static boolean isAutoAligning = false;
 
   public V2_RedundancyLEDs() {
     super(LENGTH, PORT);
@@ -89,11 +85,11 @@ public class V2_RedundancyLEDs extends Leds {
         rainbow(LENGTH, 5.0);
       }
     } else if (RobotMode.enabled()) {
-      if (isAutoAligning) {
+      if (RobotState.isAutoAligning()) {
         rainbow(LENGTH, 0.25);
       } else {
         if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
-          if (isIntaking) {
+          if (RobotState.isIntakingCoral()) {
             solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
           } else {
             breath(
@@ -104,7 +100,7 @@ public class V2_RedundancyLEDs extends Leds {
                 LEFT_LENGTH_END);
           }
         } else if (RobotState.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
-          if (isIntaking) {
+          if (RobotState.isIntakingCoral()) {
             solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
           } else {
             breath(
