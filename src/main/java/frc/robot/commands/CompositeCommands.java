@@ -306,20 +306,21 @@ public class CompositeCommands {
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.deadline(
-              Commands.sequence(
-                  elevator.setPosition(level),
-                  elevator.waitUntilAtGoal(),
-                  manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
-                  manipulator.waitUntilAlgaeArmAtGoal(),
-                  Commands.waitSeconds(.5),
-                  Commands.runEnd(
-                          () -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0)),
-                          () -> drive.stop())
-                      .withTimeout(0.5)),
-              manipulator.runManipulator(6)),
-          manipulator.runManipulator(-3).withTimeout(0.5)).finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
+              DriveCommands.autoAlignReefAlgae(drive, cameras),
+              Commands.deadline(
+                  Commands.sequence(
+                      elevator.setPosition(level),
+                      elevator.waitUntilAtGoal(),
+                      manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
+                      manipulator.waitUntilAlgaeArmAtGoal(),
+                      Commands.waitSeconds(.5),
+                      Commands.runEnd(
+                              () -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0)),
+                              () -> drive.stop())
+                          .withTimeout(0.5)),
+                  manipulator.runManipulator(6)),
+              manipulator.runManipulator(-3).withTimeout(0.5))
+          .finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
     }
 
     public static final Command dropFromReefSequence(
