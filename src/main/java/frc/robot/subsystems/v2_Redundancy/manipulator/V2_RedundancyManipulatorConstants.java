@@ -49,7 +49,7 @@ public class V2_RedundancyManipulatorConstants {
     CONSTRAINTS =
         new Constraints(
             new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 100.0),
-            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
+            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5.0),
             new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", 0.01));
 
     ROLLER_CAN_ID = 30;
@@ -58,8 +58,9 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
     ROLLER_VOLTAGES =
         new Voltages(
-            new LoggedTunableNumber("Manipulator/Intake Volts", 6.0 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Volts", 4.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/Intake Volts", 9.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/Score Algae Volts", 9),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
@@ -96,7 +97,8 @@ public class V2_RedundancyManipulatorConstants {
 
   public static final record Voltages(
       LoggedTunableNumber INTAKE_VOLTS,
-      LoggedTunableNumber SCORE_VOLTS,
+      LoggedTunableNumber SCORE_CORAL_VOLTS,
+      LoggedTunableNumber SCORE_ALGAE_VOLTS,
       LoggedTunableNumber REMOVE_ALGAE,
       LoggedTunableNumber HALF_VOLTS,
       LoggedTunableNumber L1_VOLTS) {}

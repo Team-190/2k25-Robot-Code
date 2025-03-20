@@ -343,12 +343,14 @@ public class CompositeCommands {
                   elevator.waitUntilAtGoal(),
                   manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                   manipulator.waitUntilAlgaeArmAtGoal(),
-                  Commands.waitSeconds(.5)),
+                  Commands.waitSeconds(.5),
+                  Commands.runEnd(
+                          () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
+                          () -> drive.stop())
+                      .withTimeout(0.5)),
               manipulator.intakeAlgae()),
           Commands.either(
-              Commands.sequence(
-                  moveAlgaeArm(manipulator, elevator, ArmState.UP),
-                  elevator.setPosition(ReefHeight.STOW)),
+              Commands.none(),
               Commands.sequence(
                   moveAlgaeArm(manipulator, elevator, ArmState.DOWN),
                   elevator.setPosition(ReefHeight.STOW)),
@@ -374,6 +376,7 @@ public class CompositeCommands {
     public static final Command stowAll(V2_RedundancyManipulator manipulator, Elevator elevator) {
       return Commands.sequence(
           moveAlgaeArm(manipulator, elevator, ArmState.DOWN),
+          manipulator.waitUntilAlgaeArmAtGoal(),
           elevator.setPosition(ReefHeight.STOW));
     }
   }
@@ -383,5 +386,9 @@ public class CompositeCommands {
         elevator.setPosition(ReefHeight.ALGAE_MID),
         elevator.waitUntilAtGoal(),
         manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE));
+  }
+
+  public static final Command scoreAlgae(V2_RedundancyManipulator manipulator) {
+    return Commands.sequence(manipulator.scoreAlgae());
   }
 }

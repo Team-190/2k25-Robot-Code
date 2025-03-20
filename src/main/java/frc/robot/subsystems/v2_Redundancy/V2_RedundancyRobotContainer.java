@@ -48,6 +48,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOSim;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
@@ -219,10 +220,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
-    driver
-        .start()
-        .whileTrue(
-            AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive));
+    driver.start().whileTrue(AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive));
     driver.back().whileTrue(AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive));
 
     // Operator face buttons
@@ -262,7 +260,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimber());
 
     operator.start().onTrue(manipulator.scoreAlgae());
-    operator.back().whileTrue(manipulator.scoreAlgae());
+    operator
+        .back()
+        .onTrue(
+            Commands.sequence(
+                AlgaeCommands.moveAlgaeArm(manipulator, elevator, ArmState.UP),
+                elevator.setPosition(ReefHeight.ALGAE_SCORE)));
+    driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
   }
 
   private void configureAutos() {

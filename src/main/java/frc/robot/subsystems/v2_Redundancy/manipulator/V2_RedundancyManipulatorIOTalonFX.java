@@ -81,8 +81,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         V2_RedundancyManipulatorConstants.CONSTRAINTS
             .maxAccelerationRadiansPerSecondSquared()
             .get();
-    armConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRadiansPerSecond().get();
+    armConfig.MotionMagic.MotionMagicCruiseVelocity = 1;
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -91,8 +90,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
         V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    // rollerConfig.CurrentLimits.StatorCurrentLimit =
-    //     V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
+    rollerConfig.CurrentLimits.StatorCurrentLimit =
+        V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));

@@ -53,16 +53,11 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       }
     }
 
-    if (RobotState.isHasAlgae()) {
+    if (RobotState.isHasAlgae() && !RobotState.isIntakingAlgae()) {
       if (inputs.rollerVelocityRadiansPerSecond >= 50.0) {
         RobotState.setHasAlgae(false);
       } else {
-
-        if (!algaeArmAtGoal()) {
-          io.setRollerVoltage(6.0);
-        } else {
-          io.setRollerVoltage(3.0);
-        }
+        io.setRollerVoltage(2.0);
       }
     }
   }
@@ -99,14 +94,14 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command scoreCoral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get());
+    return runManipulator(
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get());
   }
 
   public Command scoreAlgae() {
     return Commands.sequence(
-        Commands.sequence(
-            Commands.parallel(setAlgaeArmGoal(ArmState.UP)), waitUntilAlgaeArmAtGoal()),
-        runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_VOLTS().get()),
+        runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get())
+            .withTimeout(0.5),
         Commands.runOnce(() -> RobotState.setHasAlgae(false)));
   }
 
