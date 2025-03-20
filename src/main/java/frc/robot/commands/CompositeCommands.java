@@ -346,23 +346,32 @@ public class CompositeCommands {
         ReefHeight level,
         Camera... cameras) {
       return Commands.sequence(
-              DriveCommands.autoAlignReefAlgae(drive, cameras),
-              Commands.deadline(
-                  Commands.sequence(
-                      elevator.setPosition(level),
-                      elevator.waitUntilAtGoal(),
-                      manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
-                      manipulator.waitUntilAlgaeArmAtGoal(),
-                      Commands.waitSeconds(.5)),
-                  manipulator.intakeAlgae()))
-          .finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          Commands.deadline(
+              Commands.sequence(
+                  elevator.setPosition(level),
+                  elevator.waitUntilAtGoal(),
+                  manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
+                  manipulator.waitUntilAlgaeArmAtGoal(),
+                  Commands.waitSeconds(.5)),
+              manipulator.intakeAlgae()),
+          Commands.either(
+              Commands.sequence(
+                  manipulator.setAlgaeArmGoal(ArmState.UP),
+                  manipulator.waitUntilAlgaeArmAtGoal(),
+                  elevator.setPosition(ReefHeight.STOW)),
+              Commands.sequence(
+                  elevator.setPosition(ReefHeight.ALGAE_MID),
+                  elevator.waitUntilAtGoal(),
+                  manipulator.setAlgaeArmGoal(ArmState.DOWN)),
+              RobotState::isHasAlgae));
     }
 
     public static final Command intakeFromReefSequence(
         V2_RedundancyManipulator manipulator, Elevator elevator, Drive drive, Camera... cameras) {
       return Commands.deferredProxy(
           () ->
-              dropFromReefSequence(
+              intakeFromReefSequence(
                   manipulator,
                   elevator,
                   drive,
