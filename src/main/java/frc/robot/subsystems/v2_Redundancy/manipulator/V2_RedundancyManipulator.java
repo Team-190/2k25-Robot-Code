@@ -19,7 +19,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
   @Getter private ArmState state;
-  private boolean isIntakingAlgae;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -35,7 +34,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     state = ArmState.DOWN;
-    isIntakingAlgae = false;
   }
 
   @Override
@@ -49,7 +47,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       io.setRollerVoltage(3);
     }
 
-    if (isIntakingAlgae) {
+    if (RobotState.isIntakingAlgae()) {
       if (inputs.rollerVelocityRadiansPerSecond <= 50.0) {
         RobotState.setHasAlgae(true);
       }
@@ -58,6 +56,13 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     if (RobotState.isHasAlgae()) {
       if (inputs.rollerVelocityRadiansPerSecond >= 50.0) {
         RobotState.setHasAlgae(false);
+      } else {
+
+        if (!algaeArmAtGoal()) {
+          io.setRollerVoltage(6.0);
+        } else {
+          io.setRollerVoltage(3.0);
+        }
       }
     }
   }
@@ -86,13 +91,11 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command intakeAlgae() {
     return Commands.sequence(
-            Commands.runOnce(() -> isIntakingAlgae = true),
+            Commands.runOnce(() -> RobotState.setIntakingAlgae(true)),
             Commands.parallel(
                 runManipulator(
-                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get()),
-                Commands.sequence(
-                    Commands.parallel(setAlgaeArmGoal(ArmState.DOWN)), waitUntilAlgaeArmAtGoal())))
-        .finallyDo(() -> isIntakingAlgae = false);
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())))
+        .finallyDo(() -> RobotState.setIntakingAlgae(false));
   }
 
   public Command scoreCoral() {

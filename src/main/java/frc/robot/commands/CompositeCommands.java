@@ -339,6 +339,41 @@ public class CompositeCommands {
                   cameras));
     }
 
+    public static final Command intakeFromReefSequence(
+        V2_RedundancyManipulator manipulator,
+        Elevator elevator,
+        Drive drive,
+        ReefHeight level,
+        Camera... cameras) {
+      return Commands.sequence(
+              DriveCommands.autoAlignReefAlgae(drive, cameras),
+              Commands.deadline(
+                  Commands.sequence(
+                      elevator.setPosition(level),
+                      elevator.waitUntilAtGoal(),
+                      manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
+                      manipulator.waitUntilAlgaeArmAtGoal(),
+                      Commands.waitSeconds(.5)),
+                  manipulator.intakeAlgae()))
+          .finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
+    }
+
+    public static final Command intakeFromReefSequence(
+        V2_RedundancyManipulator manipulator, Elevator elevator, Drive drive, Camera... cameras) {
+      return Commands.deferredProxy(
+          () ->
+              dropFromReefSequence(
+                  manipulator,
+                  elevator,
+                  drive,
+                  switch (RobotState.getReefAlignData().closestReefTag()) {
+                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.ALGAE_INTAKE_TOP;
+                    default -> ReefHeight.ALGAE_INTAKE_BOTTOM;
+                  },
+                  cameras));
+    }
+
     public static final Command stowAll(V2_RedundancyManipulator manipulator, Elevator elevator) {
       return Commands.sequence(
           moveAlgaeArm(manipulator, elevator, ArmState.DOWN),

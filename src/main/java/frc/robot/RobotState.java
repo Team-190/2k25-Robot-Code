@@ -35,10 +35,11 @@ public class RobotState {
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData OIData;
 
-  @Setter @Getter private static RobotMode mode;
+  @Getter @Setter private static RobotMode mode;
   @Getter @Setter private static boolean hasAlgae;
 
   @Getter @Setter private static boolean isIntakingCoral;
+  @Getter @Setter private static boolean isIntakingAlgae;
   @Getter @Setter private static boolean isAutoAligning;
 
   static {
