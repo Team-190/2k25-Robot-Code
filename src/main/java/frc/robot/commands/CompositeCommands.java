@@ -308,14 +308,14 @@ public class CompositeCommands {
                       elevator.waitUntilAtGoal(),
                       manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                       manipulator.waitUntilAlgaeArmAtGoal(),
-                      Commands.waitSeconds(.5),
+                      Commands.waitUntil(() -> RobotState.isHasAlgae()),
                       Commands.runEnd(
                               () -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0)),
                               () -> drive.stop())
                           .withTimeout(0.5)),
                   manipulator.runManipulator(6)),
               manipulator.runManipulator(-3).withTimeout(0.5))
-          .finallyDo(() -> manipulator.setAlgaeArmGoal(ArmState.DOWN));
+          .finallyDo(() -> stowAll(manipulator, elevator));
     }
 
     public static final Command dropFromReefSequence(
@@ -348,7 +348,7 @@ public class CompositeCommands {
                   elevator.waitUntilAtGoal(),
                   manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                   manipulator.waitUntilAlgaeArmAtGoal(),
-                  Commands.waitSeconds(1.0),
+                  Commands.waitUntil(() -> RobotState.isHasAlgae()),
                   Commands.runEnd(
                           () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                           () -> drive.stop())
