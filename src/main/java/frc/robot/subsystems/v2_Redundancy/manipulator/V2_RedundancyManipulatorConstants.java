@@ -56,7 +56,8 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
     ROLLER_VOLTAGES =
         new Voltages(
-            new LoggedTunableNumber("Manipulator/Intake Volts", 6.0),
+            new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
+            new LoggedTunableNumber("Manipulator/Algae Intake Volts", 9.0),
             new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.0 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
@@ -94,7 +95,8 @@ public class V2_RedundancyManipulatorConstants {
       LoggedTunableNumber goalToleranceRadians) {}
 
   public static final record Voltages(
-      LoggedTunableNumber INTAKE_VOLTS,
+      LoggedTunableNumber CORAL_INTAKE_VOLTS,
+      LoggedTunableNumber ALGAE_INTAKE_VOLTS,
       LoggedTunableNumber SCORE_CORAL_VOLTS,
       LoggedTunableNumber SCORE_ALGAE_VOLTS,
       LoggedTunableNumber REMOVE_ALGAE,
@@ -104,7 +106,7 @@ public class V2_RedundancyManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ArmState {
     UP(Rotation2d.fromDegrees(75)),
-    REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
+    REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 7.5)),
     DOWN(Rotation2d.fromDegrees(-77));
 
     private final Rotation2d angle;

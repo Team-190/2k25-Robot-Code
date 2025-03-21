@@ -80,7 +80,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command intakeCoral() {
     return Commands.sequence(
-        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())
+        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
             .until(() -> hasCoral()));
   }
 
@@ -89,7 +89,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             Commands.runOnce(() -> RobotState.setIntakingAlgae(true)),
             Commands.parallel(
                 runManipulator(
-                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.INTAKE_VOLTS().get())))
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())))
         .finallyDo(() -> RobotState.setIntakingAlgae(false));
   }
 
