@@ -343,7 +343,7 @@ public class CompositeCommands {
                   elevator.waitUntilAtGoal(),
                   manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                   manipulator.waitUntilAlgaeArmAtGoal(),
-                  Commands.waitSeconds(.5),
+                  Commands.waitSeconds(1.0),
                   Commands.runEnd(
                           () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                           () -> drive.stop())
