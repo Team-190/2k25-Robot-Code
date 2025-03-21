@@ -86,12 +86,12 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
     rollerConfig = new TalonFXConfiguration();
-    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
-        V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.StatorCurrentLimit =
-        V2_RedundancyManipulatorConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
