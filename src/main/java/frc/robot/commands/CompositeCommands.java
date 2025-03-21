@@ -308,7 +308,7 @@ public class CompositeCommands {
                       elevator.waitUntilAtGoal(),
                       manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                       manipulator.waitUntilAlgaeArmAtGoal(),
-                      Commands.waitUntil(() -> RobotState.isHasAlgae()),
+                      Commands.waitSeconds(1.0),
                       Commands.runEnd(
                               () -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0)),
                               () -> drive.stop())
@@ -348,7 +348,7 @@ public class CompositeCommands {
                   elevator.waitUntilAtGoal(),
                   manipulator.setAlgaeArmGoal(ArmState.REEF_INTAKE),
                   manipulator.waitUntilAlgaeArmAtGoal(),
-                  Commands.waitUntil(() -> RobotState.isHasAlgae()),
+                  Commands.waitUntil(RobotState::isHasAlgae),
                   Commands.runEnd(
                           () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                           () -> drive.stop())
