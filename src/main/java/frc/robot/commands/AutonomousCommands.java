@@ -636,7 +636,7 @@ public class AutonomousCommands {
                 RobotState.resetRobotPose(
                     C_RIGHT_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
         Commands.runEnd(
-                () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)), () -> drive.stop())
+                () -> drive.runVelocity(new ChassisSpeeds(0.0, 1.0, 0.0)), () -> drive.stop())
             .withTimeout(0.5),
         Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         C_RIGHT_PATH1_CMD,

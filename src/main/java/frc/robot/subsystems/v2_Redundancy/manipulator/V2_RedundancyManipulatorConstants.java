@@ -59,7 +59,7 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_VOLTAGES =
         new Voltages(
             new LoggedTunableNumber("Manipulator/Intake Volts", 9.0 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.0 * 1.56),
+            new LoggedTunableNumber("Manipulator/Score Coral Volts", 6.0 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Algae Volts", 9),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
