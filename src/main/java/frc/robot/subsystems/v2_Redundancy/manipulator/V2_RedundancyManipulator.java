@@ -19,7 +19,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
   @Getter private ArmState state;
-  private boolean isGoingUp;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -35,7 +34,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     state = ArmState.DOWN;
-    isGoingUp = false;
   }
 
   @Override
@@ -43,10 +41,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
 
-    isGoingUp = state.equals(ArmState.UP);
-    Logger.recordOutput("Maipuilator/going up", isGoingUp);
-
-    if (isClosedLoop) io.setArmPositionGoal(state.getAngle(), isGoingUp);
+    if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
     if (RobotState.isHasAlgae()) {
       io.setRollerVoltage(.75);
