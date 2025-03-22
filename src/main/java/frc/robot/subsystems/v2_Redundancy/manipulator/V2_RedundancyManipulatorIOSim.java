@@ -92,7 +92,7 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
   }
 
   @Override
-  public void setArmPositionGoal(Rotation2d position) {
+  public void setArmPositionGoal(Rotation2d position, boolean goingUp) {
     feedback.setGoal(position.getRadians());
   }
 

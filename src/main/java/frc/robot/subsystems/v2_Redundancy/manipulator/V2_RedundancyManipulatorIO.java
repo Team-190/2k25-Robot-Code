@@ -50,7 +50,7 @@ public interface V2_RedundancyManipulatorIO {
    *
    * @param meters The position goal to set in meters.
    */
-  public default void setArmPositionGoal(Rotation2d rotatoion) {}
+  public default void setArmPositionGoal(Rotation2d rotatoion, boolean goingUp) {}
 
   /**
    * Sets the gains for the arm.

@@ -201,23 +201,20 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
   }
 
   @Override
-  public void setArmPositionGoal(Rotation2d position) {
+  public void setArmPositionGoal(Rotation2d position, boolean goingUp) {
     armPositionGoal = position;
     armTalonFX.setControl(
         positionControlRequest
             .withPosition(position.getRotations())
             .withEnableFOC(true)
             .withAcceleration(
-                armGoingUp()
+                goingUp
                     ? 1
                     : V2_RedundancyManipulatorConstants.CONSTRAINTS
                         .maxAccelerationRotationsPerSecondSquared()
                         .get()));
   }
 
-  private boolean armGoingUp() {
-    return armPositionGoal.getRotations() > armPositionRotations.getValueAsDouble();
-  }
 
   @Override
   public void updateSlot0ArmGains(
