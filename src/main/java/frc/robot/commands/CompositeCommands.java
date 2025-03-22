@@ -108,7 +108,7 @@ public class CompositeCommands {
                   () -> manipulator.getState().equals(ArmState.DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
-              Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
+              Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> true)))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
   }
