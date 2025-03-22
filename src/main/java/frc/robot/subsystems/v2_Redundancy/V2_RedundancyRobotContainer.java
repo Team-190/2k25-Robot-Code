@@ -274,9 +274,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
     operatorFunnelOverride.whileTrue(
         IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator, intake));
-    operatorFunnelOverride.onFalse(Commands.sequence(
-        funnel.setClapDaddyGoal(FunnelState.OPENED),
-        funnel.stopRoller()));
+    operatorFunnelOverride.onFalse(
+        Commands.sequence(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
   }
 
   private void configureAutos() {
