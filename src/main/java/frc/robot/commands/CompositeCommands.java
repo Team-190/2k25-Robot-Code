@@ -123,12 +123,12 @@ public class CompositeCommands {
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(
-                  manipulator.intakeCoral(), funnel.setClapDaddyGoal(FunnelState.CLOSED)))
+                  manipulator.intakeCoral(), funnel.setFunnelVoltage(12), funnel.setClapDaddyGoal(FunnelState.CLOSED))
           .finallyDo(
               () -> {
                 RobotState.setIntakingCoral(false);
                 funnel.setClapDaddyGoal(FunnelState.OPENED);
-              });
+              }));
     }
   }
 
