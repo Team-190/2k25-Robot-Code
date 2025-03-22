@@ -215,7 +215,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
                         .get()));
   }
 
-
   @Override
   public void updateSlot0ArmGains(
       double kP, double kD, double kS, double kV, double kA, double kG) {

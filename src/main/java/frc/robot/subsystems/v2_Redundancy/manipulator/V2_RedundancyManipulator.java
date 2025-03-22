@@ -44,9 +44,9 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     Logger.processInputs("Manipulator", inputs);
 
     isGoingUp = state.equals(ArmState.UP);
+    Logger.recordOutput("Maipuilator/going up", isGoingUp);
 
-    if (isClosedLoop) io.setArmPositionGoal(state.getAngle(), isGoingUp
-    );
+    if (isClosedLoop) io.setArmPositionGoal(state.getAngle(), isGoingUp);
 
     if (RobotState.isHasAlgae()) {
       io.setRollerVoltage(.75);
