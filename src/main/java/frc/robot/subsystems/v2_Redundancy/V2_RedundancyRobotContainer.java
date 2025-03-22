@@ -165,6 +165,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Trigger unHalfScoreTrigger =
     //     new Trigger(() -> operator.getLeftY() > DriveConstants.OPERATOR_DEADBAND);
 
+    Trigger operatorFunnelOverride =
+        new Trigger(() -> Math.hypot(operator.getRightX(), operator.getRightY()) > 0.5);
+
     // Default drive command
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -266,7 +269,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             Commands.sequence(
                 AlgaeCommands.moveAlgaeArm(manipulator, elevator, ArmState.UP),
                 elevator.setPosition(ReefHeight.ALGAE_SCORE)));
+    // Misc
     driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
+    operatorFunnelOverride.whileTrue(
+        IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator));
   }
 
   private void configureAutos() {
