@@ -44,7 +44,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
     if (RobotState.isHasAlgae()) {
-      io.setRollerVoltage(3);
+      io.setRollerVoltage(.75);
     }
 
     if (RobotState.isIntakingAlgae()) {
@@ -57,7 +57,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       if (inputs.rollerVelocityRadiansPerSecond >= 50.0) {
         RobotState.setHasAlgae(false);
       } else {
-        io.setRollerVoltage(2.0);
+        io.setRollerVoltage(0.75);
       }
     }
   }
