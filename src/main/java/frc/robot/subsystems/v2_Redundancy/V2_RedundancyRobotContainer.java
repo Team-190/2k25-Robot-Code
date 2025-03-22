@@ -272,7 +272,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Misc
     driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
     operatorFunnelOverride.whileTrue(
-        IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator,intake));
+        IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator, intake));
   }
 
   private void configureAutos() {

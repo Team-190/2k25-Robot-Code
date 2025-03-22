@@ -113,7 +113,10 @@ public class CompositeCommands {
     }
 
     public static final Command intakeCoralCloseOverride(
-        Elevator elevator, Funnel funnel, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        Elevator elevator,
+        Funnel funnel,
+        V2_RedundancyManipulator manipulator,
+        V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               Commands.either(
@@ -122,7 +125,8 @@ public class CompositeCommands {
                   () -> manipulator.getState().equals(ArmState.DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
-              Commands.parallel(manipulator.intakeCoral(), funnel.funnelClosedOverride()).until(intake::hasCoral))
+              Commands.parallel(manipulator.intakeCoral(), funnel.funnelClosedOverride())
+                  .until(intake::hasCoral))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
   }
