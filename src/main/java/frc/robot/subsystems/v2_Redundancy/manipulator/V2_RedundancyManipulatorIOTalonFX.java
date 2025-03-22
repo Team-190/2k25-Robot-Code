@@ -83,9 +83,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
             .maxAccelerationRotationsPerSecondSquared()
             .get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
-    V2_RedundancyManipulatorConstants.CONSTRAINTS
-        .cruisingVelocityRotationsPerSecond()
-        .get();
+        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -117,11 +115,16 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
-    positionControlRequest = new DynamicMotionMagicVoltage(0, V2_RedundancyManipulatorConstants.CONSTRAINTS
-    .cruisingVelocityRotationsPerSecond()
-    .get(), V2_RedundancyManipulatorConstants.CONSTRAINTS
-    .maxAccelerationRotationsPerSecondSquared()
-    .get(), 0);
+    positionControlRequest =
+        new DynamicMotionMagicVoltage(
+            0,
+            V2_RedundancyManipulatorConstants.CONSTRAINTS
+                .cruisingVelocityRotationsPerSecond()
+                .get(),
+            V2_RedundancyManipulatorConstants.CONSTRAINTS
+                .maxAccelerationRotationsPerSecondSquared()
+                .get(),
+            0);
     voltageRequest = new VoltageOut(0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -205,13 +208,13 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         positionControlRequest
             .withPosition(position.getRotations())
             .withEnableFOC(true)
-            .withSlot(RobotState.isHasAlgae() ? 1 : 0).withAcceleration(
+            .withSlot(RobotState.isHasAlgae() ? 1 : 0)
+            .withAcceleration(
                 armGoingUp()
                     ? 1
-                    : 
-                V2_RedundancyManipulatorConstants.CONSTRAINTS
-                    .maxAccelerationRotationsPerSecondSquared()
-                    .get()));
+                    : V2_RedundancyManipulatorConstants.CONSTRAINTS
+                        .maxAccelerationRotationsPerSecondSquared()
+                        .get()));
   }
 
   private boolean armGoingUp() {
