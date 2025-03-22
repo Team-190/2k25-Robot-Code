@@ -105,6 +105,18 @@ public class Funnel extends SubsystemBase {
     return Commands.runOnce(io::stopRoller);
   }
 
+  public Command funnelClosedOverride() {
+    return Commands.runEnd(
+        ()->{
+          goal = FunnelState.CLOSED;
+          io.setRollerVoltage(12);
+        },
+        ()->{
+          goal = FunnelState.OPENED;
+          io.setRollerVoltage(0);
+        });
+  }
+
   /**
    * Runs the SysId routine for the clapDaddy.
    *
