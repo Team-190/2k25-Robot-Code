@@ -90,8 +90,8 @@ public class V2_RedundancyManipulatorConstants {
       double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRadiansPerSecondSquared,
-      LoggedTunableNumber cruisingVelocityRadiansPerSecond,
+      LoggedTunableNumber maxAccelerationRotationsPerSecondSquared,
+      LoggedTunableNumber cruisingVelocityRotationsPerSecond,
       LoggedTunableNumber goalToleranceRadians) {}
 
   public static final record Voltages(

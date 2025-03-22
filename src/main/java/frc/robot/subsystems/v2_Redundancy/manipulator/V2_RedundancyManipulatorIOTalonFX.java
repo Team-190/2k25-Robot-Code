@@ -5,6 +5,7 @@ import static frc.robot.util.PhoenixUtil.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,6 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.RobotState;
 
 public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulatorIO {
   private final TalonFX armTalonFX;
@@ -43,7 +45,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   private Rotation2d armPositionGoal;
 
-  private final MotionMagicVoltage positionControlRequest;
+  private final DynamicMotionMagicVoltage positionControlRequest;
   private final VoltageOut voltageRequest;
 
   public V2_RedundancyManipulatorIOTalonFX() {
@@ -79,9 +81,12 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     armConfig.MotionMagic.MotionMagicAcceleration =
         V2_RedundancyManipulatorConstants.CONSTRAINTS
-            .maxAccelerationRadiansPerSecondSquared()
+            .maxAccelerationRotationsPerSecondSquared()
             .get();
-    armConfig.MotionMagic.MotionMagicCruiseVelocity = 1;
+    armConfig.MotionMagic.MotionMagicCruiseVelocity =
+    V2_RedundancyManipulatorConstants.CONSTRAINTS
+        .cruisingVelocityRotationsPerSecond()
+        .get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -113,7 +118,11 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
-    positionControlRequest = new MotionMagicVoltage(0);
+    positionControlRequest = new DynamicMotionMagicVoltage(0, V2_RedundancyManipulatorConstants.CONSTRAINTS
+    .cruisingVelocityRotationsPerSecond()
+    .get(), V2_RedundancyManipulatorConstants.CONSTRAINTS
+    .maxAccelerationRotationsPerSecondSquared()
+    .get(), 0);
     voltageRequest = new VoltageOut(0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -197,7 +206,17 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         positionControlRequest
             .withPosition(position.getRotations())
             .withEnableFOC(true)
-            .withSlot(0));
+            .withSlot(RobotState.isHasAlgae() ? 1 : 0).withAcceleration(
+                armGoingUp()
+                    ? 1
+                    : 
+                V2_RedundancyManipulatorConstants.CONSTRAINTS
+                    .maxAccelerationRotationsPerSecondSquared()
+                    .get()));
+  }
+
+  private boolean armGoingUp() {
+    return armPositionGoal.getRotations() > armPositionRotations.getValueAsDouble();
   }
 
   @Override
