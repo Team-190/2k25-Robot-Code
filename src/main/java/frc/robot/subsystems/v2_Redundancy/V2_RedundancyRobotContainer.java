@@ -253,7 +253,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Operator triggers
     operator
         .leftTrigger(0.5)
-        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator, intake));
+        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator, intake)).onFalse(Commands.parallel(
+            funnel.setClapDaddyGoal(FunnelState.OPENED),
+            funnel.stopRoller()));
     operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
 
     // Operator bumpers
