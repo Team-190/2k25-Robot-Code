@@ -208,7 +208,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         positionControlRequest
             .withPosition(position.getRotations())
             .withEnableFOC(true)
-            .withSlot(RobotState.isHasAlgae() ? 1 : 0)
             .withAcceleration(
                 armGoingUp()
                     ? 1
