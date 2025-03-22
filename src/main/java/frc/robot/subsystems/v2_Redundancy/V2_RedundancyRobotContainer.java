@@ -36,6 +36,7 @@ import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
@@ -252,7 +253,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Operator triggers
     operator
         .leftTrigger(0.5)
-        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
+        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator, intake));
     operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
 
     // Operator bumpers
@@ -273,6 +274,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
     operatorFunnelOverride.whileTrue(
         IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator, intake));
+    operatorFunnelOverride.onFalse(Commands.sequence(
+        funnel.setClapDaddyGoal(FunnelState.OPENED),
+        funnel.stopRoller()));
   }
 
   private void configureAutos() {
