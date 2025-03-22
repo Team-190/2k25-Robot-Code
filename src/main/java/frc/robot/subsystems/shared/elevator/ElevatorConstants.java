@@ -203,7 +203,7 @@ public class ElevatorConstants {
     ASS_TOP(1.2),
     ASS_BOT(0.82),
     ALGAE_INTAKE_TOP(1.17 - Units.inchesToMeters(8)),
-    ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(10)),
+    ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(8)),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
