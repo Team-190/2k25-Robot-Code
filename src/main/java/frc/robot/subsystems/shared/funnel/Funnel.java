@@ -107,11 +107,11 @@ public class Funnel extends SubsystemBase {
 
   public Command funnelClosedOverride() {
     return Commands.runEnd(
-        ()->{
+        () -> {
           goal = FunnelState.CLOSED;
           io.setRollerVoltage(12);
         },
-        ()->{
+        () -> {
           goal = FunnelState.OPENED;
           io.setRollerVoltage(0);
         });
