@@ -197,7 +197,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .and(elevatorNotStow)
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
     driver
-        .a()
+        .a() 
         .and(elevatorNotStow)
         .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
