@@ -113,7 +113,8 @@ public final class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      BooleanSupplier rotateToReef) {
+      BooleanSupplier rotateToReef,
+      BooleanSupplier bargeAlign) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -149,13 +150,18 @@ public final class DriveCommands {
 
           double angular = 0.0;
 
-          angular = omega * DriveConstants.DRIVE_CONFIG.maxAngularVelocity();
+          angular =
+              bargeAlign.getAsBoolean()
+                  ? bargeAlignTheta()
+                  : rotateToReef.getAsBoolean()
+                      ? reefThetaSpeedCalculate()
+                      : omega * DriveConstants.DRIVE_CONFIG.maxAngularVelocity();
 
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
-                  fieldRelativeYVel,
-                  rotateToReef.getAsBoolean() ? reefThetaSpeedCalculate() : angular,
+                  bargeAlign.getAsBoolean() ? 0.0 : fieldRelativeYVel,
+                  angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
@@ -167,6 +173,34 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
+  }
+
+  public static final Command joystickDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier rotateToReef) {
+    return joystickDrive(drive, xSupplier, ySupplier, omegaSupplier, rotateToReef, () -> false);
+  }
+
+  private static double bargeAlignTheta() {
+    double thetaSpeed = 0.0;
+
+    alignHeadingController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
+
+    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
+    if (!alignHeadingController.atSetpoint())
+      thetaSpeed =
+          alignHeadingController.calculate(
+              RobotState.getRobotPoseReef().getRotation().getRadians(),
+              RobotState.getRobotPoseField().getX() < FieldConstants.fieldLength / 2 ? 0 : Math.PI);
+    else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+
+    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+    return thetaSpeed;
   }
 
   public static final Command inchMovement(Drive drive, double velocity, double time) {

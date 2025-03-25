@@ -174,6 +174,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
+            () -> false,
             () -> false));
 
     // Driver face buttons

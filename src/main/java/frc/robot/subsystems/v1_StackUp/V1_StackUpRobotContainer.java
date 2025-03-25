@@ -16,7 +16,6 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands;
-import frc.robot.commands.CompositeCommands.AlgaeCommands;
 import frc.robot.commands.CompositeCommands.IntakeCommands;
 import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
@@ -161,7 +160,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
-            () -> false));
+            () -> false,
+            driver.back()::getAsBoolean));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
@@ -199,10 +199,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     // Driver algae
-    driver.back().onTrue(manipulator.toggleAlgaeArm());
+    /*driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver
         .start()
-        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
+        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));*/
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
