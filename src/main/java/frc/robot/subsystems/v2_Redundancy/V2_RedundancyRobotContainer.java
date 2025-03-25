@@ -273,7 +273,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 AlgaeCommands.moveAlgaeArm(manipulator, elevator, ArmState.UP),
                 elevator.setPosition(ReefHeight.ALGAE_SCORE)));
     // Misc
-    driver.rightStick().onTrue(CompositeCommands.testAlgae(elevator, manipulator));
+    driver.rightStick().onTrue(AlgaeCommands.testAlgae(elevator, manipulator));
     operatorFunnelOverride.whileTrue(
         IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator, intake));
     operatorFunnelOverride.onFalse(
