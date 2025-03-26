@@ -34,6 +34,7 @@ public class RobotState {
 
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData OIData;
+  @Getter private static BargeAlignData bargeAlignData;
 
   @Getter @Setter private static RobotMode mode;
   @Getter @Setter private static boolean hasAlgae;
@@ -85,6 +86,7 @@ public class RobotState {
             DriveConstants.DRIVE_CONFIG.kinematics(), new Rotation2d(), modulePositions);
 
     reefAlignData = new ReefAlignData(-1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false);
+    bargeAlignData = new BargeAlignData(0.0, 0.0, false);
   }
 
   public RobotState() {}
@@ -184,6 +186,16 @@ public class RobotState {
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
+    double bargeSetpoint =
+        FieldConstants.fieldLength / 2
+            + (RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
+                ? -1
+                : 1 * FieldConstants.Barge.distanceFromBarge);
+
+    boolean bargeAtSetpoint =
+        Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint)
+            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+
     reefAlignData =
         new ReefAlignData(
             closestReefTag,
@@ -194,6 +206,12 @@ public class RobotState {
             atCoralSetpoint,
             atAlgaeSetpoint,
             cameras);
+
+    bargeAlignData =
+        new BargeAlignData(
+            bargeSetpoint,
+            Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint),
+            bargeAtSetpoint);
 
     Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
 
@@ -214,6 +232,9 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
+
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Barge Setpoint", bargeSetpoint);
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Barge Setpoint", bargeAtSetpoint);
   }
 
   public static Pose2d getRobotPoseField() {
@@ -327,6 +348,9 @@ public class RobotState {
 
   public static final record OperatorInputData(
       ReefPose currentReefPost, ReefHeight currentReefHeight) {}
+
+  public static final record BargeAlignData(
+      double bargeSetpoint, double distanceToBargeSetpoint, boolean atBargeSetpoint) {}
 
   public enum RobotMode {
     DISABLED,

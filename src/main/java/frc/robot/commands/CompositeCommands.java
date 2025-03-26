@@ -406,10 +406,13 @@ public class CompositeCommands {
           elevator.setPosition(ReefHeight.ALGAE_SCORE));
     }
 
-    // ******** ADD ALGAE AUTO SCORE HERE ******** //
-
-    // public static final Command autoScoreAlgae() {
-    //   return Commands.none();
-    // }
+    public static final Command autoScoreAlgae(
+        Drive drive, Elevator elevator, V2_RedundancyManipulator manipulator) {
+      return Commands.sequence(
+          DriveCommands.autoAlignBargeAlgae(drive),
+          netHeight(manipulator, elevator),
+          elevator.waitUntilAtGoal(),
+          scoreAlgae(manipulator, elevator));
+    }
   }
 }

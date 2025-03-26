@@ -59,7 +59,7 @@ public class V2_RedundancyManipulatorConstants {
             new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
             new LoggedTunableNumber("Manipulator/Algae Intake Volts", 9.0),
             new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.6 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Algae Volts", 12),
+            new LoggedTunableNumber("Manipulator/Score Algae Volts", 6),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));

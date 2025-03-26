@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -511,6 +512,74 @@ public final class DriveCommands {
               RobotState.getRobotPoseReef().getRotation().getRadians(),
               RobotState.getReefAlignData().coralSetpoint().getRotation().getRadians());
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+
+    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+    return thetaSpeed;
+  }
+
+  public static Command autoAlignBargeAlgae(Drive drive) {
+    alignXController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
+    alignYController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
+
+    return Commands.runOnce(
+            () -> {
+              RobotState.setAutoAligning(true);
+            })
+        .andThen(
+            Commands.run(
+                    () -> {
+                      ChassisSpeeds speeds;
+                      double xSpeed = 0.0;
+                      if (!alignXController.atSetpoint()) {
+                        xSpeed =
+                            alignXController.calculate(
+                                RobotState.getRobotPoseField().getX(),
+                                RobotState.getBargeAlignData().bargeSetpoint());
+                      } else alignXController.reset(RobotState.getRobotPoseField().getX());
+                      speeds =
+                          ChassisSpeeds.fromFieldRelativeSpeeds(
+                              -xSpeed,
+                              0,
+                              bargeThetaSpeedCalculate(),
+                              RobotState.getRobotPoseReef()
+                                  .getRotation()
+                                  .plus(new Rotation2d(Math.PI)));
+                      Logger.recordOutput("Drive/Barge/xSpeed", -speeds.vxMetersPerSecond);
+                      Logger.recordOutput("Drive/Barge/ySpeed", -speeds.vyMetersPerSecond);
+                      Logger.recordOutput("Drive/Barge/thetaSpeed", speeds.omegaRadiansPerSecond);
+                      drive.runVelocity(speeds);
+                    },
+                    drive)
+                .until(() -> RobotState.getBargeAlignData().atBargeSetpoint())
+                .finallyDo(
+                    () -> {
+                      drive.runVelocity(new ChassisSpeeds());
+                      alignHeadingController.reset(
+                          RobotState.getRobotPoseReef().getRotation().getRadians());
+                      alignXController.reset(RobotState.getRobotPoseReef().getX());
+                      alignYController.reset(RobotState.getRobotPoseReef().getY());
+                      RobotState.setAutoAligning(false);
+                    }));
+  }
+
+  private static double bargeThetaSpeedCalculate() {
+    double thetaSpeed = 0.0;
+
+    alignHeadingController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
+
+    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
+    if (!alignHeadingController.atSetpoint())
+      thetaSpeed =
+          alignHeadingController.calculate(
+              RobotState.getRobotPoseField().getRotation().getRadians(),
+              RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
+                  ? 0
+                  : Math.PI);
+    else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
     return thetaSpeed;
