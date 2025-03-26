@@ -108,7 +108,8 @@ public class V2_RedundancyManipulatorConstants {
     UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
-    DOWN(Rotation2d.fromDegrees(-77));
+    DOWN(Rotation2d.fromDegrees(-77)),
+    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 30));
 
     private final Rotation2d angle;
 

@@ -416,5 +416,12 @@ public class CompositeCommands {
           elevator.waitUntilAtGoal(),
           scoreAlgae(manipulator, elevator));
     }
+
+    public static final Command scoreProcessor(
+        Elevator elevator, V2_RedundancyManipulator manipulator) {
+      return Commands.sequence(
+          moveAlgaeArm(manipulator, elevator, ArmState.PROCESSOR),
+          elevator.setPosition(ReefHeight.STOW));
+    }
   }
 }
