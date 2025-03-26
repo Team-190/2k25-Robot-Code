@@ -397,7 +397,9 @@ public class CompositeCommands {
     public static final Command scoreAlgae(
         V2_RedundancyManipulator manipulator, Elevator elevator) {
       return Commands.sequence(
-          moveAlgaeArm(manipulator, elevator, ArmState.UP), manipulator.scoreAlgae());
+          moveAlgaeArm(manipulator, elevator, ArmState.UP),
+          manipulator.waitUntilAlgaeArmAtGoal(),
+          manipulator.scoreAlgae());
     }
 
     public static final Command netHeight(V2_RedundancyManipulator manipulator, Elevator elevator) {
