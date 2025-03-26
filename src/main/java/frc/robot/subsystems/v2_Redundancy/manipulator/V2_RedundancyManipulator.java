@@ -2,6 +2,7 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,18 +49,18 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     }
 
     if (RobotState.isIntakingAlgae()) {
-      if (inputs.rollerVelocityRadiansPerSecond <= 50.0) {
+      if (hasAlgae()) {
         RobotState.setHasAlgae(true);
       }
     }
 
-    if (RobotState.isHasAlgae() && !RobotState.isIntakingAlgae()) {
-      if (inputs.rollerVelocityRadiansPerSecond >= 50.0) {
-        RobotState.setHasAlgae(false);
-      } else {
-        io.setRollerVoltage(0.75);
-      }
+    if (RobotState.isHasAlgae() && !RobotState.isIntakingAlgae() && !hasAlgae()) {
+      RobotState.setHasAlgae(false);
     }
+  }
+
+  public Rotation2d getArmAngle() {
+    return inputs.armPosition;
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -70,8 +71,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return Math.abs(inputs.rollerTorqueCurrentAmps)
-        > V2_RedundancyManipulatorConstants.ROLLER_CURRENT_THRESHOLD;
+    return Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0;
+  }
+
+  @AutoLogOutput(key = "Manipulator/Has Algae")
+  public boolean isIntakingAlgae() {
+    return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
   }
 
   public Command runManipulator(double volts) {
@@ -86,8 +91,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command intakeAlgae() {
     return Commands.sequence(
-            Commands.runOnce(() -> RobotState.setIntakingAlgae(true)),
             Commands.parallel(
+                Commands.sequence(
+                    Commands.waitUntil(() -> isIntakingAlgae()),
+                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
                 runManipulator(
                     V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())))
         .finallyDo(() -> RobotState.setIntakingAlgae(false));

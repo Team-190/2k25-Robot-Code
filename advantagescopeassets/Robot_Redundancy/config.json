@@ -161,13 +161,13 @@
         },
         {
           "axis": "z",
-          "degrees": 180
+          "degrees": 90
         }
       ],
       "zeroedPosition": [
+        0.135838,
         0.0,
-        0.0,
-        0.0
+        -0.688074
       ]
     },
     {
@@ -178,7 +178,7 @@
         },
         {
           "axis": "z",
-          "degrees": 180
+          "degrees": 90
         }
       ],
       "zeroedPosition": [

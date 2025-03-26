@@ -106,6 +106,7 @@ public class V2_RedundancyManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ArmState {
     UP(Rotation2d.fromDegrees(75)),
+    PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     DOWN(Rotation2d.fromDegrees(-77));
 

@@ -536,8 +536,7 @@ public class AutonomousCommands {
         elevator.setPosition(ReefHeight.L4),
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), Commands.waitUntil(elevator::atGoal)),
-        manipulator.scoreCoral().withTimeout(0.5),
-        AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive, cameras));
+        manipulator.scoreCoral().withTimeout(0.5));
   }
 
   public static final Command autoCLeftPush(
@@ -618,8 +617,7 @@ public class AutonomousCommands {
         elevator.setPosition(ReefHeight.L4),
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), Commands.waitUntil(elevator::atGoal)),
-        manipulator.scoreCoral().withTimeout(0.5),
-        AlgaeCommands.dropFromReefSequence(manipulator, elevator, drive, cameras));
+        manipulator.scoreCoral().withTimeout(0.5));
   }
 
   public static final Command autoCRightPush(

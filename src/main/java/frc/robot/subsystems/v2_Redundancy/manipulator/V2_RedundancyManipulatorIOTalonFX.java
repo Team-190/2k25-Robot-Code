@@ -204,10 +204,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
   public void setArmPositionGoal(Rotation2d position) {
     armPositionGoal = position;
     armTalonFX.setControl(
-        positionControlRequest
-            .withPosition(position.getRotations())
-            .withEnableFOC(true)
-            );
+        positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
   }
 
   @Override

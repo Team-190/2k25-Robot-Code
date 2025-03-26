@@ -49,6 +49,10 @@ public class V2_RedundancyIntake extends SubsystemBase {
     }
   }
 
+  public double getExtension() {
+    return inputs.extensionPositionMeters;
+  }
+
   /**
    * Sets the goal state of the extension.
    *
