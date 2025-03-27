@@ -327,7 +327,7 @@ public class CompositeCommands {
                       && armState.getAngle().getRadians()
                           >= ArmState.REEF_INTAKE.getAngle().getRadians());
     }
-    
+
     public static final Command intakeFromReefSequence(
         V2_RedundancyManipulator manipulator,
         Elevator elevator,
