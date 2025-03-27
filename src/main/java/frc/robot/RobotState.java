@@ -172,7 +172,8 @@ public class RobotState {
         OIData.currentReefHeight().equals(ReefHeight.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
-    Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+    Pose2d autoAlignAlgaeSetpoint =
+        Reef.reefMap.get(getMinDistanceReefAlgaeTag()).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =
         RobotState.getRobotPoseReef()
@@ -491,6 +492,74 @@ public class RobotState {
           minDistanceTag = 17;
           break;
       }
+    }
+    return minDistanceTag;
+  }
+
+  private static int getMinDistanceReefAlgaeTag() {
+    int minDistanceTag = 1;
+    double minDistance = Double.POSITIVE_INFINITY;
+    for (int i = 0; i < 6; i++) {
+      double currentDistance =
+          RobotState.getRobotPoseReef()
+              .getTranslation()
+              .getDistance(
+                  AllianceFlipUtil.overrideApply(FieldConstants.Reef.centerFaces[i])
+                      .getTranslation());
+      if (currentDistance < minDistance) {
+        minDistance = currentDistance;
+        minDistanceTag = i;
+      }
+    }
+
+    for (int i = 0; i < 6; i++) {
+      double currentDistance =
+          RobotState.getRobotPoseReef()
+              .getTranslation()
+              .getDistance((FieldConstants.Reef.centerFaces[i]).getTranslation());
+      if (currentDistance < minDistance) {
+        minDistance = currentDistance;
+        minDistanceTag = i + 6;
+      }
+    }
+
+    switch (minDistanceTag) {
+      case 0:
+        minDistanceTag = 7;
+        break;
+      case 1:
+        minDistanceTag = 6;
+        break;
+      case 2:
+        minDistanceTag = 11;
+        break;
+      case 3:
+        minDistanceTag = 10;
+        break;
+      case 4:
+        minDistanceTag = 9;
+        break;
+      case 5:
+        minDistanceTag = 8;
+        break;
+      case 6:
+        minDistanceTag = 18;
+        break;
+      case 7:
+        minDistanceTag = 19;
+        break;
+      case 8:
+        minDistanceTag = 20;
+        break;
+      case 9:
+        minDistanceTag = 21;
+        break;
+      case 10:
+        minDistanceTag = 22;
+        break;
+      case 11:
+        minDistanceTag = 17;
+        break;
     }
     return minDistanceTag;
   }
