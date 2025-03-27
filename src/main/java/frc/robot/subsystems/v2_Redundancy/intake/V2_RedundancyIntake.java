@@ -167,4 +167,12 @@ public class V2_RedundancyIntake extends SubsystemBase {
     return Commands.sequence(setExtensionGoal(IntakeState.STOW), setRollerVoltage(-2))
         .withTimeout(2);
   }
+
+  public Command homingSequence() {
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
+        setIntakeVoltage(-2).until(() -> inputs.extensionTorqueCurrentAmps > 30),
+        setIntakeVoltage(0),
+        Commands.runOnce(io::resetExtension));
+  }
 }

@@ -82,4 +82,6 @@ public interface V2_RedundancyIntakeIO {
    * @param maxVelocity The maximum velocity.
    */
   public default void updateConstraints(double maxAcceleration, double maxVelocity) {}
+
+  public default void resetExtension() {}
 }
