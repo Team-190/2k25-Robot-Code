@@ -1,6 +1,8 @@
 package frc.robot.subsystems.v2_Redundancy;
 
 import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +53,7 @@ import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 
@@ -359,5 +362,24 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     return autoChooser.selectedCommand();
+  }
+
+  public AutoFactory getAutoFactory() {
+    return
+        new AutoFactory(
+            RobotState::getRobotPoseField,
+            RobotState::resetRobotPose,
+            drive::choreoDrive,
+            true,
+            drive,
+            (sample, isStart) -> {
+              Pose2d[] poses = sample.getPoses();
+              if (AllianceFlipUtil.shouldFlip()) {
+                for (int i = 0; i < sample.getPoses().length; i++) {
+                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
+                }
+              }
+              Logger.recordOutput("Auto/Choreo Trajectory", poses);
+            });
   }
 }

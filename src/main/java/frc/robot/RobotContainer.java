@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -22,5 +23,9 @@ public interface RobotContainer {
 
   public default Command getAutonomousCommand() {
     return Commands.none();
+  }
+
+  public default AutoFactory getAutoFactory() {
+    return null;
   }
 }

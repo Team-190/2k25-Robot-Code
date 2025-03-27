@@ -56,8 +56,6 @@ public class Drive extends SubsystemBase {
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
-  @Getter private final AutoFactory autoFactory;
-
   static {
     odometryLock = new ReentrantLock();
   }
@@ -93,23 +91,6 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
         };
-
-    autoFactory =
-        new AutoFactory(
-            RobotState::getRobotPoseField,
-            RobotState::resetRobotPose,
-            this::choreoDrive,
-            true,
-            this,
-            (sample, isStart) -> {
-              Pose2d[] poses = sample.getPoses();
-              if (AllianceFlipUtil.shouldFlip()) {
-                for (int i = 0; i < sample.getPoses().length; i++) {
-                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
-                }
-              }
-              Logger.recordOutput("Auto/Choreo Trajectory", poses);
-            });
   }
 
   public void periodic() {
