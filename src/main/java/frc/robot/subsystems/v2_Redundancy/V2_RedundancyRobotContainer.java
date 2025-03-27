@@ -211,10 +211,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Driver bumpers
-    // driver
-    //     .leftBumper()
-    //     .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
-    //     .whileFalse(intake.retractAlgae());
+    driver
+        .leftBumper()
+        .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
+        .whileFalse(intake.retractAlgae());
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV

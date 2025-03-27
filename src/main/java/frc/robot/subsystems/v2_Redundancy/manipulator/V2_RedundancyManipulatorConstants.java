@@ -57,7 +57,7 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_VOLTAGES =
         new Voltages(
             new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
-            new LoggedTunableNumber("Manipulator/Algae Intake Volts", 9.0),
+            new LoggedTunableNumber("Manipulator/Algae Intake Volts", 12.0),
             new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.6 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Algae Volts", 6),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
@@ -108,6 +108,7 @@ public class V2_RedundancyManipulatorConstants {
     UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
+    FLOOR_INTAKE(Rotation2d.fromDegrees(-70)),
     DOWN(Rotation2d.fromDegrees(-77)),
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 30));
 
