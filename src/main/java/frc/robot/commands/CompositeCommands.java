@@ -152,6 +152,12 @@ public class CompositeCommands {
     public static final Command scoreCoralSequence(
         Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier autoAligned) {
       return Commands.sequence(
+          Commands.either(
+              elevator.setPosition(ReefHeight.L3),
+              elevator.setPosition(),
+              () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)),
+          Commands.waitSeconds(0.125),
+          Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
