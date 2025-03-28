@@ -16,6 +16,7 @@ import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
+import frc.robot.util.NTPrefixes;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -172,12 +173,12 @@ public class Robot extends LoggedRobot {
     if (Constants.getMode() == Constants.Mode.REAL) {
       var canivoreStatus = canivoreReader.getStatus();
       if (canivoreStatus.isPresent()) {
-        Logger.recordOutput("CANivoreStatus/Status", canivoreStatus.get().Status.getName());
-        Logger.recordOutput("CANivoreStatus/Utilization", canivoreStatus.get().BusUtilization);
-        Logger.recordOutput("CANivoreStatus/OffCount", canivoreStatus.get().BusOffCount);
-        Logger.recordOutput("CANivoreStatus/TxFullCount", canivoreStatus.get().TxFullCount);
-        Logger.recordOutput("CANivoreStatus/ReceiveErrorCount", canivoreStatus.get().REC);
-        Logger.recordOutput("CANivoreStatus/TransmitErrorCount", canivoreStatus.get().TEC);
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
+        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
         if (!canivoreStatus.get().Status.isOK()
             || canStatus.transmitErrorCount > 0
             || canStatus.receiveErrorCount > 0) {
