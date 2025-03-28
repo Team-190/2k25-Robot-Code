@@ -48,7 +48,7 @@ public class Robot extends LoggedRobot {
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.WARNING);
   private final Alert canErrorAlert =
-  new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
+      new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
   private final Alert canivoreErrorAlert =
       new Alert("CANivore errors detected, robot may not be controllable.", AlertType.ERROR);
   private final CanivoreReader canivoreReader = new CanivoreReader("Drive");
@@ -160,25 +160,31 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
-     // Check CAN status
-     var canStatus = RobotController.getCANStatus();
-     if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-       canErrorTimer.restart();
-     }
-     canErrorAlert.set(
-         !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-             && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // Check CAN status
+    var canStatus = RobotController.getCANStatus();
+    if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
+      canErrorTimer.restart();
+    }
+    canErrorAlert.set(
+        !canErrorTimer.hasElapsed(canErrorTimeThreshold)
+            && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
 
     // Log CANivore status
     if (Constants.getMode() == Constants.Mode.REAL) {
       var canivoreStatus = canivoreReader.getStatus();
       if (canivoreStatus.isPresent()) {
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
-        Logger.recordOutput(NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
+        Logger.recordOutput(
+            NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
         if (!canivoreStatus.get().Status.isOK()
             || canStatus.transmitErrorCount > 0
             || canStatus.receiveErrorCount > 0) {
