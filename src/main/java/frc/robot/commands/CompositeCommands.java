@@ -257,29 +257,51 @@ public class CompositeCommands {
     }
 
     public static final Command scoreCoralSequence(
-        Elevator elevator, V2_RedundancyManipulator manipulator) {
-      return Commands.sequence(
-          elevator.setPosition(),
-          Commands.waitSeconds(0.125),
-          Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.4));
+        Elevator elevator, V2_RedundancyManipulator manipulator, BooleanSupplier autoAligned) {
+          return Commands.sequence(
+            Commands.either(
+                elevator.setPosition(ReefHeight.L3),
+                elevator.setPosition(),
+                () ->
+                    RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
+                        && !elevator.getPosition().equals(ElevatorPositions.L4)),
+            Commands.waitUntil(() -> autoAligned.getAsBoolean()),
+            elevator.setPosition(),
+            Commands.waitSeconds(0.05),
+            Commands.waitUntil(elevator::atGoal),
+            Commands.either(
+                manipulator.scoreL4Coral().withTimeout(0.4),
+                manipulator.scoreCoral().withTimeout(0.15),
+                () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
     }
 
     public static final Command autoScoreCoralSequence(
         Drive drive, Elevator elevator, V2_RedundancyManipulator manipulator, Camera... cameras) {
-      return Commands.either(
+
+          return Commands.either(
           autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
           Commands.sequence(
+              Commands.either(
+                  elevator.setPosition(ReefHeight.L2),
+                  Commands.none(),
+                  () ->
+                      RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1)
+                          || RobotState.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                          || RobotState.getOIData()
+                              .currentReefHeight()
+                              .equals(ReefHeight.CORAL_INTAKE)),
+              Commands.parallel(
+                  DriveCommands.autoAlignReefCoral(drive, cameras),
+                  scoreCoralSequence(
+                      elevator,
+                      manipulator,
+                      () -> RobotState.getReefAlignData().atCoralSetpoint())),
               elevator
-                  .setPosition(ReefHeight.L2)
-                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.STOW)),
-              DriveCommands.autoAlignReefCoral(drive, cameras),
-              scoreCoralSequence(elevator, manipulator),
-              Commands.waitSeconds(0.25),
-              Commands.sequence(
-                      elevator.setPosition(ReefHeight.L4_PLUS),
-                      manipulator.scoreCoral().withTimeout(0.5))
-                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
+                  .setPosition(ReefHeight.STOW)
+                  .onlyIf(
+                      () ->
+                          elevator.getPosition().equals(ElevatorPositions.L3)
+                              || elevator.getPosition().equals(ElevatorPositions.L2))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
