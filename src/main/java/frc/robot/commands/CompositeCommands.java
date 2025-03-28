@@ -23,6 +23,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.In
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.AllianceFlipUtil;
+import java.util.function.BooleanSupplier;
 
 public class CompositeCommands {
   public static final Command resetHeading(Drive drive) {
@@ -149,12 +150,15 @@ public class CompositeCommands {
     }
 
     public static final Command scoreCoralSequence(
-        Elevator elevator, V1_StackUpManipulator manipulator) {
+        Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier autoAligned) {
       return Commands.sequence(
           elevator.setPosition(),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
-          manipulator.scoreCoral().withTimeout(0.4));
+          Commands.either(
+              manipulator.scoreL4Coral().withTimeout(0.4),
+              manipulator.scoreCoral().withTimeout(0.15),
+              () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
     }
 
     public static final Command autoScoreCoralSequence(
@@ -171,8 +175,18 @@ public class CompositeCommands {
                           || RobotState.getOIData()
                               .currentReefHeight()
                               .equals(ReefHeight.CORAL_INTAKE)),
-              DriveCommands.autoAlignReefCoral(drive, cameras),
-              scoreCoralSequence(elevator, manipulator)),
+              Commands.parallel(
+                  DriveCommands.autoAlignReefCoral(drive, cameras),
+                  scoreCoralSequence(
+                      elevator,
+                      manipulator,
+                      () -> RobotState.getReefAlignData().atCoralSetpoint())),
+              elevator
+                  .setPosition(ReefHeight.STOW)
+                  .onlyIf(
+                      () ->
+                          elevator.getPosition().equals(ElevatorPositions.L3)
+                              || elevator.getPosition().equals(ElevatorPositions.L2))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
