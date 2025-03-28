@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
