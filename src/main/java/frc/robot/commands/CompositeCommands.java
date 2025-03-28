@@ -258,27 +258,27 @@ public class CompositeCommands {
 
     public static final Command scoreCoralSequence(
         Elevator elevator, V2_RedundancyManipulator manipulator, BooleanSupplier autoAligned) {
-          return Commands.sequence(
-            Commands.either(
-                elevator.setPosition(ReefHeight.L3),
-                elevator.setPosition(),
-                () ->
-                    RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
-                        && !elevator.getPosition().equals(ElevatorPositions.L4)),
-            Commands.waitUntil(() -> autoAligned.getAsBoolean()),
-            elevator.setPosition(),
-            Commands.waitSeconds(0.05),
-            Commands.waitUntil(elevator::atGoal),
-            Commands.either(
-                manipulator.scoreL4Coral().withTimeout(0.4),
-                manipulator.scoreCoral().withTimeout(0.15),
-                () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
+      return Commands.sequence(
+          Commands.either(
+              elevator.setPosition(ReefHeight.L3),
+              elevator.setPosition(),
+              () ->
+                  RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
+                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
+          Commands.waitUntil(() -> autoAligned.getAsBoolean()),
+          elevator.setPosition(),
+          Commands.waitSeconds(0.05),
+          Commands.waitUntil(elevator::atGoal),
+          Commands.either(
+              manipulator.scoreL4Coral().withTimeout(0.4),
+              manipulator.scoreCoral().withTimeout(0.15),
+              () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
     }
 
     public static final Command autoScoreCoralSequence(
         Drive drive, Elevator elevator, V2_RedundancyManipulator manipulator, Camera... cameras) {
 
-          return Commands.either(
+      return Commands.either(
           autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
           Commands.sequence(
               Commands.either(
