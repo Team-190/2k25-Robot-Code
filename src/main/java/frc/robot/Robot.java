@@ -36,9 +36,12 @@ public class Robot extends LoggedRobot {
   private static final double lowBatteryDisabledTime = 1.5;
   private static final double canErrorTimeThreshold = 0.5;
   private static final double canivoreErrorTimeThreshold = 0.5;
+  private static final double canErrorTimeThreshold = 0.5;
+  private static final double canivoreErrorTimeThreshold = 0.5;
 
   private final Timer canErrorTimer = new Timer();
   private final Timer canErrorTimerInitial = new Timer();
+  private final Timer canivoreErrorTimer = new Timer();
   private final Timer canivoreErrorTimer = new Timer();
   private final Timer disabledTimer = new Timer();
   private final Alert logReceiverQueueAlert =
