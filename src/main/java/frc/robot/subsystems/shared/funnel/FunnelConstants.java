@@ -91,12 +91,12 @@ public class FunnelConstants {
         CLAP_DADDY_MOTOR_GEAR_RATIO = 34.0;
         ROLLER_MOTOR_GEAR_RATIO = 5.33333333;
         CLAP_DADDY_CANCODER_GEAR_RATIO = 1.5;
-        CANCODER_ABSOLUTE_OFFSET_RADIANS = Rotation2d.fromRadians(-0.3630421197996017);
+        CANCODER_ABSOLUTE_OFFSET_RADIANS = Rotation2d.fromRadians(-4.651029748869264);
         CLAP_DADDY_INVERTED = InvertedValue.CounterClockwise_Positive;
         ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
 
         CURRENT_LIMITS = new FunnelCurrentLimits(20.0, 20.0, 40.0, 40.0);
-        ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
+        ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(95.0), 0.0);
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
 
@@ -162,7 +162,7 @@ public class FunnelConstants {
   public enum FunnelState {
     STOW(Rotation2d.fromDegrees(65.0)),
     OPENED(Rotation2d.fromDegrees(60.0)),
-    CLOSED(Rotation2d.fromDegrees(100.0)),
+    CLOSED(Rotation2d.fromDegrees(93.0)),
     CLIMB(Rotation2d.fromDegrees(0.0));
 
     private final Rotation2d angle;
