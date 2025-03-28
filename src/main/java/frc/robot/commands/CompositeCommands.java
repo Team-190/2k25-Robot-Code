@@ -167,11 +167,12 @@ public class CompositeCommands {
           Commands.either(
               elevator.setPosition(ReefHeight.L3),
               elevator.setPosition(),
-              () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)),
-          Commands.waitSeconds(0.125),
+              () ->
+                  RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
+                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
-          Commands.waitSeconds(0.125),
+          Commands.waitSeconds(0.05),
           Commands.waitUntil(elevator::atGoal),
           Commands.either(
               manipulator.scoreL4Coral().withTimeout(0.4),
