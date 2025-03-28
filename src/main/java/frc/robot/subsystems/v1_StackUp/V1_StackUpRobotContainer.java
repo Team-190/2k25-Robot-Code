@@ -15,10 +15,9 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
-import frc.robot.commands.CompositeCommands;
-import frc.robot.commands.CompositeCommands.IntakeCommands;
-import frc.robot.commands.CompositeCommands.ScoreCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.NewCompositeCommands.SharedCommands;
+import frc.robot.commands.NewCompositeCommands.SharedCommands.V1_StackUpCompositeCommands;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberIO;
 import frc.robot.subsystems.shared.climber.ClimberIOSim;
@@ -164,34 +163,36 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             driver.back()::getAsBoolean));
 
     // Driver face buttons
-    driver.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
-    driver.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
-    driver.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    driver.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
+    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
+    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
+    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
 
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Driver triggers
-    driver.leftTrigger(0.5).whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator));
+    driver
+        .leftTrigger(0.5)
+        .whileTrue(V1_StackUpCompositeCommands.intakeCoral(elevator, funnel, manipulator));
     driver
         .rightTrigger(0.5)
         .whileTrue(
-            ScoreCommands.autoScoreCoralSequence(
+            V1_StackUpCompositeCommands.autoScoreCoralSequence(
                 drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
 
     // Driver bumpers
@@ -210,46 +211,46 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         .povDown()
         .whileTrue(
             Commands.runOnce(() -> RobotState.resetRobotPose(new Pose2d()))
-                .alongWith(CompositeCommands.resetHeading(drive)));
+                .alongWith(SharedCommands.resetHeading(drive)));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
     halfScoreTrigger.whileTrue(manipulator.halfScoreCoral());
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
     // Operator face buttons
-    operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
-    operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
-    operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
+    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
+    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
+    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
 
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
     operator
         .leftTrigger(0.5)
-        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator));
-    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
+        .whileTrue(V1_StackUpCompositeCommands.intakeCoralOverride(elevator, funnel, manipulator));
+    operator.rightTrigger(0.5).whileTrue(V1_StackUpCompositeCommands.scoreCoral(manipulator));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
     operator
@@ -260,7 +261,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                     RobotState.resetRobotPose(
                         new Pose2d(0, 0, RobotState.getRobotPoseField().getRotation())))));
 
-    operator.back().whileTrue(ScoreCommands.emergencyEject(elevator, manipulator));
+    operator.back().whileTrue(V1_StackUpCompositeCommands.emergencyEject(elevator, manipulator));
   }
 
   private void configureAutos() {

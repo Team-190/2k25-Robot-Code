@@ -107,10 +107,12 @@ public class V2_RedundancyManipulatorConstants {
   public static enum ArmState {
     UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
+    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 30)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
+    INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(-70)),
-    DOWN(Rotation2d.fromDegrees(-77)),
-    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 30));
+    STOW_LINE(Rotation2d.fromDegrees(-75)),
+    DOWN(Rotation2d.fromDegrees(-77));
 
     private final Rotation2d angle;
 

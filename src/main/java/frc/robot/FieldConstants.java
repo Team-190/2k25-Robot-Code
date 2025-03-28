@@ -60,7 +60,7 @@ public class FieldConstants {
     public static enum ReefHeight {
       STOW,
       CORAL_INTAKE,
-      ALGAE_INTAKE,
+      ALGAE_FLOOR_INTAKE,
       ALGAE_MID,
       ASS_TOP,
       ASS_BOT,
@@ -133,8 +133,8 @@ public class FieldConstants {
           DriveConstants.DRIVE_CONFIG.bumperWidth()
               / 2.0; // Offset X setpoint by center of robot to bumper
 
-      double adjustYAlgae =
-          Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
+      //   double adjustYAlgae =
+      //       Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
       double adjustXAlgae =
           DriveConstants.DRIVE_CONFIG.bumperWidth()
               / 2.0; // Offset X setpoint by center of robot to bumper

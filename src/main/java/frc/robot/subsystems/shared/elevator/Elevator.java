@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase {
             case CORAL_INTAKE:
               this.position = ElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_INTAKE:
+            case ALGAE_FLOOR_INTAKE:
               this.position = ElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
@@ -129,7 +129,7 @@ public class Elevator extends SubsystemBase {
             case CORAL_INTAKE:
               this.position = ElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_INTAKE:
+            case ALGAE_FLOOR_INTAKE:
               this.position = ElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
@@ -168,6 +168,41 @@ public class Elevator extends SubsystemBase {
               break;
           }
         });
+  }
+
+  public ElevatorPositions getPosition(ReefHeight newPosition) {
+    switch (newPosition) {
+      case STOW:
+        return ElevatorPositions.STOW;
+      case CORAL_INTAKE:
+        return ElevatorPositions.CORAL_INTAKE;
+      case ALGAE_FLOOR_INTAKE:
+        return ElevatorPositions.ALGAE_INTAKE;
+      case ALGAE_MID:
+        return ElevatorPositions.ALGAE_MID;
+      case ASS_TOP:
+        return ElevatorPositions.ASS_TOP;
+      case ASS_BOT:
+        return ElevatorPositions.ASS_BOT;
+      case ALGAE_INTAKE_TOP:
+        return ElevatorPositions.ALGAE_INTAKE_TOP;
+      case ALGAE_INTAKE_BOTTOM:
+        return ElevatorPositions.ALGAE_INTAKE_BOT;
+      case L1:
+        return ElevatorPositions.L1;
+      case L2:
+        return ElevatorPositions.L2;
+      case L3:
+        return ElevatorPositions.L3;
+      case L4:
+        return ElevatorPositions.L4;
+      case L4_PLUS:
+        return ElevatorPositions.L4_PLUS;
+      case ALGAE_SCORE:
+        return ElevatorPositions.ALGAE_SCORE;
+      default:
+        return ElevatorPositions.STOW;
+    }
   }
 
   public Command setVoltage(double volts) {

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,7 +18,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
-  private IntakeState goal;
+  @Getter private IntakeState goal;
 
   private boolean isClosedLoop;
 
@@ -166,5 +167,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
   public Command retractAlgae() {
     return Commands.sequence(setExtensionGoal(IntakeState.STOW), setRollerVoltage(-2))
         .withTimeout(2);
+  }
+
+  public Command waitUntilExtensionAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
   }
 }
