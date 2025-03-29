@@ -309,7 +309,8 @@ public class NewCompositeCommands {
           V2_RedundancyManipulator manipulator,
           V2_RedundancyIntake intake,
           Camera... cameras) {
-        return Commands.sequence(
+        return Commands.sequence(                Commands.waitSeconds(0.25),
+
             DriveCommands.autoAlignReefCoral(drive, cameras),
             scoreL1Coral(drive, elevator, manipulator, intake));
       }
@@ -322,18 +323,17 @@ public class NewCompositeCommands {
           Camera... cameras) {
         return Commands.either(
             autoScoreL1CoralSequence(drive, elevator, manipulator, intake, cameras),
-            Commands.sequence(
+            Commands.parallel(Commands.sequence(
                 DecisionTree.moveSequence(
                         elevator,
                         manipulator,
                         intake,
-                        ReefHeight.L2,
+                        RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4) ? ReefHeight.L3 : RobotState.getOIData().currentReefHeight(),
                         ArmState.DOWN,
                         IntakeState.STOW)
                     .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.STOW)),
-                DriveCommands.autoAlignReefCoral(drive, cameras),
+                DriveCommands.autoAlignReefCoral(drive, cameras)),
                 scoreCoralSequence(elevator, manipulator, intake),
-                Commands.waitSeconds(0.25),
                 Commands.sequence(
                         DecisionTree.moveSequence(
                             elevator,
