@@ -296,6 +296,11 @@ public class CompositeCommands {
                       elevator,
                       manipulator,
                       () -> RobotState.getReefAlignData().atCoralSetpoint())),
+              Commands.waitSeconds(0.25),
+              Commands.sequence(
+                      elevator.setPosition(ReefHeight.L4_PLUS),
+                      manipulator.scoreCoral().withTimeout(0.5))
+                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4)),
               elevator
                   .setPosition(ReefHeight.STOW)
                   .onlyIf(
