@@ -88,7 +88,11 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(
+                  () -> {
+                    RobotState.setHasAlgae(false);
+                    RobotState.setIntakingCoral(true);
+                  }),
               Commands.either(
                   Commands.none(),
                   Commands.sequence(
@@ -108,7 +112,11 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(
+                  () -> {
+                    RobotState.setHasAlgae(false);
+                    RobotState.setIntakingCoral(true);
+                  }),
               Commands.either(
                   Commands.none(),
                   AlgaeCommands.stowAllNoAlgae(manipulator, elevator),
@@ -126,7 +134,11 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(
+                  () -> {
+                    RobotState.setHasAlgae(false);
+                    RobotState.setIntakingCoral(true);
+                  }),
               Commands.either(
                   Commands.none(),
                   AlgaeCommands.stowAllNoAlgae(manipulator, elevator),

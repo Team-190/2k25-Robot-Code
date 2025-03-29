@@ -2,7 +2,9 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +22,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
   @Getter private ArmState state;
+  private double hasAlgaeTimestamp;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -35,6 +38,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     state = ArmState.DOWN;
+    hasAlgaeTimestamp = Timer.getFPGATimestamp();
   }
 
   @Override
@@ -45,17 +49,13 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
     if (RobotState.isHasAlgae()) {
-      io.setRollerVoltage(.75);
+      io.setRollerVoltage(holdVoltage());
     }
 
     if (RobotState.isIntakingAlgae()) {
       if (hasAlgae()) {
         RobotState.setHasAlgae(true);
       }
-    }
-
-    if (RobotState.isHasAlgae() && !RobotState.isIntakingAlgae() && !hasAlgae()) {
-      RobotState.setHasAlgae(false);
     }
   }
 
@@ -71,8 +71,11 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return (Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0 && RobotState.isIntakingAlgae())
-        || state.equals(ArmState.UP);
+    if (Math.abs(inputs.rollerTorqueCurrentAmps) > 35
+        && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0)
+      hasAlgaeTimestamp = Timer.getFPGATimestamp();
+
+    return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
   }
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
@@ -188,5 +191,14 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command waitUntilAlgaeArmAtGoal() {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::algaeArmAtGoal));
+  }
+
+  private double holdVoltage() {
+    return MathUtil.clamp(
+        Math.abs(inputs.rollerTorqueCurrentAmps) > 25
+            ? 3
+            : 17 / Math.abs(inputs.rollerTorqueCurrentAmps),
+        0.5,
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get());
   }
 }
