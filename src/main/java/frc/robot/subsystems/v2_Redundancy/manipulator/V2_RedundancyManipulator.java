@@ -76,7 +76,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0)
       hasAlgaeTimestamp = Timer.getFPGATimestamp();
 
-    return !(Timer.getFPGATimestamp() >= hasAlgaeTimestamp + 0.5);
+    return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
   }
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
