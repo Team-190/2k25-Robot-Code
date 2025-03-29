@@ -57,10 +57,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         RobotState.setHasAlgae(true);
       }
     }
-
-    if (RobotState.isHasAlgae() && !RobotState.isIntakingAlgae() && !hasAlgae()) {
-      RobotState.setHasAlgae(false);
-    }
   }
 
   public Rotation2d getArmAngle() {
@@ -79,7 +75,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0)
       hasAlgaeTimestamp = Timer.getFPGATimestamp();
 
-    return !(Timer.getFPGATimestamp() >= hasAlgaeTimestamp + 0.5);
+    return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
   }
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
@@ -196,8 +192,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private double holdVoltage() {
     return MathUtil.clamp(
         Math.abs(inputs.rollerTorqueCurrentAmps) > 25
-            ? 7
-            : 33 / Math.abs(inputs.rollerTorqueCurrentAmps),
+            ? 3
+            : 17 / Math.abs(inputs.rollerTorqueCurrentAmps),
         0.5,
         V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get());
   }
