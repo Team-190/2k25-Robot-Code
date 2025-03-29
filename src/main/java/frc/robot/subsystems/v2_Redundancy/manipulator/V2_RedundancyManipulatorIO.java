@@ -18,6 +18,7 @@ public interface V2_RedundancyManipulatorIO {
 
     public Rotation2d rollerPosition = new Rotation2d();
     public double rollerVelocityRadiansPerSecond = 0.0;
+    public double rollerAccelerationRadiansPerSecondSquared = 0.0;
     public double rollerAppliedVolts = 0.0;
     public double rollerSupplyCurrentAmps = 0.0;
     public double rollerTorqueCurrentAmps = 0.0;

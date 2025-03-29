@@ -79,6 +79,8 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();
+    inputs.rollerAccelerationRadiansPerSecondSquared =
+        rollerSim.getAngularAccelerationRadPerSecSq();
     inputs.rollerAppliedVolts = rollerAppliedVolts;
     inputs.rollerSupplyCurrentAmps = rollerSim.getCurrentDrawAmps();
 

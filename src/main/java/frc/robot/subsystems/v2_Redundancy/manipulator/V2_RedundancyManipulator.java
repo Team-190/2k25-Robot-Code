@@ -52,10 +52,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       io.setRollerVoltage(holdVoltage());
     }
 
-    if (RobotState.isIntakingAlgae()) {
-      if (hasAlgae()) {
-        RobotState.setHasAlgae(true);
-      }
+    if (RobotState.isIntakingAlgae() && hasAlgae()) {
+      RobotState.setHasAlgae(true);
     }
   }
 
@@ -71,8 +69,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    if (Math.abs(inputs.rollerTorqueCurrentAmps) > 35
-        && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0)
+    if (Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 70.0
+        && inputs.rollerAccelerationRadiansPerSecondSquared > 0.0)
       hasAlgaeTimestamp = Timer.getFPGATimestamp();
 
     return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
@@ -193,11 +191,16 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   private double holdVoltage() {
+    double y;
+    double x = Math.abs(inputs.rollerTorqueCurrentAmps);
+    if (x <= 20) {
+      y = -0.0003 * Math.pow(x, 3) + 0.0124286 * Math.pow(x, 2) - 0.241071 * x + 4.00643;
+    } else {
+      y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
+    }
     return MathUtil.clamp(
-        Math.abs(inputs.rollerTorqueCurrentAmps) > 25
-            ? 3
-            : 17 / Math.abs(inputs.rollerTorqueCurrentAmps),
-        0.5,
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get());
+        y,
+        0.05,
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get() / 1.5);
   }
 }

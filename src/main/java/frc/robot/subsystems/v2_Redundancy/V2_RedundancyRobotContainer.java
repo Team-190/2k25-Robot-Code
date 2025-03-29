@@ -263,7 +263,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
-    operator.povRight().whileTrue(AlgaeCommands.scoreProcessor(elevator, manipulator)).onFalse(manipulator.scoreAlgae().withTimeout(1));
+    operator
+        .povRight()
+        .whileTrue(AlgaeCommands.scoreProcessor(elevator, manipulator))
+        .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
     operator.start().onTrue(AlgaeCommands.scoreAlgae(manipulator, elevator));
     operator.back().onTrue(AlgaeCommands.netHeight(manipulator, elevator));

@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -36,6 +37,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   private final StatusSignal<Angle> rollerPositionRotations;
   private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
+  private final StatusSignal<AngularAcceleration> rollerAccelerationRotationsPerSecondSquared;
   private final StatusSignal<Voltage> rollerAppliedVoltage;
   private final StatusSignal<Current> rollerSupplyCurrentAmps;
   private final StatusSignal<Current> rollerTorqueCurrentAmps;
@@ -109,6 +111,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     rollerPositionRotations = rollerTalonFX.getPosition();
     rollerVelocityRotationsPerSecond = rollerTalonFX.getVelocity();
+    rollerAccelerationRotationsPerSecondSquared = rollerTalonFX.getAcceleration();
     rollerAppliedVoltage = rollerTalonFX.getMotorVoltage();
     rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
@@ -138,6 +141,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         armPositionErrorRotations,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
+        rollerAccelerationRotationsPerSecondSquared,
         rollerAppliedVoltage,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
@@ -163,6 +167,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         armPositionErrorRotations,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
+        rollerAccelerationRotationsPerSecondSquared,
         rollerAppliedVoltage,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
@@ -184,6 +189,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     inputs.rollerPosition = Rotation2d.fromRotations(rollerPositionRotations.getValueAsDouble());
     inputs.rollerVelocityRadiansPerSecond =
         Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.rollerAccelerationRadiansPerSecondSquared =
+        Units.rotationsToRadians(rollerAccelerationRotationsPerSecondSquared.getValueAsDouble());
     inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
