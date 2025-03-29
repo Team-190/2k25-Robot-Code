@@ -53,6 +53,10 @@ public class V1_StackUpManipulator extends SubsystemBase {
             .until(() -> hasCoral() && currentTimer.hasElapsed(0.25)));
   }
 
+  public Command scoreL4Coral() {
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.L4_VOLTS().get());
+  }
+
   public Command scoreCoral() {
     return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.SCORE_VOLTS().get());
   }
