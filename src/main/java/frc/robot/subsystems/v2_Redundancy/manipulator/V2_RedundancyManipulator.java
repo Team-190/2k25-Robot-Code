@@ -128,6 +128,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get());
   }
 
+  public Command scoreL4Coral() {
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get());
+  }
+
   public Command halfScoreCoral() {
     return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
   }
