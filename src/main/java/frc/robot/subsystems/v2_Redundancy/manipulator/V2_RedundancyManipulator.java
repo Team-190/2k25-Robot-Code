@@ -3,6 +3,7 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -75,7 +76,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 50.0)
       hasAlgaeTimestamp = Timer.getFPGATimestamp();
 
-    return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
+    return !(Timer.getFPGATimestamp() >= hasAlgaeTimestamp + 0.5);
   }
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
