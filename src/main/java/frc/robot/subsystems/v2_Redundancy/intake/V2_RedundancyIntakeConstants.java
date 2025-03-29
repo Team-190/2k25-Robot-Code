@@ -44,7 +44,7 @@ public class V2_RedundancyIntakeConstants {
             new Constraints(
                 new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 500.0),
                 new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 500.0),
-                new LoggedTunableNumber("Intake/Goal Tolerance", 0.0));
+                new LoggedTunableNumber("Intake/Goal Tolerance", 0.01));
         EXTENSION_PARAMS =
             new ExtensionParams(
                 DCMotor.getKrakenX60(1),

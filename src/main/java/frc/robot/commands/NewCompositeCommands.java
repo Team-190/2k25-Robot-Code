@@ -384,19 +384,29 @@ public class NewCompositeCommands {
                 RobotState::isHasAlgae));
       }
 
-      public static final Command scoreAlgae(V2_RedundancyManipulator manipulator) {
-        return manipulator.scoreAlgae();
+      public static final Command scoreAlgae(
+          Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        return Commands.sequence(
+            DecisionTree.moveSequence(
+                elevator,
+                manipulator,
+                intake,
+                ReefHeight.ALGAE_SCORE,
+                ArmState.UP,
+                IntakeState.STOW),
+            manipulator.scoreAlgae());
       }
 
       public static final Command netHeight(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return DecisionTree.moveSequence(
-            elevator,
-            manipulator,
-            intake,
-            ReefHeight.ALGAE_SCORE,
-            ArmState.PRE_SCORE,
-            IntakeState.STOW);
+                elevator,
+                manipulator,
+                intake,
+                ReefHeight.ALGAE_SCORE,
+                ArmState.PRE_SCORE,
+                IntakeState.STOW)
+            .until(() -> elevator.atGoal() && manipulator.algaeArmAtGoal() && intake.atGoal());
       }
 
       public static final Command autoScoreAlgae(
@@ -407,7 +417,7 @@ public class NewCompositeCommands {
         return Commands.sequence(
             DriveCommands.autoAlignBargeAlgae(drive),
             netHeight(elevator, manipulator, intake),
-            scoreAlgae(manipulator));
+            scoreAlgae(elevator, manipulator, intake));
       }
 
       public static final Command scoreProcessor(
