@@ -3,7 +3,6 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,7 +35,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
-    state = ArmState.DOWN;
+    state = ArmState.STOW_DOWN;
   }
 
   @Override

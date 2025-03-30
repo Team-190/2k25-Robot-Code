@@ -98,7 +98,7 @@ public class CompositeCommands {
                   Commands.sequence(
                       AlgaeCommands.stowAllNoAlgae(manipulator, elevator),
                       Commands.runOnce(() -> elevator.setPosition(ReefHeight.STOW))),
-                  () -> manipulator.getState().equals(ArmState.DOWN)),
+                  () -> manipulator.getState().equals(ArmState.STOW_DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(manipulator.intakeCoral(), funnel.intakeCoral(() -> intake.hasCoral()))
@@ -120,7 +120,7 @@ public class CompositeCommands {
               Commands.either(
                   Commands.none(),
                   AlgaeCommands.stowAllNoAlgae(manipulator, elevator),
-                  () -> manipulator.getState().equals(ArmState.DOWN)),
+                  () -> manipulator.getState().equals(ArmState.STOW_DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
@@ -142,7 +142,7 @@ public class CompositeCommands {
               Commands.either(
                   Commands.none(),
                   AlgaeCommands.stowAllNoAlgae(manipulator, elevator),
-                  () -> manipulator.getState().equals(ArmState.DOWN)),
+                  () -> manipulator.getState().equals(ArmState.STOW_DOWN)),
               elevator.setPosition(ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(
@@ -435,7 +435,7 @@ public class CompositeCommands {
       return Commands.sequence(
           manipulator.scoreAlgae().withTimeout(0.25),
           Commands.parallel(
-              moveAlgaeArm(manipulator, elevator, ArmState.DOWN),
+              moveAlgaeArm(manipulator, elevator, ArmState.STOW_DOWN),
               elevator.setPosition(ReefHeight.ALGAE_MID)),
           manipulator.waitUntilAlgaeArmAtGoal(),
           elevator.setPosition(ReefHeight.STOW));
@@ -444,7 +444,7 @@ public class CompositeCommands {
     public static final Command stowAllWithAlgae(
         V2_RedundancyManipulator manipulator, Elevator elevator) {
       return Commands.sequence(
-          moveAlgaeArm(manipulator, elevator, ArmState.UP),
+          moveAlgaeArm(manipulator, elevator, ArmState.STOW_UP),
           manipulator.waitUntilAlgaeArmAtGoal(),
           elevator.setPosition(ReefHeight.STOW));
     }
@@ -459,7 +459,7 @@ public class CompositeCommands {
     public static final Command scoreAlgae(
         V2_RedundancyManipulator manipulator, Elevator elevator) {
       return Commands.sequence(
-          moveAlgaeArm(manipulator, elevator, ArmState.UP),
+          moveAlgaeArm(manipulator, elevator, ArmState.STOW_UP),
           manipulator.waitUntilAlgaeArmAtGoal(),
           manipulator.scoreAlgae().withTimeout(.5));
     }
@@ -501,7 +501,7 @@ public class CompositeCommands {
                   manipulator.setAlgaeArmGoal(ArmState.FLOOR_INTAKE),
                   manipulator.waitUntilAlgaeArmAtGoal()),
               Commands.sequence(
-                  elevator.setPosition(ReefHeight.ALGAE_INTAKE), elevator.waitUntilAtGoal()),
+                  elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE), elevator.waitUntilAtGoal()),
               Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
           .until(() -> RobotState.isHasAlgae())
           .andThen(stowAllWithAlgae(manipulator, elevator));

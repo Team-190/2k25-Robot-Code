@@ -227,7 +227,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     driver
         .leftStick()
-        .onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(!RobotState.isHasAlgae())));
+        .onTrue(V2_RedundancyCompositeCommands.scoreCoralSequence(elevator, manipulator, intake));
 
     driver
         .start()

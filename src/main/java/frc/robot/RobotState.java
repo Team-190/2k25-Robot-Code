@@ -367,10 +367,20 @@ public class RobotState {
 
     ReefHeight algaeHeight;
     switch (closestReefTag) {
-      case 10, 6, 8, 21, 17, 19:
+      case 10:
+      case 6:
+      case 8:
+      case 21:
+      case 17:
+      case 19:
         algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
         break;
-      case 9, 11, 7, 22, 20, 18:
+      case 9:
+      case 11:
+      case 7:
+      case 22:
+      case 20:
+      case 18:
         algaeHeight = ReefHeight.ALGAE_INTAKE_TOP;
         break;
       default:
@@ -418,6 +428,7 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
+    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Height", algaeHeight);
 
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Barge Setpoint", bargeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Barge Setpoint", bargeAtSetpoint);
