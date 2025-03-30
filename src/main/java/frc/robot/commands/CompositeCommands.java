@@ -566,5 +566,15 @@ public class CompositeCommands {
             RobotState::isHasAlgae);
       }
     }
+
+    public static final Command homeingSequences(
+        V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake, Elevator elevator) {
+      return Commands.sequence(
+          elevator.setPosition(() -> ReefHeight.ALGAE_MID),
+          elevator.waitUntilAtGoal(),
+          manipulator.homingSequence(),
+          intake.homingSequence(),
+          elevator.setPosition(() -> RobotState.getOIData().currentReefHeight()));
+    }
   }
 }
