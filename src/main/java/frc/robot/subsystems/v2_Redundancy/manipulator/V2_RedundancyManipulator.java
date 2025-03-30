@@ -190,7 +190,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Commands.sequence(
       Commands.runOnce(() -> isClosedLoop = false),
       Commands.run(()->io.setArmVoltage(-0.2)).until(()->inputs.armTorqueCurrentAmps>15),
-      Commands.runOnce(io.zeroArmPosition())
+      Commands.runOnce(()->io.zeroArmPosition())
     );
   }
 }
