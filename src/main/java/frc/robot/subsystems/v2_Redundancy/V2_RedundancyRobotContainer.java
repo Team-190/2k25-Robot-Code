@@ -14,9 +14,9 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
-import frc.robot.commands.DriveCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands.V2_RedundancyCompositeCommands;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberIO;
 import frc.robot.subsystems.shared.climber.ClimberIOSim;
@@ -227,7 +227,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     driver
         .leftStick()
-        .onTrue(V2_RedundancyCompositeCommands.scoreCoralSequence(elevator, manipulator, intake));
+        .onTrue(
+            V2_RedundancyCompositeCommands.scoreCoralSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver
         .start()
@@ -237,7 +242,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 elevator,
                 manipulator,
                 intake,
-                RobotState.getReefAlignData().algaeIntakeHeight(),
+                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
     driver
         .back()
