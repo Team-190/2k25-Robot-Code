@@ -30,11 +30,14 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.FunnelConstants;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
@@ -42,9 +45,11 @@ import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorConstants;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
+import frc.robot.util.KeyboardController;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,6 +66,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
+  private final KeyboardController debugBoard = new KeyboardController(0);
 
   // Auto chooser
 
@@ -160,7 +166,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            driver.back()::getAsBoolean));
+            () -> false));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -200,10 +206,12 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     // Driver algae
-    /*driver.back().onTrue(manipulator.toggleAlgaeArm());
+    driver.back().onTrue(manipulator.toggleAlgaeArm());
     driver
         .start()
-        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));*/
+        .onTrue(
+            V1_StackUpCompositeCommands.twerk(
+                drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
@@ -262,6 +270,302 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                         new Pose2d(0, 0, RobotState.getRobotPoseField().getRotation())))));
 
     operator.back().whileTrue(V1_StackUpCompositeCommands.emergencyEject(elevator, manipulator));
+
+    // Debug board
+    // Base triggers
+    debugBoard.resetHeading().onTrue(SharedCommands.resetHeading(drive).ignoringDisable(true));
+    // debugBoard
+    //     .resetHeadingCameras()
+    //     .onTrue(
+    //         Commands.runOnce(() -> RobotState.fieldPoseResetMT1(RobotCameras.V1_STACKUP_CAMS))
+    //             .ignoringDisable(true));
+    debugBoard
+        .scoring()
+        .primeLeft()
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)).ignoringDisable(true));
+    debugBoard
+        .scoring()
+        .primeRight()
+        .onTrue(
+            Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)).ignoringDisable(true));
+    debugBoard.scoring().track().whileTrue(DriveCommands.autoAlignReefCoral(drive));
+    // Funnel triggers
+    debugBoard.funnel().wingsClose().onTrue(funnel.setClapDaddyGoal(FunnelState.CLOSED));
+    debugBoard.funnel().wingsIntake().onTrue(funnel.setClapDaddyGoal(FunnelState.OPENED));
+    debugBoard.funnel().rollerWheelsIn().whileTrue(funnel.setRollerVoltage(12));
+    debugBoard.funnel().rollerWheelsOut().whileTrue(funnel.setRollerVoltage(-12));
+    debugBoard
+        .funnel()
+        .incrementRollerWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(FunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .decrementRollerWheelsSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setRollerVoltageOffset(-FunnelConstants.ROLLER_OFFSET_INCREMENT_VOLTS)));
+    debugBoard
+        .funnel()
+        .incrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED, -FunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .incrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED, -FunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementClosedSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.CLOSED, FunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard
+        .funnel()
+        .decrementIntakeSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    funnel.setFunnelPositionOffset(
+                        FunnelState.OPENED, FunnelConstants.CLAP_DADDY_OFFSET_INCREMENT_RADIANS)));
+    debugBoard.funnel().funnelSensorToggle().onTrue(Commands.runOnce(funnel::toggleSensorOverride));
+
+    // Elevator triggers
+    debugBoard
+        .elevator()
+        .stow()
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.STOW, elevator));
+    debugBoard.elevator().raise().onTrue(elevator.setPosition());
+    debugBoard.elevator().primeL1().onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    debugBoard.elevator().primeL2().onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
+    debugBoard.elevator().primeL3().onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
+    debugBoard.elevator().primeL4().onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
+    debugBoard
+        .elevator()
+        .decreaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .decreaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .decreaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .decreaseAlgaeSetPoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        -ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .increaseL1Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L1,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL2Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L2,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL3Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L3,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseL4Setpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.L4,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    debugBoard
+        .elevator()
+        .increaseStowSetpoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+
+    debugBoard
+        .elevator()
+        .increaseAlgaeSetPoint()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    elevator.changeSetpoint(
+                        ElevatorPositions.STOW,
+                        ElevatorConstants.ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS)));
+    // Manipulator triggers
+    debugBoard
+        .endEffector()
+        .wheelsIn()
+        .whileTrue(
+            manipulator.runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+    debugBoard
+        .endEffector()
+        .wheelsOut()
+        .whileTrue(
+            manipulator.runManipulator(
+                -V1_StackUpManipulatorConstants.VOLTAGES.HALF_VOLTS().get()));
+    debugBoard
+        .endEffector()
+        .eject()
+        .onTrue(V1_StackUpCompositeCommands.emergencyEject(elevator, manipulator));
+    debugBoard
+        .endEffector()
+        .incrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        V1_StackUpManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT().get())));
+    debugBoard
+        .endEffector()
+        .decrementSpeed()
+        .onTrue(
+            Commands.runOnce(
+                () ->
+                    manipulator.incrementScoreSpeed(
+                        -V1_StackUpManipulatorConstants.VOLTAGES.SCORE_OFFSET_INCREMENT().get())));
+    debugBoard.endEffector().toggleSensor().onTrue(manipulator.toggleSensorOverride());
+    // Algae triggers
+    debugBoard
+        .endEffector()
+        .blepUp()
+        .onTrue(
+            V1_StackUpCompositeCommands.twerk(
+                drive, elevator, manipulator, ReefHeight.ALGAE_INTAKE_TOP));
+    debugBoard
+        .endEffector()
+        .blepDown()
+        .onTrue(
+            V1_StackUpCompositeCommands.twerk(
+                drive, elevator, manipulator, ReefHeight.ALGAE_INTAKE_BOTTOM));
+    debugBoard.endEffector().toggleAss().onTrue(manipulator.toggleAlgaeArm());
+    // Climber triggers
+    debugBoard.climber().deployLower().onTrue(climber.releaseClimber());
+    debugBoard.climber().incrementWintchIn().onTrue(climber.incrementWinchClimber());
+    debugBoard.climber().incrementWintchOut().onTrue(climber.decrementWinchClimber());
+    debugBoard.climber().sensorOverride().onTrue(climber.manualDeployOverride());
+    // // Add climber lane chooser options
+    // climberLaneChooser.addDefaultOption("Center", ClimberLane.CENTER);
+    // climberLaneChooser.addOption("Right", ClimberLane.RIGHT);
+    // climberLaneChooser.addOption("Left", ClimberLane.LEFT);
+    // climberLaneChooser
+    //     .getSendableChooser()
+    //     .onChange(
+    //         (l) ->
+    //             RobotState.setClimbLane(
+    //                 l.equals("Center")
+    //                     ? ClimberLane.CENTER
+    //                     : l.equals("Right") ? ClimberLane.RIGHT : ClimberLane.LEFT));
+
+    // debugBoard
+    //     .climber()
+    //     .shiftLaneLeft()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     NetworkTableInstance.getDefault()
+    //                         .getTable("SmartDashboard/Climber Lane")
+    //                         .getStringTopic("selected")
+    //                         .publish()
+    //                         .set(
+    //                             RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+    //                                 ? "Left"
+    //                                 :
+    // RobotState.getOIData().climbLane().equals(ClimberLane.RIGHT)
+    //                                     ? "Center"
+    //                                     : "Left"))
+    //             .ignoringDisable(true));
+
+    // debugBoard
+    //     .climber()
+    //     .shiftLaneRight()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     NetworkTableInstance.getDefault()
+    //                         .getTable("SmartDashboard/Climber Lane")
+    //                         .getStringTopic("selected")
+    //                         .publish()
+    //                         .set(
+    //                             RobotState.getOIData().climbLane().equals(ClimberLane.CENTER)
+    //                                 ? "Right"
+    //                                 : RobotState.getOIData().climbLane().equals(ClimberLane.LEFT)
+    //                                     ? "Center"
+    //                                     : "Right"))
+    //             .ignoringDisable(true));
   }
 
   private void configureAutos() {

@@ -71,8 +71,7 @@ public class Climber extends SubsystemBase {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(
-          ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+      if (redundantTrustTimer.hasElapsed(ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
         if (!inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (!inputs.redundantSwitchTwo) {

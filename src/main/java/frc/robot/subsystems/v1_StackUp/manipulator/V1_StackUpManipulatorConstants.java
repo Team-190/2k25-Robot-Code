@@ -24,7 +24,6 @@ public class V1_StackUpManipulatorConstants {
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5),
             new LoggedTunableNumber("Manipulator/Score Offset Increment", 0.1));
-
   }
 
   public static final record Voltages(

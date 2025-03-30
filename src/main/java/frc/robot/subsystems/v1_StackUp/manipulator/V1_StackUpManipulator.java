@@ -50,7 +50,9 @@ public class V1_StackUpManipulator extends SubsystemBase {
   }
 
   public Command runManipulator(double volts) {
-    return this.runEnd(() -> io.setVoltage(volts+Math.copySign(scoreSpeedOffset, volts)), () -> io.setVoltage(0));
+    return this.runEnd(
+        () -> io.setVoltage(volts + Math.copySign(scoreSpeedOffset, volts)),
+        () -> io.setVoltage(0));
   }
 
   public Command intakeCoral() {
@@ -66,6 +68,10 @@ public class V1_StackUpManipulator extends SubsystemBase {
 
   public Command scoreL1Coral() {
     return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.L1_VOLTS().get());
+  }
+
+  public Command scoreL4Coral() {
+    return runManipulator(V1_StackUpManipulatorConstants.VOLTAGES.L4_VOLTS().get());
   }
 
   public Command removeAlgae() {

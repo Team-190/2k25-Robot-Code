@@ -81,7 +81,7 @@ public class Funnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
+  public Command setRollerVoltage(double volts) {
     return Commands.runEnd(
         () -> io.setRollerVoltage(volts + Math.copySign(rollerVoltageOffset, volts)),
         () -> io.setRollerVoltage(0.0));
