@@ -215,7 +215,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .leftBumper()
         .whileTrue(
             V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
-        .whileFalse(intake.retractAlgae());
+        .onFalse(
+            V2_RedundancyCompositeCommands.postFloorIntakeSequence(manipulator, elevator, intake));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
