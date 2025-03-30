@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,7 +21,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
   @Getter private ArmState state;
-  private double hasAlgaeTimestamp;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -38,7 +36,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     state = ArmState.DOWN;
-    hasAlgaeTimestamp = Timer.getFPGATimestamp();
   }
 
   @Override
@@ -52,7 +49,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       io.setRollerVoltage(holdVoltage());
     }
 
-    if (RobotState.isIntakingAlgae() && hasAlgae()) {
+    if (hasAlgae() && RobotState.isIntakingAlgae()) {
       RobotState.setHasAlgae(true);
     }
   }
@@ -69,14 +66,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    if (Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 70.0
-        && inputs.rollerAccelerationRadiansPerSecondSquared > 0.0)
-      hasAlgaeTimestamp = Timer.getFPGATimestamp();
-
-    return Timer.getFPGATimestamp() < hasAlgaeTimestamp + 0.5;
+    return RobotState.isIntakingAlgae()
+        && Math.abs(inputs.rollerAccelerationRadiansPerSecondSquared) < 1000
+        && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 70;
   }
 
-  @AutoLogOutput(key = "Manipulator/Has Algae")
+  @AutoLogOutput(key = "Manipulator/Intaking Algae")
   public boolean isIntakingAlgae() {
     return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
   }
