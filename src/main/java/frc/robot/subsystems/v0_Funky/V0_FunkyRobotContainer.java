@@ -10,7 +10,7 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.NewCompositeCommands.SharedCommands;
+import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
