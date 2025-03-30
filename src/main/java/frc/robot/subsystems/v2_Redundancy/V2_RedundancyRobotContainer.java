@@ -226,6 +226,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     driver
+        .leftStick()
+        .onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(!RobotState.isHasAlgae())));
+
+    driver
         .start()
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
@@ -281,7 +285,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimber());
     operator
         .povRight()
-        .whileTrue(AlgaeCommands.scoreProcessor(elevator, manipulator))
+        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
         .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
     operator
