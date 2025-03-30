@@ -116,7 +116,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   public Command scoreAlgae() {
     return runManipulator(
             -V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get())
-        .finallyDo(() -> Commands.runOnce(() -> RobotState.setHasAlgae(false)));
+        .finallyDo(() -> RobotState.setHasAlgae(false));
   }
 
   public Command scoreL1Coral() {

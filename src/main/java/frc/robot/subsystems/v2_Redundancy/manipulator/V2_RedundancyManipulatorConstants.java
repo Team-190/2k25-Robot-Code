@@ -112,7 +112,7 @@ public class V2_RedundancyManipulatorConstants {
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
-    FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5)),
+    FLOOR_INTAKE(Rotation2d.fromDegrees(-70)),
     STOW_LINE(Rotation2d.fromDegrees(-75)),
     STOW_DOWN(Rotation2d.fromDegrees(-77));
 

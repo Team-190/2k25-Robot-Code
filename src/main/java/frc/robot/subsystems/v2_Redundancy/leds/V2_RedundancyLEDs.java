@@ -71,7 +71,7 @@ public class V2_RedundancyLEDs extends Leds {
 
   private void setPattern() {
     // Select LED mode
-    solid(Color.kBlack); // Default to off
+    solid(Color.kBlack); // Default to off%
     if (estopped) {
       solid(Color.kRed);
     } else if (RobotMode.disabled()) {
@@ -87,6 +87,8 @@ public class V2_RedundancyLEDs extends Leds {
     } else if (RobotMode.enabled()) {
       if (RobotState.isAutoAligning()) {
         rainbow(LENGTH, 0.25);
+      } else if (RobotState.isHasAlgae()) {
+        wave(Color.kBlack, Color.kDarkGreen, RAINBOW_CYCLE_LENGTH, 1.0);
       } else {
         if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
           if (RobotState.isIntakingCoral()) {
