@@ -237,7 +237,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 elevator,
                 manipulator,
                 intake,
-                RobotState.getReefAlignData().algaeIntakeHeight(),
+                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
     driver
         .back()

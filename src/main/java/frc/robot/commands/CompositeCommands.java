@@ -22,6 +22,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.In
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.AllianceFlipUtil;
+import java.util.function.Supplier;
 
 public class CompositeCommands {
   public static final class SharedCommands {
@@ -377,7 +378,7 @@ public class CompositeCommands {
           Elevator elevator,
           V2_RedundancyManipulator manipulator,
           V2_RedundancyIntake intake,
-          ReefHeight level,
+          Supplier<ReefHeight> level,
           Camera... cameras) {
         return Commands.sequence(
             DriveCommands.autoAlignReefAlgae(drive, cameras),
@@ -387,7 +388,7 @@ public class CompositeCommands {
                         elevator,
                         manipulator,
                         intake,
-                        () -> level,
+                        level,
                         ArmState.REEF_INTAKE,
                         IntakeState.STOW),
                     Commands.waitSeconds(1.0),
