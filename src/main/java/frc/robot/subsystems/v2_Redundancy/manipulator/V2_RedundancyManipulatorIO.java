@@ -75,4 +75,6 @@ public interface V2_RedundancyManipulatorIO {
    * @param cruisingVelocity The cruising velocity.
    */
   public default void updateArmConstraints(double maxAcceleration, double cruisingVelocity) {}
+
+  public default void zeroArmPosition() {}
 }

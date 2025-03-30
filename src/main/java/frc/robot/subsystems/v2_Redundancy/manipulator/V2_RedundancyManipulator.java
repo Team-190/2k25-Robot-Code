@@ -178,11 +178,19 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public boolean algaeArmAtGoal() {
-    return inputs.armPosition.getRadians() - this.state.getAngle().getRadians()
+    return inputs.armPosition.getRadians() - state.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
   public Command waitUntilAlgaeArmAtGoal() {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::algaeArmAtGoal));
+  }
+
+  public Command homingSequence() {
+    return Commands.sequence(
+      Commands.runOnce(() -> isClosedLoop = false),
+      Commands.run(()->io.setArmVoltage(-0.2)).until(()->inputs.armTorqueCurrentAmps>15),
+      Commands.runOnce(io.zeroArmPosition())
+    );
   }
 }
