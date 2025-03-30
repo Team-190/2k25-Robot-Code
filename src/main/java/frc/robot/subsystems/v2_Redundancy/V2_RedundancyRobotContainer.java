@@ -227,7 +227,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     driver
         .leftStick()
-        .onTrue(V2_RedundancyCompositeCommands.scoreCoralSequence(elevator, manipulator, intake));
+        .onTrue(
+            V2_RedundancyCompositeCommands.scoreCoralSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver
         .start()
