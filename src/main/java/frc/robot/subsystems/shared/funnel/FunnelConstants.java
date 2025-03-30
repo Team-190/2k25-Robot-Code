@@ -28,6 +28,10 @@ public class FunnelConstants {
   public static final Gains CLAP_DADDY_MOTOR_GAINS;
   public static final Constraints CLAP_DADDY_MOTOR_CONSTRAINTS;
 
+
+  public static final double ROLLER_OFFSET_INCREMENT_VOLTS;
+  public static final double CLAP_DADDY_OFFSET_INCREMENT_RADIANS;
+
   static {
     switch (Constants.ROBOT) {
       case V1_STACKUP:
@@ -47,6 +51,10 @@ public class FunnelConstants {
         ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        
+        ROLLER_OFFSET_INCREMENT_VOLTS = 0.1;
+        CLAP_DADDY_OFFSET_INCREMENT_RADIANS = Units.degreesToRadians(1);
+        
 
         switch (Constants.getMode()) {
           case REAL:
@@ -100,6 +108,9 @@ public class FunnelConstants {
         CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
         ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
 
+        ROLLER_OFFSET_INCREMENT_VOLTS = 0.1;
+        CLAP_DADDY_OFFSET_INCREMENT_RADIANS = Units.degreesToRadians(1);
+        
         switch (Constants.getMode()) {
           case REAL:
           case REPLAY:
@@ -167,8 +178,14 @@ public class FunnelConstants {
 
     private final Rotation2d angle;
 
+    private double offset = 0.0;
+
     public Rotation2d getAngle() {
-      return angle;
+      return Rotation2d.fromRadians(angle.getRadians() + offset);
+    }
+
+    public void setOffset(double offset) {
+      this.offset += offset;
     }
   }
 }

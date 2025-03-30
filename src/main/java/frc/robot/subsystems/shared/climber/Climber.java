@@ -12,6 +12,8 @@ public class Climber extends SubsystemBase {
 
   private Timer redundantSwitchesTimer;
   private Timer redundantTrustTimer;
+  private Timer redundantSwitchTimer;
+  private Timer brokenTimer;
 
   @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
   private boolean trustRedundantSwitchOne;
@@ -25,6 +27,12 @@ public class Climber extends SubsystemBase {
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
 
+  @AutoLogOutput(key = "Climber/SwitchesBroken")
+  private boolean broken;
+
+  @AutoLogOutput(key = "Climber/climberReleased")
+  private boolean climberDeployed;
+
   public Climber(ClimberIO io) {
     this.io = io;
     inputs = new ClimberIOInputsAutoLogged();
@@ -32,9 +40,13 @@ public class Climber extends SubsystemBase {
     isClimbed = false;
     redundantSwitchesTimer = new Timer();
     redundantTrustTimer = new Timer();
+    redundantSwitchTimer = new Timer();
+    brokenTimer = new Timer();
     trustRedundantSwitchOne = true;
     trustRedundantSwitchTwo = true;
     override = false;
+    broken = false;
+    climberDeployed = false;
   }
 
   @Override
@@ -50,17 +62,20 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean climberReady() {
-    if (override) {
-      return true;
+    broken = climberSwitchesBroken();
+    if (override || broken) {
+      return override;
     }
-    if (inputs.redundantSwitchOne != inputs.redundantSwitchOne) {
+
+    if (inputs.redundantSwitchOne != inputs.redundantSwitchTwo) {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
-        if (inputs.redundantSwitchOne) {
+      if (redundantTrustTimer.hasElapsed(
+          ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+        if (!inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
-        } else if (inputs.redundantSwitchOne) {
+        } else if (!inputs.redundantSwitchTwo) {
           trustRedundantSwitchTwo = true;
         }
       }
@@ -70,10 +85,16 @@ public class Climber extends SubsystemBase {
       redundantTrustTimer.reset();
     }
 
-    if (inputs.redundantSwitchOne && inputs.redundantSwitchOne) {
+    if (inputs.redundantSwitchOne && inputs.redundantSwitchTwo) {
       redundantSwitchesTimer.start();
-    } else {
+    } else if (!inputs.redundantSwitchOne && !inputs.redundantSwitchTwo) {
       redundantSwitchesTimer.reset();
+    } else if ((inputs.redundantSwitchTwo && trustRedundantSwitchTwo)
+        || (inputs.redundantSwitchOne && trustRedundantSwitchOne)) {
+      redundantSwitchTimer.start();
+    } else if ((!inputs.redundantSwitchTwo && trustRedundantSwitchTwo)
+        || (!inputs.redundantSwitchOne && trustRedundantSwitchOne)) {
+      redundantSwitchTimer.reset();
     }
 
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
@@ -81,9 +102,23 @@ public class Climber extends SubsystemBase {
           && inputs.redundantSwitchTwo
           && redundantSwitchesTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchOne) {
-      return inputs.redundantSwitchOne;
+      return inputs.redundantSwitchOne
+          && redundantSwitchTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
     } else if (trustRedundantSwitchTwo) {
-      return inputs.redundantSwitchTwo;
+      return inputs.redundantSwitchTwo
+          && redundantSwitchTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
+    } else {
+      return false;
+    }
+  }
+
+  private boolean climberSwitchesBroken() {
+    if ((inputs.redundantSwitchOne && inputs.redundantSwitchTwo && !climberDeployed)) {
+      brokenTimer.start();
+      if (brokenTimer.hasElapsed(0.5) && !climberDeployed) {
+        return true;
+      }
+      return false;
     } else {
       return false;
     }
@@ -94,14 +129,24 @@ public class Climber extends SubsystemBase {
   }
 
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1125);
+    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0))
+        .withTimeout(0.1)
+        .finallyDo(() -> climberDeployed = true);
   }
 
   public Command winchClimber() {
     return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
-  public Command manualDeployOverride(boolean override) { // set using debug board button
-    return this.runOnce(() -> this.override = override);
+  public Command manualDeployOverride() { // set using debug board button
+    return this.runOnce(() -> override = !override);
+  }
+
+  public Command incrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).withTimeout(0.04);
+  }
+
+  public Command decrementWinchClimber() {
+    return this.runEnd(() -> io.setVoltage(-12), () -> io.setVoltage(0)).withTimeout(0.04);
   }
 }

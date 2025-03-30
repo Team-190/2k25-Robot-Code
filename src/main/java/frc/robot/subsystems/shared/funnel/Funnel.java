@@ -21,6 +21,8 @@ public class Funnel extends SubsystemBase {
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
   private FunnelState goal;
+  private double rollerVoltageOffset;
+  private boolean sensorOverride;
 
   private boolean isClosedLoop;
 
@@ -39,6 +41,8 @@ public class Funnel extends SubsystemBase {
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
     goal = FunnelState.OPENED;
+    rollerVoltageOffset = 0.0;
+    sensorOverride = false;
 
     isClosedLoop = true;
   }
@@ -78,7 +82,9 @@ public class Funnel extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   private Command setRollerVoltage(double volts) {
-    return Commands.run(() -> io.setRollerVoltage(volts));
+    return Commands.runEnd(
+        () -> io.setRollerVoltage(volts + Math.copySign(rollerVoltageOffset, volts)),
+        () -> io.setRollerVoltage(0.0));
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
@@ -105,18 +111,6 @@ public class Funnel extends SubsystemBase {
     return Commands.runOnce(io::stopRoller);
   }
 
-  public Command funnelClosedOverride() {
-    return Commands.runEnd(
-        () -> {
-          goal = FunnelState.CLOSED;
-          io.setRollerVoltage(12);
-        },
-        () -> {
-          goal = FunnelState.OPENED;
-          io.setRollerVoltage(0);
-        });
-  }
-
   /**
    * Runs the SysId routine for the clapDaddy.
    *
@@ -140,6 +134,9 @@ public class Funnel extends SubsystemBase {
    * @return True if the funnel has coral, false otherwise.
    */
   public boolean hasCoral() {
+    if (sensorOverride) {
+      return false;
+    }
     return inputs.hasCoral && Timer.getFPGATimestamp() > debounceTimestamp + 0.05;
   }
 
@@ -182,5 +179,18 @@ public class Funnel extends SubsystemBase {
 
   public Command setFunnelVoltage(double volts) {
     return Commands.run(() -> io.setClapDaddyVoltage(volts));
+  }
+
+  public void setRollerVoltageOffset(double offset) {
+    rollerVoltageOffset += offset;
+  }
+
+  public void setFunnelPositionOffset(
+      frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState state, double offset) {
+    state.setOffset(offset);
+  }
+
+  public void toggleSensorOverride() {
+    sensorOverride = !sensorOverride;
   }
 }

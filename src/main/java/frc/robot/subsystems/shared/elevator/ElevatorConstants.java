@@ -19,6 +19,7 @@ public class ElevatorConstants {
   public static final Constraints CONSTRAINTS;
   public static final Gains STOW_GAINS;
   public static final Constraints STOW_CONSTRAINTS;
+  public static final double ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS;
 
   static {
     switch (Constants.ROBOT) {
@@ -34,7 +35,7 @@ public class ElevatorConstants {
         ELEVATOR_PARAMETERS =
             new ElevatorParameters(
                 DCMotor.getKrakenX60Foc(4), 6.803886, 0.0, 1.43 + Units.inchesToMeters(0.5), 4);
-
+        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.0127;
         switch (Constants.getMode()) {
           case REAL:
           case REPLAY:
@@ -109,7 +110,7 @@ public class ElevatorConstants {
         ELEVATOR_PARAMETERS =
             new ElevatorParameters(
                 DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, 1.43 + Units.inchesToMeters(0.5), 2);
-
+        ELEVATOR_HEIGHT_OFFSET_INCREMENT_METERS = 0.0127;
         switch (Constants.getMode()) {
           case REAL:
           case REPLAY:
@@ -213,8 +214,15 @@ public class ElevatorConstants {
 
     private final double position;
 
+    private double offset = 0.0;
+
     public double getPosition() {
-      return position;
+      return position + offset;
+    }
+
+    public void changeOffset(double offset) {
+      this.offset += offset;
+      CORAL_INTAKE.offset = STOW.offset;
     }
   }
 }

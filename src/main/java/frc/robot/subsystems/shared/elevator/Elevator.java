@@ -319,4 +319,8 @@ public class Elevator extends SubsystemBase {
   public Command waitUntilAtGoal() {
     return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(this::atGoal));
   }
+  
+  public void changeSetpoint(ElevatorPositions position, double offset) {
+    position.changeOffset(offset);
+  }
 }
