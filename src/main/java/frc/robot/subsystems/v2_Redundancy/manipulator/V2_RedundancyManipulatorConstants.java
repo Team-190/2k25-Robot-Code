@@ -58,7 +58,8 @@ public class V2_RedundancyManipulatorConstants {
         new Voltages(
             new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
             new LoggedTunableNumber("Manipulator/Algae Intake Volts", 12.0),
-            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.6 * 1.56),
+            new LoggedTunableNumber("Manipulator/L4 Volts", 4.6 * 1.56),
+            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.8 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Algae Volts", 6),
             new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
@@ -97,6 +98,7 @@ public class V2_RedundancyManipulatorConstants {
   public static final record Voltages(
       LoggedTunableNumber CORAL_INTAKE_VOLTS,
       LoggedTunableNumber ALGAE_INTAKE_VOLTS,
+      LoggedTunableNumber L4_VOLTS,
       LoggedTunableNumber SCORE_CORAL_VOLTS,
       LoggedTunableNumber SCORE_ALGAE_VOLTS,
       LoggedTunableNumber REMOVE_ALGAE,
@@ -105,12 +107,14 @@ public class V2_RedundancyManipulatorConstants {
 
   @RequiredArgsConstructor
   public static enum ArmState {
-    UP(Rotation2d.fromDegrees(75)),
+    STOW_UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
+    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
-    FLOOR_INTAKE(Rotation2d.fromDegrees(-70)),
-    DOWN(Rotation2d.fromDegrees(-77)),
-    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 30));
+    INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
+    FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5)),
+    STOW_LINE(Rotation2d.fromDegrees(-75)),
+    STOW_DOWN(Rotation2d.fromDegrees(-77));
 
     private final Rotation2d angle;
 

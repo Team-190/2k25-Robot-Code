@@ -17,8 +17,8 @@ public class V2_RedundancyIntakeConstants {
   public static final Gains EXTENSION_MOTOR_GAINS;
   public static final Thresholds ANGLE_THRESHOLDS;
   public static final Constraints EXTENSION_MOTOR_CONSTRAINTS;
-  public static final IntakeParams EXTENSION_PARAMS;
-  public static final IntakeParams ROLLER_PARAMS;
+  public static final ExtensionParams EXTENSION_PARAMS;
+  public static final RollerParams ROLLER_PARAMS;
 
   static {
     EXTENSION_MOTOR_ID = 60;
@@ -44,9 +44,15 @@ public class V2_RedundancyIntakeConstants {
             new Constraints(
                 new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 500.0),
                 new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 500.0),
-                new LoggedTunableNumber("Intake/Goal Tolerance", 0.0));
-        EXTENSION_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
-        ROLLER_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
+                new LoggedTunableNumber("Intake/Goal Tolerance", 0.01));
+        EXTENSION_PARAMS =
+            new ExtensionParams(
+                DCMotor.getKrakenX60(1),
+                0.0042,
+                Units.inchesToMeters(1.0),
+                IntakeState.STOW.getDistance(),
+                IntakeState.INTAKE.getDistance());
+        ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
         break;
 
       case SIM:
@@ -64,8 +70,14 @@ public class V2_RedundancyIntakeConstants {
                 new LoggedTunableNumber("Intake/Extension Motor/Max Acceleration", 100.0),
                 new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 100.0),
                 new LoggedTunableNumber("Intake/Goal Tolerance", 0.0));
-        EXTENSION_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
-        ROLLER_PARAMS = new IntakeParams(DCMotor.getKrakenX60(1), 0.0042);
+        EXTENSION_PARAMS =
+            new ExtensionParams(
+                DCMotor.getKrakenX60(1),
+                0.0042,
+                Units.inchesToMeters(1.0),
+                IntakeState.STOW.getDistance(),
+                IntakeState.INTAKE.getDistance());
+        ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
         break;
     }
   }
@@ -91,7 +103,14 @@ public class V2_RedundancyIntakeConstants {
       LoggedTunableNumber MAX_VELOCITY,
       LoggedTunableNumber GOAL_TOLERANCE) {}
 
-  public static final record IntakeParams(DCMotor motor, double momentOfInertia) {}
+  public static final record ExtensionParams(
+      DCMotor motor,
+      double massKg,
+      double pitchDiameter,
+      double minExtension,
+      double maxExtension) {}
+
+  public static final record RollerParams(DCMotor motor, double momentOfInertia) {}
 
   @RequiredArgsConstructor
   public enum IntakeState {

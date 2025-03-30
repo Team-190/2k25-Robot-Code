@@ -7,7 +7,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -86,7 +86,7 @@ public class V0_WhiplashRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> driver.b().getAsBoolean()));
-    driver.y().onTrue(CompositeCommands.resetHeading(drive));
+    driver.y().onTrue(SharedCommands.resetHeading(drive));
   }
 
   private void configureAutos() {

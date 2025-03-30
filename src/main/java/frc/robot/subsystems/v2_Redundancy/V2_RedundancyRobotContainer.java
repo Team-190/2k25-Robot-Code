@@ -14,10 +14,8 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
-import frc.robot.commands.CompositeCommands;
-import frc.robot.commands.CompositeCommands.AlgaeCommands;
-import frc.robot.commands.CompositeCommands.IntakeCommands;
-import frc.robot.commands.CompositeCommands.ScoreCommands;
+import frc.robot.commands.CompositeCommands.SharedCommands;
+import frc.robot.commands.CompositeCommands.SharedCommands.V2_RedundancyCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberIO;
@@ -178,99 +176,132 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> false));
 
     // Driver face buttons
-    driver.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
-    driver.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
-    driver.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    driver.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
+    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
+    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
+    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
 
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Driver triggers
     driver
         .leftTrigger(0.5)
-        .whileTrue(IntakeCommands.intakeCoral(elevator, funnel, manipulator, intake));
+        .whileTrue(
+            V2_RedundancyCompositeCommands.intakeCoralDriverSequence(
+                elevator, funnel, manipulator, intake));
     driver
         .rightTrigger(0.5)
         .whileTrue(
-            ScoreCommands.autoScoreCoralSequence(
-                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+            V2_RedundancyCompositeCommands.autoScoreCoralSequence(
+                drive, elevator, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Driver bumpers
     driver
         .leftBumper()
-        .whileTrue(AlgaeCommands.floorIntakeSequence(manipulator, elevator, intake))
-        .whileFalse(intake.retractAlgae());
+        .whileTrue(
+            V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
+        .onFalse(
+            V2_RedundancyCompositeCommands.postFloorIntakeSequence(manipulator, elevator, intake));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
-    driver.povDown().onTrue(CompositeCommands.resetHeading(drive));
+    driver.povDown().onTrue(SharedCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
     driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
-    driver.start().whileTrue(AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive));
-    driver.back().whileTrue(AlgaeCommands.autoScoreAlgae(drive, elevator, manipulator));
+    driver
+        .leftStick()
+        .onTrue(
+            V2_RedundancyCompositeCommands.scoreCoralSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().atCoralSetpoint()));
+
+    driver
+        .start()
+        .whileTrue(
+            V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
+                drive,
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+                RobotCameras.V2_REDUNDANCY_CAMS));
+    driver
+        .back()
+        .whileTrue(
+            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake));
 
     // Operator face buttons
-    operator.y().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L4));
-    operator.x().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L3));
-    operator.b().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(CompositeCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
+    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
+    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
+    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
 
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(CompositeCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
 
     // Operator triggers
     operator
         .leftTrigger(0.5)
-        .whileTrue(IntakeCommands.intakeCoralOverride(elevator, funnel, manipulator, intake))
+        .whileTrue(
+            V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(
+                elevator, funnel, manipulator, intake))
         .onFalse(
             Commands.parallel(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
-    operator.rightTrigger(0.5).whileTrue(ScoreCommands.scoreCoral(manipulator));
+    operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(CompositeCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
+    operator
+        .povRight()
+        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
+        .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
-    operator.start().onTrue(AlgaeCommands.scoreAlgae(manipulator, elevator));
-    operator.back().onTrue(AlgaeCommands.netHeight(manipulator, elevator));
+    operator
+        .start()
+        .onTrue(V2_RedundancyCompositeCommands.scoreAlgae(elevator, manipulator, intake));
+    operator.back().onTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
 
     // Misc
-    driver.rightStick().onTrue(AlgaeCommands.testAlgae(elevator, manipulator));
     operatorFunnelOverride.whileTrue(
-        IntakeCommands.intakeCoralCloseOverride(elevator, funnel, manipulator, intake));
+        V2_RedundancyCompositeCommands.intakeCoralOperatorOverrideSequence(
+            elevator, funnel, manipulator, intake));
     operatorFunnelOverride.onFalse(
         Commands.sequence(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
   }
@@ -339,6 +370,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
+        intake.getExtension(),
+        manipulator.getArmAngle(),
+        elevator.getPositionMeters(),
         vision.getCameras());
 
     LTNUpdater.updateDrive(drive);

@@ -119,7 +119,7 @@ public class V2_RedundancyMechanism3d {
                               .MIN_ANGLE()
                               .getDegrees()),
                   0.0))),
-      ALGAE_INTAKE.transformBy(new Transform3d(intakePosition, 0.0, 0.0, new Rotation3d()))
+      ALGAE_INTAKE.transformBy(new Transform3d(-intakePosition, 0.0, 0.0, new Rotation3d()))
     };
   }
 }

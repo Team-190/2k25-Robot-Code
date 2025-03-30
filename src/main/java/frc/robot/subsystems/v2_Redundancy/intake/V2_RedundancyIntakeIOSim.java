@@ -7,11 +7,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
 public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
-  public final SingleJointedArmSim extensionSim;
+  public final ElevatorSim extensionSim;
   public final DCMotorSim rollerSim;
 
   private final ProfiledPIDController extensionController;
@@ -23,18 +23,17 @@ public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
 
   public V2_RedundancyIntakeIOSim() {
     extensionSim =
-        new SingleJointedArmSim(
-            LinearSystemId.createSingleJointedArmSystem(
+        new ElevatorSim(
+            LinearSystemId.createElevatorSystem(
                 V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
-                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.momentOfInertia(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.massKg(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.pitchDiameter(),
                 V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO),
             V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
-            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO,
-            1.0,
-            Double.NEGATIVE_INFINITY,
-            Double.POSITIVE_INFINITY,
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension(),
             false,
-            V2_RedundancyIntakeConstants.IntakeState.STOW.getDistance());
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
@@ -68,7 +67,7 @@ public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
   public void updateInputs(IntakeIOInputs inputs) {
     if (extensionClosedLoop) {
       extensionAppliedVolts =
-          extensionController.calculate(extensionSim.getAngleRads())
+          extensionController.calculate(extensionSim.getPositionMeters())
               + extensionFeedforward.calculate(extensionController.getSetpoint().position);
     }
 
@@ -80,16 +79,8 @@ public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
     extensionSim.update(Constants.LOOP_PERIOD_SECONDS);
     rollerSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    inputs.extensionPositionMeters =
-        extensionSim.getAngleRads()
-            / (2 * Math.PI)
-            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
-            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
-    inputs.extensionVelocityMetersPerSecond =
-        extensionSim.getVelocityRadPerSec()
-            / (2 * Math.PI)
-            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
-            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+    inputs.extensionPositionMeters = extensionSim.getPositionMeters();
+    inputs.extensionVelocityMetersPerSecond = extensionSim.getVelocityMetersPerSecond();
     inputs.extensionAppliedVolts = extensionAppliedVolts;
     inputs.extensionSupplyCurrentAmps = extensionSim.getCurrentDrawAmps();
     inputs.extensionGoal =
