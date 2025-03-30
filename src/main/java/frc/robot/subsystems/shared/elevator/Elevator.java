@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -118,11 +119,11 @@ public class Elevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(ReefHeight newPosition) {
+  public Command setPosition(Supplier<ReefHeight> newPosition) {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          switch (newPosition) {
+          switch (newPosition.get()) {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;
@@ -245,7 +246,7 @@ public class Elevator extends SubsystemBase {
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        setPosition(ReefHeight.STOW));
+        setPosition(() -> ReefHeight.STOW));
   }
 
   /**

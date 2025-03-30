@@ -10,6 +10,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.In
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class DecisionTree {
 
@@ -26,9 +27,9 @@ public class DecisionTree {
   }
 
   private static final BooleanSupplier getElevatorEndBelow(
-      Elevator elevator, ReefHeight elevatorState) {
+      Elevator elevator, Supplier<ReefHeight> elevatorState) {
     return () ->
-        elevator.getPosition(elevatorState).getPosition()
+        elevator.getPosition(elevatorState.get()).getPosition()
             < ElevatorPositions.ALGAE_MID.getPosition();
   }
 
@@ -56,10 +57,10 @@ public class DecisionTree {
   private static final Command ES_A_EE(
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_MID),
+        elevator.setPosition(() -> ReefHeight.ALGAE_MID),
         elevator.waitUntilAtGoal(),
         manipulator.setAlgaeArmGoal(armState),
         manipulator.waitUntilAlgaeArmAtGoal(),
@@ -70,10 +71,10 @@ public class DecisionTree {
   private static final Command ES_AEE(
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_MID),
+        elevator.setPosition(() -> ReefHeight.ALGAE_MID),
         elevator.waitUntilAtGoal(),
         Commands.parallel(
             elevator.setPosition(elevatorState),
@@ -85,11 +86,11 @@ public class DecisionTree {
   private static final Command ESA_EE(
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_MID),
+            elevator.setPosition(() -> ReefHeight.ALGAE_MID),
             manipulator.setAlgaeArmGoal(armState),
             elevator.waitUntilAtGoal(),
             manipulator.waitUntilAlgaeArmAtGoal()),
@@ -100,7 +101,7 @@ public class DecisionTree {
   private static final Command AEE(
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
@@ -114,11 +115,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+            elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
             intake.waitUntilExtensionAtGoal()),
@@ -132,11 +133,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+            elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
             intake.waitUntilExtensionAtGoal()),
@@ -151,11 +152,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+            elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
             manipulator.setAlgaeArmGoal(armState),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
@@ -169,7 +170,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
@@ -185,11 +186,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_MID),
+            elevator.setPosition(() -> ReefHeight.ALGAE_MID),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
             intake.waitUntilExtensionAtGoal()),
@@ -203,11 +204,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_MID),
+            elevator.setPosition(() -> ReefHeight.ALGAE_MID),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
             intake.waitUntilExtensionAtGoal()),
@@ -222,11 +223,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_MID),
+            elevator.setPosition(() -> ReefHeight.ALGAE_MID),
             manipulator.setAlgaeArmGoal(armState),
             intake.setExtensionGoal(IntakeState.INTAKE),
             elevator.waitUntilAtGoal(),
@@ -240,10 +241,10 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+        elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
         elevator.waitUntilAtGoal(),
         manipulator.setAlgaeArmGoal(armState),
         manipulator.waitUntilAlgaeArmAtGoal(),
@@ -258,10 +259,10 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+        elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
         elevator.waitUntilAtGoal(),
         Commands.parallel(
             elevator.setPosition(elevatorState),
@@ -276,11 +277,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_FLOOR_INTAKE),
+            elevator.setPosition(() -> ReefHeight.ALGAE_FLOOR_INTAKE),
             manipulator.setAlgaeArmGoal(armState),
             elevator.waitUntilAtGoal(),
             manipulator.waitUntilAlgaeArmAtGoal()),
@@ -295,7 +296,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
@@ -311,10 +312,10 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_MID),
+        elevator.setPosition(() -> ReefHeight.ALGAE_MID),
         elevator.waitUntilAtGoal(),
         manipulator.setAlgaeArmGoal(armState),
         manipulator.waitUntilAlgaeArmAtGoal(),
@@ -329,10 +330,10 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
-        elevator.setPosition(ReefHeight.ALGAE_MID),
+        elevator.setPosition(() -> ReefHeight.ALGAE_MID),
         elevator.waitUntilAtGoal(),
         Commands.parallel(
             elevator.setPosition(elevatorState),
@@ -347,11 +348,11 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
         Commands.parallel(
-            elevator.setPosition(ReefHeight.ALGAE_MID),
+            elevator.setPosition(() -> ReefHeight.ALGAE_MID),
             manipulator.setAlgaeArmGoal(armState),
             elevator.waitUntilAtGoal(),
             manipulator.waitUntilAlgaeArmAtGoal()),
@@ -366,7 +367,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
@@ -385,7 +386,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
@@ -404,7 +405,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
@@ -423,7 +424,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
@@ -442,7 +443,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
@@ -461,7 +462,7 @@ public class DecisionTree {
       Elevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
-      ReefHeight elevatorState,
+      Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
     return Commands.either(
