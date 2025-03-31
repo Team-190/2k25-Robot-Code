@@ -116,7 +116,7 @@ public class V2_RedundancyIntakeConstants {
   public enum IntakeState {
     STOW(0),
     INTAKE(0.3496120605),
-    L1_EXT(0.0889);
+    L1_EXT(0.0689);
 
     private final double distanceMeters;
 

@@ -329,8 +329,8 @@ public class CompositeCommands {
                     Commands.either(
                         DriveCommands.inchMovement(drive, -1, 0.1),
                         DriveCommands.inchMovement(drive, 1, 0.1),
-                        () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))),
-            intake.setExtensionGoal(IntakeState.L1_EXT));
+                        () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT)),
+                intake.setExtensionGoal(IntakeState.L1_EXT)));
       }
 
       public static final Command autoScoreL1CoralSequence(
