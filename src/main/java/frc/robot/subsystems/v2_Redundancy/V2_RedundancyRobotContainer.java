@@ -244,14 +244,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 intake,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
-    // driver
-    //     .back()
-    //     .whileTrue(
-    //         V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake));
-
     driver
         .back()
-        .whileTrue(V2_RedundancyCompositeCommands.homeingSequences(manipulator, intake, elevator));
+        .whileTrue(
+            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
