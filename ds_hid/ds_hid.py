@@ -60,7 +60,6 @@ endpoint = usb.util.find_descriptor(
 
 if endpoint is None:
     print("No IN endpoint found on XK-80")
-    connected = False
     exit(1)
 
 print("Listening for XK-80 key presses...")
@@ -127,7 +126,6 @@ try:
         except usb.core.USBError as e:
             if e.errno == 5:  # Input/Output Error = Disconnected device
                 print("Device disconnected!")
-                connected = False
                 pass
 
 except KeyboardInterrupt:

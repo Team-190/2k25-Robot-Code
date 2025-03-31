@@ -1,18 +1,27 @@
 {
     "subsystems": {
-      "Funnel": {
+      "Funnel+EE": {
         "buttons": [
           { "name": "WINGS CLOSE", "virtual_gamepad": 1, "xKeys": 0 },
-          { "name": "increment setpoint", "virtual_gamepad": 2, "xKeys": 8 },
-          { "name": "decrement setpoint", "virtual_gamepad": 3, "xKeys": 16 },
+          { "name": "WINGS CLOSE increment setpoint", "virtual_gamepad": 2, "xKeys": 8 },
+          { "name": "WINGS CLOSE decrement setpoint", "virtual_gamepad": 3, "xKeys": 16 },
           { "name": "FUNNEL SENSOR OVERRIDE", "virtual_gamepad": 4, "xKeys": 24 },
           { "name": "WINGS INTAKE", "virtual_gamepad": 5, "xKeys": 1 },
-          { "name": "increment setpoint", "virtual_gamepad": 6, "xKeys": 9 },
-          { "name": "decrement setpoint", "virtual_gamepad": 7, "xKeys": 17 },
+          { "name": "WINGS INTAKE increment setpoint", "virtual_gamepad": 6, "xKeys": 9 },
+          { "name": "WINGS INTAKE decrement setpoint", "virtual_gamepad": 7, "xKeys": 17 },
           { "name": "FUNNEL WHEELS IN", "virtual_gamepad": 8, "xKeys": 2 },
           { "name": "FUNNEL WHEELS OUT", "virtual_gamepad": 9, "xKeys": 10 },
-          { "name": "increment speed", "virtual_gamepad": 10, "xKeys": 18 },
-          { "name": "decrement speed", "virtual_gamepad": 11, "xKeys": 26 }
+          { "name": "FUNNEL WHEELS increment speed", "virtual_gamepad": 10, "xKeys": 18 },
+          { "name": "FUNNEL WHEELS decrement speed", "virtual_gamepad": 11, "xKeys": 26 },
+          { "name": "EE WHEELS IN", "virtual_gamepad": 12, "xKeys": 60 },
+          { "name": "EE WHEELS OUT", "virtual_gamepad": 13, "xKeys": 68 },
+          { "name": "EE WHEELS increment speed", "virtual_gamepad": 14, "xKeys": 76 },
+          { "name": "EE WHEELS decrement speed", "virtual_gamepad": 15, "xKeys": 61 },
+          { "name": "EJECT", "virtual_gamepad": 16, "xKeys": 69 },
+          { "name": "TOGGLE ASS", "virtual_gamepad": 17, "xKeys": 77 },
+          { "name": "EE SENSOR OVERRIDE", "virtual_gamepad": 18, "xKeys": 63 },
+          { "name": "TWERK TOP", "virtual_gamepad": 19, "xKeys": 63 },
+          { "name": "TWERK BOTTOM", "virtual_gamepad": 20, "xKeys": 63 }
         ]
       },
       "Elevator": {
@@ -38,27 +47,12 @@
           { "name": "decrement setpoint ALGAE", "virtual_gamepad": 19, "xKeys": 53 }
         ]
       },
-      "Base": {
+      "Miscellaneous": {
         "buttons": [
-          { "name": "RESET GYRO", "virtual_gamepad": 1, "xKeys": 5 }
-        ]
-      },
-      "Scoring": {
-        "buttons": [
-          { "name": "PRIME LEFT", "virtual_gamepad": 1, "xKeys": 58 },
-          { "name": "PRIME RIGHT", "virtual_gamepad": 2, "xKeys": 66 },
-          { "name": "TRACK", "virtual_gamepad": 3, "xKeys": 74 }
-        ]
-      },
-      "End Effector": {
-        "buttons": [
-          { "name": "EE WHEELS IN", "virtual_gamepad": 1, "xKeys": 60 },
-          { "name": "EE WHEELS OUT", "virtual_gamepad": 2, "xKeys": 68 },
-          { "name": "increment speed", "virtual_gamepad": 3, "xKeys": 76 },
-          { "name": "decrement speed", "virtual_gamepad": 4, "xKeys": 61 },
-          { "name": "EJECT", "virtual_gamepad": 5, "xKeys": 69 },
-          { "name": "TOGGLE ASS", "virtual_gamepad": 6, "xKeys": 77 },
-          { "name": "EE SENSOR OVERRIDE", "virtual_gamepad": 7, "xKeys": 63 }
+          { "name": "RESET GYRO", "virtual_gamepad": 1, "xKeys": 5 },
+          { "name": "PRIME LEFT", "virtual_gamepad": 2, "xKeys": 58 },
+          { "name": "PRIME RIGHT", "virtual_gamepad": 3, "xKeys": 66 },
+          { "name": "TRACK", "virtual_gamepad": 4, "xKeys": 74 }
         ]
       },
       "Climb": {
