@@ -2,51 +2,36 @@ import usb.core
 import usb.util
 import usb.backend.libusb1
 from usbmonitor import USBMonitor
-from networktables import NetworkTables
+import vgamepad as vg
+import json
 
 # XK-80 Vendor and Product ID
 VENDOR_ID = 1523
 PRODUCT_ID = 1091
 
-# Networktables stuff
-SERVER = '10.1.90.2'
-KEYBOARD = 0
-KEYS = 80
+def load_key_mapping():
+    with open("./v1_stackUp_bindings.json", "r") as f:
+        return json.load(f)
+
+key_mapping = load_key_mapping()
+
+# Create multiple virtual gamepads
+controllers = {subsystem: vg.VX360Gamepad() for subsystem in key_mapping.keys()}
 
 connected = False
-# Set up NetworkTables connection
-try:
-    NetworkTables.initialize(server=SERVER) 
-except Exception as e:
-    print(f'Failed to initialize NetworkTables with server {SERVER}: {e}.')
-
-keyboard_status_table = NetworkTables.getTable('AdvantageKit/DriverStation/Keyboard'+str(KEYBOARD))
 
 def on_disconnect(device_id, device_info):
-    keyboard_status_table.putBoolean('isConnected', False)
+    global connected
     connected = False
     print(f"Device disconnected: {device_id}")
 
 def on_connect(device_id, device_info):
-    keyboard_status_table.putBoolean('isConnected', True)
+    global connected
     connected = True
     print(f"Device connected: {device_id}")
 
-
 monitor = USBMonitor()
 monitor.start_monitoring(on_connect=on_connect, on_disconnect=on_disconnect, check_every_seconds=0.02)
-
-def send_data(data):
-    keyboard_status_table.putBoolean('isConnected', True)
-    for key in data:
-        keyboard_status_table.putBoolean(str(key), True)
-
-def set_up_NT():
-    for i in range(KEYS):
-        keyboard_status_table.putBoolean(str(i), False)
-
-set_up_NT()
-
 
 # Find the XK-80 device
 backend = usb.backend.libusb1.get_backend()
@@ -75,51 +60,75 @@ endpoint = usb.util.find_descriptor(
 
 if endpoint is None:
     print("No IN endpoint found on XK-80")
-    keyboard_status_table.putBoolean('isConnected', False)
+    connected = False
     exit(1)
 
 print("Listening for XK-80 key presses...")
 
+def process_key_presses(pressed_keys):
+    for subsystem, mapping in key_mapping.items():
+        gamepad = controllers[subsystem]
+        
+        for key, action in mapping.items():
+            if int(key) in pressed_keys:
+                if "button" in action:
+                    gamepad.press_button(getattr(vg.XUSB_BUTTON, action["button"]))
+                if "axis" in action:
+                    if action["axis"] == "left_x":
+                        gamepad.left_joystick_float(action["value"], 0.0)
+                    elif action["axis"] == "left_y":
+                        gamepad.left_joystick_float(0.0, action["value"])
+                    elif action["axis"] == "right_x":
+                        gamepad.right_joystick_float(action["value"], 0.0)
+                    elif action["axis"] == "right_y":
+                        gamepad.right_joystick_float(0.0, action["value"])
+                if "trigger" in action:
+                    if action["trigger"] == "left":
+                        gamepad.left_trigger_float(action["value"])
+                    elif action["trigger"] == "right":
+                        gamepad.right_trigger_float(action["value"])
+            else:
+                if "button" in action:
+                    gamepad.release_button(getattr(vg.XUSB_BUTTON, action["button"]))
+                if "axis" in action:
+                    if action["axis"] in ["left_x", "left_y"]:
+                        gamepad.left_joystick_float(0.0, 0.0)
+                    if action["axis"] in ["right_x", "right_y"]:
+                        gamepad.right_joystick_float(0.0, 0.0)
+                if "trigger" in action:
+                    if action["trigger"] == "left":
+                        gamepad.left_trigger_float(0.0)
+                    elif action["trigger"] == "right":
+                        gamepad.right_trigger_float(0.0)
+        
+        gamepad.update()
 
 try:
     while True:
         try:
-            if connected is True:
-                keyboard_status_table.putBoolean('isConnected', True)
-                pass
-            data = device.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=5000)
+            if connected:
+                data = device.read(endpoint.bEndpointAddress, endpoint.wMaxPacketSize, timeout=5000)
+                
+                if data:
+                    key_states = data[2:12]  # 10 bytes, representing 10 columns
+                    pressed_keys = []
 
-            if data:
-                keyboard_status_table.putBoolean('isConnected', True)
-                print(f"Raw Data: {list(data)}")
+                    for col_index, byte in enumerate(key_states):
+                        for row_index in range(8):
+                            if (byte >> row_index) & 1:
+                                key_number = (col_index) * 8 + row_index
+                                pressed_keys.append(key_number)
 
-                key_states = data[2:12]  # 10 bytes, representing 10 columns
-                pressed_keys = []
-
-                for col_index, byte in enumerate(key_states):
-                    for row_index in range(8):
-                        if (byte >> row_index) & 1:
-                            key_number = (col_index) * 8 + row_index
-                            pressed_keys.append(key_number)
-
-                set_up_NT()
-                if pressed_keys:
-                    print(f"Keys Pressed: {pressed_keys}")
-                    send_data(pressed_keys)
-                else:
-                    print("No keys pressed.")
-            else:
-                print("No data received.")
-                keyboard_status_table.putBoolean('isConnected', False)
-
+                    process_key_presses(pressed_keys)
+        
         except usb.core.USBTimeoutError:
             pass  # Ignore timeout errors
 
         except usb.core.USBError as e:
             if e.errno == 5:  # Input/Output Error = Disconnected device
-                print("Device disconnected! Exiting loop...")
-                keyboard_status_table.putBoolean('isConnected', False)
-                break  # Exit the loop when the device disconnects
+                print("Device disconnected!")
+                connected = False
+                pass
 
 except KeyboardInterrupt:
     print("\nStopping script.")
@@ -127,8 +136,6 @@ except KeyboardInterrupt:
 finally:
     print("Cleaning up...")
     monitor.stop_monitoring()
-    keyboard_status_table.putBoolean('isConnected', False)
-    NetworkTables.stopClient()
 
     try:
         usb.util.release_interface(device, 0)
