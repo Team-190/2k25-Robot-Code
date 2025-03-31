@@ -1,70 +1,265 @@
 {
-    "subsystems": {
-      "Funnel+EE": {
-        "buttons": [
-          { "name": "WINGS CLOSE", "virtual_gamepad": 1, "xKeys": 0 },
-          { "name": "WINGS CLOSE increment setpoint", "virtual_gamepad": 2, "xKeys": 8 },
-          { "name": "WINGS CLOSE decrement setpoint", "virtual_gamepad": 3, "xKeys": 16 },
-          { "name": "FUNNEL SENSOR OVERRIDE", "virtual_gamepad": 4, "xKeys": 24 },
-          { "name": "WINGS INTAKE", "virtual_gamepad": 5, "xKeys": 1 },
-          { "name": "WINGS INTAKE increment setpoint", "virtual_gamepad": 6, "xKeys": 9 },
-          { "name": "WINGS INTAKE decrement setpoint", "virtual_gamepad": 7, "xKeys": 17 },
-          { "name": "FUNNEL WHEELS IN", "virtual_gamepad": 8, "xKeys": 2 },
-          { "name": "FUNNEL WHEELS OUT", "virtual_gamepad": 9, "xKeys": 10 },
-          { "name": "FUNNEL WHEELS increment speed", "virtual_gamepad": 10, "xKeys": 18 },
-          { "name": "FUNNEL WHEELS decrement speed", "virtual_gamepad": 11, "xKeys": 26 },
-          { "name": "EE WHEELS IN", "virtual_gamepad": 12, "xKeys": 60 },
-          { "name": "EE WHEELS OUT", "virtual_gamepad": 13, "xKeys": 68 },
-          { "name": "EE WHEELS increment speed", "virtual_gamepad": 14, "xKeys": 76 },
-          { "name": "EE WHEELS decrement speed", "virtual_gamepad": 15, "xKeys": 61 },
-          { "name": "EJECT", "virtual_gamepad": 16, "xKeys": 69 },
-          { "name": "TOGGLE ASS", "virtual_gamepad": 17, "xKeys": 77 },
-          { "name": "EE SENSOR OVERRIDE", "virtual_gamepad": 18, "xKeys": 63 },
-          { "name": "TWERK TOP", "virtual_gamepad": 19, "xKeys": 63 },
-          { "name": "TWERK BOTTOM", "virtual_gamepad": 20, "xKeys": 63 }
-        ]
-      },
-      "Elevator": {
-        "buttons": [
-          { "name": "STOW/INTAKE", "virtual_gamepad": 1, "xKeys": 32 },
-          { "name": "increment setpoint STOW/INTAKE", "virtual_gamepad": 2, "xKeys": 40 },
-          { "name": "decrement setpoint STOW/INTAKE", "virtual_gamepad": 3, "xKeys": 48 },
-          { "name": "RAISE", "virtual_gamepad": 4, "xKeys": 56 },
-          { "name": "PRIME L4", "virtual_gamepad": 5, "xKeys": 33 },
-          { "name": "increment setpoint L4", "virtual_gamepad": 6, "xKeys": 41 },
-          { "name": "decrement setpoint L4", "virtual_gamepad": 7, "xKeys": 49 },
-          { "name": "PRIME L3", "virtual_gamepad": 8, "xKeys": 34 },
-          { "name": "increment setpoint L3", "virtual_gamepad": 9, "xKeys": 42 },
-          { "name": "decrement setpoint L3", "virtual_gamepad": 10, "xKeys": 50 },
-          { "name": "PRIME L2", "virtual_gamepad": 11, "xKeys": 35 },
-          { "name": "increment setpoint L2", "virtual_gamepad": 12, "xKeys": 43 },
-          { "name": "decrement setpoint L2", "virtual_gamepad": 13, "xKeys": 51 },
-          { "name": "PRIME L1", "virtual_gamepad": 14, "xKeys": 36 },
-          { "name": "increment setpoint L1", "virtual_gamepad": 15, "xKeys": 44 },
-          { "name": "decrement setpoint L1", "virtual_gamepad": 16, "xKeys": 52 },
-          { "name": "PRIME ALGAE", "virtual_gamepad": 17, "xKeys": 37 },
-          { "name": "increment setpoint ALGAE", "virtual_gamepad": 18, "xKeys": 45 },
-          { "name": "decrement setpoint ALGAE", "virtual_gamepad": 19, "xKeys": 53 }
-        ]
-      },
-      "Miscellaneous": {
-        "buttons": [
-          { "name": "RESET GYRO", "virtual_gamepad": 1, "xKeys": 5 },
-          { "name": "PRIME LEFT", "virtual_gamepad": 2, "xKeys": 58 },
-          { "name": "PRIME RIGHT", "virtual_gamepad": 3, "xKeys": 66 },
-          { "name": "TRACK", "virtual_gamepad": 4, "xKeys": 74 }
-        ]
-      },
-      "Climb": {
-        "buttons": [
-          { "name": "DEPLOY LOWER", "virtual_gamepad": 1, "xKeys": 5 },
-          { "name": "increment winch out", "virtual_gamepad": 2, "xKeys": 13 },
-          { "name": "increment winch in", "virtual_gamepad": 3, "xKeys": 21 },
-          { "name": "Lane assist switch", "virtual_gamepad": 4, "xKeys": 29 },
-          { "name": "Lane assist switch", "virtual_gamepad": 5, "xKeys": 37 },
-          { "name": "Override Sensor and Winch", "virtual_gamepad": 6, "xKeys": 45 }
-        ]
-      }
+  "subsystems": {
+    "Funnel+EE": {
+      "buttons": [
+        {
+          "name": "WINGS CLOSE",
+          "virtual_gamepad": 1,
+          "xKeys": 1
+        },
+        {
+          "name": "WINGS CLOSE increment setpoint",
+          "virtual_gamepad": 2,
+          "xKeys": 9
+        },
+        {
+          "name": "WINGS CLOSE decrement setpoint",
+          "virtual_gamepad": 3,
+          "xKeys": 17
+        },
+        {
+          "name": "FUNNEL SENSOR OVERRIDE",
+          "virtual_gamepad": 4,
+          "xKeys": 25
+        },
+        {
+          "name": "WINGS INTAKE",
+          "virtual_gamepad": 5,
+          "xKeys": 2
+        },
+        {
+          "name": "WINGS INTAKE increment setpoint",
+          "virtual_gamepad": 6,
+          "xKeys": 10
+        },
+        {
+          "name": "WINGS INTAKE decrement setpoint",
+          "virtual_gamepad": 7,
+          "xKeys": 18
+        },
+        {
+          "name": "FUNNEL WHEELS IN",
+          "virtual_gamepad": 8,
+          "xKeys": 3
+        },
+        {
+          "name": "FUNNEL WHEELS OUT",
+          "virtual_gamepad": 9,
+          "xKeys": 11
+        },
+        {
+          "name": "FUNNEL WHEELS increment speed",
+          "virtual_gamepad": 10,
+          "xKeys": 19
+        },
+        {
+          "name": "FUNNEL WHEELS decrement speed",
+          "virtual_gamepad": 11,
+          "xKeys": 27
+        },
+        {
+          "name": "EE WHEELS IN",
+          "virtual_gamepad": 12,
+          "xKeys": 5
+        },
+        {
+          "name": "EE WHEELS OUT",
+          "virtual_gamepad": 13,
+          "xKeys": 13
+        },
+        {
+          "name": "EE WHEELS increment speed",
+          "virtual_gamepad": 14,
+          "xKeys": 21
+        },
+        {
+          "name": "EE WHEELS decrement speed",
+          "virtual_gamepad": 15,
+          "xKeys": 29
+        },
+        {
+          "name": "EJECT",
+          "virtual_gamepad": 16,
+          "xKeys": 6
+        },
+        {
+          "name": "TOGGLE ASS",
+          "virtual_gamepad": 17,
+          "xKeys": 14
+        },
+        {
+          "name": "EE SENSOR OVERRIDE",
+          "virtual_gamepad": 18,
+          "xKeys": 30
+        },
+        {
+          "name": "TWERK TOP",
+          "virtual_gamepad": 19,
+          "xKeys": 7
+        },
+        {
+          "name": "TWERK BOTTOM",
+          "virtual_gamepad": 20,
+          "xKeys": 15
+        }
+      ]
+    },
+    "Elevator": {
+      "buttons": [
+        {
+          "name": "STOW/INTAKE",
+          "virtual_gamepad": 1,
+          "xKeys": 33
+        },
+        {
+          "name": "increment setpoint STOW/INTAKE",
+          "virtual_gamepad": 2,
+          "xKeys": 41
+        },
+        {
+          "name": "decrement setpoint STOW/INTAKE",
+          "virtual_gamepad": 3,
+          "xKeys": 49
+        },
+        {
+          "name": "RAISE",
+          "virtual_gamepad": 4,
+          "xKeys": 34
+        },
+        {
+          "name": "PRIME L4",
+          "virtual_gamepad": 5,
+          "xKeys": 35
+        },
+        {
+          "name": "increment setpoint L4",
+          "virtual_gamepad": 6,
+          "xKeys": 43
+        },
+        {
+          "name": "decrement setpoint L4",
+          "virtual_gamepad": 7,
+          "xKeys": 51
+        },
+        {
+          "name": "PRIME L3",
+          "virtual_gamepad": 8,
+          "xKeys": 36
+        },
+        {
+          "name": "increment setpoint L3",
+          "virtual_gamepad": 9,
+          "xKeys": 44
+        },
+        {
+          "name": "decrement setpoint L3",
+          "virtual_gamepad": 10,
+          "xKeys": 52
+        },
+        {
+          "name": "PRIME L2",
+          "virtual_gamepad": 11,
+          "xKeys": 37
+        },
+        {
+          "name": "increment setpoint L2",
+          "virtual_gamepad": 12,
+          "xKeys": 45
+        },
+        {
+          "name": "decrement setpoint L2",
+          "virtual_gamepad": 13,
+          "xKeys": 53
+        },
+        {
+          "name": "PRIME L1",
+          "virtual_gamepad": 14,
+          "xKeys": 38
+        },
+        {
+          "name": "increment setpoint L1",
+          "virtual_gamepad": 15,
+          "xKeys": 46
+        },
+        {
+          "name": "decrement setpoint L1",
+          "virtual_gamepad": 16,
+          "xKeys": 54
+        },
+        {
+          "name": "PRIME ALGAE",
+          "virtual_gamepad": 17,
+          "xKeys": 39
+        },
+        {
+          "name": "increment setpoint ALGAE",
+          "virtual_gamepad": 18,
+          "xKeys": 47
+        },
+        {
+          "name": "decrement setpoint ALGAE",
+          "virtual_gamepad": 19,
+          "xKeys": 54
+        }
+      ]
+    },
+    "Miscellaneous": {
+      "buttons": [
+        {
+          "name": "RESET GYRO",
+          "virtual_gamepad": 1,
+          "xKeys": 73
+        },
+        {
+          "name": "PRIME LEFT",
+          "virtual_gamepad": 2,
+          "xKeys": 59
+        },
+        {
+          "name": "PRIME RIGHT",
+          "virtual_gamepad": 3,
+          "xKeys": 67
+        },
+        {
+          "name": "TRACK",
+          "virtual_gamepad": 4,
+          "xKeys": 75
+        }
+      ]
+    },
+    "Climb": {
+      "buttons": [
+        {
+          "name": "DEPLOY LOWER",
+          "virtual_gamepad": 1,
+          "xKeys": 61
+        },
+        {
+          "name": "increment winch out",
+          "virtual_gamepad": 2,
+          "xKeys": 69
+        },
+        {
+          "name": "increment winch in",
+          "virtual_gamepad": 3,
+          "xKeys": 77
+        },
+        {
+          "name": "Lane switch LEFT",
+          "virtual_gamepad": 4,
+          "xKeys": 62
+        },
+        {
+          "name": "Lane switch RIGHT",
+          "virtual_gamepad": 5,
+          "xKeys": 70
+        },
+        {
+          "name": "Override Sensor and Winch",
+          "virtual_gamepad": 6,
+          "xKeys": 78
+        }
+      ]
     }
   }
-  
+}
