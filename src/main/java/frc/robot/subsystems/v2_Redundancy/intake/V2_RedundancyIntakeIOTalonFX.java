@@ -82,6 +82,7 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     rollerConfig.CurrentLimits.withStatorCurrentLimit(
         V2_RedundancyIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     rollerConfig.Feedback.SensorToMechanismRatio =
         V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO;
 
