@@ -84,4 +84,6 @@ public interface V2_RedundancyIntakeIO {
   public default void updateConstraints(double maxAcceleration, double maxVelocity) {}
 
   public default void resetExtension() {}
+
+  public default void maxExt() {}
 }

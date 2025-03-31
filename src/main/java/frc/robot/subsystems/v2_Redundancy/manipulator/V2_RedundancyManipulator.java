@@ -187,12 +187,16 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   public Command homingSequence() {
     return Commands.sequence(
-      Commands.runOnce(() -> isClosedLoop = false),
-      Commands.run(()->io.setArmVoltage(-0.2)).until(()->inputs.armTorqueCurrentAmps>15),
-      Commands.runOnce(()->io.zeroArmPosition())
-    );
+        Commands.runOnce(
+            () -> {
+              isClosedLoop = false;
+              io.armMax();
+            }),
+        Commands.runEnd(() -> io.setArmVoltage(-6), () -> io.setArmVoltage(0))
+            .until(() -> Math.abs(inputs.armTorqueCurrentAmps) > 40),
+        Commands.runOnce(() -> io.zeroArmPosition()));
   }
-  
+
   private double holdVoltage() {
     double y;
     double x = Math.abs(inputs.rollerTorqueCurrentAmps);

@@ -244,8 +244,13 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
   }
 
-    @Override
-    public void zeroArmPosition() {
-        armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
-    }
+  @Override
+  public void zeroArmPosition() {
+    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void armMax() {
+    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+  }
 }

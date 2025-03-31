@@ -78,4 +78,6 @@ public interface V2_RedundancyManipulatorIO {
   public default void updateArmConstraints(double maxAcceleration, double cruisingVelocity) {}
 
   public default void zeroArmPosition() {}
+
+  public default void armMax() {}
 }
