@@ -6,9 +6,17 @@ import vgamepad as vg
 import keyboard as kb
 import json
 
+
+class RobotConfig:
+    V1_STACKUP = "./v1_stackUp_bindings.json"
+    V2_REDUNDANCY = "./v2_redundancy_bindings.json"
+
 # XK-80 Vendor and Product ID
 VENDOR_ID = 1523
 PRODUCT_ID = 1091
+
+# Robot Config
+ROBOT = RobotConfig.V1_STACKUP
 
 print("""
 
@@ -48,7 +56,7 @@ def flipActive():
 kb.add_hotkey('right shift', flipActive)
 
 def load_key_mapping():
-    with open("./v1_stackUp_bindings.json", "r") as f:
+    with open(ROBOT, "r") as f:
         return json.load(f)
 
 key_mapping = load_key_mapping()
