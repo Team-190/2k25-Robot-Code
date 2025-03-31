@@ -53,6 +53,9 @@ public class AutonomousCommands {
   private static Optional<Trajectory<SwerveSample>> C_RIGHT_PATH3;
 
   private static Optional<Trajectory<SwerveSample>> D_CENTER_PATH1;
+  private static Optional<Trajectory<SwerveSample>> D_CENTER_PATH2;
+  private static Optional<Trajectory<SwerveSample>> D_CENTER_PATH3;
+  private static Optional<Trajectory<SwerveSample>> D_CENTER_PATH4;
 
   private static Command A_LEFT_PATH1_CMD;
   private static Command A_LEFT_PATH2_CMD;
@@ -79,6 +82,9 @@ public class AutonomousCommands {
   private static Command C_RIGHT_PATH3_CMD;
 
   private static Command D_CENTER_PATH1_CMD;
+  private static Command D_CENTER_PATH2_CMD;
+  private static Command D_CENTER_PATH3_CMD;
+  private static Command D_CENTER_PATH4_CMD;
 
   static {
     A_LEFT = Robot.autoFactory.newRoutine("A_LEFT");
@@ -107,7 +113,10 @@ public class AutonomousCommands {
     C_RIGHT_PATH2 = Choreo.loadTrajectory("C_RIGHT_PATH2");
     C_RIGHT_PATH3 = Choreo.loadTrajectory("C_RIGHT_PATH3");
 
-    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH");
+    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH1");
+    D_CENTER_PATH2 = Choreo.loadTrajectory("D_CENTER_PATH2");
+    D_CENTER_PATH3 = Choreo.loadTrajectory("D_CENTER_PATH3");
+    D_CENTER_PATH4 = Choreo.loadTrajectory("D_CENTER_PATH4");
   }
 
   public static void loadAutoTrajectories(Drive drive) {
@@ -136,6 +145,9 @@ public class AutonomousCommands {
     C_RIGHT_PATH3_CMD = Robot.autoFactory.trajectoryCmd(C_RIGHT_PATH3.get());
 
     D_CENTER_PATH1_CMD = Robot.autoFactory.trajectoryCmd(D_CENTER_PATH1.get());
+    D_CENTER_PATH2_CMD = Robot.autoFactory.trajectoryCmd(D_CENTER_PATH2.get());
+    D_CENTER_PATH3_CMD = Robot.autoFactory.trajectoryCmd(D_CENTER_PATH3.get());
+    D_CENTER_PATH4_CMD = Robot.autoFactory.trajectoryCmd(D_CENTER_PATH4.get());
   }
 
   public static final Command autoALeft(
@@ -706,10 +718,19 @@ public class AutonomousCommands {
             () ->
                 RobotState.resetRobotPose(
                     D_CENTER_PATH1.get().getInitialPose(AllianceFlipUtil.shouldFlip()).get())),
-        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
         D_CENTER_PATH1_CMD,
         Commands.parallel(
             DriveCommands.autoAlignReefCoral(drive, cameras), elevator.setPosition(ReefHeight.L4)),
-        manipulator.scoreCoral().withTimeout(0.5));
+        manipulator.scoreCoral().withTimeout(0.5),
+        AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, cameras),
+        D_CENTER_PATH2_CMD,
+        AlgaeCommands.autoScoreAlgae(drive, elevator, manipulator),
+        elevator.setPosition(ReefHeight.STOW),
+        D_CENTER_PATH3_CMD,
+        AlgaeCommands.intakeFromReefSequence(manipulator, elevator, drive, cameras),
+        D_CENTER_PATH4_CMD,
+        AlgaeCommands.autoScoreAlgae(drive, elevator, manipulator),
+        elevator.setPosition(ReefHeight.STOW));
   }
 }
