@@ -18,7 +18,10 @@ public class V2_RedundancyIntake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
-  @Getter private IntakeState goal;
+
+  @Getter
+  @AutoLogOutput(key = "Intake/Goal")
+  private IntakeState goal;
 
   private boolean isClosedLoop;
 
