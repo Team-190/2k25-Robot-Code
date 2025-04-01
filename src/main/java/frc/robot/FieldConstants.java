@@ -136,8 +136,8 @@ public class FieldConstants {
       //   double adjustYAlgae =
       //       Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
       double adjustXAlgae =
-          DriveConstants.DRIVE_CONFIG.bumperWidth()
-              / 2.0; // Offset X setpoint by center of robot to bumper
+          DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0
+              + Units.inchesToMeters(2); // Offset X setpoint by center of robot to bumper
 
       reefMap.put(
           18,

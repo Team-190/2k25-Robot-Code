@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -80,10 +81,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
-  public Command intakeCoral() {
+  public Command intakeCoral(BooleanSupplier shouldStop) {
     return Commands.sequence(
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
-            .until(() -> hasCoral()));
+            .until(shouldStop));
   }
 
   public Command intakeReefAlgae() {

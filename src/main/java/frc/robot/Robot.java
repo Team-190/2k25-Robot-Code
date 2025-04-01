@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
@@ -211,6 +212,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     RobotState.setMode(RobotState.RobotMode.AUTO);
+    RobotState.setReefHeight(ReefHeight.L4);
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

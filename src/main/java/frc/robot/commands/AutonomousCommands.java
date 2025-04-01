@@ -23,29 +23,11 @@ import java.util.Optional;
 
 public class AutonomousCommands {
   private static Optional<Trajectory<SwerveSample>> A_LEFT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> A_LEFT_PATH2;
-  private static Optional<Trajectory<SwerveSample>> A_LEFT_PATH3;
-  private static Optional<Trajectory<SwerveSample>> A_LEFT_PATH4;
-
   private static Optional<Trajectory<SwerveSample>> A_RIGHT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> A_RIGHT_PATH2;
-  private static Optional<Trajectory<SwerveSample>> A_RIGHT_PATH3;
-  private static Optional<Trajectory<SwerveSample>> A_RIGHT_PATH4;
-
   private static Optional<Trajectory<SwerveSample>> B_LEFT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> B_LEFT_PATH2;
-
   private static Optional<Trajectory<SwerveSample>> B_RIGHT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> B_RIGHT_PATH2;
-
   private static Optional<Trajectory<SwerveSample>> C_LEFT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> C_LEFT_PATH2;
-  private static Optional<Trajectory<SwerveSample>> C_LEFT_PATH3;
-
   private static Optional<Trajectory<SwerveSample>> C_RIGHT_PATH1;
-  private static Optional<Trajectory<SwerveSample>> C_RIGHT_PATH2;
-  private static Optional<Trajectory<SwerveSample>> C_RIGHT_PATH3;
-
   private static Optional<Trajectory<SwerveSample>> D_CENTER_PATH1;
 
   private static Command A_LEFT_PATH1_CMD;
@@ -75,59 +57,68 @@ public class AutonomousCommands {
   private static Command D_CENTER_PATH1_CMD;
 
   static {
-    A_LEFT_PATH1 = Choreo.loadTrajectory("A_LEFT_PATH1");
-    A_LEFT_PATH2 = Choreo.loadTrajectory("A_LEFT_PATH2");
-    A_LEFT_PATH3 = Choreo.loadTrajectory("A_LEFT_PATH3");
-    A_LEFT_PATH4 = Choreo.loadTrajectory("A_LEFT_PATH4");
-
-    A_RIGHT_PATH1 = Choreo.loadTrajectory("A_RIGHT_PATH1");
-    A_RIGHT_PATH2 = Choreo.loadTrajectory("A_RIGHT_PATH2");
-    A_RIGHT_PATH3 = Choreo.loadTrajectory("A_RIGHT_PATH3");
-    A_RIGHT_PATH4 = Choreo.loadTrajectory("A_RIGHT_PATH4");
-
-    B_LEFT_PATH1 = Choreo.loadTrajectory("B_LEFT_PATH1");
-    B_LEFT_PATH2 = Choreo.loadTrajectory("B_LEFT_PATH2");
-
-    B_RIGHT_PATH1 = Choreo.loadTrajectory("B_RIGHT_PATH1");
-    B_RIGHT_PATH2 = Choreo.loadTrajectory("B_RIGHT_PATH2");
-
-    C_LEFT_PATH1 = Choreo.loadTrajectory("C_LEFT_PATH1");
-    C_LEFT_PATH2 = Choreo.loadTrajectory("C_LEFT_PATH2");
-    C_LEFT_PATH3 = Choreo.loadTrajectory("C_LEFT_PATH3");
-
-    C_RIGHT_PATH1 = Choreo.loadTrajectory("C_RIGHT_PATH1");
-    C_RIGHT_PATH2 = Choreo.loadTrajectory("C_RIGHT_PATH2");
-    C_RIGHT_PATH3 = Choreo.loadTrajectory("C_RIGHT_PATH3");
-
-    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH");
   }
 
   public static void loadAutoTrajectories(Drive drive) {
-    A_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(A_LEFT_PATH1.get());
-    A_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(A_LEFT_PATH2.get());
-    A_LEFT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd(A_LEFT_PATH3.get());
-    A_LEFT_PATH4_CMD = drive.getAutoFactory().trajectoryCmd(A_LEFT_PATH4.get());
+    drive.getAutoFactory().cache().loadTrajectory("A_LEFT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("A_LEFT_PATH2");
+    drive.getAutoFactory().cache().loadTrajectory("A_LEFT_PATH3");
+    drive.getAutoFactory().cache().loadTrajectory("A_LEFT_PATH4");
 
-    A_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(A_RIGHT_PATH1.get());
-    A_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(A_RIGHT_PATH2.get());
-    A_RIGHT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd(A_RIGHT_PATH3.get());
-    A_RIGHT_PATH4_CMD = drive.getAutoFactory().trajectoryCmd(A_RIGHT_PATH4.get());
+    drive.getAutoFactory().cache().loadTrajectory("A_RIGHT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("A_RIGHT_PATH2");
+    drive.getAutoFactory().cache().loadTrajectory("A_RIGHT_PATH3");
+    drive.getAutoFactory().cache().loadTrajectory("A_RIGHT_PATH4");
 
-    B_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(B_LEFT_PATH1.get());
-    B_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(B_LEFT_PATH2.get());
+    drive.getAutoFactory().cache().loadTrajectory("B_LEFT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("B_LEFT_PATH2");
 
-    B_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(B_RIGHT_PATH1.get());
-    B_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(B_RIGHT_PATH2.get());
+    drive.getAutoFactory().cache().loadTrajectory("B_RIGHT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("B_RIGHT_PATH2");
 
-    C_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(C_LEFT_PATH1.get());
-    C_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(C_LEFT_PATH2.get());
-    C_LEFT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd(C_LEFT_PATH3.get());
+    drive.getAutoFactory().cache().loadTrajectory("C_LEFT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("C_LEFT_PATH2");
+    drive.getAutoFactory().cache().loadTrajectory("C_LEFT_PATH3");
 
-    C_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(C_RIGHT_PATH1.get());
-    C_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd(C_RIGHT_PATH2.get());
-    C_RIGHT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd(C_RIGHT_PATH3.get());
+    drive.getAutoFactory().cache().loadTrajectory("C_RIGHT_PATH1");
+    drive.getAutoFactory().cache().loadTrajectory("C_RIGHT_PATH2");
+    drive.getAutoFactory().cache().loadTrajectory("C_RIGHT_PATH3");
 
-    D_CENTER_PATH1_CMD = drive.getAutoFactory().trajectoryCmd(D_CENTER_PATH1.get());
+    drive.getAutoFactory().cache().loadTrajectory("D_CENTER_PATH1");
+
+    A_LEFT_PATH1 = Choreo.loadTrajectory("A_LEFT_PATH1");
+    A_RIGHT_PATH1 = Choreo.loadTrajectory("A_RIGHT_PATH1");
+    B_LEFT_PATH1 = Choreo.loadTrajectory("B_LEFT_PATH1");
+    B_RIGHT_PATH1 = Choreo.loadTrajectory("B_RIGHT_PATH1");
+    C_LEFT_PATH1 = Choreo.loadTrajectory("C_LEFT_PATH1");
+    C_RIGHT_PATH1 = Choreo.loadTrajectory("C_RIGHT_PATH1");
+    D_CENTER_PATH1 = Choreo.loadTrajectory("D_CENTER_PATH");
+
+    A_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("A_LEFT_PATH1");
+    A_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("A_LEFT_PATH2");
+    A_LEFT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd("A_LEFT_PATH3");
+    A_LEFT_PATH4_CMD = drive.getAutoFactory().trajectoryCmd("A_LEFT_PATH4");
+
+    A_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("A_RIGHT_PATH1");
+    A_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("A_RIGHT_PATH2");
+    A_RIGHT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd("A_RIGHT_PATH3");
+    A_RIGHT_PATH4_CMD = drive.getAutoFactory().trajectoryCmd("A_RIGHT_PATH4");
+
+    B_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("B_LEFT_PATH1");
+    B_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("B_LEFT_PATH2");
+
+    B_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("B_RIGHT_PATH1");
+    B_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("B_RIGHT_PATH2");
+
+    C_LEFT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("C_LEFT_PATH1");
+    C_LEFT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("C_LEFT_PATH2");
+    C_LEFT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd("C_LEFT_PATH3");
+
+    C_RIGHT_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("C_RIGHT_PATH1");
+    C_RIGHT_PATH2_CMD = drive.getAutoFactory().trajectoryCmd("C_RIGHT_PATH2");
+    C_RIGHT_PATH3_CMD = drive.getAutoFactory().trajectoryCmd("C_RIGHT_PATH3");
+
+    D_CENTER_PATH1_CMD = drive.getAutoFactory().trajectoryCmd("D_CENTER_PATH");
   }
 
   public static final Command autoALeft(
