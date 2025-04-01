@@ -312,8 +312,14 @@ public class CompositeCommands {
           V2_RedundancyIntake intake,
           Camera... cameras) {
         return Commands.sequence(
-            DriveCommands.autoAlignReefCoral(drive, cameras),
-            scoreL1Coral(drive, elevator, manipulator, intake));
+                DriveCommands.autoAlignReefCoral(drive, cameras),
+                scoreL1Coral(drive, elevator, manipulator, intake))
+            .finallyDo(
+                () -> {
+                  elevator.setPosition(() -> ReefHeight.STOW);
+                  manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN);
+                  intake.setExtensionGoal(IntakeState.STOW);
+                });
       }
 
       public static final Command scoreCoralSequence(
