@@ -322,6 +322,14 @@ public class CompositeCommands {
                 });
       }
 
+      public static final Command postL1Score(
+          Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        return Commands.sequence(
+            elevator.setPosition(() -> ReefHeight.STOW),
+            manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN),
+            intake.setExtensionGoal(IntakeState.STOW));
+      }
+
       public static final Command scoreCoralSequence(
           Elevator elevator,
           V2_RedundancyManipulator manipulator,
@@ -368,7 +376,9 @@ public class CompositeCommands {
           Camera... cameras) {
 
         return Commands.either(
-            autoScoreL1CoralSequence(drive, elevator, manipulator, intake, cameras),
+            Commands.sequence(
+                autoScoreL1CoralSequence(drive, elevator, manipulator, intake, cameras),
+                postL1Score(elevator, manipulator, intake)),
             Commands.sequence(
                 Commands.either(
                     DecisionTree.moveSequence(
@@ -471,6 +481,7 @@ public class CompositeCommands {
                 () -> ReefHeight.ALGAE_SCORE,
                 ArmState.STOW_UP,
                 IntakeState.STOW),
+            Commands.waitSeconds(0.5),
             manipulator.scoreAlgae());
       }
 
