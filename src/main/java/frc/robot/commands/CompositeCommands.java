@@ -518,10 +518,11 @@ public class CompositeCommands {
                 () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                 ArmState.STOW_DOWN,
                 IntakeState.INTAKE),
-            intake.setRollerVoltage(-6));
+            Commands.parallel(intake.setRollerVoltage(-6), manipulator.scoreAlgae())
+                .withTimeout(4));
       }
 
-      public static final Command scoreProcessor(
+      public static final Command scoreProcessorOld(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return DecisionTree.moveSequence(
             elevator,
@@ -551,6 +552,27 @@ public class CompositeCommands {
       }
 
       public static final Command postFloorIntakeSequence(
+          V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
+        return Commands.either(
+            // DecisionTree.moveSequence(
+            //     elevator,
+            //     manipulator,
+            //     intake,
+            //     () -> ReefHeight.STOW,
+            //     ArmState.STOW_UP,
+            //     IntakeState.STOW),
+            Commands.none(),
+            DecisionTree.moveSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> ReefHeight.STOW,
+                ArmState.STOW_DOWN,
+                IntakeState.STOW),
+            RobotState::isHasAlgae);
+      }
+
+      public static final Command postFloorIntakeStow(
           V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
         return Commands.either(
             DecisionTree.moveSequence(

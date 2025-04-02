@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
@@ -46,6 +45,7 @@ import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOSim;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
@@ -283,20 +283,23 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
 
     // Operator bumpers
-    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
-    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
+    operator
+        .leftBumper().whileTrue(Commands.none())
+        .and(() -> !manipulator.getState().equals(ArmState.FLOOR_INTAKE)) //This is when it breaks. The armState changes here and the command is inturptted
+        .onTrue(V2_RedundancyCompositeCommands.scoreProcessorOld(elevator, manipulator, intake))
+        .onFalse(manipulator.scoreAlgae().withTimeout(1));
+
+    operator
+        .leftBumper()
+        .and(() -> manipulator.getState().equals(ArmState.FLOOR_INTAKE))
+        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessorNew(elevator, manipulator, intake))
+        .onFalse(V2_RedundancyCompositeCommands.postFloorIntakeStow(manipulator, elevator, intake));
+    operator
+        .rightBumper()
+        .onTrue(V2_RedundancyCompositeCommands.postFloorIntakeStow(manipulator, elevator, intake));
 
     operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
-    operator
-        .povLeft()
-        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(1));
-
-        operator
-        .povRight()
-        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessorNew(elevator, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
     operator.start().onTrue(manipulator.scoreAlgae().withTimeout(.5));
     operator.back().onTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
