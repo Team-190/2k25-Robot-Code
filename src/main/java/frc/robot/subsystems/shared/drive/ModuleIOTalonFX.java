@@ -37,6 +37,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTracer;
 import java.util.Queue;
 
 /**
@@ -86,7 +87,10 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnConnectedDebounce;
   private final Debouncer turnEncoderConnectedDebounce;
 
+  private final int id;
+
   public ModuleIOTalonFX(
+      int id,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     driveTalonFX = new TalonFX(constants.DriveMotorId, DriveConstants.DRIVE_CONFIG.canBus());
@@ -202,10 +206,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveTalonFX.optimizeBusUtilization();
     turnTalonFX.optimizeBusUtilization();
     cancoder.optimizeBusUtilization();
+
+    this.id = id;
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
+    LoggedTracer.reset();
     var driveStatus =
         BaseStatusSignal.refreshAll(
             drivePositionRotations,
@@ -227,7 +234,10 @@ public class ModuleIOTalonFX implements ModuleIO {
             turnPositionSetpointRotations,
             turnPositionErrorRotations);
     var turnEncoderStatus = BaseStatusSignal.refreshAll(turnAbsolutePositionRotations);
+    LoggedTracer.record(
+        "Refresh Status Signals", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
 
+    LoggedTracer.reset();
     inputs.drivePositionRadians =
         Units.rotationsToRadians(drivePositionRotations.getValueAsDouble());
     inputs.driveVelocityRadiansPerSecond =
@@ -268,9 +278,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromRotations(value))
             .toArray(Rotation2d[]::new);
+    LoggedTracer.record("Update Inputs", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
+
+    LoggedTracer.reset();
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
+    LoggedTracer.record("Reset Queues", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override

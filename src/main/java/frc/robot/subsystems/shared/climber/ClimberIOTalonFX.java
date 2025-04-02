@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
+import frc.robot.util.LoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -68,6 +69,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
+    LoggedTracer.reset();
     BaseStatusSignal.refreshAll(
         positionRotations,
         velocityRotationsPerSecond,
@@ -75,6 +77,9 @@ public class ClimberIOTalonFX implements ClimberIO {
         supplyCurrentAmps,
         torqueCurrentAmps,
         temperatureCelsius);
+    LoggedTracer.record("Refresh Status Signals", "Climber/TalonFX");
+
+    LoggedTracer.reset();
     inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
@@ -85,6 +90,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     inputs.redundantSwitchOne = redundantSwitchOne.get();
     inputs.redundantSwitchTwo = redundantSwitchTwo.get();
+    LoggedTracer.record("Refresh Update Inputs", "Climber/TalonFX");
   }
 
   @Override

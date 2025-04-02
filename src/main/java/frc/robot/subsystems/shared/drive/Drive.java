@@ -33,6 +33,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LoggedTracer;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -113,28 +114,42 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
+    LoggedTracer.reset();
     odometryLock.lock(); // Prevents odometry updates while reading data
+    LoggedTracer.record("Odometry Lock", "Drive/Periodic");
+
+    LoggedTracer.reset();
     gyroIO.updateInputs(gyroInputs);
+    LoggedTracer.record("Update Gyro Inputs", "Drive/Periodic");
+
+    LoggedTracer.reset();
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    LoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
+
+    LoggedTracer.reset();
     for (var module : modules) {
       module.periodic();
     }
+    LoggedTracer.record("Module Periodic Total", "Drive/Periodic");
+
+    LoggedTracer.reset();
     odometryLock.unlock();
+    LoggedTracer.record("Odometry Unlock", "Drive/Periodic");
 
     // Stop moving when disabled
+    LoggedTracer.reset();
     if (RobotMode.disabled()) {
       for (var module : modules) {
         module.stop();
       }
-    }
 
-    // Log empty setpoint states when disabled
-    if (RobotMode.disabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+    LoggedTracer.record("Stop Modules", "Drive/Periodic");
 
     // Update odometry
+    LoggedTracer.reset();
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
     int sampleCount = sampleTimestamps.length;
@@ -170,6 +185,7 @@ public class Drive extends SubsystemBase {
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
+    LoggedTracer.record("Update Odometry", "Drive/Periodic");
   }
 
   /**

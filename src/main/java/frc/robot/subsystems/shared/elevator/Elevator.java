@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.util.LoggedTracer;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -46,14 +47,21 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LoggedTracer.reset();
     io.updateInputs(inputs);
+    LoggedTracer.record("Update Inputs", "Elevator/Periodic");
+
+    LoggedTracer.reset();
     Logger.processInputs("Elevator", inputs);
+    LoggedTracer.record("Process Inputs", "Elevator/Periodic");
 
     Logger.recordOutput("Elevator/Position", position.name());
 
+    LoggedTracer.reset();
     if (isClosedLoop) {
       io.setPositionGoal(position.getPosition());
     }
+    LoggedTracer.record("Set Position Goal", "Elevator/Periodic");
   }
 
   /**

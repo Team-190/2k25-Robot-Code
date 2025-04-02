@@ -17,6 +17,7 @@ import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
+import frc.robot.util.LoggedTracer;
 import frc.robot.util.NTPrefixes;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -145,14 +146,26 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
+
+    LoggedTracer.reset();
     robotContainer.robotPeriodic();
+    LoggedTracer.record("Robot Container Periodic", "Robot");
+
+    LoggedTracer.reset();
     VirtualSubsystem.periodicAll();
+    LoggedTracer.record("Virtual Subsystem Periodic", "Robot");
+
+    LoggedTracer.reset();
     CommandScheduler.getInstance().run();
+    LoggedTracer.record("Command Scheduler Run", "Robot");
 
     // Check logging fault
+    LoggedTracer.reset();
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
+    LoggedTracer.record("Check Logging Fault", "Robot");
 
     // Update low battery alert
+    LoggedTracer.reset();
     if (RobotState.RobotMode.enabled()) {
       disabledTimer.reset();
     }
@@ -160,8 +173,10 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
+    LoggedTracer.record("Check Battery Alert", "Robot");
 
     // Check CAN status
+    LoggedTracer.reset();
     var canStatus = RobotController.getCANStatus();
     if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
       canErrorTimer.restart();
@@ -196,6 +211,7 @@ public class Robot extends LoggedRobot {
           !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
               && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
     }
+    LoggedTracer.record("Check CANivore Status", "Robot");
   }
 
   /** This function is called once when the robot is disabled. */
@@ -211,16 +227,23 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    LoggedTracer.reset();
     RobotState.setMode(RobotState.RobotMode.AUTO);
-    RobotState.setReefHeight(ReefHeight.L4);
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    LoggedTracer.record("Set Robotstate Mode", "Robot");
 
-    // schedule the autonomous command (example)
+    LoggedTracer.reset();
+    RobotState.setReefHeight(ReefHeight.L4);
+    LoggedTracer.record("Set Reef Height", "Robot");
+
+    LoggedTracer.reset();
+    autonomousCommand = robotContainer.getAutonomousCommand();
+    LoggedTracer.record("Set Autonomous Command", "Robot");
+
+    LoggedTracer.reset();
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
-
-    Shuffleboard.selectTab("Autonomous");
+    LoggedTracer.record("Schedule Autonomous Command", "Robot");
   }
 
   /** This function is called periodically during autonomous. */

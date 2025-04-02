@@ -3,6 +3,7 @@ package frc.robot.subsystems.shared.climber;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LoggedTracer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,8 +40,13 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LoggedTracer.reset();
     io.updateInputs(inputs);
+    LoggedTracer.record("Climber Input Update", "Climber/Periodic");
+
+    LoggedTracer.reset();
     Logger.processInputs("Climber", inputs);
+    LoggedTracer.record("Climber Input Processing", "Climber/Periodic");
 
     Logger.recordOutput("Climber/redundantSwitchesTimer", redundantSwitchesTimer.get());
     Logger.recordOutput("Climber/redundantTrustTimer", redundantTrustTimer.get());
