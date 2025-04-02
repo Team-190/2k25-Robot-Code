@@ -508,6 +508,19 @@ public class CompositeCommands {
             scoreAlgae(elevator, manipulator, intake));
       }
 
+      public static final Command scoreProcessorNew(
+          Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        return Commands.sequence(
+            DecisionTree.moveSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> ReefHeight.ALGAE_FLOOR_INTAKE,
+                ArmState.STOW_DOWN,
+                IntakeState.INTAKE),
+            intake.setRollerVoltage(-6));
+      }
+
       public static final Command scoreProcessor(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return DecisionTree.moveSequence(
