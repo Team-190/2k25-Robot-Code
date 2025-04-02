@@ -403,7 +403,6 @@ public class RobotState {
         algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
         break;
     }
-    ;
     LoggedTracer.record("Generate Setpoints", "RobotState/Periodic");
 
     LoggedTracer.reset();

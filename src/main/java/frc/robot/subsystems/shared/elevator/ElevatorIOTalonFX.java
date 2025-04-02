@@ -145,13 +145,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     positionVoltageRequest = new MotionMagicVoltage(0.0);
     voltageRequest = new VoltageOut(0.0);
+
+    PhoenixUtil.registerSignals(false, statusSignals);
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    LoggedTracer.reset();
-    BaseStatusSignal.refreshAll(statusSignals).isOK();
-    LoggedTracer.record("Refresh Status Signals", "Elevator/TalonFX");
+    // LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(statusSignals).isOK();
+    // LoggedTracer.record("Refresh Status Signals", "Elevator/TalonFX");
 
     LoggedTracer.reset();
     inputs.positionMeters =

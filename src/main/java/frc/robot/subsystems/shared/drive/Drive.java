@@ -372,5 +372,6 @@ public class Drive extends SubsystemBase {
             Rotation2d.fromRadians(sample.heading));
 
     runVelocity(velocity);
+    Logger.recordOutput("Auto/Setpoint", sample.getPose());
   }
 }

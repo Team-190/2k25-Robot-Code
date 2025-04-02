@@ -34,6 +34,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.util.LoggedTracer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
@@ -117,6 +118,7 @@ public final class DriveCommands {
       BooleanSupplier bargeAlign) {
     return Commands.run(
         () -> {
+          LoggedTracer.reset();
           // Apply deadband
           double linearMagnitude =
               MathUtil.applyDeadband(
@@ -171,6 +173,7 @@ public final class DriveCommands {
               "Drive/JoystickDrive/thetaSpeed", chassisSpeeds.omegaRadiansPerSecond);
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);
+          LoggedTracer.record("Joystick Drive", "Command Scheduler/Drive Commands");
         },
         drive);
   }
@@ -185,6 +188,7 @@ public final class DriveCommands {
   }
 
   private static double bargeAlignTheta() {
+    LoggedTracer.reset();
     double thetaSpeed = 0.0;
 
     alignHeadingController.setTolerance(
@@ -200,6 +204,8 @@ public final class DriveCommands {
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+    LoggedTracer.record("Barge Align Theta", "Command Scheduler/Drive Commands");
+
     return thetaSpeed;
   }
 
@@ -311,6 +317,7 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
+                      LoggedTracer.reset();
                       ChassisSpeeds speeds;
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
                         double xSpeed = 0.0;
@@ -401,17 +408,21 @@ public final class DriveCommands {
                       Logger.recordOutput("Drive/Coral/ySpeed", -speeds.vyMetersPerSecond);
                       Logger.recordOutput("Drive/Coral/thetaSpeed", speeds.omegaRadiansPerSecond);
                       drive.runVelocity(speeds);
+                      LoggedTracer.record("Auto Align Coral", "Command Scheduler/Drive Commands");
                     },
                     drive)
                 .until(() -> RobotState.getReefAlignData().atCoralSetpoint())
                 .finallyDo(
                     () -> {
+                      LoggedTracer.reset();
                       drive.runVelocity(new ChassisSpeeds());
                       alignHeadingController.reset(
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
                       RobotState.setAutoAligning(false);
+                      LoggedTracer.record(
+                          "Auto Align Coral End", "Command Scheduler/Drive Commands");
                     }));
   }
 
@@ -533,6 +544,7 @@ public final class DriveCommands {
   }
 
   private static double reefThetaSpeedCalculate() {
+    LoggedTracer.reset();
     double thetaSpeed = 0.0;
 
     alignHeadingController.setTolerance(
@@ -548,6 +560,8 @@ public final class DriveCommands {
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+    LoggedTracer.record("Reef Align Theta", "Command Scheduler/Drive Commands");
+
     return thetaSpeed;
   }
 

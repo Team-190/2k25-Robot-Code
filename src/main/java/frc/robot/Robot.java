@@ -18,7 +18,7 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
 import frc.robot.util.LoggedTracer;
-import frc.robot.util.NTPrefixes;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -148,6 +148,10 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
 
     LoggedTracer.reset();
+    PhoenixUtil.refreshAll();
+    LoggedTracer.record("Refresh Status Signals", "Robot");
+
+    LoggedTracer.reset();
     robotContainer.robotPeriodic();
     LoggedTracer.record("Robot Container Periodic", "Robot");
 
@@ -176,42 +180,42 @@ public class Robot extends LoggedRobot {
     LoggedTracer.record("Check Battery Alert", "Robot");
 
     // Check CAN status
-    LoggedTracer.reset();
-    var canStatus = RobotController.getCANStatus();
-    if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-      canErrorTimer.restart();
-    }
-    canErrorAlert.set(
-        !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-            && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // LoggedTracer.reset();
+    // var canStatus = RobotController.getCANStatus();
+    // if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
+    //   canErrorTimer.restart();
+    // }
+    // canErrorAlert.set(
+    //     !canErrorTimer.hasElapsed(canErrorTimeThreshold)
+    //         && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
 
-    // Log CANivore status
-    if (Constants.getMode() == Constants.Mode.REAL) {
-      var canivoreStatus = canivoreReader.getStatus();
-      if (canivoreStatus.isPresent()) {
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
-        Logger.recordOutput(
-            NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
-        if (!canivoreStatus.get().Status.isOK()
-            || canStatus.transmitErrorCount > 0
-            || canStatus.receiveErrorCount > 0) {
-          canivoreErrorTimer.restart();
-        }
-      }
-      canivoreErrorAlert.set(
-          !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
-              && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-    }
-    LoggedTracer.record("Check CANivore Status", "Robot");
+    // // Log CANivore status
+    // if (Constants.getMode() == Constants.Mode.REAL) {
+    //   var canivoreStatus = canivoreReader.getStatus();
+    //   if (canivoreStatus.isPresent()) {
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
+    //     if (!canivoreStatus.get().Status.isOK()
+    //         || canStatus.transmitErrorCount > 0
+    //         || canStatus.receiveErrorCount > 0) {
+    //       canivoreErrorTimer.restart();
+    //     }
+    //   }
+    //   canivoreErrorAlert.set(
+    //       !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
+    //           && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // }
+    // LoggedTracer.record("Check CANivore Status", "Robot");
   }
 
   /** This function is called once when the robot is disabled. */

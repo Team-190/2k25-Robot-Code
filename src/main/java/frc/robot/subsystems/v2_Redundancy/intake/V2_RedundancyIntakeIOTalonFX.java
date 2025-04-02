@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import frc.robot.util.LoggedTracer;
+import frc.robot.util.PhoenixUtil;
 
 public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   private final TalonFX extensionTalonFX;
@@ -127,31 +128,46 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     neutralRequest = new NeutralOut();
     positionControlRequest = new MotionMagicVoltage(0.0);
 
-    extensionTalonFX.setPosition(
-        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
-  }
-
-  @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-    LoggedTracer.reset();
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        false,
         extensionPositionRotations,
         extensionVelocityRotationsPerSecond,
         extensionAppliedVolts,
         extensionSupplyCurrentAmps,
         extensionTorqueCurrentAmps,
         extensionTemperatureCelsius,
-        extensionPositionSetpointRotations,
-        extensionPositionErrorRotations);
-
-    BaseStatusSignal.refreshAll(
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVolts,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
-    LoggedTracer.record("Refresh Status Signals", "Intake/TalonFX");
+
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void updateInputs(IntakeIOInputs inputs) {
+    // LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     extensionPositionRotations,
+    //     extensionVelocityRotationsPerSecond,
+    //     extensionAppliedVolts,
+    //     extensionSupplyCurrentAmps,
+    //     extensionTorqueCurrentAmps,
+    //     extensionTemperatureCelsius,
+    //     extensionPositionSetpointRotations,
+    //     extensionPositionErrorRotations);
+
+    // BaseStatusSignal.refreshAll(
+    //     rollerPositionRotations,
+    //     rollerVelocityRotationsPerSecond,
+    //     rollerAppliedVolts,
+    //     rollerSupplyCurrentAmps,
+    //     rollerTorqueCurrentAmps,
+    //     rollerTemperatureCelsius);
+    // LoggedTracer.record("Refresh Status Signals", "Intake/TalonFX");
 
     LoggedTracer.reset();
     inputs.extensionPositionMeters =

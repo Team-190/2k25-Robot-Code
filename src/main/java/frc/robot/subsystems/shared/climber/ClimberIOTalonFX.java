@@ -65,19 +65,28 @@ public class ClimberIOTalonFX implements ClimberIO {
     talonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
-  }
 
-  @Override
-  public void updateInputs(ClimberIOInputs inputs) {
-    LoggedTracer.reset();
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        true,
         positionRotations,
         velocityRotationsPerSecond,
         appliedVolts,
         supplyCurrentAmps,
         torqueCurrentAmps,
         temperatureCelsius);
-    LoggedTracer.record("Refresh Status Signals", "Climber/TalonFX");
+  }
+
+  @Override
+  public void updateInputs(ClimberIOInputs inputs) {
+    // LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     positionRotations,
+    //     velocityRotationsPerSecond,
+    //     appliedVolts,
+    //     supplyCurrentAmps,
+    //     torqueCurrentAmps,
+    //     temperatureCelsius);
+    // LoggedTracer.record("Refresh Status Signals", "Climber/TalonFX");
 
     LoggedTracer.reset();
     inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());

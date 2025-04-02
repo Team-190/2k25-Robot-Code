@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.LoggedTracer;
+import frc.robot.util.PhoenixUtil;
 
 public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulatorIO {
   private final TalonFX armTalonFX;
@@ -153,12 +154,9 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     armTalonFX.setPosition(
         V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
-  }
 
-  @Override
-  public void updateInputs(ManipulatorIOInputs inputs) {
-    LoggedTracer.reset();
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        false,
         armPositionRotations,
         armVelocityRotationsPerSecond,
         armAppliedVolts,
@@ -174,7 +172,28 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
-    LoggedTracer.record("Refresh Status Signals", "Manipulator/TalonFX");
+  }
+
+  @Override
+  public void updateInputs(ManipulatorIOInputs inputs) {
+    // LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     armPositionRotations,
+    //     armVelocityRotationsPerSecond,
+    //     armAppliedVolts,
+    //     armSupplyCurrentAmps,
+    //     armTorqueCurrentAmps,
+    //     armTemperatureCelsius,
+    //     armPositionSetpointRotations,
+    //     armPositionErrorRotations,
+    //     rollerPositionRotations,
+    //     rollerVelocityRotationsPerSecond,
+    //     rollerAccelerationRotationsPerSecondSquared,
+    //     rollerAppliedVoltage,
+    //     rollerSupplyCurrentAmps,
+    //     rollerTorqueCurrentAmps,
+    //     rollerTemperatureCelsius);
+    // LoggedTracer.record("Refresh Status Signals", "Manipulator/TalonFX");
 
     LoggedTracer.reset();
     inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
