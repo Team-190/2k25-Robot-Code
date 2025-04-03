@@ -2,8 +2,10 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +22,9 @@ import frc.robot.util.CanivoreReader;
 import frc.robot.util.LoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
+
+import java.lang.reflect.Field;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -55,6 +60,8 @@ public class Robot extends LoggedRobot {
   private final Alert canivoreErrorAlert =
       new Alert("CANivore errors detected, robot may not be controllable.", AlertType.ERROR);
   private final CanivoreReader canivoreReader = new CanivoreReader("Drive");
+
+  private static final double loopOverrunWarningTimeout = 1;
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
@@ -137,6 +144,16 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(loopOverrunWarningTimeout);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
+    }
+    CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
 
     startupTimestamp = Timer.getFPGATimestamp();
   }
