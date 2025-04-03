@@ -1,6 +1,10 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.math.MathShared;
+import edu.wpi.first.math.MathSharedStore;
+import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -22,9 +26,7 @@ import frc.robot.util.CanivoreReader;
 import frc.robot.util.LoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
-
 import java.lang.reflect.Field;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -141,9 +143,7 @@ public class Robot extends LoggedRobot {
         };
 
     Shuffleboard.selectTab("Autonomous");
-    if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
-    }
 
     try {
       Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
@@ -154,6 +154,29 @@ public class Robot extends LoggedRobot {
       DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
     }
     CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
+
+        // Silence Rotation2d warnings
+    var mathShared = MathSharedStore.getMathShared();
+    MathSharedStore.setMathShared(
+        new MathShared() {
+          @Override
+          public void reportError(String error, StackTraceElement[] stackTrace) {
+            if (error.startsWith("x and y components of Rotation2d are zero")) {
+              return;
+            }
+            mathShared.reportError(error, stackTrace);
+          }
+
+          @Override
+          public void reportUsage(MathUsageId id, int count) {
+            mathShared.reportUsage(id, count);
+          }
+
+          @Override
+          public double getTimestamp() {
+            return mathShared.getTimestamp();
+          }
+        });
 
     startupTimestamp = Timer.getFPGATimestamp();
   }
