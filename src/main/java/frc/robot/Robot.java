@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-
 import edu.wpi.first.math.MathShared;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
@@ -143,7 +142,7 @@ public class Robot extends LoggedRobot {
         };
 
     Shuffleboard.selectTab("Autonomous");
-      DriverStation.silenceJoystickConnectionWarning(true);
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     try {
       Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
@@ -155,7 +154,7 @@ public class Robot extends LoggedRobot {
     }
     CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
 
-        // Silence Rotation2d warnings
+    // Silence Rotation2d warnings
     var mathShared = MathSharedStore.getMathShared();
     MathSharedStore.setMathShared(
         new MathShared() {
