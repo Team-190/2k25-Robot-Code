@@ -487,13 +487,15 @@ public class CompositeCommands {
 
       public static final Command netHeight(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-        return Commands.sequence(DecisionTree.moveSequence(
+        return Commands.sequence(
+            DecisionTree.moveSequence(
                 elevator,
                 manipulator,
                 intake,
                 () -> ReefHeight.ALGAE_SCORE,
                 ArmState.PRE_SCORE,
-                IntakeState.STOW), manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
+                IntakeState.STOW),
+            manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
       }
 
       public static final Command autoScoreAlgae(
