@@ -290,7 +290,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
-        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
+        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))\
         .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
     operator
