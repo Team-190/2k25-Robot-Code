@@ -105,7 +105,11 @@ public class Climber extends SubsystemBase {
   }
 
   public Command winchClimber() {
-    return Commands.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0)).until(() -> isClimbed);
+    return Commands.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+  }
+
+  public Command winchClimberManual() {
+    return Commands.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0));
   }
 
   public Command manualDeployOverride(boolean override) { // set using debug board button
