@@ -18,6 +18,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.PhoenixUtil;
 
 public class FunnelIOTalonFX implements FunnelIO {
   private final TalonFX clapDaddyTalonFX;
@@ -154,11 +156,9 @@ public class FunnelIOTalonFX implements FunnelIO {
     voltageRequest = new VoltageOut(0.0);
     neutralRequest = new NeutralOut();
     positionControlRequest = new MotionMagicVoltage(0.0);
-  }
 
-  @Override
-  public void updateInputs(FunnelIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        true,
         clapDaddyPositionRotations,
         clapDaddyVelocityRotationsPerSecond,
         clapDaddyAppliedVolts,
@@ -166,17 +166,42 @@ public class FunnelIOTalonFX implements FunnelIO {
         clapDaddyTorqueCurrentAmps,
         clapDaddyTemperatureCelsius,
         clapDaddyPositionSetpointRotations,
-        clapDaddyPositionErrorRotations);
+        clapDaddyPositionErrorRotations,
+        cancoderPositionRotations);
 
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        false,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVolts,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
+  }
 
-    cancoderPositionRotations.refresh();
+  @Override
+  public void updateInputs(FunnelIOInputs inputs) {
+    LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     clapDaddyPositionRotations,
+    //     clapDaddyVelocityRotationsPerSecond,
+    //     clapDaddyAppliedVolts,
+    //     clapDaddySupplyCurrentAmps,
+    //     clapDaddyTorqueCurrentAmps,
+    //     clapDaddyTemperatureCelsius,
+    //     clapDaddyPositionSetpointRotations,
+    //     clapDaddyPositionErrorRotations);
+
+    // BaseStatusSignal.refreshAll(
+    //     rollerPositionRotations,
+    //     rollerVelocityRotationsPerSecond,
+    //     rollerAppliedVolts,
+    //     rollerSupplyCurrentAmps,
+    //     rollerTorqueCurrentAmps,
+    //     rollerTemperatureCelsius);
+
+    // cancoderPositionRotations.refresh();
+    LoggedTracer.record("Refresh Status Signals", "Funnel/TalonFX");
 
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
@@ -205,6 +230,7 @@ public class FunnelIOTalonFX implements FunnelIO {
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
 
     inputs.hasCoral = coralSensor.get();
+    LoggedTracer.record("Update Inputs", "Funnel/TalonFX");
   }
 
   @Override

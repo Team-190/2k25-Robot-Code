@@ -32,6 +32,8 @@ public class FieldConstants {
     // Measured from floor to bottom of cage
     public static final double deepHeight = Units.inchesToMeters(3.125);
     public static final double shallowHeight = Units.inchesToMeters(30.125);
+
+    public static final double distanceFromBarge = 0.4;
   }
 
   public static class CoralStation {
@@ -58,7 +60,7 @@ public class FieldConstants {
     public static enum ReefHeight {
       STOW,
       CORAL_INTAKE,
-      ALGAE_INTAKE,
+      ALGAE_FLOOR_INTAKE,
       ALGAE_MID,
       ASS_TOP,
       ASS_BOT,
@@ -131,11 +133,11 @@ public class FieldConstants {
           DriveConstants.DRIVE_CONFIG.bumperWidth()
               / 2.0; // Offset X setpoint by center of robot to bumper
 
-      double adjustYAlgae =
-          Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
+      //   double adjustYAlgae =
+      //       Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
       double adjustXAlgae =
-          DriveConstants.DRIVE_CONFIG.bumperWidth()
-              / 2.0; // Offset X setpoint by center of robot to bumper
+          DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0
+              + Units.inchesToMeters(2); // Offset X setpoint by center of robot to bumper
 
       reefMap.put(
           18,

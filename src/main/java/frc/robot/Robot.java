@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
@@ -15,6 +16,9 @@ import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.CanivoreReader;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -32,9 +36,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private static final double lowBatteryVoltage = 10.0;
   private static final double lowBatteryDisabledTime = 1.5;
+  private static final double canErrorTimeThreshold = 0.5;
+  private static final double canivoreErrorTimeThreshold = 0.5;
+  private static double startupTimestamp = Double.NEGATIVE_INFINITY;
 
   private final Timer canErrorTimer = new Timer();
   private final Timer canErrorTimerInitial = new Timer();
+  private final Timer canivoreErrorTimer = new Timer();
   private final Timer disabledTimer = new Timer();
   private final Alert logReceiverQueueAlert =
       new Alert("Logging queue exceeded capacity, data will NOT be logged.", AlertType.WARNING);
@@ -42,6 +50,11 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.WARNING);
+  private final Alert canErrorAlert =
+      new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
+  private final Alert canivoreErrorAlert =
+      new Alert("CANivore errors detected, robot may not be controllable.", AlertType.ERROR);
+  private final CanivoreReader canivoreReader = new CanivoreReader("Drive");
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
@@ -102,10 +115,9 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // Start timers
-    canErrorTimer.reset();
-    canErrorTimer.start();
-    canErrorTimerInitial.reset();
-    canErrorTimerInitial.start();
+    canErrorTimer.restart();
+    canErrorTimerInitial.restart();
+    canivoreErrorTimer.restart();
     disabledTimer.reset();
     disabledTimer.start();
 
@@ -125,6 +137,8 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
+
+    startupTimestamp = Timer.getFPGATimestamp();
   }
 
   /** This function is called periodically during all modes. */
@@ -135,14 +149,30 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
+
+    LoggedTracer.reset();
+    PhoenixUtil.refreshAll();
+    LoggedTracer.record("Refresh Status Signals", "Robot");
+
+    LoggedTracer.reset();
     robotContainer.robotPeriodic();
+    LoggedTracer.record("Robot Container Periodic", "Robot");
+
+    LoggedTracer.reset();
     VirtualSubsystem.periodicAll();
+    LoggedTracer.record("Virtual Subsystem Periodic", "Robot");
+
+    LoggedTracer.reset();
     CommandScheduler.getInstance().run();
+    LoggedTracer.record("Command Scheduler Run", "Robot");
 
     // Check logging fault
+    LoggedTracer.reset();
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
+    LoggedTracer.record("Check Logging Fault", "Robot");
 
     // Update low battery alert
+    LoggedTracer.reset();
     if (RobotState.RobotMode.enabled()) {
       disabledTimer.reset();
     }
@@ -150,6 +180,45 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
+    LoggedTracer.record("Check Battery Alert", "Robot");
+
+    // Check CAN status
+    // LoggedTracer.reset();
+    // var canStatus = RobotController.getCANStatus();
+    // if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
+    //   canErrorTimer.restart();
+    // }
+    // canErrorAlert.set(
+    //     !canErrorTimer.hasElapsed(canErrorTimeThreshold)
+    //         && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+
+    // // Log CANivore status
+    // if (Constants.getMode() == Constants.Mode.REAL) {
+    //   var canivoreStatus = canivoreReader.getStatus();
+    //   if (canivoreStatus.isPresent()) {
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
+    //     Logger.recordOutput(
+    //         NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
+    //     if (!canivoreStatus.get().Status.isOK()
+    //         || canStatus.transmitErrorCount > 0
+    //         || canStatus.receiveErrorCount > 0) {
+    //       canivoreErrorTimer.restart();
+    //     }
+    //   }
+    //   canivoreErrorAlert.set(
+    //       !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
+    //           && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // }
+    // LoggedTracer.record("Check CANivore Status", "Robot");
   }
 
   /** This function is called once when the robot is disabled. */
@@ -165,15 +234,23 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    LoggedTracer.reset();
     RobotState.setMode(RobotState.RobotMode.AUTO);
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    LoggedTracer.record("Set Robotstate Mode", "Robot");
 
-    // schedule the autonomous command (example)
+    LoggedTracer.reset();
+    RobotState.setReefHeight(ReefHeight.L4);
+    LoggedTracer.record("Set Reef Height", "Robot");
+
+    LoggedTracer.reset();
+    autonomousCommand = robotContainer.getAutonomousCommand();
+    LoggedTracer.record("Set Autonomous Command", "Robot");
+
+    LoggedTracer.reset();
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
-
-    Shuffleboard.selectTab("Autonomous");
+    LoggedTracer.record("Schedule Autonomous Command", "Robot");
   }
 
   /** This function is called periodically during autonomous. */
@@ -216,4 +293,8 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  public static boolean isJitting() {
+    return Timer.getFPGATimestamp() - startupTimestamp <= 45.0;
+  }
 }

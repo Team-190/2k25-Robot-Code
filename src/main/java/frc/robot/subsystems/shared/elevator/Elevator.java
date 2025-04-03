@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.util.LoggedTracer;
+import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -45,14 +47,21 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LoggedTracer.reset();
     io.updateInputs(inputs);
+    LoggedTracer.record("Update Inputs", "Elevator/Periodic");
+
+    LoggedTracer.reset();
     Logger.processInputs("Elevator", inputs);
+    LoggedTracer.record("Process Inputs", "Elevator/Periodic");
 
     Logger.recordOutput("Elevator/Position", position.name());
 
+    LoggedTracer.reset();
     if (isClosedLoop) {
       io.setPositionGoal(position.getPosition());
     }
+    LoggedTracer.record("Set Position Goal", "Elevator/Periodic");
   }
 
   /**
@@ -71,7 +80,7 @@ public class Elevator extends SubsystemBase {
             case CORAL_INTAKE:
               this.position = ElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_INTAKE:
+            case ALGAE_FLOOR_INTAKE:
               this.position = ElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
@@ -118,18 +127,18 @@ public class Elevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(ReefHeight newPosition) {
+  public Command setPosition(Supplier<ReefHeight> newPosition) {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          switch (newPosition) {
+          switch (newPosition.get()) {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;
             case CORAL_INTAKE:
               this.position = ElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_INTAKE:
+            case ALGAE_FLOOR_INTAKE:
               this.position = ElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
@@ -168,6 +177,41 @@ public class Elevator extends SubsystemBase {
               break;
           }
         });
+  }
+
+  public ElevatorPositions getPosition(ReefHeight newPosition) {
+    switch (newPosition) {
+      case STOW:
+        return ElevatorPositions.STOW;
+      case CORAL_INTAKE:
+        return ElevatorPositions.CORAL_INTAKE;
+      case ALGAE_FLOOR_INTAKE:
+        return ElevatorPositions.ALGAE_INTAKE;
+      case ALGAE_MID:
+        return ElevatorPositions.ALGAE_MID;
+      case ASS_TOP:
+        return ElevatorPositions.ASS_TOP;
+      case ASS_BOT:
+        return ElevatorPositions.ASS_BOT;
+      case ALGAE_INTAKE_TOP:
+        return ElevatorPositions.ALGAE_INTAKE_TOP;
+      case ALGAE_INTAKE_BOTTOM:
+        return ElevatorPositions.ALGAE_INTAKE_BOT;
+      case L1:
+        return ElevatorPositions.L1;
+      case L2:
+        return ElevatorPositions.L2;
+      case L3:
+        return ElevatorPositions.L3;
+      case L4:
+        return ElevatorPositions.L4;
+      case L4_PLUS:
+        return ElevatorPositions.L4_PLUS;
+      case ALGAE_SCORE:
+        return ElevatorPositions.ALGAE_SCORE;
+      default:
+        return ElevatorPositions.STOW;
+    }
   }
 
   public Command setVoltage(double volts) {
@@ -210,7 +254,7 @@ public class Elevator extends SubsystemBase {
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        setPosition(ReefHeight.STOW));
+        setPosition(() -> ReefHeight.STOW));
   }
 
   /**

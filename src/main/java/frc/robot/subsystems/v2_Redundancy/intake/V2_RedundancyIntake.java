@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.util.LoggedTracer;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,6 +19,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
+
+  @Getter
+  @AutoLogOutput(key = "Intake/Goal")
   private IntakeState goal;
 
   private boolean isClosedLoop;
@@ -41,12 +46,23 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
+    LoggedTracer.record("Update Inputs", "Intake/eriodic");
 
+    LoggedTracer.reset();
+    Logger.processInputs("Intake", inputs);
+    LoggedTracer.record("Process Inputs", "Intake/Periodic");
+
+    LoggedTracer.reset();
     if (isClosedLoop) {
       io.setExtensionGoal(goal.getDistance());
     }
+    LoggedTracer.record("Set Extension Goal", "Intake/Periodic");
+  }
+
+  public double getExtension() {
+    return inputs.extensionPositionMeters;
   }
 
   /**
@@ -69,7 +85,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
+  public Command setRollerVoltage(double volts) {
     return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
@@ -162,5 +178,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
   public Command retractAlgae() {
     return Commands.sequence(setExtensionGoal(IntakeState.STOW), setRollerVoltage(-2))
         .withTimeout(2);
+  }
+
+  public Command waitUntilExtensionAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
   }
 }

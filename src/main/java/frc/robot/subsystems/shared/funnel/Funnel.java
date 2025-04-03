@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
+import frc.robot.util.LoggedTracer;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -45,16 +46,25 @@ public class Funnel extends SubsystemBase {
 
   @Override
   public void periodic() {
+    LoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Funnel", inputs);
+    LoggedTracer.record("Update Inputs", "Funnel/Periodic");
 
+    LoggedTracer.reset();
+    Logger.processInputs("Funnel", inputs);
+    LoggedTracer.record("Process Inputs", "Funnel/Periodic");
+
+    LoggedTracer.reset();
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
     }
+    LoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
+    LoggedTracer.reset();
     if (!inputs.hasCoral) {
       debounceTimestamp = Timer.getFPGATimestamp();
     }
+    LoggedTracer.record("Update debounce Timestamp", "Funnel/Periodic");
   }
 
   /**
@@ -103,6 +113,18 @@ public class Funnel extends SubsystemBase {
    */
   public Command stopRoller() {
     return Commands.runOnce(io::stopRoller);
+  }
+
+  public Command funnelClosedOverride() {
+    return Commands.runEnd(
+        () -> {
+          goal = FunnelState.CLOSED;
+          io.setRollerVoltage(12);
+        },
+        () -> {
+          goal = FunnelState.OPENED;
+          io.setRollerVoltage(0);
+        });
   }
 
   /**

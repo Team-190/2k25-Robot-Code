@@ -37,6 +37,8 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTracer;
+import frc.robot.util.PhoenixUtil;
 import java.util.Queue;
 
 /**
@@ -86,7 +88,10 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnConnectedDebounce;
   private final Debouncer turnEncoderConnectedDebounce;
 
+  private final int id;
+
   public ModuleIOTalonFX(
+      int id,
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
           constants) {
     driveTalonFX = new TalonFX(constants.DriveMotorId, DriveConstants.DRIVE_CONFIG.canBus());
@@ -199,35 +204,62 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTemperatureCelcius,
         turnPositionSetpointRotations,
         turnPositionErrorRotations);
+
     driveTalonFX.optimizeBusUtilization();
     turnTalonFX.optimizeBusUtilization();
     cancoder.optimizeBusUtilization();
+
+    PhoenixUtil.registerSignals(
+        true,
+        drivePositionRotations,
+        turnPositionRotations,
+        turnAbsolutePositionRotations,
+        driveVelocityRotationsPerSecond,
+        driveAppliedVolts,
+        driveSupplyCurrentAmps,
+        driveTorqueCurrentAmps,
+        driveTemperatureCelcius,
+        driveVelocitySetpointRotationsPerSecond,
+        driveVelocityErrorRotationsPerSecond,
+        turnVelocityRotationsPerSecond,
+        turnAppliedVolts,
+        turnSupplyCurrentAmps,
+        turnTorqueCurrentAmps,
+        turnTemperatureCelcius,
+        turnPositionSetpointRotations,
+        turnPositionErrorRotations);
+
+    this.id = id;
   }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    var driveStatus =
-        BaseStatusSignal.refreshAll(
-            drivePositionRotations,
-            driveVelocityRotationsPerSecond,
-            driveAppliedVolts,
-            driveSupplyCurrentAmps,
-            driveTorqueCurrentAmps,
-            driveTemperatureCelcius,
-            driveVelocitySetpointRotationsPerSecond,
-            driveVelocityErrorRotationsPerSecond);
-    var turnStatus =
-        BaseStatusSignal.refreshAll(
-            turnPositionRotations,
-            turnVelocityRotationsPerSecond,
-            turnAppliedVolts,
-            turnSupplyCurrentAmps,
-            turnTorqueCurrentAmps,
-            turnTemperatureCelcius,
-            turnPositionSetpointRotations,
-            turnPositionErrorRotations);
-    var turnEncoderStatus = BaseStatusSignal.refreshAll(turnAbsolutePositionRotations);
+    // LoggedTracer.reset();
+    // var driveStatus =
+    //     BaseStatusSignal.isAllGood(
+    //         drivePositionRotations,
+    //         driveVelocityRotationsPerSecond,
+    //         driveAppliedVolts,
+    //         driveSupplyCurrentAmps,
+    //         driveTorqueCurrentAmps,
+    //         driveTemperatureCelcius,
+    //         driveVelocitySetpointRotationsPerSecond,
+    //         driveVelocityErrorRotationsPerSecond);
+    // var turnStatus =
+    //     BaseStatusSignal.isAllGood(
+    //         turnPositionRotations,
+    //         turnVelocityRotationsPerSecond,
+    //         turnAppliedVolts,
+    //         turnSupplyCurrentAmps,
+    //         turnTorqueCurrentAmps,
+    //         turnTemperatureCelcius,
+    //         turnPositionSetpointRotations,
+    //         turnPositionErrorRotations);
+    // var turnEncoderStatus = BaseStatusSignal.isAllGood(turnAbsolutePositionRotations);
+    // LoggedTracer.record(
+    //     "Refresh Status Signals", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
 
+    LoggedTracer.reset();
     inputs.drivePositionRadians =
         Units.rotationsToRadians(drivePositionRotations.getValueAsDouble());
     inputs.driveVelocityRadiansPerSecond =
@@ -256,9 +288,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnPositionError =
         Rotation2d.fromRotations(turnPositionErrorRotations.getValueAsDouble());
 
-    inputs.driveConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
-    inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
-    inputs.turnEncoderConnected = turnEncoderConnectedDebounce.calculate(turnEncoderStatus.isOK());
+    // inputs.driveConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
+    // inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
+    // inputs.turnEncoderConnected =
+    // turnEncoderConnectedDebounce.calculate(turnEncoderStatus.isOK());
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
@@ -268,9 +301,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromRotations(value))
             .toArray(Rotation2d[]::new);
+    LoggedTracer.record("Update Inputs", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
+
+    LoggedTracer.reset();
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
+    LoggedTracer.record("Reset Queues", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override

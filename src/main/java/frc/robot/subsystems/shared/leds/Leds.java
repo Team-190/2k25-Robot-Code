@@ -72,7 +72,7 @@ public abstract class Leds extends VirtualSubsystem {
         new Notifier(
             () -> {
               synchronized (this) {
-                breath(Color.kWhite, Color.kBlack, System.currentTimeMillis() / 1000.0);
+                breath(Color.kRed, Color.kBlack, System.currentTimeMillis() / 1000.0);
                 leds.setData(buffer);
               }
             });
