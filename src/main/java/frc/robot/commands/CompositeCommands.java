@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
@@ -490,12 +489,12 @@ public class CompositeCommands {
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return Commands.sequence(
             DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> ReefHeight.ALGAE_SCORE,
-                    ArmState.PRE_SCORE,
-                    IntakeState.STOW),
+                elevator,
+                manipulator,
+                intake,
+                () -> ReefHeight.ALGAE_SCORE,
+                ArmState.PRE_SCORE,
+                IntakeState.STOW),
             manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
       }
 
