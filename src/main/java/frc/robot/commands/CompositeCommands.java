@@ -490,12 +490,13 @@ public class CompositeCommands {
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return Commands.sequence(
             DecisionTree.moveSequence(
-                elevator,
-                manipulator,
-                intake,
-                () -> ReefHeight.ALGAE_SCORE,
-                ArmState.PRE_SCORE,
-                IntakeState.STOW).withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
+                    elevator,
+                    manipulator,
+                    intake,
+                    () -> ReefHeight.ALGAE_SCORE,
+                    ArmState.PRE_SCORE,
+                    IntakeState.STOW)
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
             manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
       }
 
