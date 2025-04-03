@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.FieldConstants.Reef.ReefPose;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.leds.Leds;
@@ -21,12 +22,12 @@ public class V2_RedundancyLEDs extends Leds {
   private double lastEnabledTime = 0.0;
   private boolean estopped = false;
 
-  private static final int LENGTH = 29;
+  private static final int LENGTH = 68;
   private static final int PORT = 0;
   private static final int LEFT_LENGTH_START = 0;
-  private static final int LEFT_LENGTH_END = 14;
-  private static final int RIGHT_LENGTH_START = 15;
-  private static final int RIGHT_LENGTH_END = 29;
+  private static final int LEFT_LENGTH_END = 33;
+  private static final int RIGHT_LENGTH_START = 34;
+  private static final int RIGHT_LENGTH_END = 68;
 
   public V2_RedundancyLEDs() {
     super(LENGTH, PORT);
@@ -81,8 +82,10 @@ public class V2_RedundancyLEDs extends Leds {
       } else if (lowBatteryAlert) {
         // Low battery
         strobe(Color.kOrangeRed, Color.kBlack, STROBE_FAST_DURATION);
+      } else if (Robot.isJitting()) {
+        breath(Color.kBlack, Color.kYellow, Timer.getFPGATimestamp());
       } else {
-        rainbow(LENGTH, 5.0);
+        breath(Color.kBlack, Color.kGreen, Timer.getFPGATimestamp());
       }
     } else if (RobotMode.enabled()) {
       if (RobotState.isAutoAligning()) {
