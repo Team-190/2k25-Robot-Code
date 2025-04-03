@@ -2,6 +2,7 @@ package frc.robot.subsystems.shared.climber;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTracer;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -96,18 +97,18 @@ public class Climber extends SubsystemBase {
   }
 
   public Command setVoltage(double volts) {
-    return this.run(() -> io.setVoltage(volts));
+    return Commands.run(() -> io.setVoltage(volts));
   }
 
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1125);
+    return Commands.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1125);
   }
 
   public Command winchClimber() {
-    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+    return Commands.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
   public Command manualDeployOverride(boolean override) { // set using debug board button
-    return this.runOnce(() -> this.override = override);
+    return Commands.runOnce(() -> this.override = override);
   }
 }
