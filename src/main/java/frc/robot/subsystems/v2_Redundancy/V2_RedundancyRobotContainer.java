@@ -287,7 +287,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
-    operator.povDown().whileTrue(climber.winchClimber());
+    operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
         .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
