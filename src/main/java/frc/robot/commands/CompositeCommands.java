@@ -495,8 +495,7 @@ public class CompositeCommands {
                     intake,
                     () -> ReefHeight.ALGAE_SCORE,
                     ArmState.PRE_SCORE,
-                    IntakeState.STOW)
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming),
+                    IntakeState.STOW),
             manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
       }
 
