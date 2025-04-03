@@ -482,7 +482,7 @@ public class CompositeCommands {
                 ArmState.STOW_UP,
                 IntakeState.STOW),
             Commands.waitSeconds(0.5),
-            manipulator.scoreAlgae());
+            manipulator.scoreAlgae().withTimeout(0.5));
       }
 
       public static final Command netHeight(
