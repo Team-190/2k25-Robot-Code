@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
