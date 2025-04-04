@@ -114,5 +114,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"Funnel", "from":{"target":2, "targetTimestamp":2.22526, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"Funnel"}}}]
+   {"name":"Funnel", "from":{"target":2, "targetTimestamp":2.22526, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }
