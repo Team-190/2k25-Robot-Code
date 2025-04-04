@@ -247,12 +247,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver
         .back()
         .whileTrue(
-        V2_RedundancyCompositeCommands.dropAlgae(
-            drive,
-            elevator,
-            manipulator,
-            intake,
-            () -> RobotState.getReefAlignData().algaeIntakeHeight()));
+            V2_RedundancyCompositeCommands.dropAlgae(
+                drive,
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().algaeIntakeHeight()));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
