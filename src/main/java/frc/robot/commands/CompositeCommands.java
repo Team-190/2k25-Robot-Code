@@ -485,9 +485,13 @@ public class CompositeCommands {
             manipulator.scoreAlgae().withTimeout(0.5));
       }
 
-      public static final Command dropAlgae( Drive drive,
-        Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake, Supplier<ReefHeight> level, Camera... cameras
-      ) {
+      public static final Command dropAlgae(
+          Drive drive,
+          Elevator elevator,
+          V2_RedundancyManipulator manipulator,
+          V2_RedundancyIntake intake,
+          Supplier<ReefHeight> level,
+          Camera... cameras) {
         return Commands.sequence(
             DriveCommands.autoAlignReefAlgae(drive, cameras),
             Commands.deadline(
@@ -507,10 +511,14 @@ public class CompositeCommands {
                             () -> drive.stop())
                         .withTimeout(0.5)),
                 manipulator.intakeReefAlgae()),
-                manipulator.scoreAlgae().withTimeout(0.75),
-                DecisionTree.moveSequence(elevator, manipulator, intake, ()->ReefHeight.CORAL_INTAKE, ArmState.STOW_DOWN, IntakeState.STOW)
-
-        );
+            manipulator.scoreAlgae().withTimeout(0.75),
+            DecisionTree.moveSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> ReefHeight.CORAL_INTAKE,
+                ArmState.STOW_DOWN,
+                IntakeState.STOW));
       }
 
       public static final Command netHeight(
