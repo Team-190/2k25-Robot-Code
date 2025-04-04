@@ -297,6 +297,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .back()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
+    operator.start().whileTrue(V2_RedundancyCompositeCommands.dropAlgae(drive,elevator,manipulator,intake,() -> RobotState.getReefAlignData().algaeIntakeHeight()));
 
     // Misc
     operatorFunnelOverride.whileTrue(
