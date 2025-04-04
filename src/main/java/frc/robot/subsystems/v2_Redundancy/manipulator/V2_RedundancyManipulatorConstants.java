@@ -47,7 +47,7 @@ public class V2_RedundancyManipulatorConstants {
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 100.0),
+            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 10.0),
             new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5.0),
             new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", 0.01));
 
