@@ -195,8 +195,8 @@ public class RobotState {
     double bargeSetpoint =
         FieldConstants.fieldLength / 2
             + (RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                ? -1
-                : 1 * FieldConstants.Barge.distanceFromBarge);
+                ? -FieldConstants.Barge.distanceFromBarge
+                : FieldConstants.Barge.distanceFromBarge);
 
     boolean bargeAtSetpoint =
         Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint)
@@ -374,8 +374,8 @@ public class RobotState {
     double bargeSetpoint =
         FieldConstants.fieldLength / 2
             + (RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                ? -1
-                : 1 * FieldConstants.Barge.distanceFromBarge);
+                ? -FieldConstants.Barge.distanceFromBarge
+                : FieldConstants.Barge.distanceFromBarge);
 
     boolean bargeAtSetpoint =
         Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint)
