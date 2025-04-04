@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.Logger;
 
 /** Utility class for logging code execution times. */
-public class LoggedTracer {
-  private LoggedTracer() {}
+public class ExternalLoggedTracer {
+  private ExternalLoggedTracer() {}
 
   private static double startTime = -1.0;
 

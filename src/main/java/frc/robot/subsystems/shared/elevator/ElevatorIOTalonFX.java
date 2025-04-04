@@ -14,7 +14,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 
@@ -155,7 +155,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // BaseStatusSignal.refreshAll(statusSignals).isOK();
     // LoggedTracer.record("Refresh Status Signals", "Elevator/TalonFX");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     inputs.positionMeters =
         (positionRotations.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
@@ -183,7 +183,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * Math.PI
             * ElevatorConstants.DRUM_RADIUS
             * 2;
-    LoggedTracer.record("Update Inputs", "Elevator/TalonFX");
+    InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
   }
 
   @Override

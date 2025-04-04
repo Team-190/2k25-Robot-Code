@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -46,25 +46,25 @@ public class Funnel extends SubsystemBase {
 
   @Override
   public void periodic() {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    LoggedTracer.record("Update Inputs", "Funnel/Periodic");
+    InternalLoggedTracer.record("Update Inputs", "Funnel/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     Logger.processInputs("Funnel", inputs);
-    LoggedTracer.record("Process Inputs", "Funnel/Periodic");
+    InternalLoggedTracer.record("Process Inputs", "Funnel/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
     }
-    LoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
+    InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (!inputs.hasCoral) {
       debounceTimestamp = Timer.getFPGATimestamp();
     }
-    LoggedTracer.record("Update debounce Timestamp", "Funnel/Periodic");
+    InternalLoggedTracer.record("Update debounce Timestamp", "Funnel/Periodic");
   }
 
   /**
