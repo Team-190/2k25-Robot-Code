@@ -295,10 +295,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     operator
         .povRight()
-        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessorNew(elevator, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(1));
-
-    operator.start().whileTrue(manipulator.scoreAlgae());
+        .whileTrue(manipulator.scoreAlgae());
     operator
         .back()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
