@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.LoggedTracer;
 import lombok.Getter;
 
 public class CameraIOLimelight implements CameraIO {
@@ -28,7 +28,7 @@ public class CameraIOLimelight implements CameraIO {
 
   @Override
   public void updateInputs(CameraIOInputs inputs) {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     inputs.currentHeartbeat =
         NetworkTableInstance.getDefault().getTable(this.name).getEntry("hb").getDouble(-1);
     inputs.isConnected = getIsConnected(inputs);
@@ -45,7 +45,7 @@ public class CameraIOLimelight implements CameraIO {
       inputs.frameTimestamp = LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds;
       inputs.tagIDOfInterest = LimelightHelpers.getFiducialID(name);
     }
-    LoggedTracer.record("Udate Inuts", "Vision/Cameras/" + name + "/Limelight");
+    InternalLoggedTracer.record("Update Inuts", "Vision/Cameras/" + name + "/Limelight");
   }
 
   @Override

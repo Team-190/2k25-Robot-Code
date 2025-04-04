@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -46,7 +46,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
@@ -57,11 +57,11 @@ public class GyroIOPigeon2 implements GyroIO {
         yawPositionQueue.stream()
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
-    LoggedTracer.record("Update Gyro Inputs", "Drive/Pigeon2");
+    InternalLoggedTracer.record("Update Gyro Inputs", "Drive/Pigeon2");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
-    LoggedTracer.record("Clear Gyro Queues", "Drive/Pigeon2");
+    InternalLoggedTracer.record("Clear Gyro Queues", "Drive/Pigeon2");
   }
 }

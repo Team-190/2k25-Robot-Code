@@ -18,7 +18,7 @@ import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
 import lombok.Getter;
 import lombok.Setter;
@@ -269,31 +269,31 @@ public class RobotState {
       double elevatorStart,
       Camera[] cameras) {
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
-    LoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
+    InternalLoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
-    LoggedTracer.record("Update Localizers", "RobotState/Periodic");
+    InternalLoggedTracer.record("Update Localizers", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     for (Camera camera : cameras) {
       double[] limelightHeadingData = {
         robotHeading.minus(headingOffset).getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
       };
       camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
     }
-    LoggedTracer.record("Publish Heading To LLs", "RobotState/Periodic");
+    InternalLoggedTracer.record("Publish Heading To LLs", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     NetworkTableInstance.getDefault().flush();
-    LoggedTracer.record("Flush NT", "RobotState/Periodic");
+    InternalLoggedTracer.record("Flush NT", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     for (Camera camera : cameras) {
       if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
           && camera.getTargetAquired()
@@ -324,13 +324,13 @@ public class RobotState {
         }
       }
     }
-    LoggedTracer.record("Add Field Localizer Measurements", "RobotState/Periodic");
+    InternalLoggedTracer.record("Add Field Localizer Measurements", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     int closestReefTag = getMinDistanceReefTag();
-    LoggedTracer.record("Get Minimum Distance To Reef Tag", "RobotState/Periodic");
+    InternalLoggedTracer.record("Get Minimum Distance To Reef Tag", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     for (Camera camera : cameras) {
       if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
           && !GeometryUtil.isZero(camera.getPrimaryPose())
@@ -346,9 +346,9 @@ public class RobotState {
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
       }
     }
-    LoggedTracer.record("Add Reef Localizer Measurements", "RobotState/Periodic");
+    InternalLoggedTracer.record("Add Reef Localizer Measurements", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     Pose2d autoAlignCoralSetpoint =
         OIData.currentReefHeight().equals(ReefHeight.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
@@ -403,9 +403,9 @@ public class RobotState {
         algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
         break;
     }
-    LoggedTracer.record("Generate Setpoints", "RobotState/Periodic");
+    InternalLoggedTracer.record("Generate Setpoints", "RobotState/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     reefAlignData =
         new ReefAlignData(
             closestReefTag,
@@ -425,7 +425,7 @@ public class RobotState {
             bargeAtSetpoint);
 
     robotConfigurationData = new RobotConfigurationData(intakeStart, armStart, elevatorStart);
-    LoggedTracer.record("Generate Records", "RobotState/Periodic");
+    InternalLoggedTracer.record("Generate Records", "RobotState/Periodic");
 
     Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
 
