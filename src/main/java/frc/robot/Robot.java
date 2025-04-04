@@ -22,7 +22,7 @@ import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
 import java.lang.reflect.Field;
@@ -189,29 +189,29 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     PhoenixUtil.refreshAll();
-    LoggedTracer.record("Refresh Status Signals", "Robot");
+    InternalLoggedTracer.record("Refresh Status Signals", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     robotContainer.robotPeriodic();
-    LoggedTracer.record("Robot Container Periodic", "Robot");
+    InternalLoggedTracer.record("Robot Container Periodic", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     VirtualSubsystem.periodicAll();
-    LoggedTracer.record("Virtual Subsystem Periodic", "Robot");
+    InternalLoggedTracer.record("Virtual Subsystem Periodic", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     CommandScheduler.getInstance().run();
-    LoggedTracer.record("Command Scheduler Run", "Robot");
+    InternalLoggedTracer.record("Command Scheduler Run", "Robot");
 
     // Check logging fault
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
-    LoggedTracer.record("Check Logging Fault", "Robot");
+    InternalLoggedTracer.record("Check Logging Fault", "Robot");
 
     // Update low battery alert
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (RobotState.RobotMode.enabled()) {
       disabledTimer.reset();
     }
@@ -219,7 +219,7 @@ public class Robot extends LoggedRobot {
         && disabledTimer.hasElapsed(lowBatteryDisabledTime)) {
       lowBatteryAlert.set(true);
     }
-    LoggedTracer.record("Check Battery Alert", "Robot");
+    InternalLoggedTracer.record("Check Battery Alert", "Robot");
 
     // Check CAN status
     // LoggedTracer.reset();
@@ -273,23 +273,23 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     RobotState.setMode(RobotState.RobotMode.AUTO);
-    LoggedTracer.record("Set Robotstate Mode", "Robot");
+    InternalLoggedTracer.record("Set Robotstate Mode", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     RobotState.setReefHeight(ReefHeight.L4);
-    LoggedTracer.record("Set Reef Height", "Robot");
+    InternalLoggedTracer.record("Set Reef Height", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     autonomousCommand = robotContainer.getAutonomousCommand();
-    LoggedTracer.record("Set Autonomous Command", "Robot");
+    InternalLoggedTracer.record("Set Autonomous Command", "Robot");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
-    LoggedTracer.record("Schedule Autonomous Command", "Robot");
+    InternalLoggedTracer.record("Schedule Autonomous Command", "Robot");
   }
 
   /** This function is called periodically during autonomous. */

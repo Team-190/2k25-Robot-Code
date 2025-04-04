@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -46,19 +46,19 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    LoggedTracer.record("Update Inputs", "Intake/eriodic");
+    InternalLoggedTracer.record("Update Inputs", "Intake/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     Logger.processInputs("Intake", inputs);
-    LoggedTracer.record("Process Inputs", "Intake/Periodic");
+    InternalLoggedTracer.record("Process Inputs", "Intake/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setExtensionGoal(goal.getDistance());
     }
-    LoggedTracer.record("Set Extension Goal", "Intake/Periodic");
+    InternalLoggedTracer.record("Set Extension Goal", "Intake/Periodic");
   }
 
   public double getExtension() {

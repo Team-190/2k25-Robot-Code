@@ -34,7 +34,8 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.BooleanSupplier;
@@ -99,8 +100,14 @@ public final class DriveCommands {
             0.0,
             DriveConstants.AUTO_GAINS.translation_Kd().get());
 
+    alignXController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
+    alignYController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
+
     alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    alignHeadingController.setTolerance(Units.degreesToRadians(1.0));
+    alignHeadingController.setTolerance(
+        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
 
     autoHeadingController.enableContinuousInput(-Math.PI, Math.PI);
     autoHeadingController.setTolerance(Units.degreesToRadians(1.0));
@@ -118,38 +125,60 @@ public final class DriveCommands {
       BooleanSupplier bargeAlign) {
     return Commands.run(
         () -> {
-          LoggedTracer.reset();
+          ExternalLoggedTracer.reset();
+          InternalLoggedTracer.reset();
           // Apply deadband
           double linearMagnitude =
               MathUtil.applyDeadband(
                   Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
                   DriveConstants.DRIVER_DEADBAND);
+          InternalLoggedTracer.record(
+              "Linear Magnitude", "Command Scheduler/Drive Commands/Joystick Drive");
+
+          InternalLoggedTracer.reset();
           Rotation2d linearDirection =
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          InternalLoggedTracer.record(
+              "Linear Direction", "Command Scheduler/Drive Commands/Joystick Drive");
+
+          InternalLoggedTracer.reset();
           double omega =
               MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DriveConstants.DRIVER_DEADBAND);
+          InternalLoggedTracer.record("Omega", "Command Scheduler/Drive Commands/Joystick Drive");
 
           // Square values
+          InternalLoggedTracer.reset();
           linearMagnitude = linearMagnitude * linearMagnitude;
+          InternalLoggedTracer.record("Square", "Command Scheduler/Drive Commands/Joystick Drive");
 
           // Calcaulate new linear velocity
+          InternalLoggedTracer.reset();
           Translation2d linearVelocity =
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
+          InternalLoggedTracer.record(
+              "Linear Velocity", "Command Scheduler/Drive Commands/Joystick Drive");
 
           // Get robot relative vel
+          InternalLoggedTracer.reset();
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
+          InternalLoggedTracer.record(
+              "Flipped?", "Command Scheduler/Drive Commands/Joystick Drive");
 
+          InternalLoggedTracer.reset();
           double fieldRelativeXVel =
               linearVelocity.getX()
                   * DriveConstants.DRIVE_CONFIG.maxLinearVelocityMetersPerSecond();
           double fieldRelativeYVel =
               linearVelocity.getY()
                   * DriveConstants.DRIVE_CONFIG.maxLinearVelocityMetersPerSecond();
+          InternalLoggedTracer.record(
+              "Field Relative Velocity", "Command Scheduler/Drive Commands/Joystick Drive");
 
+          InternalLoggedTracer.reset();
           double angular = 0.0;
 
           angular =
@@ -158,7 +187,9 @@ public final class DriveCommands {
                   : rotateToReef.getAsBoolean()
                       ? reefThetaSpeedCalculate()
                       : omega * DriveConstants.DRIVE_CONFIG.maxAngularVelocity();
+          InternalLoggedTracer.record("Angular", "Command Scheduler/Drive Commands/Joystick Drive");
 
+          InternalLoggedTracer.reset();
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
@@ -167,13 +198,23 @@ public final class DriveCommands {
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPoseField().getRotation());
+          InternalLoggedTracer.record(
+              "Chassis Speeds", "Command Scheduler/Drive Commands/Joystick Drive");
+
+          InternalLoggedTracer.reset();
           Logger.recordOutput("Drive/JoystickDrive/xSpeed", chassisSpeeds.vxMetersPerSecond);
           Logger.recordOutput("Drive/JoystickDrive/ySpeed", chassisSpeeds.vyMetersPerSecond);
           Logger.recordOutput(
               "Drive/JoystickDrive/thetaSpeed", chassisSpeeds.omegaRadiansPerSecond);
+          InternalLoggedTracer.record("Logging", "Command Scheduler/Drive Commands/Joystick Drive");
           // Convert to field relative speeds & send command
+
+          InternalLoggedTracer.reset();
           drive.runVelocity(chassisSpeeds);
-          LoggedTracer.record("Joystick Drive", "Command Scheduler/Drive Commands");
+          InternalLoggedTracer.record(
+              "Apply Speeds", "Command Scheduler/Drive Commands/Joystick Drive");
+          ExternalLoggedTracer.record(
+              "Joystick Drive Total Time", "Command Scheduler/Drive Commands/Joystick Drive");
         },
         drive);
   }
@@ -188,13 +229,8 @@ public final class DriveCommands {
   }
 
   private static double bargeAlignTheta() {
-    LoggedTracer.reset();
+    ExternalLoggedTracer.reset();
     double thetaSpeed = 0.0;
-
-    alignHeadingController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
-
-    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     if (!alignHeadingController.atSetpoint())
       thetaSpeed =
@@ -204,7 +240,7 @@ public final class DriveCommands {
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
-    LoggedTracer.record("Barge Align Theta", "Command Scheduler/Drive Commands");
+    ExternalLoggedTracer.record("Barge Align Theta", "Command Scheduler/Drive Commands");
 
     return thetaSpeed;
   }
@@ -305,11 +341,6 @@ public final class DriveCommands {
   }
 
   public static Command autoAlignReefCoral(Drive drive, Camera... cameras) {
-    alignXController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
-    alignYController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
-
     return Commands.runOnce(
             () -> {
               RobotState.setAutoAligning(true);
@@ -317,20 +348,33 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
-                      LoggedTracer.reset();
+                      ExternalLoggedTracer.reset();
+                      InternalLoggedTracer.reset();
                       ChassisSpeeds speeds;
+                      InternalLoggedTracer.record(
+                          "Create ChassisSpeeds",
+                          "Command Scheduler/Drive Commands/Auto Align Coral");
+
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
+                        InternalLoggedTracer.reset();
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
+                        InternalLoggedTracer.record(
+                            "Create Speeds", "Command Scheduler/Drive Commands/Auto Align Coral");
 
+                        InternalLoggedTracer.reset();
                         double ex =
                             RobotState.getReefAlignData().coralSetpoint().getX()
                                 - RobotState.getRobotPoseReef().getX();
                         double ey =
                             RobotState.getReefAlignData().coralSetpoint().getY()
                                 - RobotState.getRobotPoseReef().getY();
+                        InternalLoggedTracer.record(
+                            "Create Cartesian Errors",
+                            "Command Scheduler/Drive Commands/Auto Align Coral");
 
                         // Rotate errors into the reef post's coordinate frame
+                        InternalLoggedTracer.reset();
                         double ex_prime =
                             ex
                                     * Math.cos(
@@ -357,15 +401,36 @@ public final class DriveCommands {
                                             .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
+                        InternalLoggedTracer.record(
+                            "Create Rotated Errors",
+                            "Command Scheduler/Drive Commands/Auto Align Coral");
 
-                        if (!alignXController.atSetpoint())
+                        if (!alignXController.atSetpoint()) {
+                          InternalLoggedTracer.reset();
                           xSpeed = alignXController.calculate(0, ex_prime);
-                        else alignXController.reset(ex_prime);
-                        if (!alignYController.atSetpoint())
+                          InternalLoggedTracer.record(
+                              "Create XSpeed", "Command Scheduler/Drive Commands/Auto Align Coral");
+                        } else {
+                          InternalLoggedTracer.reset();
+                          alignXController.reset(ex_prime);
+                          InternalLoggedTracer.record(
+                              "Reset XSpeed", "Command Scheduler/Drive Commands/Auto Align Coral");
+                        }
+                        if (!alignYController.atSetpoint()) {
+                          InternalLoggedTracer.reset();
                           ySpeed = alignYController.calculate(0, ey_prime);
-                        else alignYController.reset(ey_prime);
+                          InternalLoggedTracer.record(
+                              "Create YSpeed", "Command Scheduler/Drive Commands/Auto Align Coral");
+
+                        } else {
+                          InternalLoggedTracer.reset();
+                          alignYController.reset(ey_prime);
+                          InternalLoggedTracer.record(
+                              "Reset YSpeed", "Command Scheduler/Drive Commands/Auto Align Coral");
+                        }
 
                         // Re-rotate the speeds into field relative coordinate frame
+                        InternalLoggedTracer.reset();
                         double adjustedXSpeed =
                             xSpeed
                                     * Math.cos(
@@ -392,7 +457,11 @@ public final class DriveCommands {
                                             .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
+                        InternalLoggedTracer.record(
+                            "Create Adjusted Speeds",
+                            "Command Scheduler/Drive Commands/Auto Align Coral");
 
+                        InternalLoggedTracer.reset();
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
@@ -401,37 +470,50 @@ public final class DriveCommands {
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
+                        InternalLoggedTracer.record(
+                            "Update Populated ChassisSpeeds",
+                            "Command Scheduler/Drive Commands/Auto Align Coral");
+
                       } else {
+                        InternalLoggedTracer.reset();
                         speeds = new ChassisSpeeds();
+                        InternalLoggedTracer.record(
+                            "Updated Unpopulated ChassisSpeeds",
+                            "Command Scheduler/Drive Commands");
                       }
+                      InternalLoggedTracer.reset();
                       Logger.recordOutput("Drive/Coral/xSpeed", -speeds.vxMetersPerSecond);
                       Logger.recordOutput("Drive/Coral/ySpeed", -speeds.vyMetersPerSecond);
                       Logger.recordOutput("Drive/Coral/thetaSpeed", speeds.omegaRadiansPerSecond);
+                      InternalLoggedTracer.record(
+                          "Logging", "Command Scheduler/Drive Commands/Auto Align Coral");
+
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(speeds);
-                      LoggedTracer.record("Auto Align Coral", "Command Scheduler/Drive Commands");
+                      InternalLoggedTracer.record(
+                          "Apply Speeds", "Command Scheduler/Drive Commands/Auto Align Coral");
                     },
                     drive)
                 .until(() -> RobotState.getReefAlignData().atCoralSetpoint())
                 .finallyDo(
                     () -> {
-                      LoggedTracer.reset();
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(new ChassisSpeeds());
                       alignHeadingController.reset(
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
                       RobotState.setAutoAligning(false);
-                      LoggedTracer.record(
-                          "Auto Align Coral End", "Command Scheduler/Drive Commands");
+                      InternalLoggedTracer.record(
+                          "Auto Align Coral End",
+                          "Command Scheduler/Drive Commands/Auto Align Coral");
+                      ExternalLoggedTracer.record(
+                          "Total Time Auto Align Coral",
+                          "Command Scheduler/Drive Commands/Auto Align Coral");
                     }));
   }
 
   public static Command autoAlignReefAlgae(Drive drive, Camera... cameras) {
-    alignXController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
-    alignYController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
-
     return Commands.runOnce(
             () -> {
               RobotState.setAutoAligning(true);
@@ -439,19 +521,33 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
+                      ExternalLoggedTracer.reset();
+                      InternalLoggedTracer.reset();
                       ChassisSpeeds speeds;
+                      InternalLoggedTracer.record(
+                          "Generate ChassisSpeeds",
+                          "Command Scheduler/Drive Commands/Auto Align Algae");
+
                       if (RobotState.getReefAlignData().closestReefTag() != -1) {
+                        InternalLoggedTracer.reset();
                         double xSpeed = 0.0;
                         double ySpeed = 0.0;
+                        InternalLoggedTracer.record(
+                            "Create Speeds", "Command Scheduler/Drive Commands/Auto Align Algae");
 
+                        InternalLoggedTracer.reset();
                         double ex =
                             RobotState.getReefAlignData().algaeSetpoint().getX()
                                 - RobotState.getRobotPoseReef().getX();
                         double ey =
                             RobotState.getReefAlignData().algaeSetpoint().getY()
                                 - RobotState.getRobotPoseReef().getY();
+                        InternalLoggedTracer.record(
+                            "Create Cartesian Errors",
+                            "Command Scheduler/Drive Commands/Auto Align Algae");
 
                         // Rotate errors into the reef post's coordinate frame
+                        InternalLoggedTracer.reset();
                         double ex_prime =
                             ex
                                     * Math.cos(
@@ -478,15 +574,36 @@ public final class DriveCommands {
                                             .algaeSetpoint()
                                             .getRotation()
                                             .getRadians());
+                        InternalLoggedTracer.record(
+                            "Create Rotated Errors",
+                            "Command Scheduler/Drive Commands/Auto Align Algae");
 
-                        if (!alignXController.atSetpoint())
+                        if (!alignXController.atSetpoint()) {
+                          InternalLoggedTracer.reset();
                           xSpeed = alignXController.calculate(0, ex_prime);
-                        else alignXController.reset(ex_prime);
-                        if (!alignYController.atSetpoint())
+                          InternalLoggedTracer.record(
+                              "Create XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
+                        } else {
+                          InternalLoggedTracer.reset();
+                          alignXController.reset(ex_prime);
+                          InternalLoggedTracer.record(
+                              "Reset XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
+                        }
+                        if (!alignYController.atSetpoint()) {
+                          InternalLoggedTracer.reset();
                           ySpeed = alignYController.calculate(0, ey_prime);
-                        else alignYController.reset(ey_prime);
+                          InternalLoggedTracer.record(
+                              "Create YSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
+
+                        } else {
+                          InternalLoggedTracer.reset();
+                          alignYController.reset(ey_prime);
+                          InternalLoggedTracer.record(
+                              "Reset YSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
+                        }
 
                         // Re-rotate the speeds into field relative coordinate frame
+                        InternalLoggedTracer.reset();
                         double adjustedXSpeed =
                             xSpeed
                                     * Math.cos(
@@ -514,6 +631,11 @@ public final class DriveCommands {
                                             .getRotation()
                                             .getRadians());
 
+                        InternalLoggedTracer.record(
+                            "Create Adjusted Speeds",
+                            "Command Scheduler/Drive Commands/Auto Align Algae");
+
+                        InternalLoggedTracer.reset();
                         speeds =
                             ChassisSpeeds.fromFieldRelativeSpeeds(
                                 -adjustedXSpeed,
@@ -522,29 +644,51 @@ public final class DriveCommands {
                                 RobotState.getRobotPoseReef()
                                     .getRotation()
                                     .plus(new Rotation2d(Math.PI)));
+                        InternalLoggedTracer.record(
+                            "Update Populated Speeds",
+                            "Command Scheduler/Drive Commands/Auto Align Algae");
                       } else {
+                        InternalLoggedTracer.reset();
                         speeds = new ChassisSpeeds();
+                        InternalLoggedTracer.record(
+                            "Update Unpopulated Speeds",
+                            "Command Scheduler/Drive Commands/Auto Align Algae");
                       }
+
+                      InternalLoggedTracer.reset();
                       Logger.recordOutput("Drive/Algae/xSpeed", -speeds.vxMetersPerSecond);
                       Logger.recordOutput("Drive/Algae/ySpeed", -speeds.vyMetersPerSecond);
                       Logger.recordOutput("Drive/Algae/thetaSpeed", speeds.omegaRadiansPerSecond);
+                      InternalLoggedTracer.record(
+                          "Logging", "Command Scheduler/Drive Commands/Auto Align Algae");
+
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(speeds);
+                      InternalLoggedTracer.record(
+                          "Apply Speeds", "Command Scheduler/Drive Commands/Auto Align Algae");
                     },
                     drive)
                 .until(() -> RobotState.getReefAlignData().atAlgaeSetpoint())
                 .finallyDo(
                     () -> {
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(new ChassisSpeeds());
                       alignHeadingController.reset(
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
                       RobotState.setAutoAligning(false);
+                      InternalLoggedTracer.record(
+                          "Auto Align Algae End",
+                          "Command Scheduler/Drive Commands/Auto Align Algae");
+                      ExternalLoggedTracer.record(
+                          "Auto Align Algae Total Time",
+                          "Command Scheduler/Drive Commands/Auto Align Algae");
                     }));
   }
 
   private static double reefThetaSpeedCalculate() {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     double thetaSpeed = 0.0;
 
     alignHeadingController.setTolerance(
@@ -560,17 +704,12 @@ public final class DriveCommands {
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
-    LoggedTracer.record("Reef Align Theta", "Command Scheduler/Drive Commands");
+    InternalLoggedTracer.record("Reef Align Theta", "Command Scheduler/Drive Commands");
 
     return thetaSpeed;
   }
 
   public static Command autoAlignBargeAlgae(Drive drive) {
-    alignXController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.xPIDConstants().tolerance().get());
-    alignYController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.yPIDConstants().tolerance().get());
-
     return Commands.runOnce(
             () -> {
               RobotState.setAutoAligning(true);
@@ -578,14 +717,33 @@ public final class DriveCommands {
         .andThen(
             Commands.run(
                     () -> {
+                      ExternalLoggedTracer.reset();
+                      InternalLoggedTracer.reset();
                       ChassisSpeeds speeds;
+                      InternalLoggedTracer.record(
+                          "Create ChassisSpeeds",
+                          "Command Scheduler/Drive Commands/Auto Align Barge");
+
+                      InternalLoggedTracer.reset();
                       double xSpeed = 0.0;
+                      InternalLoggedTracer.record(
+                          "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
+
                       if (!alignXController.atSetpoint()) {
+                        InternalLoggedTracer.reset();
                         xSpeed =
                             alignXController.calculate(
                                 RobotState.getRobotPoseField().getX(),
                                 RobotState.getBargeAlignData().bargeSetpoint());
-                      } else alignXController.reset(RobotState.getRobotPoseField().getX());
+                        InternalLoggedTracer.record(
+                            "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
+                      } else {
+                        InternalLoggedTracer.reset();
+                        alignXController.reset(RobotState.getRobotPoseField().getX());
+                        InternalLoggedTracer.record(
+                            "Reset XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
+                      }
+                      InternalLoggedTracer.reset();
                       speeds =
                           ChassisSpeeds.fromFieldRelativeSpeeds(
                               -xSpeed,
@@ -594,31 +752,48 @@ public final class DriveCommands {
                               RobotState.getRobotPoseReef()
                                   .getRotation()
                                   .plus(new Rotation2d(Math.PI)));
+                      InternalLoggedTracer.record(
+                          "Update Populated Speeds",
+                          "Command Scheduler/Drive Commands/Auto Align Barge");
+
+                      InternalLoggedTracer.record(
+                          "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
+
+                      InternalLoggedTracer.reset();
                       Logger.recordOutput("Drive/Barge/xSpeed", -speeds.vxMetersPerSecond);
                       Logger.recordOutput("Drive/Barge/ySpeed", -speeds.vyMetersPerSecond);
                       Logger.recordOutput("Drive/Barge/thetaSpeed", speeds.omegaRadiansPerSecond);
+                      InternalLoggedTracer.record(
+                          "Logging", "Command Scheduler/Drive Commands/Auto Align Barge");
+
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(speeds);
+                      InternalLoggedTracer.record(
+                          "Apply Speeds", "Command Scheduler/Drive Commands/Auto Align Barge");
                     },
                     drive)
                 .until(() -> RobotState.getBargeAlignData().atBargeSetpoint())
                 .finallyDo(
                     () -> {
+                      InternalLoggedTracer.reset();
                       drive.runVelocity(new ChassisSpeeds());
                       alignHeadingController.reset(
                           RobotState.getRobotPoseReef().getRotation().getRadians());
                       alignXController.reset(RobotState.getRobotPoseReef().getX());
                       alignYController.reset(RobotState.getRobotPoseReef().getY());
                       RobotState.setAutoAligning(false);
+                      InternalLoggedTracer.record(
+                          "Auto Align Barge End",
+                          "Command Scheduler/Drive Commands/Auto Align Barge");
+                      ExternalLoggedTracer.record(
+                          "Auto Align Barge Total Time",
+                          "Command Scheduler/Drive Commands/Auto Align Barge");
                     }));
   }
 
   private static double bargeThetaSpeedCalculate() {
+    ExternalLoggedTracer.reset();
     double thetaSpeed = 0.0;
-
-    alignHeadingController.setTolerance(
-        DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.omegaPIDConstants().tolerance().get());
-
-    alignHeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
     if (!alignHeadingController.atSetpoint())
       thetaSpeed =
@@ -630,6 +805,8 @@ public final class DriveCommands {
     else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+
+    ExternalLoggedTracer.record("Barge Theta Speed", "Command Scheduler/Drive Commands");
     return thetaSpeed;
   }
 

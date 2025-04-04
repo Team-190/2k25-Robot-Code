@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -42,15 +42,15 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    LoggedTracer.record("Update Inputs", "Manipulator/Periodic");
+    InternalLoggedTracer.record("Update Inputs", "Manipulator/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     Logger.processInputs("Manipulator", inputs);
-    LoggedTracer.record("Process Inputs", "Manipulator/Periodic");
+    InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
     if (RobotState.isHasAlgae()) {
@@ -60,7 +60,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     if (hasAlgae() && RobotState.isIntakingAlgae()) {
       RobotState.setHasAlgae(true);
     }
-    LoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
+    InternalLoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
   }
 
   public Rotation2d getArmAngle() {

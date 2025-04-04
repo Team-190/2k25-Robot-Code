@@ -14,7 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
-import frc.robot.util.LoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
@@ -169,7 +169,7 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     //     rollerTemperatureCelsius);
     // LoggedTracer.record("Refresh Status Signals", "Intake/TalonFX");
 
-    LoggedTracer.reset();
+    InternalLoggedTracer.reset();
     inputs.extensionPositionMeters =
         (extensionPositionRotations.getValueAsDouble()
             * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
@@ -192,7 +192,7 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
-    LoggedTracer.record("Update Inputs", "Intake/TalonFX");
+    InternalLoggedTracer.record("Update Inputs", "Intake/TalonFX");
   }
 
   @Override
