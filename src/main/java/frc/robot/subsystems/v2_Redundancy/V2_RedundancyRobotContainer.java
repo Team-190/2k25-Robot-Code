@@ -316,7 +316,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addRoutine(
+    autoChooser.addCmd(
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(
