@@ -13,7 +13,6 @@
 
 package frc.robot.subsystems.shared.drive;
 
-import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -32,7 +31,6 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.util.AllianceFlipUtil;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

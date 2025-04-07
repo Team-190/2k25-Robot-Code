@@ -331,6 +331,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoDCenter(
                 drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+    autoChooser.addCmd(
+        "1 Piece + 2 Algae Center",
+        () ->
+            AutonomousCommands.autoECenter(
+                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
@@ -365,21 +370,20 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   }
 
   public AutoFactory getAutoFactory() {
-    return
-        new AutoFactory(
-            RobotState::getRobotPoseField,
-            RobotState::resetRobotPose,
-            drive::choreoDrive,
-            true,
-            drive,
-            (sample, isStart) -> {
-              Pose2d[] poses = sample.getPoses();
-              if (AllianceFlipUtil.shouldFlip()) {
-                for (int i = 0; i < sample.getPoses().length; i++) {
-                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
-                }
-              }
-              Logger.recordOutput("Auto/Choreo Trajectory", poses);
-            });
+    return new AutoFactory(
+        RobotState::getRobotPoseField,
+        RobotState::resetRobotPose,
+        drive::choreoDrive,
+        true,
+        drive,
+        (sample, isStart) -> {
+          Pose2d[] poses = sample.getPoses();
+          if (AllianceFlipUtil.shouldFlip()) {
+            for (int i = 0; i < sample.getPoses().length; i++) {
+              poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
+            }
+          }
+          Logger.recordOutput("Auto/Choreo Trajectory", poses);
+        });
   }
 }

@@ -1,8 +1,7 @@
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
-
 import choreo.auto.AutoFactory;
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
