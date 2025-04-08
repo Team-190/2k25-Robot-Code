@@ -540,9 +540,8 @@ public class CompositeCommands {
           V2_RedundancyManipulator manipulator,
           V2_RedundancyIntake intake) {
         return Commands.sequence(
-                DriveCommands.autoAlignBargeAlgae(drive),
-                netHeight(elevator, manipulator, intake)
-                    .unless(() -> !RobotState.getBargeAlignData().atBargeSetpoint()),
+            DriveCommands.autoAlignBargeAlgae(drive),
+            netHeight(elevator, manipulator, intake),
             scoreAlgae(elevator, manipulator, intake));
       }
 
