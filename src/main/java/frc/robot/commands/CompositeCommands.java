@@ -345,13 +345,12 @@ public class CompositeCommands {
                     ArmState.STOW_DOWN,
                     IntakeState.STOW),
                 DecisionTree.moveSequence(
-                        elevator,
-                        manipulator,
-                        intake,
-                        () -> RobotState.getOIData().currentReefHeight(),
-                        ArmState.STOW_DOWN,
-                        IntakeState.STOW)
-                    .until(elevator.inFastScoringTolerance()),
+                    elevator,
+                    manipulator,
+                    intake,
+                    () -> RobotState.getOIData().currentReefHeight(),
+                    ArmState.STOW_DOWN,
+                    IntakeState.STOW),
                 () ->
                     RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
                         && !elevator.getPosition().equals(ElevatorPositions.L4)),
