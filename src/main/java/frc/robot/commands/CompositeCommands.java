@@ -345,12 +345,13 @@ public class CompositeCommands {
                     ArmState.STOW_DOWN,
                     IntakeState.STOW),
                 DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> RobotState.getOIData().currentReefHeight(),
-                    ArmState.STOW_DOWN,
-                    IntakeState.STOW),
+                        elevator,
+                        manipulator,
+                        intake,
+                        () -> RobotState.getOIData().currentReefHeight(),
+                        ArmState.STOW_DOWN,
+                        IntakeState.STOW)
+                    .until(elevator.inFastScoringTolerance()),
                 () ->
                     RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
                         && !elevator.getPosition().equals(ElevatorPositions.L4)),
@@ -362,10 +363,22 @@ public class CompositeCommands {
                 () -> RobotState.getOIData().currentReefHeight(),
                 ArmState.STOW_DOWN,
                 IntakeState.STOW),
-            Commands.either(
-                manipulator.scoreL4Coral().withTimeout(0.4),
-                manipulator.scoreCoral().withTimeout(0.15),
-                () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
+            Commands.parallel(
+                Commands.either(
+                    manipulator.scoreL4Coral().withTimeout(0.4),
+                    manipulator.scoreCoral().withTimeout(0.15),
+                    () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4))),
+            DecisionTree.moveSequence(
+                    elevator,
+                    manipulator,
+                    intake,
+                    () -> ReefHeight.STOW,
+                    ArmState.STOW_DOWN,
+                    IntakeState.STOW)
+                .onlyIf(
+                    () ->
+                        elevator.getPosition().equals(ElevatorPositions.L3)
+                            || elevator.getPosition().equals(ElevatorPositions.L2)));
       }
 
       public static final Command autoScoreCoralSequence(
@@ -402,7 +415,6 @@ public class CompositeCommands {
                         manipulator,
                         intake,
                         () -> RobotState.getReefAlignData().atCoralSetpoint())),
-                Commands.waitSeconds(0.25),
                 Commands.sequence(
                         DecisionTree.moveSequence(
                             elevator,
@@ -412,18 +424,7 @@ public class CompositeCommands {
                             ArmState.STOW_DOWN,
                             IntakeState.STOW),
                         manipulator.scoreCoral().withTimeout(0.5))
-                    .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4)),
-                DecisionTree.moveSequence(
-                        elevator,
-                        manipulator,
-                        intake,
-                        () -> ReefHeight.STOW,
-                        ArmState.STOW_DOWN,
-                        IntakeState.STOW)
-                    .onlyIf(
-                        () ->
-                            elevator.getPosition().equals(ElevatorPositions.L3)
-                                || elevator.getPosition().equals(ElevatorPositions.L2))),
+                    .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
             () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
       }
 

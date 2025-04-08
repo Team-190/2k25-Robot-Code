@@ -15,6 +15,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -329,5 +330,9 @@ public class Elevator extends SubsystemBase {
 
   public Command waitUntilAtGoal() {
     return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(this::atGoal));
+  }
+
+  public BooleanSupplier inFastScoringTolerance() {
+    return () -> Math.abs(inputs.positionMeters - inputs.positionGoalMeters) <= 0.03;
   }
 }
