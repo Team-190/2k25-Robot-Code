@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.LoggedChoreo.LoggedAutoFactory.AllianceContext;
 import java.util.function.BooleanSupplier;
 
@@ -86,19 +87,24 @@ public class LoggedAutoRoutine {
    * @return A {@link Trigger} that is true while this autonomous routine is being polled.
    */
   public Trigger active() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("Active", "Choreo/LoggedAutoRoutine/Active");
     return isActiveTrigger;
   }
 
   /** Polls the routine. Should be called in the autonomous periodic method. */
   public void poll() {
+    InternalLoggedTracer.reset();
     if (DriverStation.isDisabled() || !allianceCtx.allianceKnownOrIgnored() || isKilled) {
       isActive = false;
+      InternalLoggedTracer.record("Poll", "Choreo/LoggedAutoRoutine/Poll");
       return;
     }
     pollCount++;
     cycleTimestamp = Timer.getFPGATimestamp();
     loop.poll();
     isActive = true;
+    InternalLoggedTracer.record("Poll", "Choreo/LoggedAutoRoutine/Poll");
   }
 
   /**
@@ -107,6 +113,8 @@ public class LoggedAutoRoutine {
    * @return The event loop that this routine is using.
    */
   public EventLoop loop() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("Loop", "Choreo/LoggedAutoRoutine/Loop");
     return loop;
   }
 
@@ -117,14 +125,21 @@ public class LoggedAutoRoutine {
    * @return A {@link Trigger} that mirrors the state of the provided {@code condition}
    */
   public Trigger observe(BooleanSupplier condition) {
-    return new Trigger(loop, condition);
+    InternalLoggedTracer.reset();
+    Trigger trigger = new Trigger(loop, condition);
+    InternalLoggedTracer.record("Observe", "Choreo/LoggedAutoRoutine/Observe");
+    return trigger;
   }
 
   int pollCount() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("PollCount", "Choreo/LoggedAutoRoutine/PollCount");
     return pollCount;
   }
 
   double cycleTimestamp() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("CycleTimestamp", "Choreo/LoggedAutoRoutine/CycleTimestamp");
     return cycleTimestamp;
   }
 
@@ -134,7 +149,9 @@ public class LoggedAutoRoutine {
    * @param isIdle The new idle state of the routine.
    */
   void updateIdle(boolean isIdle) {
+    InternalLoggedTracer.reset();
     this.isIdle = isIdle;
+    InternalLoggedTracer.record("UpdateIdle", "Choreo/LoggedAutoRoutine/UpdateIdle");
   }
 
   /**
@@ -143,20 +160,25 @@ public class LoggedAutoRoutine {
    * do nothing.
    */
   public void reset() {
+    InternalLoggedTracer.reset();
     pollCount = 0;
     cycleTimestamp = 0;
     isActive = false;
+    InternalLoggedTracer.record("Reset", "Choreo/LoggedAutoRoutine/Reset");
   }
 
   /** Kills the loop and prevents it from running again. */
   public void kill() {
+    InternalLoggedTracer.reset();
     CommandScheduler.getInstance().cancelAll();
     if (isKilled) {
+      InternalLoggedTracer.record("Kill", "Choreo/LoggedAutoRoutine/Kill");
       return;
     }
     reset();
     ChoreoAlert.alert("Killed an auto loop", kWarning).set(true);
     isKilled = true;
+    InternalLoggedTracer.record("Kill", "Choreo/LoggedAutoRoutine/Kill");
   }
 
   /**
@@ -167,6 +189,8 @@ public class LoggedAutoRoutine {
    * @return A trigger that is true when the routine is idle.
    */
   public Trigger idle() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("Idle", "Choreo/LoggedAutoRoutine/Idle");
     return isIdleTrigger;
   }
 
@@ -177,7 +201,10 @@ public class LoggedAutoRoutine {
    * @return A new {@link LoggedAutoTrajectory}.
    */
   public LoggedAutoTrajectory trajectory(String trajectoryName) {
-    return factory.trajectory(trajectoryName, this, true);
+    InternalLoggedTracer.reset();
+    LoggedAutoTrajectory result = factory.trajectory(trajectoryName, this, true);
+    InternalLoggedTracer.record("Trajectory", "Choreo/LoggedAutoRoutine/Trajectory");
+    return result;
   }
 
   /**
@@ -188,7 +215,10 @@ public class LoggedAutoRoutine {
    * @return A new {@link LoggedAutoTrajectory}.
    */
   public LoggedAutoTrajectory trajectory(String trajectoryName, final int splitIndex) {
-    return factory.trajectory(trajectoryName, splitIndex, this, true);
+    InternalLoggedTracer.reset();
+    LoggedAutoTrajectory result = factory.trajectory(trajectoryName, splitIndex, this, true);
+    InternalLoggedTracer.record("TrajectorySplit", "Choreo/LoggedAutoRoutine/TrajectorySplit");
+    return result;
   }
 
   /**
@@ -200,7 +230,10 @@ public class LoggedAutoRoutine {
    */
   public <SampleType extends TrajectorySample<SampleType>> LoggedAutoTrajectory trajectory(
       Trajectory<SampleType> trajectory) {
-    return factory.trajectory(trajectory, this, true);
+    InternalLoggedTracer.reset();
+    LoggedAutoTrajectory result = factory.trajectory(trajectory, this, true);
+    InternalLoggedTracer.record("TrajectoryObject", "Choreo/LoggedAutoRoutine/TrajectoryObject");
+    return result;
   }
 
   /**
@@ -213,7 +246,10 @@ public class LoggedAutoRoutine {
    *     takes a delay in cycles before the trigger is true.
    */
   public Trigger anyDone(LoggedAutoTrajectory trajectory, LoggedAutoTrajectory... trajectories) {
-    return anyDone(0, trajectory, trajectories);
+    InternalLoggedTracer.reset();
+    Trigger result = anyDone(0, trajectory, trajectories);
+    InternalLoggedTracer.record("AnyDone", "Choreo/LoggedAutoRoutine/AnyDone");
+    return result;
   }
 
   /**
@@ -228,10 +264,12 @@ public class LoggedAutoRoutine {
    */
   public Trigger anyDoneDelayed(
       int cyclesToDelay, LoggedAutoTrajectory trajectory, LoggedAutoTrajectory... trajectories) {
+    InternalLoggedTracer.reset();
     var trigger = trajectory.doneDelayed(cyclesToDelay);
     for (int i = 0; i < trajectories.length; i++) {
       trigger = trigger.or(trajectories[i].doneDelayed(cyclesToDelay));
     }
+    InternalLoggedTracer.record("AnyDoneDelayed", "Choreo/LoggedAutoRoutine/AnyDoneDelayed");
     return trigger.and(this.active());
   }
 
@@ -249,7 +287,10 @@ public class LoggedAutoRoutine {
   @Deprecated(forRemoval = true, since = "2025")
   public Trigger anyDone(
       int cyclesToDelay, LoggedAutoTrajectory trajectory, LoggedAutoTrajectory... trajectories) {
-    return anyDoneDelayed(cyclesToDelay, trajectory, trajectories);
+    InternalLoggedTracer.reset();
+    Trigger result = anyDoneDelayed(cyclesToDelay, trajectory, trajectories);
+    InternalLoggedTracer.record("AnyDoneDeprecated", "Choreo/LoggedAutoRoutine/AnyDoneDeprecated");
+    return result;
   }
 
   /**
@@ -260,10 +301,12 @@ public class LoggedAutoRoutine {
    * @return a trigger that determines if any of the trajectories are active
    */
   public Trigger anyActive(LoggedAutoTrajectory trajectory, LoggedAutoTrajectory... trajectories) {
+    InternalLoggedTracer.reset();
     var trigger = trajectory.active();
     for (int i = 0; i < trajectories.length; i++) {
       trigger = trigger.or(trajectories[i].active());
     }
+    InternalLoggedTracer.record("AnyActive", "Choreo/LoggedAutoRoutine/AnyActive");
     return trigger.and(this.active());
   }
 
@@ -278,10 +321,12 @@ public class LoggedAutoRoutine {
    */
   public Trigger allInactive(
       LoggedAutoTrajectory trajectory, LoggedAutoTrajectory... trajectories) {
+    InternalLoggedTracer.reset();
     var trigger = trajectory.inactive();
     for (int i = 0; i < trajectories.length; i++) {
       trigger = trigger.and(trajectories[i].inactive());
     }
+    InternalLoggedTracer.record("AllInactive", "Choreo/LoggedAutoRoutine/AllInactive");
     return trigger.and(this.active());
   }
 
@@ -295,7 +340,10 @@ public class LoggedAutoRoutine {
    * @see #cmd(BooleanSupplier) A version of this method that takes a condition to finish the loop.
    */
   public Command cmd() {
-    return cmd(() -> false);
+    InternalLoggedTracer.reset();
+    Command result = cmd(() -> false);
+    InternalLoggedTracer.record("Cmd", "Choreo/LoggedAutoRoutine/Cmd");
+    return result;
   }
 
   /**
@@ -310,16 +358,20 @@ public class LoggedAutoRoutine {
    *     the alliance supplier returns an empty optional when scheduled.
    */
   public Command cmd(BooleanSupplier finishCondition) {
-    return Commands.either(
-        Commands.run(this::poll)
-            .finallyDo(this::reset)
-            .until(() -> DriverStation.isDisabled() || finishCondition.getAsBoolean())
-            .withName(name),
-        Commands.runOnce(
-            () -> {
-              ChoreoAlert.alert("Alliance not known when starting routine", kWarning).set(true);
-              kill();
-            }),
-        allianceCtx::allianceKnownOrIgnored);
+    InternalLoggedTracer.reset();
+    Command result =
+        Commands.either(
+            Commands.run(this::poll)
+                .finallyDo(this::reset)
+                .until(() -> DriverStation.isDisabled() || finishCondition.getAsBoolean())
+                .withName(name),
+            Commands.runOnce(
+                () -> {
+                  ChoreoAlert.alert("Alliance not known when starting routine", kWarning).set(true);
+                  kill();
+                }),
+            allianceCtx::allianceKnownOrIgnored);
+    InternalLoggedTracer.record("CmdWithCondition", "Choreo/LoggedAutoRoutine/CmdWithCondition");
+    return result;
   }
 }

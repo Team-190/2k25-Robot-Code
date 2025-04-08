@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.LoggedChoreo.LoggedAutoFactory.AllianceContext;
 import frc.robot.util.LoggedChoreo.LoggedAutoFactory.AutoBindings;
 import java.util.Optional;
@@ -125,8 +126,10 @@ public class LoggedAutoTrajectory {
 
   @SuppressWarnings("unchecked")
   private void logTrajectory(boolean starting) {
+    InternalLoggedTracer.reset();
     var sampleOpt = trajectory.getInitialSample(false);
     if (sampleOpt.isEmpty()) {
+      InternalLoggedTracer.record("LogTrajectory", "Choreo/LoggedAutoTrajectory/LogTrajectory");
       return;
     }
     var sample = sampleOpt.get();
@@ -142,10 +145,11 @@ public class LoggedAutoTrajectory {
           (Trajectory<DifferentialSample>) trajectory;
       differentialLogger.accept(differentialTrajectory, starting);
     }
-    ;
+    InternalLoggedTracer.record("LogTrajectory", "Choreo/LoggedAutoTrajectory/LogTrajectory");
   }
 
   private void cmdInitialize() {
+    InternalLoggedTracer.reset();
     activeTimer.start();
     inactiveTimer.stop();
     inactiveTimer.reset();
@@ -153,16 +157,20 @@ public class LoggedAutoTrajectory {
     isCompleted = false;
     logTrajectory(true);
     routine.updateIdle(false);
+    InternalLoggedTracer.record("CmdInitialize", "Choreo/LoggedAutoTrajectory/CmdInitialize");
   }
 
   @SuppressWarnings("unchecked")
   private void cmdExecute() {
+    InternalLoggedTracer.reset();
     if (!allianceCtx.allianceKnownOrIgnored()) {
       allianceNotReady.set(true);
+      InternalLoggedTracer.record("CmdExecute", "Choreo/LoggedAutoTrajectory/CmdExecute");
       return;
     }
     var sampleOpt = trajectory.sampleAt(activeTimer.get(), allianceCtx.doFlip());
     if (sampleOpt.isEmpty()) {
+      InternalLoggedTracer.record("CmdExecute", "Choreo/LoggedAutoTrajectory/CmdExecute");
       return;
     }
     var sample = sampleOpt.get();
@@ -173,10 +181,12 @@ public class LoggedAutoTrajectory {
       var differentialController = (Consumer<DifferentialSample>) this.controller;
       differentialController.accept(differentialSample);
     }
+    InternalLoggedTracer.record("CmdExecute", "Choreo/LoggedAutoTrajectory/CmdExecute");
   }
 
   @SuppressWarnings("unchecked")
   private void cmdEnd(boolean interrupted) {
+    InternalLoggedTracer.reset();
     activeTimer.stop();
     activeTimer.reset();
     inactiveTimer.start();
@@ -199,12 +209,17 @@ public class LoggedAutoTrajectory {
 
     logTrajectory(false);
     routine.updateIdle(true);
+    InternalLoggedTracer.record("CmdEnd", "Choreo/LoggedAutoTrajectory/CmdEnd");
   }
 
   private boolean cmdIsFinished() {
-    return activeTimer.get() > trajectory.getTotalTime()
-        || !routine.active().getAsBoolean()
-        || !allianceCtx.allianceKnownOrIgnored();
+    InternalLoggedTracer.reset();
+    boolean result =
+        activeTimer.get() > trajectory.getTotalTime()
+            || !routine.active().getAsBoolean()
+            || !allianceCtx.allianceKnownOrIgnored();
+    InternalLoggedTracer.record("CmdIsFinished", "Choreo/LoggedAutoTrajectory/CmdIsFinished");
+    return result;
   }
 
   /**
@@ -214,17 +229,23 @@ public class LoggedAutoTrajectory {
    * @return The command that will follow the trajectory
    */
   public Command cmd() {
-    // if the trajectory is empty, return a command that will print an error
+    InternalLoggedTracer.reset();
+    Command result;
     if (trajectory.samples().isEmpty()) {
-      return driveSubsystem.runOnce(() -> noSamples.addCause(name)).withName("Trajectory_" + name);
+      result =
+          driveSubsystem.runOnce(() -> noSamples.addCause(name)).withName("Trajectory_" + name);
+    } else {
+      result =
+          new FunctionalCommand(
+                  this::cmdInitialize,
+                  this::cmdExecute,
+                  this::cmdEnd,
+                  this::cmdIsFinished,
+                  driveSubsystem)
+              .withName("Trajectory_" + name);
     }
-    return new FunctionalCommand(
-            this::cmdInitialize,
-            this::cmdExecute,
-            this::cmdEnd,
-            this::cmdIsFinished,
-            driveSubsystem)
-        .withName("Trajectory_" + name);
+    InternalLoggedTracer.record("Cmd", "Choreo/LoggedAutoTrajectory/Cmd");
+    return result;
   }
 
   /**
@@ -236,7 +257,10 @@ public class LoggedAutoTrajectory {
    * @return The command that will schedule the trajectory following command.
    */
   public Command spawnCmd() {
-    return new ScheduleCommand(cmd()).withName("Trajectory_" + name + "_Spawner");
+    InternalLoggedTracer.reset();
+    Command result = new ScheduleCommand(cmd()).withName("Trajectory_" + name + "_Spawner");
+    InternalLoggedTracer.record("SpawnCmd", "Choreo/LoggedAutoTrajectory/SpawnCmd");
+    return result;
   }
 
   /**
@@ -245,16 +269,21 @@ public class LoggedAutoTrajectory {
    * @return A command that resets the robot's odometry.
    */
   public Command resetOdometry() {
-    return Commands.either(
-            Commands.runOnce(() -> resetOdometry.accept(getInitialPose().get()), driveSubsystem),
-            Commands.runOnce(
-                    () -> {
-                      noInitialPose.addCause(name);
-                      routine.kill();
-                    })
-                .andThen(driveSubsystem.run(() -> {})),
-            () -> getInitialPose().isPresent())
-        .withName("Trajectory_ResetOdometry_" + name);
+    InternalLoggedTracer.reset();
+    Command result =
+        Commands.either(
+                Commands.runOnce(
+                    () -> resetOdometry.accept(getInitialPose().get()), driveSubsystem),
+                Commands.runOnce(
+                        () -> {
+                          noInitialPose.addCause(name);
+                          routine.kill();
+                        })
+                    .andThen(driveSubsystem.run(() -> {})),
+                () -> getInitialPose().isPresent())
+            .withName("Trajectory_ResetOdometry_" + name);
+    InternalLoggedTracer.record("ResetOdometry", "Choreo/LoggedAutoTrajectory/ResetOdometry");
+    return result;
   }
 
   /**
@@ -269,7 +298,10 @@ public class LoggedAutoTrajectory {
   @SuppressWarnings("unchecked")
   public <SampleType extends TrajectorySample<SampleType>>
       Trajectory<SampleType> getRawTrajectory() {
-    return (Trajectory<SampleType>) trajectory;
+    InternalLoggedTracer.reset();
+    Trajectory<SampleType> result = (Trajectory<SampleType>) trajectory;
+    InternalLoggedTracer.record("GetRawTrajectory", "Choreo/LoggedAutoTrajectory/GetRawTrajectory");
+    return result;
   }
 
   /**
@@ -285,11 +317,16 @@ public class LoggedAutoTrajectory {
    * @return The starting pose
    */
   public Optional<Pose2d> getInitialPose() {
+    InternalLoggedTracer.reset();
+    Optional<Pose2d> result;
     if (!allianceCtx.allianceKnownOrIgnored()) {
       allianceNotReady.set(true);
-      return Optional.empty();
+      result = Optional.empty();
+    } else {
+      result = trajectory.getInitialPose(allianceCtx.doFlip());
     }
-    return trajectory.getInitialPose(allianceCtx.doFlip());
+    InternalLoggedTracer.record("GetInitialPose", "Choreo/LoggedAutoTrajectory/GetInitialPose");
+    return result;
   }
 
   /**
@@ -305,11 +342,16 @@ public class LoggedAutoTrajectory {
    * @return The starting pose
    */
   public Optional<Pose2d> getFinalPose() {
+    InternalLoggedTracer.reset();
+    Optional<Pose2d> result;
     if (!allianceCtx.allianceKnownOrIgnored()) {
       allianceNotReady.set(true);
-      return Optional.empty();
+      result = Optional.empty();
+    } else {
+      result = trajectory.getFinalPose(allianceCtx.doFlip());
     }
-    return trajectory.getFinalPose(allianceCtx.doFlip());
+    InternalLoggedTracer.record("GetFinalPose", "Choreo/LoggedAutoTrajectory/GetFinalPose");
+    return result;
   }
 
   /**
@@ -318,7 +360,11 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true while the trajectory is scheduled.
    */
   public Trigger active() {
-    return new Trigger(routine.loop(), () -> this.isActive && routine.active().getAsBoolean());
+    InternalLoggedTracer.reset();
+    Trigger result =
+        new Trigger(routine.loop(), () -> this.isActive && routine.active().getAsBoolean());
+    InternalLoggedTracer.record("Active", "Choreo/LoggedAutoTrajectory/Active");
+    return result;
   }
 
   /**
@@ -329,63 +375,74 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true while the command is not scheduled.
    */
   public Trigger inactive() {
-    return active().negate();
+    InternalLoggedTracer.reset();
+    Trigger result = active().negate();
+    InternalLoggedTracer.record("Inactive", "Choreo/LoggedAutoTrajectory/Inactive");
+    return result;
   }
 
   private Trigger timeTrigger(double targetTime, Timer timer) {
-    // Make the trigger only be high for 1 cycle when the time has elapsed
-    return new Trigger(
-        routine.loop(),
-        new BooleanSupplier() {
-          double lastTimestamp = -1.0;
-          OptionalInt pollTarget = OptionalInt.empty();
+    InternalLoggedTracer.reset();
+    Trigger result =
+        new Trigger(
+            routine.loop(),
+            new BooleanSupplier() {
+              double lastTimestamp = -1.0;
+              OptionalInt pollTarget = OptionalInt.empty();
 
-          public boolean getAsBoolean() {
-            if (!timer.isRunning()) {
-              lastTimestamp = -1.0;
-              pollTarget = OptionalInt.empty();
-              return false;
-            }
-            double nowTimestamp = timer.get();
-            try {
-              boolean timeAligns = lastTimestamp < targetTime && nowTimestamp >= targetTime;
-              if (pollTarget.isEmpty() && timeAligns) {
-                // if the time aligns for this cycle and it hasn't aligned previously this cycle
-                pollTarget = OptionalInt.of(routine.pollCount());
-                return true;
-              } else if (pollTarget.isPresent() && routine.pollCount() == pollTarget.getAsInt()) {
-                // if the time aligned previously this cycle
-                return true;
-              } else if (pollTarget.isPresent()) {
-                // if the time aligned last cycle
-                pollTarget = OptionalInt.empty();
-                return false;
+              public boolean getAsBoolean() {
+                if (!timer.isRunning()) {
+                  lastTimestamp = -1.0;
+                  pollTarget = OptionalInt.empty();
+                  return false;
+                }
+                double nowTimestamp = timer.get();
+                try {
+                  boolean timeAligns = lastTimestamp < targetTime && nowTimestamp >= targetTime;
+                  if (pollTarget.isEmpty() && timeAligns) {
+                    // if the time aligns for this cycle and it hasn't aligned previously this cycle
+                    pollTarget = OptionalInt.of(routine.pollCount());
+                    return true;
+                  } else if (pollTarget.isPresent()
+                      && routine.pollCount() == pollTarget.getAsInt()) {
+                    // if the time aligned previously this cycle
+                    return true;
+                  } else if (pollTarget.isPresent()) {
+                    // if the time aligned last cycle
+                    pollTarget = OptionalInt.empty();
+                    return false;
+                  }
+                  return false;
+                } finally {
+                  lastTimestamp = nowTimestamp;
+                }
               }
-              return false;
-            } finally {
-              lastTimestamp = nowTimestamp;
-            }
-          }
-        });
+            });
+    InternalLoggedTracer.record("TimeTrigger", "Choreo/LoggedAutoTrajectory/TimeTrigger");
+    return result;
   }
 
   private Trigger enterExitTrigger(Trigger enter, Trigger exit) {
-    return new Trigger(
-        routine.loop(),
-        new BooleanSupplier() {
-          boolean output = false;
+    InternalLoggedTracer.reset();
+    Trigger result =
+        new Trigger(
+            routine.loop(),
+            new BooleanSupplier() {
+              boolean output = false;
 
-          @Override
-          public boolean getAsBoolean() {
-            if (enter.getAsBoolean()) {
-              output = true;
-            }
-            if (exit.getAsBoolean()) {
-              output = false;
-            }
-            return output;
-          }
-        });
+              @Override
+              public boolean getAsBoolean() {
+                if (enter.getAsBoolean()) {
+                  output = true;
+                }
+                if (exit.getAsBoolean()) {
+                  output = false;
+                }
+                return output;
+              }
+            });
+    InternalLoggedTracer.record("EnterExitTrigger", "Choreo/LoggedAutoTrajectory/EnterExitTrigger");
+    return result;
   }
 
   /**
@@ -425,7 +482,11 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when the trajectory is finished.
    */
   public Trigger doneDelayed(double seconds) {
-    return timeTrigger(seconds, inactiveTimer).and(new Trigger(routine.loop(), () -> isCompleted));
+    InternalLoggedTracer.reset();
+    Trigger result =
+        timeTrigger(seconds, inactiveTimer).and(new Trigger(routine.loop(), () -> isCompleted));
+    InternalLoggedTracer.record("DoneDelayed", "Choreo/LoggedAutoTrajectory/DoneDelayed");
+    return result;
   }
 
   /**
@@ -439,7 +500,10 @@ public class LoggedAutoTrajectory {
    */
   @Deprecated(forRemoval = true, since = "2025")
   public Trigger done(int cycles) {
-    return doneDelayed(0.02 * cycles);
+    InternalLoggedTracer.reset();
+    Trigger result = doneDelayed(0.02 * cycles);
+    InternalLoggedTracer.record("Done", "Choreo/LoggedAutoTrajectory/Done");
+    return result;
   }
 
   /**
@@ -477,7 +541,10 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when the trajectory is finished.
    */
   public Trigger done() {
-    return doneDelayed(0);
+    InternalLoggedTracer.reset();
+    Trigger result = doneDelayed(0);
+    InternalLoggedTracer.record("Done", "Choreo/LoggedAutoTrajectory/Done");
+    return result;
   }
 
   /**
@@ -487,7 +554,10 @@ public class LoggedAutoTrajectory {
    * @return A trigger that stays true for a number of cycles after the trajectory ends.
    */
   public Trigger doneFor(double seconds) {
-    return enterExitTrigger(doneDelayed(0), doneDelayed(seconds));
+    InternalLoggedTracer.reset();
+    Trigger result = enterExitTrigger(doneDelayed(0), doneDelayed(seconds));
+    InternalLoggedTracer.record("DoneFor", "Choreo/LoggedAutoTrajectory/DoneFor");
+    return result;
   }
 
   /**
@@ -496,7 +566,10 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when the trajectory was the last one active and is done.
    */
   public Trigger recentlyDone() {
-    return enterExitTrigger(doneDelayed(0), routine.idle().negate());
+    InternalLoggedTracer.reset();
+    Trigger result = enterExitTrigger(doneDelayed(0), routine.idle().negate());
+    InternalLoggedTracer.record("RecentlyDone", "Choreo/LoggedAutoTrajectory/RecentlyDone");
+    return result;
   }
 
   /**
@@ -505,7 +578,9 @@ public class LoggedAutoTrajectory {
    * @param otherTrajectory The other trajectory to run when this one is done.
    */
   public void chain(AutoTrajectory otherTrajectory) {
+    InternalLoggedTracer.reset();
     done().onTrue(otherTrajectory.cmd());
+    InternalLoggedTracer.record("Chain", "Choreo/LoggedAutoTrajectory/Chain");
   }
 
   /**
@@ -515,19 +590,19 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when timeSinceStart has elapsed.
    */
   public Trigger atTime(double timeSinceStart) {
-    // The timer should never be negative so report this as a warning
+    InternalLoggedTracer.reset();
+    Trigger result;
     if (timeSinceStart < 0) {
       triggerTimeNegative.addCause(name);
-      return offTrigger;
-    }
-
-    // The timer should never exceed the total trajectory time so report this as a warning
-    if (timeSinceStart > trajectory.getTotalTime()) {
+      result = offTrigger;
+    } else if (timeSinceStart > trajectory.getTotalTime()) {
       triggerTimeAboveMax.addCause(name);
-      return offTrigger;
+      result = offTrigger;
+    } else {
+      result = timeTrigger(timeSinceStart, activeTimer);
     }
-
-    return timeTrigger(timeSinceStart, activeTimer);
+    InternalLoggedTracer.record("AtTime", "Choreo/LoggedAutoTrajectory/AtTime");
+    return result;
   }
 
   /**
@@ -538,7 +613,10 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when timeBeforeEnd has elapsed.
    */
   public Trigger atTimeBeforeEnd(double timeBeforeEnd) {
-    return atTime(trajectory.getTotalTime() - timeBeforeEnd);
+    InternalLoggedTracer.reset();
+    Trigger result = atTime(trajectory.getTotalTime() - timeBeforeEnd);
+    InternalLoggedTracer.record("AtTimeBeforeEnd", "Choreo/LoggedAutoTrajectory/AtTimeBeforeEnd");
+    return result;
   }
 
   /**
@@ -555,15 +633,12 @@ public class LoggedAutoTrajectory {
    *     GUI</a>
    */
   public Trigger atTime(String eventName) {
+    InternalLoggedTracer.reset();
     boolean foundEvent = false;
-    Trigger trig = offTrigger;
+    Trigger result = offTrigger;
 
     for (var event : trajectory.getEvents(eventName)) {
-      // This could create a lot of objects, could be done a more efficient way
-      // with having it all be 1 trigger that just has a list of times and checks each one each
-      // cycle
-      // or something like that. If choreo starts proposing memory issues we can look into this.
-      trig = trig.or(atTime(event.timestamp));
+      result = result.or(atTime(event.timestamp));
       foundEvent = true;
     }
 
@@ -572,18 +647,21 @@ public class LoggedAutoTrajectory {
     if (!foundEvent) {
       eventNotFound.addCause(name);
     }
-
-    return trig;
+    InternalLoggedTracer.record("AtTimeEvent", "Choreo/LoggedAutoTrajectory/AtTimeEvent");
+    return result;
   }
 
   private boolean withinTolerance(Rotation2d lhs, Rotation2d rhs, double toleranceRadians) {
+    InternalLoggedTracer.reset();
+    boolean result;
     if (Math.abs(toleranceRadians) > Math.PI) {
-      return true;
+      result = true;
+    } else {
+      double dot = lhs.getCos() * rhs.getCos() + lhs.getSin() * rhs.getSin();
+      result = dot > Math.cos(toleranceRadians);
     }
-    double dot = lhs.getCos() * rhs.getCos() + lhs.getSin() * rhs.getSin();
-    // cos(θ) >= cos(tolerance) means |θ| <= tolerance, for tolerance in [-pi, pi], as pre-checked
-    // above.
-    return dot > Math.cos(toleranceRadians);
+    InternalLoggedTracer.record("WithinTolerance", "Choreo/LoggedAutoTrajectory/WithinTolerance");
+    return result;
   }
 
   /**
@@ -600,35 +678,41 @@ public class LoggedAutoTrajectory {
    * @return A trigger that is true when the robot is within toleranceMeters of the given pose.
    */
   public Trigger atPose(Pose2d pose, double toleranceMeters, double toleranceRadians) {
+    InternalLoggedTracer.reset();
     Pose2d flippedPose = ChoreoAllianceFlipUtil.flip(pose);
-    return new Trigger(
-            routine.loop(),
-            () -> {
-              if (allianceCtx.allianceKnownOrIgnored()) {
-                final Pose2d currentPose = poseSupplier.get();
-                if (allianceCtx.doFlip()) {
-                  boolean transValid =
-                      currentPose.getTranslation().getDistance(flippedPose.getTranslation())
-                          < toleranceMeters;
-                  boolean rotValid =
-                      withinTolerance(
-                          currentPose.getRotation(), flippedPose.getRotation(), toleranceRadians);
-                  return transValid && rotValid;
-                } else {
-                  boolean transValid =
-                      currentPose.getTranslation().getDistance(pose.getTranslation())
-                          < toleranceMeters;
-                  boolean rotValid =
-                      withinTolerance(
-                          currentPose.getRotation(), pose.getRotation(), toleranceRadians);
-                  return transValid && rotValid;
-                }
-              } else {
-                allianceNotReady.set(true);
-                return false;
-              }
-            })
-        .and(active());
+    Trigger result =
+        new Trigger(
+                routine.loop(),
+                () -> {
+                  if (allianceCtx.allianceKnownOrIgnored()) {
+                    final Pose2d currentPose = poseSupplier.get();
+                    if (allianceCtx.doFlip()) {
+                      boolean transValid =
+                          currentPose.getTranslation().getDistance(flippedPose.getTranslation())
+                              < toleranceMeters;
+                      boolean rotValid =
+                          withinTolerance(
+                              currentPose.getRotation(),
+                              flippedPose.getRotation(),
+                              toleranceRadians);
+                      return transValid && rotValid;
+                    } else {
+                      boolean transValid =
+                          currentPose.getTranslation().getDistance(pose.getTranslation())
+                              < toleranceMeters;
+                      boolean rotValid =
+                          withinTolerance(
+                              currentPose.getRotation(), pose.getRotation(), toleranceRadians);
+                      return transValid && rotValid;
+                    }
+                  } else {
+                    allianceNotReady.set(true);
+                    return false;
+                  }
+                })
+            .and(active());
+    InternalLoggedTracer.record("AtPose", "Choreo/LoggedAutoTrajectory/AtPose");
+    return result;
   }
 
   /**
@@ -647,8 +731,9 @@ public class LoggedAutoTrajectory {
    *     GUI</a>
    */
   public Trigger atPose(String eventName, double toleranceMeters, double toleranceRadians) {
+    InternalLoggedTracer.reset();
     boolean foundEvent = false;
-    Trigger trig = offTrigger;
+    Trigger result = offTrigger;
 
     for (var event : trajectory.getEvents(eventName)) {
       // This could create a lot of objects, could be done a more efficient way
@@ -662,7 +747,7 @@ public class LoggedAutoTrajectory {
               .sampleAt(event.timestamp, false)
               .map(TrajectorySample::getPose);
       if (poseOpt.isPresent()) {
-        trig = trig.or(atPose(poseOpt.get(), toleranceMeters, toleranceRadians));
+        result = result.or(atPose(poseOpt.get(), toleranceMeters, toleranceRadians));
         foundEvent = true;
       }
     }
@@ -672,8 +757,8 @@ public class LoggedAutoTrajectory {
     if (!foundEvent) {
       eventNotFound.addCause(name);
     }
-
-    return trig;
+    InternalLoggedTracer.record("AtPoseEvent", "Choreo/LoggedAutoTrajectory/AtPoseEvent");
+    return result;
   }
 
   /**
@@ -692,23 +777,27 @@ public class LoggedAutoTrajectory {
    *     translation.
    */
   public Trigger atTranslation(Translation2d translation, double toleranceMeters) {
+    InternalLoggedTracer.reset();
     Translation2d flippedTranslation = ChoreoAllianceFlipUtil.flip(translation);
-    return new Trigger(
-            routine.loop(),
-            () -> {
-              if (allianceCtx.allianceKnownOrIgnored()) {
-                final Translation2d currentTrans = poseSupplier.get().getTranslation();
-                if (allianceCtx.doFlip()) {
-                  return currentTrans.getDistance(flippedTranslation) < toleranceMeters;
-                } else {
-                  return currentTrans.getDistance(translation) < toleranceMeters;
-                }
-              } else {
-                allianceNotReady.set(true);
-                return false;
-              }
-            })
-        .and(active());
+    Trigger result =
+        new Trigger(
+                routine.loop(),
+                () -> {
+                  if (allianceCtx.allianceKnownOrIgnored()) {
+                    final Translation2d currentTrans = poseSupplier.get().getTranslation();
+                    if (allianceCtx.doFlip()) {
+                      return currentTrans.getDistance(flippedTranslation) < toleranceMeters;
+                    } else {
+                      return currentTrans.getDistance(translation) < toleranceMeters;
+                    }
+                  } else {
+                    allianceNotReady.set(true);
+                    return false;
+                  }
+                })
+            .and(active());
+    InternalLoggedTracer.record("AtTranslation", "Choreo/LoggedAutoTrajectory/AtTranslation");
+    return result;
   }
 
   /**
@@ -726,6 +815,7 @@ public class LoggedAutoTrajectory {
    *     GUI</a>
    */
   public Trigger atTranslation(String eventName, double toleranceMeters) {
+    InternalLoggedTracer.reset();
     boolean foundEvent = false;
     Trigger trig = offTrigger;
 
@@ -752,7 +842,8 @@ public class LoggedAutoTrajectory {
     if (!foundEvent) {
       eventNotFound.addCause(name);
     }
-
+    InternalLoggedTracer.record(
+        "AtTranslationEvent", "Choreo/LoggedAutoTrajectory/AtTranslationEvent");
     return trig;
   }
 
@@ -765,6 +856,7 @@ public class LoggedAutoTrajectory {
    *     GUI</a>
    */
   public double[] collectEventTimes(String eventName) {
+    InternalLoggedTracer.reset();
     double[] times =
         trajectory.getEvents(eventName).stream()
             .filter(e -> e.timestamp >= 0 && e.timestamp <= trajectory.getTotalTime())
@@ -774,7 +866,8 @@ public class LoggedAutoTrajectory {
     if (times.length == 0) {
       eventNotFound.addCause("collectEvents(" + eventName + ")");
     }
-
+    InternalLoggedTracer.record(
+        "CollectEventTimes", "Choreo/LoggedAutoTrajectory/CollectEventTimes");
     return times;
   }
 
@@ -791,6 +884,7 @@ public class LoggedAutoTrajectory {
    *     GUI</a>
    */
   public Pose2d[] collectEventPoses(String eventName) {
+    InternalLoggedTracer.reset();
     double[] times = collectEventTimes(eventName);
     Pose2d[] poses = new Pose2d[times.length];
     for (int i = 0; i < times.length; i++) {
@@ -801,6 +895,8 @@ public class LoggedAutoTrajectory {
               .get(); // the event times are guaranteed to be valid
       poses[i] = pose;
     }
+    InternalLoggedTracer.record(
+        "CollectEventPoses", "Choreo/LoggedAutoTrajectory/CollectEventPoses");
     return poses;
   }
 

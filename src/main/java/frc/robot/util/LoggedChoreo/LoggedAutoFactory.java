@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.InternalLoggedTracer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,7 @@ public class LoggedAutoFactory {
       boolean useAllianceFlipping,
       Subsystem driveSubsystem,
       TrajectoryLogger<SampleType> trajectoryLogger) {
+    InternalLoggedTracer.reset();
     this.poseSupplier = poseSupplier;
     this.resetOdometry = resetOdometry;
     this.controller = controller;
@@ -149,6 +151,7 @@ public class LoggedAutoFactory {
             return new Trigger(this.loop(), () -> true);
           }
         };
+    InternalLoggedTracer.record("Constructor", "Choreo/LoggedAutoFactory/Constructor");
   }
 
   /**
@@ -189,12 +192,10 @@ public class LoggedAutoFactory {
    * @return A new {@link AutoRoutine}.
    */
   public LoggedAutoRoutine newRoutine(String name) {
-    // Clear cache in simulation to allow a form of "hot-reloading" trajectories
-    // if (RobotBase.isSimulation()) {
-    //   trajectoryCache.clear();
-    // }
-
-    return new LoggedAutoRoutine(this, name, allianceCtx);
+    InternalLoggedTracer.reset();
+    LoggedAutoRoutine routine = new LoggedAutoRoutine(this, name, allianceCtx);
+    InternalLoggedTracer.record("NewRoutine", "Choreo/LoggedAutoFactory/NewRoutine");
+    return routine;
   }
 
   /**
@@ -205,6 +206,7 @@ public class LoggedAutoFactory {
    */
   public LoggedAutoTrajectory trajectory(
       String trajectoryName, LoggedAutoRoutine routine, boolean useBindings) {
+    InternalLoggedTracer.reset();
     Optional<? extends Trajectory<?>> optTrajectory =
         trajectoryCache.loadTrajectory(trajectoryName);
     Trajectory<?> trajectory;
@@ -213,6 +215,7 @@ public class LoggedAutoFactory {
     } else {
       trajectory = new Trajectory<SwerveSample>(trajectoryName, List.of(), List.of(), List.of());
     }
+    InternalLoggedTracer.record("Trajectory", "Choreo/LoggedAutoFactory/Trajectory");
     return trajectory(trajectory, routine, useBindings);
   }
 
@@ -224,6 +227,7 @@ public class LoggedAutoFactory {
    */
   public LoggedAutoTrajectory trajectory(
       String trajectoryName, final int splitIndex, LoggedAutoRoutine routine, boolean useBindings) {
+    InternalLoggedTracer.reset();
     Optional<? extends Trajectory<?>> optTrajectory =
         trajectoryCache.loadTrajectory(trajectoryName, splitIndex);
     Trajectory<?> trajectory;
@@ -232,6 +236,7 @@ public class LoggedAutoFactory {
     } else {
       trajectory = new Trajectory<SwerveSample>(trajectoryName, List.of(), List.of(), List.of());
     }
+    InternalLoggedTracer.record("TrajectorySplit", "Choreo/LoggedAutoFactory/TrajectorySplit");
     return trajectory(trajectory, routine, useBindings);
   }
 
@@ -244,9 +249,11 @@ public class LoggedAutoFactory {
   @SuppressWarnings("unchecked")
   public <ST extends TrajectorySample<ST>> LoggedAutoTrajectory trajectory(
       Trajectory<ST> trajectory, LoggedAutoRoutine routine, boolean useBindings) {
+    InternalLoggedTracer.reset();
     // type solidify everything
     final Trajectory<ST> solidTrajectory = trajectory;
     final Consumer<ST> solidController = (Consumer<ST>) this.controller;
+    InternalLoggedTracer.record("TrajectoryObject", "Choreo/LoggedAutoFactory/TrajectoryObject");
     return new LoggedAutoTrajectory(
         trajectory.name(),
         solidTrajectory,
@@ -275,7 +282,10 @@ public class LoggedAutoFactory {
    * @return A new {@link AutoTrajectory}.
    */
   public Command trajectoryCmd(String trajectoryName) {
-    return trajectory(trajectoryName, voidRoutine, false).cmd();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectoryName, voidRoutine, false).cmd();
+    InternalLoggedTracer.record("TrajectoryCmd", "Choreo/LoggedAutoFactory/TrajectoryCmd");
+    return cmd;
   }
 
   /**
@@ -294,7 +304,11 @@ public class LoggedAutoFactory {
    * @return A new {@link AutoTrajectory}.
    */
   public Command trajectoryCmd(String trajectoryName, final int splitIndex) {
-    return trajectory(trajectoryName, splitIndex, voidRoutine, false).cmd();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectoryName, splitIndex, voidRoutine, false).cmd();
+    InternalLoggedTracer.record(
+        "TrajectoryCmdSplit", "Choreo/LoggedAutoFactory/TrajectoryCmdSplit");
+    return cmd;
   }
 
   /**
@@ -314,7 +328,11 @@ public class LoggedAutoFactory {
    * @return A new {@link AutoTrajectory}.
    */
   public <ST extends TrajectorySample<ST>> Command trajectoryCmd(Trajectory<ST> trajectory) {
-    return trajectory(trajectory, voidRoutine, false).cmd();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectory, voidRoutine, false).cmd();
+    InternalLoggedTracer.record(
+        "TrajectoryCmdObject", "Choreo/LoggedAutoFactory/TrajectoryCmdObject");
+    return cmd;
   }
 
   /**
@@ -324,7 +342,10 @@ public class LoggedAutoFactory {
    * @return A command that resets the robot's odometry.
    */
   public Command resetOdometry(String trajectoryName) {
-    return trajectory(trajectoryName, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectoryName, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.record("ResetOdometry", "Choreo/LoggedAutoFactory/ResetOdometry");
+    return cmd;
   }
 
   /**
@@ -335,7 +356,11 @@ public class LoggedAutoFactory {
    * @return A command that resets the robot's odometry.
    */
   public Command resetOdometry(String trajectoryName, final int splitIndex) {
-    return trajectory(trajectoryName, splitIndex, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectoryName, splitIndex, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.record(
+        "ResetOdometrySplit", "Choreo/LoggedAutoFactory/ResetOdometrySplit");
+    return cmd;
   }
 
   /**
@@ -347,7 +372,11 @@ public class LoggedAutoFactory {
    * @return A command that resets the robot's odometry.
    */
   public <ST extends TrajectorySample<ST>> Command resetOdometry(Trajectory<ST> trajectory) {
-    return trajectory(trajectory, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.reset();
+    Command cmd = trajectory(trajectory, voidRoutine, false).resetOdometry();
+    InternalLoggedTracer.record(
+        "ResetOdometryObject", "Choreo/LoggedAutoFactory/ResetOdometryObject");
+    return cmd;
   }
 
   /**
@@ -358,7 +387,9 @@ public class LoggedAutoFactory {
    * @return The AutoFactory the method was called from.
    */
   public LoggedAutoFactory bind(String name, Command cmd) {
+    InternalLoggedTracer.reset();
     bindings.bind(name, cmd);
+    InternalLoggedTracer.record("Bind", "Choreo/LoggedAutoFactory/Bind");
     return this;
   }
 
@@ -369,6 +400,8 @@ public class LoggedAutoFactory {
    * @return The trajectory cache.
    */
   public LoggedTrajectoryCache cache() {
+    InternalLoggedTracer.reset();
+    InternalLoggedTracer.record("Cache", "Choreo/LoggedAutoFactory/Cache");
     return trajectoryCache;
   }
 
@@ -407,16 +440,21 @@ public class LoggedAutoFactory {
      * @see Choreo#loadTrajectory(String)
      */
     public Optional<? extends Trajectory<?>> loadTrajectory(String trajectoryName) {
+      InternalLoggedTracer.reset();
+      Optional<? extends Trajectory<?>> result;
       if (cache.containsKey(trajectoryName)) {
-        return Optional.of(cache.get(trajectoryName));
+        result = Optional.of(cache.get(trajectoryName));
       } else {
-        return Choreo.loadTrajectory(trajectoryName)
-            .map(
-                trajectory -> {
-                  cache.put(trajectoryName, trajectory);
-                  return trajectory;
-                });
+        result =
+            Choreo.loadTrajectory(trajectoryName)
+                .map(
+                    trajectory -> {
+                      cache.put(trajectoryName, trajectory);
+                      return trajectory;
+                    });
       }
+      InternalLoggedTracer.record("LoadTrajectory", "Choreo/LoggedTrajectoryCache/LoadTrajectory");
+      return result;
     }
 
     /**
@@ -433,38 +471,47 @@ public class LoggedAutoFactory {
      * @see Choreo#loadTrajectory(String)
      */
     public Optional<? extends Trajectory<?>> loadTrajectory(String trajectoryName, int splitIndex) {
+      InternalLoggedTracer.reset();
+      Optional<? extends Trajectory<?>> result;
       // make the key something that could never possibly be a valid trajectory name
       String key = trajectoryName + ".:." + splitIndex;
       if (cache.containsKey(key)) {
-        return Optional.of(cache.get(key));
+        result = Optional.of(cache.get(key));
       } else if (cache.containsKey(trajectoryName)) {
-        return cache
-            .get(trajectoryName)
-            .getSplit(splitIndex)
-            .map(
-                trajectory -> {
-                  cache.put(key, trajectory);
-                  return trajectory;
-                });
+        result =
+            cache
+                .get(trajectoryName)
+                .getSplit(splitIndex)
+                .map(
+                    trajectory -> {
+                      cache.put(key, trajectory);
+                      return trajectory;
+                    });
       } else {
-        return Choreo.loadTrajectory(trajectoryName)
-            .flatMap(
-                trajectory -> {
-                  cache.put(trajectoryName, trajectory);
-                  return trajectory
-                      .getSplit(splitIndex)
-                      .map(
-                          split -> {
-                            cache.put(key, split);
-                            return split;
-                          });
-                });
+        result =
+            Choreo.loadTrajectory(trajectoryName)
+                .flatMap(
+                    trajectory -> {
+                      cache.put(trajectoryName, trajectory);
+                      return trajectory
+                          .getSplit(splitIndex)
+                          .map(
+                              split -> {
+                                cache.put(key, split);
+                                return split;
+                              });
+                    });
       }
+      InternalLoggedTracer.record(
+          "LoadTrajectorySplit", "Choreo/LoggedTrajectoryCache/LoadTrajectorySplit");
+      return result;
     }
 
     /** Clear the cache. */
     public void clear() {
+      InternalLoggedTracer.reset();
       cache.clear();
+      InternalLoggedTracer.record("ClearCache", "Choreo/LoggedTrajectoryCache/ClearCache");
     }
   }
 }
