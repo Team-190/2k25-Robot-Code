@@ -1,6 +1,5 @@
 package frc.robot.subsystems.v2_Redundancy;
 
-import choreo.auto.AutoChooser;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +49,7 @@ import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
@@ -68,7 +68,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final AutoChooser autoChooser = new AutoChooser();
+  private final ChoreoChooser autoChooser = new ChoreoChooser();
 
   public V2_RedundancyRobotContainer() {
 
@@ -319,7 +319,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(

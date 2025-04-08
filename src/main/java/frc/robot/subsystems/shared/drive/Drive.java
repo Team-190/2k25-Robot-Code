@@ -13,7 +13,6 @@
 
 package frc.robot.subsystems.shared.drive;
 
-import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -34,6 +33,7 @@ import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.LoggedChoreo.LoggedAutoFactory;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -57,7 +57,7 @@ public class Drive extends SubsystemBase {
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
-  @Getter private final AutoFactory autoFactory;
+  @Getter private final LoggedAutoFactory autoFactory;
 
   static {
     odometryLock = new ReentrantLock();
@@ -96,7 +96,7 @@ public class Drive extends SubsystemBase {
         };
 
     autoFactory =
-        new AutoFactory(
+        new LoggedAutoFactory(
             RobotState::getRobotPoseField,
             RobotState::resetRobotPose,
             this::choreoDrive,
