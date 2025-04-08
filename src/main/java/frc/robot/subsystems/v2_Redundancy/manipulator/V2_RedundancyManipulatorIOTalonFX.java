@@ -176,25 +176,6 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
-    // LoggedTracer.reset();
-    // BaseStatusSignal.refreshAll(
-    //     armPositionRotations,
-    //     armVelocityRotationsPerSecond,
-    //     armAppliedVolts,
-    //     armSupplyCurrentAmps,
-    //     armTorqueCurrentAmps,
-    //     armTemperatureCelsius,
-    //     armPositionSetpointRotations,
-    //     armPositionErrorRotations,
-    //     rollerPositionRotations,
-    //     rollerVelocityRotationsPerSecond,
-    //     rollerAccelerationRotationsPerSecondSquared,
-    //     rollerAppliedVoltage,
-    //     rollerSupplyCurrentAmps,
-    //     rollerTorqueCurrentAmps,
-    //     rollerTemperatureCelsius);
-    // LoggedTracer.record("Refresh Status Signals", "Manipulator/TalonFX");
-
     InternalLoggedTracer.reset();
     inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
     inputs.armVelocityRadiansPerSecond =
@@ -223,47 +204,59 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void setArmVoltage(double volts) {
+    InternalLoggedTracer.reset();
     armTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Arm Voltage", "Manipulator/TalonFX");
   }
 
   @Override
   public void setRollerVoltage(double volts) {
+    InternalLoggedTracer.reset();
     rollerTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Roller Voltage", "Manipulator/TalonFX");
   }
 
   @Override
   public void setArmPositionGoal(Rotation2d position) {
+    InternalLoggedTracer.reset();
     armPositionGoal = position;
     armTalonFX.setControl(
         positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Arm Position Goal", "Manipulator/TalonFX");
   }
 
   @Override
   public void updateSlot0ArmGains(
       double kP, double kD, double kS, double kV, double kA, double kG) {
+    InternalLoggedTracer.reset();
     armConfig.Slot0.kP = kP;
     armConfig.Slot0.kD = kD;
     armConfig.Slot0.kS = kS;
     armConfig.Slot0.kV = kV;
     armConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+    InternalLoggedTracer.record("Update PID Slot 0", "Manipulator/TalonFX");
   }
 
   @Override
   public void updateSlot1ArmGains(
       double kP, double kD, double kS, double kV, double kA, double kG) {
+    InternalLoggedTracer.reset();
     armConfig.Slot0.kP = kP;
     armConfig.Slot0.kD = kD;
     armConfig.Slot0.kS = kS;
     armConfig.Slot0.kV = kV;
     armConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+    InternalLoggedTracer.record("Update PID Slot 1", "Manipulator/TalonFX");
   }
 
   @Override
   public void updateArmConstraints(double maxAcceleration, double maxVelocity) {
+    InternalLoggedTracer.reset();
     armConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
     armConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+    InternalLoggedTracer.record("Update Constraints", "Manipulator/TalonFX");
   }
 }

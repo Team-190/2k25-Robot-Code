@@ -182,27 +182,6 @@ public class FunnelIOTalonFX implements FunnelIO {
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
     InternalLoggedTracer.reset();
-    // BaseStatusSignal.refreshAll(
-    //     clapDaddyPositionRotations,
-    //     clapDaddyVelocityRotationsPerSecond,
-    //     clapDaddyAppliedVolts,
-    //     clapDaddySupplyCurrentAmps,
-    //     clapDaddyTorqueCurrentAmps,
-    //     clapDaddyTemperatureCelsius,
-    //     clapDaddyPositionSetpointRotations,
-    //     clapDaddyPositionErrorRotations);
-
-    // BaseStatusSignal.refreshAll(
-    //     rollerPositionRotations,
-    //     rollerVelocityRotationsPerSecond,
-    //     rollerAppliedVolts,
-    //     rollerSupplyCurrentAmps,
-    //     rollerTorqueCurrentAmps,
-    //     rollerTemperatureCelsius);
-
-    // cancoderPositionRotations.refresh();
-    InternalLoggedTracer.record("Refresh Status Signals", "Funnel/TalonFX");
-
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
     inputs.clapDaddyAbsolutePosition =
@@ -235,24 +214,32 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   @Override
   public void setClapDaddyVoltage(double volts) {
+    InternalLoggedTracer.reset();
     clapDaddyTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Clap Daddy Voltage", "Funnel/TalonFX");
   }
 
   @Override
   public void setRollerVoltage(double volts) {
+    InternalLoggedTracer.reset();
     rollerTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Roller Voltage", "Funnel/TalonFX");
   }
 
   @Override
   public void stopRoller() {
+    InternalLoggedTracer.reset();
     rollerTalonFX.setControl(neutralRequest);
+    InternalLoggedTracer.record("StopRoller", "Funnel/TalonFX");
   }
 
   @Override
   public void setClapDaddyGoal(Rotation2d position) {
+    InternalLoggedTracer.reset();
     clapDaddyGoal = position;
     clapDaddyTalonFX.setControl(
         positionControlRequest.withPosition(position.getRotations()).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Clap Daddy Goal", "Funnel/TalonFX");
   }
 
   @Override
@@ -265,18 +252,22 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    InternalLoggedTracer.reset();
     clapDaddyConfig.Slot0.kP = kP;
     clapDaddyConfig.Slot0.kD = kD;
     clapDaddyConfig.Slot0.kS = kS;
     clapDaddyConfig.Slot0.kV = kV;
     clapDaddyConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
+    InternalLoggedTracer.record("Update Gains", "Funnel/TalonFX");
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    InternalLoggedTracer.reset();
     clapDaddyConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
     clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
+    InternalLoggedTracer.record("Update Constraints", "Funnel/TalonFX");
   }
 }

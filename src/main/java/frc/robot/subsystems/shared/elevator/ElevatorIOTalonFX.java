@@ -151,10 +151,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    // LoggedTracer.reset();
-    // BaseStatusSignal.refreshAll(statusSignals).isOK();
-    // LoggedTracer.record("Refresh Status Signals", "Elevator/TalonFX");
-
     InternalLoggedTracer.reset();
     inputs.positionMeters =
         (positionRotations.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
@@ -188,19 +184,24 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setVoltage(double volts) {
+    InternalLoggedTracer.reset();
     talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Voltage", "Elevator/TalonFX");
   }
 
   @Override
   public void setPosition(double meters) {
+    InternalLoggedTracer.reset();
     talonFX.setPosition(
         meters
             / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)
             * ElevatorConstants.ELEVATOR_GEAR_RATIO);
+    InternalLoggedTracer.record("Set Position", "Elevator/TalonFX");
   }
 
   @Override
   public void setPositionGoal(double meters) {
+    InternalLoggedTracer.reset();
     positionGoalMeters = meters;
     if (meters != 0.0) {
       talonFX.setControl(
@@ -219,10 +220,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
                       * ElevatorConstants.ELEVATOR_GEAR_RATIO)
               .withSlot(1));
     }
+    InternalLoggedTracer.record("Set Position Goal", "Elevator/TalonFX");
   }
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA, double kG) {
+    InternalLoggedTracer.reset();
     config.Slot0.kP = kP;
     config.Slot0.kD = kD;
     config.Slot0.kS = kS;
@@ -233,10 +236,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     for (TalonFX follow : followTalonFX) {
       PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(config));
     }
+    InternalLoggedTracer.record("Set PID", "Elevator/TalonFX");
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
+    InternalLoggedTracer.reset();
     config.MotionMagic.MotionMagicAcceleration =
         maxAcceleration
             / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS)
@@ -249,5 +254,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     for (TalonFX follow : followTalonFX) {
       PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(config));
     }
+    InternalLoggedTracer.record("Set Constraints", "Elevator/TalonFX");
   }
 }

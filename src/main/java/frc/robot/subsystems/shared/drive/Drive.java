@@ -33,6 +33,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -114,6 +115,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     odometryLock.lock(); // Prevents odometry updates while reading data
     InternalLoggedTracer.record("Odometry Lock", "Drive/Periodic");
@@ -126,11 +128,12 @@ public class Drive extends SubsystemBase {
     Logger.processInputs("Drive/Gyro", gyroInputs);
     InternalLoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
 
-    InternalLoggedTracer.reset();
-    for (var module : modules) {
-      module.periodic();
+    for (int i = 0; i < 4; i++) {
+      InternalLoggedTracer.reset();
+      modules[i].periodic();
+      InternalLoggedTracer.record(
+          "Module" + Integer.toString(i) + "Periodic Total", "Drive/Periodic");
     }
-    InternalLoggedTracer.record("Module Periodic Total", "Drive/Periodic");
 
     InternalLoggedTracer.reset();
     odometryLock.unlock();
@@ -186,6 +189,7 @@ public class Drive extends SubsystemBase {
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
     InternalLoggedTracer.record("Update Odometry", "Drive/Periodic");
+    ExternalLoggedTracer.record("Drive Total", "Drive/Periodic");
   }
 
   /**

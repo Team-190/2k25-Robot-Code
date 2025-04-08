@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -41,6 +42,7 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Climber Input Update", "Climber/Periodic");
@@ -49,11 +51,14 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
     InternalLoggedTracer.record("Climber Input Processing", "Climber/Periodic");
 
+    InternalLoggedTracer.reset();
     Logger.recordOutput("Climber/redundantSwitchesTimer", redundantSwitchesTimer.get());
     Logger.recordOutput("Climber/redundantTrustTimer", redundantTrustTimer.get());
     Logger.recordOutput("Climber/Ready", climberReady());
+    InternalLoggedTracer.record("Logging", "Climber/Periodic");
 
     isClimbed = io.isClimbed();
+    ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
   }
 
   public boolean climberReady() {

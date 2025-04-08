@@ -14,7 +14,6 @@
 package frc.robot.subsystems.shared.drive;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -23,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.PhoenixUtil;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -42,12 +42,14 @@ public class GyroIOPigeon2 implements GyroIO {
     pigeon.optimizeBusUtilization();
     yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
     yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(pigeon.getYaw());
+
+    PhoenixUtil.registerSignals(true, yaw, yawVelocity);
   }
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
     InternalLoggedTracer.reset();
-    inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+    inputs.connected = BaseStatusSignal.isAllGood(yaw, yawVelocity);
     inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(yawVelocity.getValueAsDouble());
 

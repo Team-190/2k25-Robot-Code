@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
@@ -42,6 +43,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Manipulator/Periodic");
@@ -61,6 +63,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
       RobotState.setHasAlgae(true);
     }
     InternalLoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
+    ExternalLoggedTracer.record("Manipulator Total", "Manipulator/Periodic");
   }
 
   public Rotation2d getArmAngle() {

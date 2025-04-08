@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.Supplier;
 import lombok.Getter;
@@ -47,6 +48,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Elevator/Periodic");
@@ -62,6 +64,7 @@ public class Elevator extends SubsystemBase {
       io.setPositionGoal(position.getPosition());
     }
     InternalLoggedTracer.record("Set Position Goal", "Elevator/Periodic");
+    ExternalLoggedTracer.record("Elevator Total", "Elevator/Periodic");
   }
 
   /**

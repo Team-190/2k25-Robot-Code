@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -46,6 +47,7 @@ public class Funnel extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Funnel/Periodic");
@@ -65,6 +67,7 @@ public class Funnel extends SubsystemBase {
       debounceTimestamp = Timer.getFPGATimestamp();
     }
     InternalLoggedTracer.record("Update debounce Timestamp", "Funnel/Periodic");
+    ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
   }
 
   /**

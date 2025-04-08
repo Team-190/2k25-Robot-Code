@@ -234,31 +234,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    // LoggedTracer.reset();
-    // var driveStatus =
-    //     BaseStatusSignal.isAllGood(
-    //         drivePositionRotations,
-    //         driveVelocityRotationsPerSecond,
-    //         driveAppliedVolts,
-    //         driveSupplyCurrentAmps,
-    //         driveTorqueCurrentAmps,
-    //         driveTemperatureCelcius,
-    //         driveVelocitySetpointRotationsPerSecond,
-    //         driveVelocityErrorRotationsPerSecond);
-    // var turnStatus =
-    //     BaseStatusSignal.isAllGood(
-    //         turnPositionRotations,
-    //         turnVelocityRotationsPerSecond,
-    //         turnAppliedVolts,
-    //         turnSupplyCurrentAmps,
-    //         turnTorqueCurrentAmps,
-    //         turnTemperatureCelcius,
-    //         turnPositionSetpointRotations,
-    //         turnPositionErrorRotations);
-    // var turnEncoderStatus = BaseStatusSignal.isAllGood(turnAbsolutePositionRotations);
-    // LoggedTracer.record(
-    //     "Refresh Status Signals", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
-
     InternalLoggedTracer.reset();
     inputs.drivePositionRadians =
         Units.rotationsToRadians(drivePositionRotations.getValueAsDouble());
@@ -288,11 +263,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnPositionError =
         Rotation2d.fromRotations(turnPositionErrorRotations.getValueAsDouble());
 
-    // inputs.driveConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
-    // inputs.turnConnected = turnConnectedDebounce.calculate(turnStatus.isOK());
-    // inputs.turnEncoderConnected =
-    // turnEncoderConnectedDebounce.calculate(turnEncoderStatus.isOK());
-
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
     inputs.odometryDrivePositionsRadians =
@@ -314,42 +284,59 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void setDriveAmps(double currentAmps) {
+    InternalLoggedTracer.reset();
     driveTalonFX.setControl(torqueCurrentRequest.withOutput(currentAmps));
+    InternalLoggedTracer.record(
+        "Set Drive Amps", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override
   public void setTurnAmps(double currentAmps) {
+    InternalLoggedTracer.reset();
     turnTalonFX.setControl(torqueCurrentRequest.withOutput(currentAmps));
+    InternalLoggedTracer.record(
+        "Set Turn Amps", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override
   public void setDriveVelocity(double velocityRadiansPerSecond, double currentFeedforward) {
+    InternalLoggedTracer.reset();
     driveTalonFX.setControl(
         velocityTorqueCurrentRequest
             .withVelocity(Units.radiansToRotations(velocityRadiansPerSecond))
             .withFeedForward(currentFeedforward));
+    InternalLoggedTracer.record(
+        "Set Drive Velocity", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override
   public void setTurnPosition(Rotation2d rotation) {
+    InternalLoggedTracer.reset();
     turnTalonFX.setControl(positionTorqueCurrentRequest.withPosition(rotation.getRotations()));
+    InternalLoggedTracer.record(
+        "Set Turn Position", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override
   public void setPID(double drive_Kp, double drive_Kd, double turn_Kp, double turn_Kd) {
+    InternalLoggedTracer.reset();
     driveConfig.Slot0.kP = drive_Kp;
     driveConfig.Slot0.kD = drive_Kd;
     turnConfig.Slot0.kP = turn_Kp;
     turnConfig.Slot0.kD = turn_Kd;
     tryUntilOk(5, () -> driveTalonFX.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> turnTalonFX.getConfigurator().apply(turnConfig, 0.25));
+    InternalLoggedTracer.record("Set PID", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 
   @Override
   public void setFeedforward(double drive_Ks, double drive_Kv) {
+    InternalLoggedTracer.reset();
     driveConfig.Slot0.kS = drive_Ks;
     driveConfig.Slot0.kV = drive_Kv;
     tryUntilOk(5, () -> driveTalonFX.getConfigurator().apply(driveConfig, 0.25));
     tryUntilOk(5, () -> turnTalonFX.getConfigurator().apply(turnConfig, 0.25));
+    InternalLoggedTracer.record(
+        "Set Feedforward", "Drive/Modules/" + Integer.toString(id) + "/TalonFX");
   }
 }
