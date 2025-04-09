@@ -75,7 +75,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the extension goal.
    */
   public Command setExtensionGoal(IntakeState goal) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           this.goal = goal;

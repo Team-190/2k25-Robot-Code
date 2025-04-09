@@ -74,7 +74,7 @@ public class Elevator extends SubsystemBase {
    * @return A command that sets the elevator position.
    */
   public Command setPosition() {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           switch (RobotState.getOIData().currentReefHeight()) {
@@ -132,7 +132,7 @@ public class Elevator extends SubsystemBase {
    * @return A command that sets the elevator position.
    */
   public Command setPosition(Supplier<ReefHeight> newPosition) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           switch (newPosition.get()) {
@@ -219,7 +219,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setVoltage(double volts) {
-    return runEnd(
+    return this.runEnd(
         () -> {
           isClosedLoop = false;
           io.setVoltage(volts);

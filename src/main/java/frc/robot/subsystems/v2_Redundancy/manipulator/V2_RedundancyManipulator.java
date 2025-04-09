@@ -160,7 +160,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command setAlgaeArmGoal(ArmState goal) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           state = goal;
