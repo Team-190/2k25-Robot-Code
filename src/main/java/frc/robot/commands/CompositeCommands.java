@@ -439,15 +439,12 @@ public class CompositeCommands {
             Commands.deadline(
                 Commands.sequence(
                     DecisionTree.moveSequence(
-                        elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
-                    DecisionTree.moveSequence(
                         elevator,
                         manipulator,
                         intake,
                         level,
                         ArmState.REEF_INTAKE,
                         IntakeState.STOW),
-                    Commands.waitSeconds(1.0),
                     Commands.runEnd(
                             () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                             () -> drive.stop())
@@ -461,13 +458,7 @@ public class CompositeCommands {
                     () -> ReefHeight.STOW,
                     ArmState.STOW_UP,
                     IntakeState.STOW),
-                DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> ReefHeight.STOW,
-                    ArmState.STOW_DOWN,
-                    IntakeState.STOW),
+                Commands.none(),
                 RobotState::isHasAlgae));
       }
 
@@ -509,6 +500,7 @@ public class CompositeCommands {
                     Commands.runEnd(
                             () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                             () -> drive.stop())
+                        .until(() -> RobotState.isHasAlgae())
                         .withTimeout(0.5)),
                 manipulator.intakeReefAlgae()),
             manipulator.scoreAlgae().withTimeout(0.75),
@@ -581,9 +573,8 @@ public class CompositeCommands {
                             () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
-                        manipulator.scoreAlgae().withTimeout(.1),
-                        Commands.runOnce(() -> RobotState.setHasAlgae(false))),
-                    Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
+                        Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+                        Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae())))
                 .until(() -> RobotState.isHasAlgae()));
       }
 

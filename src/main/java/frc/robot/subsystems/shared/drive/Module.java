@@ -60,7 +60,7 @@ public class Module {
   }
 
   public void periodic() {
-        // Calculate positions for odometry
+    // Calculate positions for odometry
     InternalLoggedTracer.reset();
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];
