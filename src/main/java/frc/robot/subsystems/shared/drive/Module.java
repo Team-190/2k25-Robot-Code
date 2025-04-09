@@ -48,7 +48,7 @@ public class Module {
             AlertType.kError);
   }
 
-  public void periodic() {
+  public void updateInputs() {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Module Inputs", "Drive/Modules/" + Integer.toString(index));
@@ -57,8 +57,10 @@ public class Module {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
     InternalLoggedTracer.record(
         "Process Module Inputs", "Drive/Modules/" + Integer.toString(index));
+  }
 
-    // Calculate positions for odometry
+  public void periodic() {
+        // Calculate positions for odometry
     InternalLoggedTracer.reset();
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];

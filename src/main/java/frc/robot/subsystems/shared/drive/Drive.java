@@ -122,6 +122,17 @@ public class Drive extends SubsystemBase {
     gyroIO.updateInputs(gyroInputs);
     InternalLoggedTracer.record("Update Gyro Inputs", "Drive/Periodic");
 
+    for (int i = 0; i < 4; i++) {
+      InternalLoggedTracer.reset();
+      modules[i].updateInputs();
+      InternalLoggedTracer.record(
+          "Module" + Integer.toString(i) + "Update Inputs", "Drive/Periodic");
+    }
+
+    InternalLoggedTracer.reset();
+    odometryLock.unlock();
+    InternalLoggedTracer.record("Odometry Unlock", "Drive/Periodic");
+
     InternalLoggedTracer.reset();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     InternalLoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
@@ -131,10 +142,6 @@ public class Drive extends SubsystemBase {
       module.periodic();
     }
     InternalLoggedTracer.record("Module Periodic Total", "Drive/Periodic");
-
-    InternalLoggedTracer.reset();
-    odometryLock.unlock();
-    InternalLoggedTracer.record("Odometry Unlock", "Drive/Periodic");
 
     // Stop moving when disabled
     InternalLoggedTracer.reset();
