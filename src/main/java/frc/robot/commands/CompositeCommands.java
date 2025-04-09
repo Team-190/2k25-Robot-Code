@@ -435,31 +435,33 @@ public class CompositeCommands {
           Supplier<ReefHeight> level,
           Camera... cameras) {
         return Commands.sequence(
-            DriveCommands.autoAlignReefAlgae(drive, cameras),
-            Commands.deadline(
-                Commands.sequence(
+            Commands.parallel(
+                    DriveCommands.autoAlignReefAlgae(drive, cameras),
+                    Commands.sequence(
+                        DecisionTree.moveSequence(
+                            elevator,
+                            manipulator,
+                            intake,
+                            level,
+                            ArmState.REEF_INTAKE,
+                            IntakeState.STOW)),
+                    manipulator.intakeReefAlgae())
+                .until(() -> RobotState.isHasAlgae()),
+            Commands.parallel(
+                Commands.either(
                     DecisionTree.moveSequence(
                         elevator,
                         manipulator,
                         intake,
-                        level,
-                        ArmState.REEF_INTAKE,
+                        () -> ReefHeight.STOW,
+                        ArmState.STOW_UP,
                         IntakeState.STOW),
-                    Commands.runEnd(
-                            () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
-                            () -> drive.stop())
-                        .withTimeout(0.5)),
-                manipulator.intakeReefAlgae()),
-            Commands.either(
-                DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> ReefHeight.STOW,
-                    ArmState.STOW_UP,
-                    IntakeState.STOW),
-                Commands.none(),
-                RobotState::isHasAlgae));
+                    Commands.none(),
+                    RobotState::isHasAlgae),
+                Commands.runEnd(
+                        () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
+                        () -> drive.stop())
+                    .withTimeout(0.5)));
       }
 
       public static final Command scoreAlgae(
@@ -500,7 +502,6 @@ public class CompositeCommands {
                     Commands.runEnd(
                             () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                             () -> drive.stop())
-                        .until(() -> RobotState.isHasAlgae())
                         .withTimeout(0.5)),
                 manipulator.intakeReefAlgae()),
             manipulator.scoreAlgae().withTimeout(0.75),
