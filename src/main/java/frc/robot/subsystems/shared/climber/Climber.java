@@ -106,7 +106,8 @@ public class Climber extends SubsystemBase {
   }
 
   public Command releaseClimber() {
-    return Commands.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1125);
+    return Commands.runEnd(() -> io.setVoltage(1), () -> io.setVoltage(0))
+        .until(() -> inputs.positionRadians >= 20);
   }
 
   public Command winchClimber() {
