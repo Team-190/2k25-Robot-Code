@@ -119,12 +119,9 @@ public class Drive extends SubsystemBase {
     InternalLoggedTracer.reset();
     odometryLock.lock(); // Prevents odometry updates while reading data
     InternalLoggedTracer.record("Odometry Lock", "Drive/Periodic");
-    InternalLoggedTracer.record("Odometry Lock", "Drive/Periodic");
 
     InternalLoggedTracer.reset();
-    InternalLoggedTracer.reset();
     gyroIO.updateInputs(gyroInputs);
-    InternalLoggedTracer.record("Update Gyro Inputs", "Drive/Periodic");
     InternalLoggedTracer.record("Update Gyro Inputs", "Drive/Periodic");
 
     for (int i = 0; i < 4; i++) {
@@ -139,9 +136,7 @@ public class Drive extends SubsystemBase {
     InternalLoggedTracer.record("Odometry Unlock", "Drive/Periodic");
 
     InternalLoggedTracer.reset();
-    InternalLoggedTracer.reset();
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    InternalLoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
     InternalLoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
 
     for (int i = 0; i < 4; i++) {
@@ -157,7 +152,6 @@ public class Drive extends SubsystemBase {
 
     // Stop moving when disabled
     InternalLoggedTracer.reset();
-    InternalLoggedTracer.reset();
     if (RobotMode.disabled()) {
       for (var module : modules) {
         module.stop();
@@ -167,10 +161,8 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
     InternalLoggedTracer.record("Stop Modules", "Drive/Periodic");
-    InternalLoggedTracer.record("Stop Modules", "Drive/Periodic");
 
     // Update odometry
-    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together

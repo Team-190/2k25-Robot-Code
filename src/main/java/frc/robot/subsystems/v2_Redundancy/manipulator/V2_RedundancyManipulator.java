@@ -47,15 +47,11 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Manipulator/Periodic");
-    InternalLoggedTracer.record("Update Inputs", "Manipulator/Periodic");
 
-    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     Logger.processInputs("Manipulator", inputs);
     InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
-    InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
 
-    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 

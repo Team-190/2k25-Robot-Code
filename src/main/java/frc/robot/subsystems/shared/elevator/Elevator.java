@@ -53,17 +53,13 @@ public class Elevator extends SubsystemBase {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Elevator/Periodic");
-    InternalLoggedTracer.record("Update Inputs", "Elevator/Periodic");
 
     InternalLoggedTracer.reset();
-    InternalLoggedTracer.reset();
     Logger.processInputs("Elevator", inputs);
-    InternalLoggedTracer.record("Process Inputs", "Elevator/Periodic");
     InternalLoggedTracer.record("Process Inputs", "Elevator/Periodic");
 
     Logger.recordOutput("Elevator/Position", position.name());
 
-    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setPositionGoal(position.getPosition());

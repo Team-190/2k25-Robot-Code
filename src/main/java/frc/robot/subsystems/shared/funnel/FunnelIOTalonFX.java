@@ -181,28 +181,6 @@ public class FunnelIOTalonFX implements FunnelIO {
 
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
-    InternalLoggedTracer.reset();
-    // BaseStatusSignal.refreshAll(
-    //     clapDaddyPositionRotations,
-    //     clapDaddyVelocityRotationsPerSecond,
-    //     clapDaddyAppliedVolts,
-    //     clapDaddySupplyCurrentAmps,
-    //     clapDaddyTorqueCurrentAmps,
-    //     clapDaddyTemperatureCelsius,
-    //     clapDaddyPositionSetpointRotations,
-    //     clapDaddyPositionErrorRotations);
-
-    // BaseStatusSignal.refreshAll(
-    //     rollerPositionRotations,
-    //     rollerVelocityRotationsPerSecond,
-    //     rollerAppliedVolts,
-    //     rollerSupplyCurrentAmps,
-    //     rollerTorqueCurrentAmps,
-    //     rollerTemperatureCelsius);
-
-    // cancoderPositionRotations.refresh();
-    InternalLoggedTracer.record("Refresh Status Signals", "Funnel/TalonFX");
-
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
     inputs.clapDaddyAbsolutePosition =

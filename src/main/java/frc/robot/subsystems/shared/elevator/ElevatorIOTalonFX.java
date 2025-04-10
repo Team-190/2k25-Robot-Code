@@ -180,7 +180,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * ElevatorConstants.DRUM_RADIUS
             * 2;
     InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
-    InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
   }
 
   @Override
