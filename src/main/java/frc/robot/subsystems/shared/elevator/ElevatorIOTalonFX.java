@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 
@@ -179,6 +180,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * Math.PI
             * ElevatorConstants.DRUM_RADIUS
             * 2;
+    InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
     InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
   }
 

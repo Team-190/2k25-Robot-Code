@@ -51,17 +51,23 @@ public class Funnel extends SubsystemBase {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Funnel/Periodic");
+    InternalLoggedTracer.record("Update Inputs", "Funnel/Periodic");
 
+    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     Logger.processInputs("Funnel", inputs);
     InternalLoggedTracer.record("Process Inputs", "Funnel/Periodic");
+    InternalLoggedTracer.record("Process Inputs", "Funnel/Periodic");
 
+    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setClapDaddyGoal(goal.getAngle());
     }
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
+    InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
+    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     if (!inputs.hasCoral) {
       debounceTimestamp = Timer.getFPGATimestamp();

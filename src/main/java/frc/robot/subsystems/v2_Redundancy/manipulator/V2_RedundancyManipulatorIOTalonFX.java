@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulatorIO {
@@ -176,6 +177,25 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
+    // LoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     armPositionRotations,
+    //     armVelocityRotationsPerSecond,
+    //     armAppliedVolts,
+    //     armSupplyCurrentAmps,
+    //     armTorqueCurrentAmps,
+    //     armTemperatureCelsius,
+    //     armPositionSetpointRotations,
+    //     armPositionErrorRotations,
+    //     rollerPositionRotations,
+    //     rollerVelocityRotationsPerSecond,
+    //     rollerAccelerationRotationsPerSecondSquared,
+    //     rollerAppliedVoltage,
+    //     rollerSupplyCurrentAmps,
+    //     rollerTorqueCurrentAmps,
+    //     rollerTemperatureCelsius);
+    // LoggedTracer.record("Refresh Status Signals", "Manipulator/TalonFX");
+
     InternalLoggedTracer.reset();
     inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
     inputs.armVelocityRadiansPerSecond =
@@ -199,6 +219,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+    InternalLoggedTracer.record("Update Inputs", "Manipulator/TalonFX");
     InternalLoggedTracer.record("Update Inputs", "Manipulator/TalonFX");
   }
 

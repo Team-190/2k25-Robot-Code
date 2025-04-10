@@ -435,40 +435,47 @@ public class CompositeCommands {
           Supplier<ReefHeight> level,
           Camera... cameras) {
         return Commands.sequence(
-            DriveCommands.autoAlignReefAlgae(drive, cameras),
-            Commands.deadline(
-                Commands.sequence(
-                    DecisionTree.moveSequence(
-                        elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
+            Commands.parallel(
+                    DriveCommands.autoAlignReefAlgae(drive, cameras),
+                    Commands.sequence(
+                        DecisionTree.moveSequence(
+                            elevator,
+                            manipulator,
+                            intake,
+                            level,
+                            ArmState.REEF_INTAKE,
+                            IntakeState.STOW)),
+                    manipulator.intakeReefAlgae())
+                .until(() -> RobotState.isHasAlgae()),
+            Commands.parallel(
+                Commands.either(
                     DecisionTree.moveSequence(
                         elevator,
                         manipulator,
                         intake,
-                        level,
-                        ArmState.REEF_INTAKE,
+                        () -> ReefHeight.STOW,
+                        ArmState.STOW_UP,
                         IntakeState.STOW),
-                    Commands.waitSeconds(1.0),
-                    Commands.runEnd(
-                            () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
-                            () -> drive.stop())
-                        .withTimeout(0.5)),
-                manipulator.intakeReefAlgae()),
-            Commands.either(
-                DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> ReefHeight.STOW,
-                    ArmState.STOW_UP,
-                    IntakeState.STOW),
-                DecisionTree.moveSequence(
-                    elevator,
-                    manipulator,
-                    intake,
-                    () -> ReefHeight.STOW,
-                    ArmState.STOW_DOWN,
-                    IntakeState.STOW),
-                RobotState::isHasAlgae));
+                    Commands.none(),
+                    RobotState::isHasAlgae),
+                Commands.runEnd(
+                        () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
+                        () -> drive.stop())
+                    .withTimeout(0.5)));
+      }
+
+      public static final Command scoreAlgae(
+          Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        return Commands.sequence(
+            DecisionTree.moveSequence(
+                elevator,
+                manipulator,
+                intake,
+                () -> ReefHeight.ALGAE_SCORE,
+                ArmState.STOW_UP,
+                IntakeState.STOW),
+            Commands.waitSeconds(0.5),
+            manipulator.scoreAlgae().withTimeout(0.5));
       }
 
       public static final Command dropAlgae(
@@ -509,7 +516,33 @@ public class CompositeCommands {
 
       public static final Command netHeight(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+      public static final Command dropAlgae(
+          Drive drive,
+          Elevator elevator,
+          V2_RedundancyManipulator manipulator,
+          V2_RedundancyIntake intake,
+          Supplier<ReefHeight> level,
+          Camera... cameras) {
         return Commands.sequence(
+            DriveCommands.autoAlignReefAlgae(drive, cameras),
+            Commands.deadline(
+                Commands.sequence(
+                    DecisionTree.moveSequence(
+                        elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
+                    DecisionTree.moveSequence(
+                        elevator,
+                        manipulator,
+                        intake,
+                        level,
+                        ArmState.REEF_INTAKE,
+                        IntakeState.STOW),
+                    Commands.waitSeconds(1.0),
+                    Commands.runEnd(
+                            () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
+                            () -> drive.stop())
+                        .withTimeout(0.5)),
+                manipulator.intakeReefAlgae()),
+            manipulator.scoreAlgae().withTimeout(0.75),
             DecisionTree.moveSequence(
                 elevator,
                 manipulator,
@@ -573,9 +606,8 @@ public class CompositeCommands {
                             () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
-                        manipulator.scoreAlgae().withTimeout(.1),
-                        Commands.runOnce(() -> RobotState.setHasAlgae(false))),
-                    Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
+                        Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+                        Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae())))
                 .until(() -> RobotState.isHasAlgae()));
       }
 

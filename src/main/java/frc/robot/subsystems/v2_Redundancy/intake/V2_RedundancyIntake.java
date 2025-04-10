@@ -51,11 +51,15 @@ public class V2_RedundancyIntake extends SubsystemBase {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Intake/Periodic");
+    InternalLoggedTracer.record("Update Inputs", "Intake/Periodic");
 
+    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     Logger.processInputs("Intake", inputs);
     InternalLoggedTracer.record("Process Inputs", "Intake/Periodic");
+    InternalLoggedTracer.record("Process Inputs", "Intake/Periodic");
 
+    InternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setExtensionGoal(goal.getDistance());

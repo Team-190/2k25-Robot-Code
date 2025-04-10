@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
 import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class FunnelIOTalonFX implements FunnelIO {
@@ -182,6 +183,27 @@ public class FunnelIOTalonFX implements FunnelIO {
   @Override
   public void updateInputs(FunnelIOInputs inputs) {
     InternalLoggedTracer.reset();
+    // BaseStatusSignal.refreshAll(
+    //     clapDaddyPositionRotations,
+    //     clapDaddyVelocityRotationsPerSecond,
+    //     clapDaddyAppliedVolts,
+    //     clapDaddySupplyCurrentAmps,
+    //     clapDaddyTorqueCurrentAmps,
+    //     clapDaddyTemperatureCelsius,
+    //     clapDaddyPositionSetpointRotations,
+    //     clapDaddyPositionErrorRotations);
+
+    // BaseStatusSignal.refreshAll(
+    //     rollerPositionRotations,
+    //     rollerVelocityRotationsPerSecond,
+    //     rollerAppliedVolts,
+    //     rollerSupplyCurrentAmps,
+    //     rollerTorqueCurrentAmps,
+    //     rollerTemperatureCelsius);
+
+    // cancoderPositionRotations.refresh();
+    InternalLoggedTracer.record("Refresh Status Signals", "Funnel/TalonFX");
+
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
     inputs.clapDaddyAbsolutePosition =
