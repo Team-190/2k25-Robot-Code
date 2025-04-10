@@ -173,7 +173,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            () -> driver.start().getAsBoolean()));
+            driver.start()));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
