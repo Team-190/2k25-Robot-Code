@@ -516,33 +516,7 @@ public class CompositeCommands {
 
       public static final Command netHeight(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-      public static final Command dropAlgae(
-          Drive drive,
-          Elevator elevator,
-          V2_RedundancyManipulator manipulator,
-          V2_RedundancyIntake intake,
-          Supplier<ReefHeight> level,
-          Camera... cameras) {
         return Commands.sequence(
-            DriveCommands.autoAlignReefAlgae(drive, cameras),
-            Commands.deadline(
-                Commands.sequence(
-                    DecisionTree.moveSequence(
-                        elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
-                    DecisionTree.moveSequence(
-                        elevator,
-                        manipulator,
-                        intake,
-                        level,
-                        ArmState.REEF_INTAKE,
-                        IntakeState.STOW),
-                    Commands.waitSeconds(1.0),
-                    Commands.runEnd(
-                            () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
-                            () -> drive.stop())
-                        .withTimeout(0.5)),
-                manipulator.intakeReefAlgae()),
-            manipulator.scoreAlgae().withTimeout(0.75),
             DecisionTree.moveSequence(
                 elevator,
                 manipulator,
