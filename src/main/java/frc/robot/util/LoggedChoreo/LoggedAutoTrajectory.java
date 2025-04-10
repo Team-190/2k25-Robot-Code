@@ -174,13 +174,8 @@ public class LoggedAutoTrajectory {
       return;
     }
     var sample = sampleOpt.get();
-    if (sample instanceof SwerveSample swerveSample) {
-      var swerveController = (Consumer<SwerveSample>) this.controller;
-      swerveController.accept(swerveSample);
-    } else if (sample instanceof DifferentialSample differentialSample) {
-      var differentialController = (Consumer<DifferentialSample>) this.controller;
-      differentialController.accept(differentialSample);
-    }
+    var swerveController = (Consumer<SwerveSample>) this.controller;
+    swerveController.accept((SwerveSample) sample);
     InternalLoggedTracer.record("CmdExecute", "Choreo/LoggedAutoTrajectory/CmdExecute");
   }
 
@@ -207,7 +202,7 @@ public class LoggedAutoTrajectory {
       }
     }
 
-    logTrajectory(false);
+    // logTrajectory(false);
     routine.updateIdle(true);
     InternalLoggedTracer.record("CmdEnd", "Choreo/LoggedAutoTrajectory/CmdEnd");
   }

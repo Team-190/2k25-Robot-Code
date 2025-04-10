@@ -31,7 +31,6 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.LoggedChoreo.LoggedAutoFactory;
@@ -102,16 +101,7 @@ public class Drive extends SubsystemBase {
             RobotState::resetRobotPose,
             this::choreoDrive,
             true,
-            this,
-            (sample, isStart) -> {
-              Pose2d[] poses = sample.getPoses();
-              if (AllianceFlipUtil.shouldFlip()) {
-                for (int i = 0; i < sample.getPoses().length; i++) {
-                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
-                }
-              }
-              Logger.recordOutput("Auto/Choreo Trajectory", poses);
-            });
+            this);
   }
 
   public void periodic() {
