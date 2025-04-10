@@ -448,16 +448,18 @@ public class CompositeCommands {
                     manipulator.intakeReefAlgae())
                 .until(() -> RobotState.isHasAlgae()),
             Commands.parallel(
-                Commands.either(
-                    DecisionTree.moveSequence(
-                        elevator,
-                        manipulator,
-                        intake,
-                        () -> ReefHeight.STOW,
-                        ArmState.STOW_UP,
-                        IntakeState.STOW),
-                    Commands.none(),
-                    RobotState::isHasAlgae),
+                Commands.sequence(
+                    Commands.waitSeconds(0.25),
+                    Commands.either(
+                        DecisionTree.moveSequence(
+                            elevator,
+                            manipulator,
+                            intake,
+                            () -> ReefHeight.STOW,
+                            ArmState.STOW_UP,
+                            IntakeState.STOW),
+                        Commands.none(),
+                        RobotState::isHasAlgae)),
                 Commands.runEnd(
                         () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
                         () -> drive.stop())
@@ -580,8 +582,8 @@ public class CompositeCommands {
                             () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
-                        Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-                        Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae())))
+                        Commands.runOnce(() -> RobotState.setHasAlgae(false))),
+                    Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
                 .until(() -> RobotState.isHasAlgae()));
       }
 

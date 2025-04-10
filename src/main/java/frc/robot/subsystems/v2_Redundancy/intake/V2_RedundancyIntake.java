@@ -89,7 +89,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerVoltage(double volts) {
-    return runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
+    return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
   /**

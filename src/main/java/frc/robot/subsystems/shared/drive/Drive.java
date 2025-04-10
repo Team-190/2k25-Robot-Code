@@ -146,10 +146,6 @@ public class Drive extends SubsystemBase {
           "Module" + Integer.toString(i) + "Periodic Total", "Drive/Periodic");
     }
 
-    InternalLoggedTracer.reset();
-    odometryLock.unlock();
-    InternalLoggedTracer.record("Odometry Unlock", "Drive/Periodic");
-
     // Stop moving when disabled
     InternalLoggedTracer.reset();
     if (RobotMode.disabled()) {
