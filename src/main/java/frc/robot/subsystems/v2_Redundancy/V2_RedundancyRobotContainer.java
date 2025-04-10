@@ -173,7 +173,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            () -> false));
+            () -> driver.start().getAsBoolean()));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -235,7 +235,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver
-        .start()
+        .back()
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
                 drive,
@@ -245,9 +245,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
     driver
-        .back()
+        .start()
         .whileTrue(
-            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake));
+            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake))
+        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));

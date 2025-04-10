@@ -193,7 +193,7 @@ public final class DriveCommands {
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   fieldRelativeXVel,
-                  bargeAlign.getAsBoolean() ? 0.0 : fieldRelativeYVel,
+                  fieldRelativeYVel,
                   angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
@@ -707,88 +707,6 @@ public final class DriveCommands {
     InternalLoggedTracer.record("Reef Align Theta", "Command Scheduler/Drive Commands");
 
     return thetaSpeed;
-  }
-
-  public static Command autoAlignBargeAlgae(Drive drive) {
-    return Commands.runOnce(
-            () -> {
-              RobotState.setAutoAligning(true);
-            })
-        .andThen(
-            Commands.run(
-                    () -> {
-                      ExternalLoggedTracer.reset();
-                      InternalLoggedTracer.reset();
-                      ChassisSpeeds speeds;
-                      InternalLoggedTracer.record(
-                          "Create ChassisSpeeds",
-                          "Command Scheduler/Drive Commands/Auto Align Barge");
-
-                      InternalLoggedTracer.reset();
-                      double xSpeed = 0.0;
-                      InternalLoggedTracer.record(
-                          "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
-
-                      if (!alignXController.atSetpoint()) {
-                        InternalLoggedTracer.reset();
-                        xSpeed =
-                            alignXController.calculate(
-                                RobotState.getRobotPoseField().getX(),
-                                RobotState.getBargeAlignData().bargeSetpoint());
-                        InternalLoggedTracer.record(
-                            "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
-                      } else {
-                        InternalLoggedTracer.reset();
-                        alignXController.reset(RobotState.getRobotPoseField().getX());
-                        InternalLoggedTracer.record(
-                            "Reset XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
-                      }
-                      InternalLoggedTracer.reset();
-                      speeds =
-                          ChassisSpeeds.fromFieldRelativeSpeeds(
-                              -xSpeed,
-                              0,
-                              bargeThetaSpeedCalculate(),
-                              RobotState.getRobotPoseReef()
-                                  .getRotation()
-                                  .plus(new Rotation2d(Math.PI)));
-                      InternalLoggedTracer.record(
-                          "Update Populated Speeds",
-                          "Command Scheduler/Drive Commands/Auto Align Barge");
-
-                      InternalLoggedTracer.record(
-                          "Create XSpeeds", "Command Scheduler/Drive Commands/Auto Align Barge");
-
-                      InternalLoggedTracer.reset();
-                      Logger.recordOutput("Drive/Barge/xSpeed", -speeds.vxMetersPerSecond);
-                      Logger.recordOutput("Drive/Barge/ySpeed", -speeds.vyMetersPerSecond);
-                      Logger.recordOutput("Drive/Barge/thetaSpeed", speeds.omegaRadiansPerSecond);
-                      InternalLoggedTracer.record(
-                          "Logging", "Command Scheduler/Drive Commands/Auto Align Barge");
-
-                      InternalLoggedTracer.reset();
-                      drive.runVelocity(speeds);
-                      InternalLoggedTracer.record(
-                          "Apply Speeds", "Command Scheduler/Drive Commands/Auto Align Barge");
-                    },
-                    drive)
-                .until(() -> RobotState.getBargeAlignData().atBargeSetpoint())
-                .finallyDo(
-                    () -> {
-                      InternalLoggedTracer.reset();
-                      drive.runVelocity(new ChassisSpeeds());
-                      alignHeadingController.reset(
-                          RobotState.getRobotPoseReef().getRotation().getRadians());
-                      alignXController.reset(RobotState.getRobotPoseReef().getX());
-                      alignYController.reset(RobotState.getRobotPoseReef().getY());
-                      RobotState.setAutoAligning(false);
-                      InternalLoggedTracer.record(
-                          "Auto Align Barge End",
-                          "Command Scheduler/Drive Commands/Auto Align Barge");
-                      ExternalLoggedTracer.record(
-                          "Auto Align Barge Total Time",
-                          "Command Scheduler/Drive Commands/Auto Align Barge");
-                    }));
   }
 
   private static double bargeThetaSpeedCalculate() {

@@ -188,6 +188,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     io.updateArmConstraints(maxAcceleration, maxVelocity);
   }
 
+  @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean algaeArmAtGoal() {
     return inputs.armPosition.getRadians() - this.state.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();

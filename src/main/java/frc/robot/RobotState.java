@@ -35,7 +35,6 @@ public class RobotState {
 
   @Getter private static ReefAlignData reefAlignData;
   @Getter private static OperatorInputData OIData;
-  @Getter private static BargeAlignData bargeAlignData;
   @Getter private static RobotConfigurationData robotConfigurationData;
 
   @Getter @Setter private static RobotMode mode;
@@ -90,7 +89,6 @@ public class RobotState {
     reefAlignData =
         new ReefAlignData(
             -1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false, ReefHeight.ALGAE_INTAKE_BOTTOM);
-    bargeAlignData = new BargeAlignData(0.0, 0.0, false);
     robotConfigurationData = new RobotConfigurationData(0.0, new Rotation2d(), 0.0);
   }
 
@@ -192,16 +190,6 @@ public class RobotState {
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
-    double bargeSetpoint =
-        FieldConstants.fieldLength / 2
-            + (RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                ? -FieldConstants.Barge.distanceFromBarge
-                : FieldConstants.Barge.distanceFromBarge);
-
-    boolean bargeAtSetpoint =
-        Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
-
     ReefHeight algaeHeight;
     switch (closestReefTag) {
       case 10, 6, 8, 21, 17, 19:
@@ -228,12 +216,6 @@ public class RobotState {
             algaeHeight,
             cameras);
 
-    bargeAlignData =
-        new BargeAlignData(
-            bargeSetpoint,
-            Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint),
-            bargeAtSetpoint);
-
     Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
 
     Logger.recordOutput(NTPrefixes.POSE_DATA + "Field Pose", fieldLocalizer.getEstimatedPosition());
@@ -253,9 +235,6 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
-
-    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Barge Setpoint", bargeSetpoint);
-    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Barge Setpoint", bargeAtSetpoint);
   }
 
   public static void periodic(
@@ -371,16 +350,6 @@ public class RobotState {
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
-    double bargeSetpoint =
-        FieldConstants.fieldLength / 2
-            + (RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                ? -FieldConstants.Barge.distanceFromBarge
-                : FieldConstants.Barge.distanceFromBarge);
-
-    boolean bargeAtSetpoint =
-        Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
-
     ReefHeight algaeHeight;
     switch (closestReefTag) {
       case 10:
@@ -418,12 +387,6 @@ public class RobotState {
             algaeHeight,
             cameras);
 
-    bargeAlignData =
-        new BargeAlignData(
-            bargeSetpoint,
-            Math.abs(RobotState.getRobotPoseField().getX() - bargeSetpoint),
-            bargeAtSetpoint);
-
     robotConfigurationData = new RobotConfigurationData(intakeStart, armStart, elevatorStart);
     InternalLoggedTracer.record("Generate Records", "RobotState/Periodic");
 
@@ -447,9 +410,6 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Height", algaeHeight);
-
-    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Barge Setpoint", bargeSetpoint);
-    Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Barge Setpoint", bargeAtSetpoint);
   }
 
   public static Pose2d getRobotPoseField() {
@@ -632,9 +592,6 @@ public class RobotState {
 
   public static final record OperatorInputData(
       ReefPose currentReefPost, ReefHeight currentReefHeight) {}
-
-  public static final record BargeAlignData(
-      double bargeSetpoint, double distanceToBargeSetpoint, boolean atBargeSetpoint) {}
 
   public static final record RobotConfigurationData(
       double intakeStart, Rotation2d armStart, double elevatorStart) {}
