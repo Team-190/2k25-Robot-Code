@@ -38,7 +38,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.util.InternalLoggedTracer;
-import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import java.util.Queue;
 

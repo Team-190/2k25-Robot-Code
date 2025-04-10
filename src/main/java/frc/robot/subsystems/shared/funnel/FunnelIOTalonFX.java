@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
 import frc.robot.util.InternalLoggedTracer;
-import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class FunnelIOTalonFX implements FunnelIO {
