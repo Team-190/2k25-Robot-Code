@@ -17,6 +17,7 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.shared.vision.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
@@ -101,7 +102,7 @@ public class RobotState {
       Translation2d robotFieldRelativeVelocity,
       SwerveModulePosition[] modulePositions,
       Camera[] cameras) {
-
+    ExternalLoggedTracer.reset();
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
@@ -235,6 +236,7 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint", autoAlignAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
+    ExternalLoggedTracer.record("Robot State Total", "RobotState/Periodic");
   }
 
   public static void periodic(
@@ -247,7 +249,7 @@ public class RobotState {
       Rotation2d armStart,
       double elevatorStart,
       Camera[] cameras) {
-
+    ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
@@ -410,6 +412,7 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Height", algaeHeight);
+    ExternalLoggedTracer.record("Robot State Total", "RobotState/Periodic");
   }
 
   public static Pose2d getRobotPoseField() {
