@@ -77,7 +77,7 @@ public class Funnel extends SubsystemBase {
    * @return A command to set the clapDaddy goal.
    */
   public Command setClapDaddyGoal(FunnelState goal) {
-    return this.runOnce(
+    return Commands.runOnce(
         () -> {
           isClosedLoop = true;
           this.goal = goal;
