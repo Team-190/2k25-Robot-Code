@@ -34,6 +34,7 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.text.DecimalFormat;
@@ -129,7 +130,8 @@ public final class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       BooleanSupplier rotateToReef,
-      BooleanSupplier bargeAlign) {
+      BooleanSupplier bargeAlign,
+      BooleanSupplier climbSpeed) {
     return Commands.run(
         () -> {
           ExternalLoggedTracer.reset();
@@ -189,18 +191,20 @@ public final class DriveCommands {
           double angular = 0.0;
 
           angular =
-              bargeAlign.getAsBoolean()
+              (bargeAlign.getAsBoolean())
                   ? bargeAlignTheta()
-                  : rotateToReef.getAsBoolean()
-                      ? reefThetaSpeedCalculate()
-                      : omega * DriveConstants.DRIVE_CONFIG.maxAngularVelocity();
+                  : climbSpeed.getAsBoolean()
+                      ? climberAlignTheta()
+                      : rotateToReef.getAsBoolean()
+                          ? reefThetaSpeedCalculate()
+                          : omega * DriveConstants.DRIVE_CONFIG.maxAngularVelocity();
           InternalLoggedTracer.record("Angular", "Command Scheduler/Drive Commands/Joystick Drive");
 
           InternalLoggedTracer.reset();
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  fieldRelativeXVel,
-                  fieldRelativeYVel,
+                  climbSpeed.getAsBoolean() ? fieldRelativeXVel * 0.25 : fieldRelativeXVel,
+                  climbSpeed.getAsBoolean() ? fieldRelativeYVel * 0.25 : fieldRelativeYVel,
                   angular,
                   isFlipped
                       ? RobotState.getRobotPoseField().getRotation().plus(new Rotation2d(Math.PI))
@@ -232,7 +236,8 @@ public final class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       BooleanSupplier rotateToReef) {
-    return joystickDrive(drive, xSupplier, ySupplier, omegaSupplier, rotateToReef, () -> false);
+    return joystickDrive(
+        drive, xSupplier, ySupplier, omegaSupplier, rotateToReef, () -> false, () -> false);
   }
 
   private static double bargeAlignTheta() {
@@ -244,6 +249,23 @@ public final class DriveCommands {
           alignHeadingController.calculate(
               RobotState.getRobotPoseReef().getRotation().getRadians(),
               RobotState.getRobotPoseField().getX() < FieldConstants.fieldLength / 2 ? 0 : Math.PI);
+    else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
+
+    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
+    ExternalLoggedTracer.record("Barge Align Theta", "Command Scheduler/Drive Commands");
+
+    return thetaSpeed;
+  }
+
+  private static double climberAlignTheta() {
+    ExternalLoggedTracer.reset();
+    double thetaSpeed = 0.0;
+
+    if (!alignHeadingController.atSetpoint())
+      thetaSpeed =
+          alignHeadingController.calculate(
+              RobotState.getRobotPoseReef().getRotation().getRadians(),
+              !AllianceFlipUtil.shouldFlip() ? 0 : Math.PI);
     else alignHeadingController.reset(RobotState.getRobotPoseReef().getRotation().getRadians());
 
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);

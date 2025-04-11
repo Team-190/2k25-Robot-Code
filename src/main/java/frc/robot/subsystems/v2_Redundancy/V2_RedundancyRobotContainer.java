@@ -173,7 +173,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            driver.start()));
+            driver.start(),
+            driver.povRight()));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -223,7 +224,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.povUp().onTrue(elevator.setPosition());
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
-    driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     driver
         .leftStick()
@@ -244,11 +244,17 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 intake,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
+
     driver
         .start()
         .whileTrue(
-            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
+            V2_RedundancyCompositeCommands.dropAlgae(
+                drive,
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -298,6 +304,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .back()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
+
+    operator
+        .start()
+        .whileTrue(
+            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake))
+        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
 
     // Misc
     operatorFunnelOverride.whileTrue(

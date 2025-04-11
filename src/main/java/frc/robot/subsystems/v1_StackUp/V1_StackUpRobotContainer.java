@@ -160,7 +160,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            driver.back()::getAsBoolean));
+            driver.back(),
+            () -> false));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
