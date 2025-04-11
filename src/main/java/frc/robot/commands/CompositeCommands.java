@@ -529,23 +529,6 @@ public class CompositeCommands {
             manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
       }
 
-      public static final Command autoScoreAlgae(
-          Drive drive,
-          Elevator elevator,
-          V2_RedundancyManipulator manipulator,
-          V2_RedundancyIntake intake) {
-        return Commands.sequence(
-            netHeight(elevator, manipulator, intake),
-            manipulator.waitUntilAlgaeArmAtGoal(),
-            DecisionTree.moveSequence(
-                elevator,
-                manipulator,
-                intake,
-                () -> ReefHeight.ALGAE_SCORE,
-                ArmState.STOW_UP,
-                IntakeState.STOW));
-      }
-
       public static final Command scoreProcessorNew(
           Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return Commands.sequence(

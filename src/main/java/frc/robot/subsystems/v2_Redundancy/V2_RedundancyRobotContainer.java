@@ -173,7 +173,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            driver.start(),
+            operator.start(),
             driver.povRight()));
 
     // Driver face buttons
@@ -307,8 +307,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     operator
         .start()
-        .whileTrue(
-            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake))
+        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake))
         .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
 
     // Misc
