@@ -565,7 +565,8 @@ public class CompositeCommands {
                             () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
-                        Commands.runOnce(() -> RobotState.setHasAlgae(false))),
+                        Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+                        intake.setRollerVoltage(3.0)),
                     Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
                 .until(() -> RobotState.isHasAlgae()));
       }
