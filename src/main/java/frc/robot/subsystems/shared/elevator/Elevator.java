@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -46,14 +49,23 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
+    InternalLoggedTracer.record("Update Inputs", "Elevator/Periodic");
+
+    InternalLoggedTracer.reset();
     Logger.processInputs("Elevator", inputs);
+    InternalLoggedTracer.record("Process Inputs", "Elevator/Periodic");
 
     Logger.recordOutput("Elevator/Position", position.name());
 
+    InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setPositionGoal(position.getPosition());
     }
+    InternalLoggedTracer.record("Set Position Goal", "Elevator/Periodic");
+    ExternalLoggedTracer.record("Elevator Total", "Elevator/Periodic");
   }
 
   /**
@@ -62,7 +74,7 @@ public class Elevator extends SubsystemBase {
    * @return A command that sets the elevator position.
    */
   public Command setPosition() {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           switch (RobotState.getOIData().currentReefHeight()) {
@@ -120,7 +132,7 @@ public class Elevator extends SubsystemBase {
    * @return A command that sets the elevator position.
    */
   public Command setPosition(Supplier<ReefHeight> newPosition) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           switch (newPosition.get()) {
@@ -207,7 +219,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command setVoltage(double volts) {
-    return runEnd(
+    return this.runEnd(
         () -> {
           isClosedLoop = false;
           io.setVoltage(volts);
@@ -318,5 +330,9 @@ public class Elevator extends SubsystemBase {
 
   public Command waitUntilAtGoal() {
     return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(this::atGoal));
+  }
+
+  public BooleanSupplier inFastScoringTolerance() {
+    return () -> Math.abs(inputs.positionMeters - inputs.positionGoalMeters) <= 0.03;
   }
 }

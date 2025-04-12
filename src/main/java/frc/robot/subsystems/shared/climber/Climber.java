@@ -2,7 +2,10 @@ package frc.robot.subsystems.shared.climber;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -39,14 +42,23 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Climber", inputs);
+    InternalLoggedTracer.record("Climber Input Update", "Climber/Periodic");
 
+    InternalLoggedTracer.reset();
+    Logger.processInputs("Climber", inputs);
+    InternalLoggedTracer.record("Climber Input Processing", "Climber/Periodic");
+
+    InternalLoggedTracer.reset();
     Logger.recordOutput("Climber/redundantSwitchesTimer", redundantSwitchesTimer.get());
     Logger.recordOutput("Climber/redundantTrustTimer", redundantTrustTimer.get());
     Logger.recordOutput("Climber/Ready", climberReady());
+    InternalLoggedTracer.record("Logging", "Climber/Periodic");
 
     isClimbed = io.isClimbed();
+    ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
   }
 
   public boolean climberReady() {
@@ -90,18 +102,23 @@ public class Climber extends SubsystemBase {
   }
 
   public Command setVoltage(double volts) {
-    return this.run(() -> io.setVoltage(volts));
+    return Commands.run(() -> io.setVoltage(volts));
   }
 
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(2), () -> io.setVoltage(0)).withTimeout(0.1125);
+    return this.runEnd(() -> io.setVoltage(1), () -> io.setVoltage(0))
+        .until(() -> inputs.positionRadians >= 20);
   }
 
   public Command winchClimber() {
-    return this.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+    return Commands.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+  }
+
+  public Command winchClimberManual() {
+    return this.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0));
   }
 
   public Command manualDeployOverride(boolean override) { // set using debug board button
-    return this.runOnce(() -> this.override = override);
+    return Commands.runOnce(() -> this.override = override);
   }
 }

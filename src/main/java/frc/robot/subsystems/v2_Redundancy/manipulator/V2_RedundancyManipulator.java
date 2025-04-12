@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
+import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -40,9 +43,16 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Manipulator", inputs);
+    InternalLoggedTracer.record("Update Inputs", "Manipulator/Periodic");
 
+    InternalLoggedTracer.reset();
+    Logger.processInputs("Manipulator", inputs);
+    InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
+
+    InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
     if (RobotState.isHasAlgae()) {
@@ -52,6 +62,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     if (hasAlgae() && RobotState.isIntakingAlgae()) {
       RobotState.setHasAlgae(true);
     }
+    InternalLoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
+    ExternalLoggedTracer.record("Manipulator Total", "Manipulator/Periodic");
   }
 
   public Rotation2d getArmAngle() {
@@ -80,10 +92,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
-  public Command intakeCoral() {
+  public Command intakeCoral(BooleanSupplier shouldStop) {
     return Commands.sequence(
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
-            .until(() -> hasCoral()));
+            .until(shouldStop));
   }
 
   public Command intakeReefAlgae() {
@@ -148,7 +160,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command setAlgaeArmGoal(ArmState goal) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           state = goal;
@@ -176,6 +188,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     io.updateArmConstraints(maxAcceleration, maxVelocity);
   }
 
+  @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean algaeArmAtGoal() {
     return inputs.armPosition.getRadians() - state.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();

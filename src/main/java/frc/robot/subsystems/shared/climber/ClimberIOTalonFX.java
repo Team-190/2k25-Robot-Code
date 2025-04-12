@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
+import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
 public class ClimberIOTalonFX implements ClimberIO {
@@ -64,17 +65,20 @@ public class ClimberIOTalonFX implements ClimberIO {
     talonFX.optimizeBusUtilization();
 
     voltageRequest = new VoltageOut(0.0);
-  }
 
-  @Override
-  public void updateInputs(ClimberIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        true,
         positionRotations,
         velocityRotationsPerSecond,
         appliedVolts,
         supplyCurrentAmps,
         torqueCurrentAmps,
         temperatureCelsius);
+  }
+
+  @Override
+  public void updateInputs(ClimberIOInputs inputs) {
+    InternalLoggedTracer.reset();
     inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
@@ -85,11 +89,14 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     inputs.redundantSwitchOne = redundantSwitchOne.get();
     inputs.redundantSwitchTwo = redundantSwitchTwo.get();
+    InternalLoggedTracer.record("Refresh Update Inputs", "Climber/TalonFX");
   }
 
   @Override
   public void setVoltage(double volts) {
+    InternalLoggedTracer.reset();
     talonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Voltage", "Climber/TalonFX");
   }
 
   @Override

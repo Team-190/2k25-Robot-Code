@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -45,12 +47,21 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    ExternalLoggedTracer.reset();
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
+    InternalLoggedTracer.record("Update Inputs", "Intake/Periodic");
 
+    InternalLoggedTracer.reset();
+    Logger.processInputs("Intake", inputs);
+    InternalLoggedTracer.record("Process Inputs", "Intake/Periodic");
+
+    InternalLoggedTracer.reset();
     if (isClosedLoop) {
       io.setExtensionGoal(goal.getDistance());
     }
+    InternalLoggedTracer.record("Set Extension Goal", "Intake/Periodic");
+    ExternalLoggedTracer.record("Intake Total", "Intake/Periodic");
   }
 
   public double getExtension() {
@@ -64,7 +75,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the extension goal.
    */
   public Command setExtensionGoal(IntakeState goal) {
-    return Commands.runOnce(
+    return this.runOnce(
         () -> {
           isClosedLoop = true;
           this.goal = goal;
@@ -77,7 +88,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
+  public Command setRollerVoltage(double volts) {
     return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
   }
 
@@ -87,7 +98,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to stop the roller.
    */
   public Command stopRoller() {
-    return Commands.runOnce(io::stopRoller);
+    return runOnce(io::stopRoller);
   }
 
   /**

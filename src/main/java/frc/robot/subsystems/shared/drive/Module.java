@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.robot.util.InternalLoggedTracer;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -47,11 +48,20 @@ public class Module {
             AlertType.kError);
   }
 
-  public void periodic() {
+  public void updateInputs() {
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    InternalLoggedTracer.record("Update Module Inputs", "Drive/Modules/" + Integer.toString(index));
 
+    InternalLoggedTracer.reset();
+    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    InternalLoggedTracer.record(
+        "Process Module Inputs", "Drive/Modules/" + Integer.toString(index));
+  }
+
+  public void periodic() {
     // Calculate positions for odometry
+    InternalLoggedTracer.reset();
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
@@ -60,11 +70,14 @@ public class Module {
       Rotation2d angle = inputs.odometryTurnPositions[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
+    InternalLoggedTracer.record("Update Odometry", "Drive/Modules/" + Integer.toString(index));
 
     // Update alerts
+    InternalLoggedTracer.reset();
     driveDisconnectedAlert.set(!inputs.driveConnected);
     turnDisconnectedAlert.set(!inputs.turnConnected);
     turnEncoderDisconnectedAlert.set(!inputs.turnEncoderConnected);
+    InternalLoggedTracer.record("Set Alerts", "Drive/Modules/" + Integer.toString(index));
   }
 
   /** Runs the module with the specified setpoint state. Mutates the state to optimize it. */

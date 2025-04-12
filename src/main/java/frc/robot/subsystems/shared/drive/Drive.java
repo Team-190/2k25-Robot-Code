@@ -13,7 +13,6 @@
 
 package frc.robot.subsystems.shared.drive;
 
-import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -32,7 +31,9 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.LoggedChoreo.LoggedAutoFactory;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -56,7 +57,7 @@ public class Drive extends SubsystemBase {
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
-  @Getter private final AutoFactory autoFactory;
+  @Getter private final LoggedAutoFactory autoFactory;
 
   static {
     odometryLock = new ReentrantLock();
@@ -95,46 +96,60 @@ public class Drive extends SubsystemBase {
         };
 
     autoFactory =
-        new AutoFactory(
+        new LoggedAutoFactory(
             RobotState::getRobotPoseField,
             RobotState::resetRobotPose,
             this::choreoDrive,
             true,
-            this,
-            (sample, isStart) -> {
-              Pose2d[] poses = sample.getPoses();
-              if (AllianceFlipUtil.shouldFlip()) {
-                for (int i = 0; i < sample.getPoses().length; i++) {
-                  poses[i] = AllianceFlipUtil.apply(sample.getPoses()[i]);
-                }
-              }
-              Logger.recordOutput("Auto/Choreo Trajectory", poses);
-            });
+            this);
   }
 
   public void periodic() {
+    ExternalLoggedTracer.reset();
+    InternalLoggedTracer.reset();
     odometryLock.lock(); // Prevents odometry updates while reading data
+    InternalLoggedTracer.record("Odometry Lock", "Drive/Periodic");
+
+    InternalLoggedTracer.reset();
     gyroIO.updateInputs(gyroInputs);
-    Logger.processInputs("Drive/Gyro", gyroInputs);
-    for (var module : modules) {
-      module.periodic();
+    InternalLoggedTracer.record("Update Gyro Inputs", "Drive/Periodic");
+
+    for (int i = 0; i < 4; i++) {
+      InternalLoggedTracer.reset();
+      modules[i].updateInputs();
+      InternalLoggedTracer.record(
+          "Module" + Integer.toString(i) + "Update Inputs", "Drive/Periodic");
     }
+
+    InternalLoggedTracer.reset();
     odometryLock.unlock();
+    InternalLoggedTracer.record("Odometry Unlock", "Drive/Periodic");
+
+    InternalLoggedTracer.reset();
+    Logger.processInputs("Drive/Gyro", gyroInputs);
+    InternalLoggedTracer.record("Process Gyro Inputs", "Drive/Periodic");
+
+    for (int i = 0; i < 4; i++) {
+      InternalLoggedTracer.reset();
+      modules[i].periodic();
+      InternalLoggedTracer.record(
+          "Module" + Integer.toString(i) + "Periodic Total", "Drive/Periodic");
+    }
 
     // Stop moving when disabled
+    InternalLoggedTracer.reset();
     if (RobotMode.disabled()) {
       for (var module : modules) {
         module.stop();
       }
-    }
 
-    // Log empty setpoint states when disabled
-    if (RobotMode.disabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+    InternalLoggedTracer.record("Stop Modules", "Drive/Periodic");
 
     // Update odometry
+    InternalLoggedTracer.reset();
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
     int sampleCount = sampleTimestamps.length;
@@ -170,6 +185,8 @@ public class Drive extends SubsystemBase {
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
+    InternalLoggedTracer.record("Update Odometry", "Drive/Periodic");
+    ExternalLoggedTracer.record("Drive Total", "Drive/Periodic");
   }
 
   /**
@@ -356,5 +373,6 @@ public class Drive extends SubsystemBase {
             Rotation2d.fromRadians(sample.heading));
 
     runVelocity(velocity);
+    Logger.recordOutput("Auto/Setpoint", sample.getPose());
   }
 }

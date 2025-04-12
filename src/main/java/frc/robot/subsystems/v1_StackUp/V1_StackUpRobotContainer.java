@@ -73,10 +73,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
           drive =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+                  new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
@@ -160,7 +160,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            driver.back()::getAsBoolean));
+            driver.back(),
+            () -> false));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -265,7 +266,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
-    AutonomousCommands.loadAutoTrajectories(drive);
+    AutonomousCommands.loadAutoTrajectoriesOld(drive);
 
     autoChooser.addCmd("None", Commands::none);
     autoChooser.addCmd(

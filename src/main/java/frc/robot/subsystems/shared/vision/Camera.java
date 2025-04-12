@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import frc.robot.util.InternalLoggedTracer;
 import java.util.List;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -65,8 +66,13 @@ public class Camera {
   }
 
   public void periodic() {
+    InternalLoggedTracer.reset();
     io.updateInputs(inputs);
+    InternalLoggedTracer.record("Update Inputs", "Vision/Cameras/" + name + "Periodic");
+
+    InternalLoggedTracer.reset();
     Logger.processInputs("Vision/Cameras/" + name, inputs);
+    InternalLoggedTracer.record("Process Inputs", "Vision/Cameras/" + name + "Periodic");
   }
 
   public Rotation2d getXOffset() {

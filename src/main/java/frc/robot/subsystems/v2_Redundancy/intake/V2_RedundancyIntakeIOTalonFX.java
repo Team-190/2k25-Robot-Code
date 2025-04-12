@@ -14,6 +14,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
+import frc.robot.util.InternalLoggedTracer;
+import frc.robot.util.PhoenixUtil;
 
 public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   private final TalonFX extensionTalonFX;
@@ -126,23 +128,14 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     neutralRequest = new NeutralOut();
     positionControlRequest = new MotionMagicVoltage(0.0);
 
-    extensionTalonFX.setPosition(
-        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
-  }
-
-  @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
+    PhoenixUtil.registerSignals(
+        false,
         extensionPositionRotations,
         extensionVelocityRotationsPerSecond,
         extensionAppliedVolts,
         extensionSupplyCurrentAmps,
         extensionTorqueCurrentAmps,
         extensionTemperatureCelsius,
-        extensionPositionSetpointRotations,
-        extensionPositionErrorRotations);
-
-    BaseStatusSignal.refreshAll(
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVolts,
@@ -150,6 +143,13 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void updateInputs(IntakeIOInputs inputs) {
+    InternalLoggedTracer.reset();
     inputs.extensionPositionMeters =
         (extensionPositionRotations.getValueAsDouble()
             * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
@@ -172,30 +172,39 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+    InternalLoggedTracer.record("Update Inputs", "Intake/TalonFX");
   }
 
   @Override
   public void setExtensionVoltage(double volts) {
+    InternalLoggedTracer.reset();
     extensionTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Extension Voltage", "Intake/TalonFX");
   }
 
   @Override
   public void setRollerVoltage(double volts) {
+    InternalLoggedTracer.reset();
     rollerTalonFX.setControl(voltageRequest.withOutput(volts).withEnableFOC(true));
+    InternalLoggedTracer.record("Set Roller Voltage", "Intake/TalonFX");
   }
 
   @Override
   public void stopRoller() {
+    InternalLoggedTracer.reset();
     rollerTalonFX.setControl(neutralRequest);
+    InternalLoggedTracer.record("Stop Roller", "Intake/TalonFX");
   }
 
   @Override
   public void setExtensionGoal(double position) {
+    InternalLoggedTracer.reset();
     extensionGoal = position;
     extensionTalonFX.setControl(
         positionControlRequest
             .withPosition(position / V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV)
             .withEnableFOC(true));
+    InternalLoggedTracer.record("Set Extension Goal", "Intake/TalonFX");
   }
 
   @Override
@@ -209,19 +218,23 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
 
   @Override
   public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+    InternalLoggedTracer.reset();
     extensionConfig.Slot0.kP = kP;
     extensionConfig.Slot0.kD = kD;
     extensionConfig.Slot0.kS = kS;
     extensionConfig.Slot0.kV = kV;
     extensionConfig.Slot0.kA = kA;
     tryUntilOk(5, () -> extensionTalonFX.getConfigurator().apply(extensionConfig, 0.25));
+    InternalLoggedTracer.record("Update Gains", "Intake/TalonFX");
   }
 
   @Override
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
+    InternalLoggedTracer.reset();
     extensionConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
     extensionConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     tryUntilOk(5, () -> extensionTalonFX.getConfigurator().apply(extensionConfig, 0.25));
+    InternalLoggedTracer.record("Update Constraints", "Intake/TalonFX");
   }
 
   @Override

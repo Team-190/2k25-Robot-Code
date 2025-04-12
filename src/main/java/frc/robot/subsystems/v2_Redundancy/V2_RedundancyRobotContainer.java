@@ -1,6 +1,5 @@
 package frc.robot.subsystems.v2_Redundancy;
 
-import choreo.auto.AutoChooser;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +49,7 @@ import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIO
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
@@ -68,7 +68,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-  private final AutoChooser autoChooser = new AutoChooser();
+  private final ChoreoChooser autoChooser = new ChoreoChooser();
 
   public V2_RedundancyRobotContainer() {
 
@@ -78,10 +78,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           drive =
               new Drive(
                   new GyroIOPigeon2(),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.FRONT_RIGHT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_LEFT),
-                  new ModuleIOTalonFX(DriveConstants.BACK_RIGHT));
+                  new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
@@ -173,7 +173,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            () -> false));
+            operator.start(),
+            driver.povRight()));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -223,7 +224,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver.povUp().onTrue(elevator.setPosition());
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
-    driver.povRight().onTrue(DriveCommands.inchMovement(drive, 0.5, .07));
 
     driver
         .leftStick()
@@ -235,7 +235,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver
-        .start()
+        .back()
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
                 drive,
@@ -244,10 +244,17 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 intake,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
+
     driver
-        .back()
+        .start()
         .whileTrue(
-            V2_RedundancyCompositeCommands.autoScoreAlgae(drive, elevator, manipulator, intake));
+            V2_RedundancyCompositeCommands.dropAlgae(
+                drive,
+                elevator,
+                manipulator,
+                intake,
+                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
@@ -287,16 +294,21 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
-    operator.povDown().whileTrue(climber.winchClimber());
+    operator.povDown().whileTrue(climber.winchClimberManual());
     operator
-        .povRight()
+        .povLeft()
         .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
         .onFalse(manipulator.scoreAlgae().withTimeout(1));
 
+    operator.povRight().whileTrue(manipulator.scoreAlgae());
+    operator
+        .back()
+        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
+
     operator
         .start()
-        .onTrue(V2_RedundancyCompositeCommands.scoreAlgae(elevator, manipulator, intake));
-    operator.back().onTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
+        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake))
+        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
 
     // Misc
     operatorFunnelOverride.whileTrue(
@@ -314,51 +326,51 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "4 Piece Right",
         () ->
             AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Left Push",
         () ->
             AutonomousCommands.autoCLeftPush(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Right Push",
         () ->
             AutonomousCommands.autoCRightPush(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "2 Piece Left",
         () ->
             AutonomousCommands.autoBLeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "2 Piece Right",
         () ->
             AutonomousCommands.autoBRight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, elevator, manipulator, funnel, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
