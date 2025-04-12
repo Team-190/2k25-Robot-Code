@@ -55,7 +55,7 @@ public class ClimberConstants {
         CLIMBER_SUPPLY_CURRENT_LIMIT = 40.0;
         CLIMBER_STATOR_CURRENT_LIMIT = 80.0;
 
-        CLIMBER_CLIMBED_RADIANS = 415;
+        CLIMBER_CLIMBED_RADIANS = 350;
 
         GEAR_RATIO = 24.0;
         GEARBOX_EFFICIENCY = 0.81;
