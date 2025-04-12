@@ -331,46 +331,46 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoALeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "4 Piece Right",
         () ->
             AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Left Push",
         () ->
             AutonomousCommands.autoCLeftPush(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "3 Piece Right Push",
         () ->
             AutonomousCommands.autoCRightPush(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "2 Piece Left",
         () ->
             AutonomousCommands.autoBLeft(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "2 Piece Right",
         () ->
             AutonomousCommands.autoBRight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    autoChooser.addCmd(
+    autoChooser.addRoutine(
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, elevator, manipulator, funnel, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

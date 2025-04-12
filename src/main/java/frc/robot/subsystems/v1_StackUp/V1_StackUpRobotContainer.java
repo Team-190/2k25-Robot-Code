@@ -266,7 +266,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   }
 
   private void configureAutos() {
-    AutonomousCommands.loadAutoTrajectories(drive);
+    AutonomousCommands.loadAutoTrajectoriesOld(drive);
 
     autoChooser.addCmd("None", Commands::none);
     autoChooser.addCmd(
