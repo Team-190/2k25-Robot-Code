@@ -443,6 +443,13 @@ public class CompositeCommands {
                             manipulator,
                             intake,
                             level,
+                            ArmState.STOW_DOWN,
+                            IntakeState.STOW),
+                        DecisionTree.moveSequence(
+                            elevator,
+                            manipulator,
+                            intake,
+                            level,
                             ArmState.REEF_INTAKE,
                             IntakeState.STOW)),
                     manipulator.intakeReefAlgae())
