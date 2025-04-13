@@ -479,7 +479,6 @@ public class AutonomousCommands {
     return routine;
   }
 
-
   public static final LoggedAutoRoutine autoALeftAlternate(
       Drive drive,
       Elevator elevator,
@@ -551,7 +550,6 @@ public class AutonomousCommands {
 
     return routine;
   }
-
 
   public static final LoggedAutoRoutine autoARight(
       Drive drive,

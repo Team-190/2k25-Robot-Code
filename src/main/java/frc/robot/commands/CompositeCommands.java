@@ -576,7 +576,7 @@ public class CompositeCommands {
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
                         Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-                        intake.setRollerVoltage(3.0)),
+                        intake.setRollerVoltage(6.0)),
                     Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
                 .until(() -> RobotState.isHasAlgae()));
       }

@@ -217,7 +217,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(
             V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
         .onFalse(
-            V2_RedundancyCompositeCommands.postFloorIntakeSequence(manipulator, elevator, intake));
+            Commands.deadline(
+                V2_RedundancyCompositeCommands.postFloorIntakeSequence(
+                    manipulator, elevator, intake),
+                intake.setRollerVoltage(-6)));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -336,7 +339,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
-    
+
     autoChooser.addRoutine(
         "Nashoba Auto",
         () ->
