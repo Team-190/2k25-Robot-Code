@@ -336,6 +336,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+    
+    autoChooser.addRoutine(
+        "Nashoba Auto",
+        () ->
+            AutonomousCommands.autoALeftAlternate(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+
     autoChooser.addRoutine(
         "3 Piece Left",
         () ->
