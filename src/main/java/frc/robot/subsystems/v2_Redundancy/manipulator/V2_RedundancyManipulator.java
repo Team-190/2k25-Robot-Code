@@ -93,9 +93,13 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command intakeCoral(BooleanSupplier shouldStop) {
-    return Commands.sequence(
-        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
-            .until(shouldStop));
+    Command cmd =
+        Commands.sequence(
+            runManipulator(
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
+                .until(shouldStop));
+    cmd.addRequirements(this);
+    return cmd;
   }
 
   public Command intakeReefAlgae() {
@@ -126,9 +130,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command scoreAlgae() {
-    return runManipulator(
-            -V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get())
-        .finallyDo(() -> RobotState.setHasAlgae(false));
+    Command cmd =
+        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get());
+    cmd.addRequirements(this);
+    return cmd;
   }
 
   public Command scoreL1Coral() {
