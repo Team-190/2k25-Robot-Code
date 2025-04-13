@@ -298,7 +298,8 @@ public class RobotState {
           && !GeometryUtil.isZero(camera.getSecondaryPose())
           && Math.abs(robotYawVelocity) <= Units.degreesToRadians(10.0)
           && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
-          && camera.getTotalTargets() > 1) {
+          && camera.getTotalTargets() > 1
+          && RobotMode.disabled()) {
         double xyStddevSecondary =
             camera.getSecondaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
