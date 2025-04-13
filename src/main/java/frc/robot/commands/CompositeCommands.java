@@ -528,9 +528,8 @@ public class CompositeCommands {
                 manipulator,
                 intake,
                 () -> ReefHeight.ALGAE_SCORE,
-                ArmState.PRE_SCORE,
-                IntakeState.STOW),
-            manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
+                ArmState.STOW_UP,
+                IntakeState.STOW));
       }
 
       public static final Command scoreProcessorNew(
