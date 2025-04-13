@@ -517,9 +517,10 @@ public class CompositeCommands {
       }
 
       public static final Command netHeight(
-          Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+          Elevator elevator, Funnel funnel, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
         return Commands.sequence(
-            DecisionTree.moveSequence(
+            funnel.setClapDaddyGoal(FunnelState.CLOSED),
+            DecisionTree.moveSequence( 
                 elevator,
                 manipulator,
                 intake,
@@ -557,7 +558,7 @@ public class CompositeCommands {
           V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
         return Commands.sequence(
             Commands.sequence(
-                    Commands.parallel(
+                    Commands.deadline(
                         DecisionTree.moveSequence(
                             elevator,
                             manipulator,

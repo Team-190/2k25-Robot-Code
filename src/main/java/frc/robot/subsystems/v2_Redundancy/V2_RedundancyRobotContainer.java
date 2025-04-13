@@ -303,11 +303,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povRight().whileTrue(manipulator.scoreAlgae());
     operator
         .back()
-        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake));
+        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake));
 
     operator
         .start()
-        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, manipulator, intake))
+        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake))
         .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
 
     // Misc
