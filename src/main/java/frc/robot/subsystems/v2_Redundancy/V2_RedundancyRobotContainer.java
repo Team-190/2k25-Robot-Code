@@ -308,7 +308,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .start()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
+        .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
 
     // Misc
     operatorFunnelOverride.whileTrue(
