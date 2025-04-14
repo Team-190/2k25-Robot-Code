@@ -279,10 +279,10 @@ public class RobotState {
       if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
           && camera.getTargetAquired()
           && !GeometryUtil.isZero(camera.getPrimaryPose())
-          && !GeometryUtil.isZero(camera.getSecondaryPose())
           && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
           && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
-          && camera.getTotalTargets() > 0) {
+          && camera.getTotalTargets() > 0
+          && RobotMode.enabled()) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
@@ -292,17 +292,23 @@ public class RobotState {
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
-        if (camera.getTotalTargets() > 1) {
-          double xyStddevSecondary =
-              camera.getSecondaryXYStandardDeviationCoefficient()
-                  * Math.pow(camera.getAverageDistance(), 2.0)
-                  / camera.getTotalTargets()
-                  * camera.getHorizontalFOV();
-          fieldLocalizer.addVisionMeasurement(
-              camera.getSecondaryPose(),
-              camera.getFrameTimestamp(),
-              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
-        }
+      }
+      if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+          && camera.getTargetAquired()
+          && !GeometryUtil.isZero(camera.getSecondaryPose())
+          && Math.abs(robotYawVelocity) <= Units.degreesToRadians(10.0)
+          && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
+          && camera.getTotalTargets() > 1
+          && RobotMode.disabled()) {
+        double xyStddevSecondary =
+            camera.getSecondaryXYStandardDeviationCoefficient()
+                * Math.pow(camera.getAverageDistance(), 2.0)
+                / camera.getTotalTargets()
+                * camera.getHorizontalFOV();
+        fieldLocalizer.addVisionMeasurement(
+            camera.getSecondaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, 0.1));
       }
     }
     InternalLoggedTracer.record("Add Field Localizer Measurements", "RobotState/Periodic");
@@ -327,6 +333,11 @@ public class RobotState {
             VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
       }
     }
+
+    if (RobotMode.disabled()) {
+      resetRobotPose(getRobotPoseField());
+    }
+
     InternalLoggedTracer.record("Add Reef Localizer Measurements", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
