@@ -479,14 +479,14 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine autoALeftAlternate(
+  public static final LoggedAutoRoutine autoALeftNashoba(
       Drive drive,
       Elevator elevator,
       Funnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       Camera... cameras) {
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftAlternate");
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftNashoba");
 
     LoggedAutoTrajectory path1 = routine.trajectory("A_LEFT_PATH1");
     LoggedAutoTrajectory path2 =
@@ -551,14 +551,14 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine autoALeftAltAlt(
+  public static final LoggedAutoRoutine autoALeftDAVE(
       Drive drive,
       Elevator elevator,
       Funnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       Camera... cameras) {
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftAltAlt");
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftD.A.V.E.");
 
     LoggedAutoTrajectory path1 = routine.trajectory("A_LEFT_PATH1");
     LoggedAutoTrajectory path2 =
