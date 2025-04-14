@@ -347,6 +347,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
+        "4 Piece Left Alt Alt Auto",
+        () ->
+            AutonomousCommands.autoALeftAltAlt(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+
+    autoChooser.addRoutine(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
