@@ -173,7 +173,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            operator.start(),
+            operator.back(),
             driver.povRight()));
 
     // Driver face buttons
@@ -217,7 +217,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(
             V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
         .onFalse(
-            V2_RedundancyCompositeCommands.postFloorIntakeSequence(manipulator, elevator, intake));
+            Commands.deadline(
+                V2_RedundancyCompositeCommands.postFloorIntakeSequence(
+                    manipulator, elevator, intake),
+                intake.setRollerVoltage(-6)));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -302,13 +305,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
     operator.povRight().whileTrue(manipulator.scoreAlgae());
     operator
-        .back()
+        .start()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake));
 
     operator
-        .start()
+        .back()
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(0.5));
+        .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
 
     // Misc
     operatorFunnelOverride.whileTrue(
@@ -336,6 +339,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoARight(
                 drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+
+    autoChooser.addRoutine(
+        "Nashoba Auto",
+        () ->
+            AutonomousCommands.autoALeftAlternate(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+
+    autoChooser.addRoutine(
+        "4 Piece Left Alt Alt Auto",
+        () ->
+            AutonomousCommands.autoALeftAltAlt(
+                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+
     autoChooser.addRoutine(
         "3 Piece Left",
         () ->

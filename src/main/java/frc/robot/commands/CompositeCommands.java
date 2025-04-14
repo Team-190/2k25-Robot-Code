@@ -443,6 +443,13 @@ public class CompositeCommands {
                             manipulator,
                             intake,
                             level,
+                            ArmState.STOW_DOWN,
+                            IntakeState.STOW),
+                        DecisionTree.moveSequence(
+                            elevator,
+                            manipulator,
+                            intake,
+                            level,
                             ArmState.REEF_INTAKE,
                             IntakeState.STOW)),
                     manipulator.intakeReefAlgae())
@@ -528,9 +535,8 @@ public class CompositeCommands {
                 manipulator,
                 intake,
                 () -> ReefHeight.ALGAE_SCORE,
-                ArmState.PRE_SCORE,
-                IntakeState.STOW),
-            manipulator.setAlgaeArmGoal(ArmState.STOW_UP));
+                ArmState.STOW_UP,
+                IntakeState.STOW));
       }
 
       public static final Command scoreProcessorNew(
@@ -570,7 +576,7 @@ public class CompositeCommands {
                             ArmState.FLOOR_INTAKE,
                             IntakeState.INTAKE),
                         Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-                        intake.setRollerVoltage(3.0)),
+                        intake.setRollerVoltage(6.0)),
                     Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
                 .until(() -> RobotState.isHasAlgae()));
       }
