@@ -236,4 +236,16 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     tryUntilOk(5, () -> extensionTalonFX.getConfigurator().apply(extensionConfig, 0.25));
     InternalLoggedTracer.record("Update Constraints", "Intake/TalonFX");
   }
+
+  @Override
+  public void resetExtension() {
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void maxExt() {
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+  }
 }

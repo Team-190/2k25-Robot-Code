@@ -16,7 +16,7 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
-import frc.robot.commands.CompositeCommands.SharedCommands.V1_StackUpCompositeCommands;
+import frc.robot.commands.CompositeCommands.V1_StackUpCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberIO;

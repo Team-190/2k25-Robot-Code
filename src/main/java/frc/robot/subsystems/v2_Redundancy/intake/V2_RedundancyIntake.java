@@ -183,6 +183,18 @@ public class V2_RedundancyIntake extends SubsystemBase {
         .withTimeout(2);
   }
 
+  public Command homingSequence() {
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              isClosedLoop = false;
+              io.maxExt();
+            }),
+        setIntakeVoltage(-6).until(() -> Math.abs(inputs.extensionTorqueCurrentAmps) > 45),
+        setIntakeVoltage(0),
+        Commands.runOnce(() -> io.resetExtension()));
+  }
+
   public Command waitUntilExtensionAtGoal() {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
   }
