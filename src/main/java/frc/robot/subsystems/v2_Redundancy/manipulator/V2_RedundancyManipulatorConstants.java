@@ -50,7 +50,7 @@ public class V2_RedundancyManipulatorConstants {
         new Constraints(
             new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 2.0),
             new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5.0),
-            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1.5)));
+            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(.01)));
 
     ROLLER_CAN_ID = 30;
     ROLLER_CURRENT_THRESHOLD = 60.0;
