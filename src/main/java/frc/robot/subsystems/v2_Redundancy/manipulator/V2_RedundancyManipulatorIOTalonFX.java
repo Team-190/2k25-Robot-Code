@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
@@ -258,5 +259,15 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
     InternalLoggedTracer.record("Update Constraints", "Manipulator/TalonFX");
+  }
+
+  @Override
+  public void zeroArmPosition() {
+    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void armMax() {
+    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
   }
 }
