@@ -2,6 +2,7 @@ package frc.robot.subsystems.v2_Redundancy.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -47,9 +48,9 @@ public class V2_RedundancyManipulatorConstants {
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 10.0),
+            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 2.0),
             new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5.0),
-            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", 0.01));
+            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1.5)));
 
     ROLLER_CAN_ID = 30;
     ROLLER_CURRENT_THRESHOLD = 60.0;
