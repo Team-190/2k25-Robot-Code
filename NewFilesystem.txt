@@ -76,8 +76,6 @@ org
         │   │   ├── RollerIOSim.java
         │   │   └── RollerIOV0_Funky.java
         │   └── superstructure
-        │   │   ├── SuperStructure.java
-        │   │   ├── SuperStructureConstants.java
         │   │   └── ...
         ├── system
         │   ├── robotstate
@@ -97,3 +95,10 @@ org
         ├── RobotContainer.java
         └── RobotState.java
 
+
+
+
+
+robotstate will handle pose and overall robot states
+
+superstructure will handle internal state transitions
