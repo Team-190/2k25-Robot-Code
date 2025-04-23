@@ -3,7 +3,6 @@ package frc.robot.subsystems.v2_Redundancy;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -314,7 +313,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake))
         .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
 
-    // operator.leftStick().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
+    // operator.leftStick().onTrue(Commands.runOnce(() ->
+    // CommandScheduler.getInstance().cancelAll()));
 
     // Misc
     operatorFunnelOverride.whileTrue(
