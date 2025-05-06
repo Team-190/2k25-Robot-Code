@@ -1,64 +1,167 @@
 digraph {
+  /*
+   * Graphviz DOT file for the superstructure state machine.
+   * States are represented as nodes, and transitions are represented as edges.
+  */
+
+  // Node definitions
   start [color = red]
-  stow [color = green]
-  start -> stow
+  stow_down [color = green]
+
+  intake_coral [color = green]
+
+  L1 [color = green]
+  L2 [color = green]
+  L3 [color = green]
+  L4 [color = green]
+  L4_plus [color = green]
+
+  score_L1 [color = green]
+  score_L2 [color = green]
+  score_L3 [color = green]
+  score_L4 [color = green]
+  score_L4_plus [color = green]
+
+  stow_up [color = blue]
+  arm_intermediate_state [color = blue]
+  arm_safe_angle [color = blue]
+
+  floor_aquisition [color = blue]
+  reef_aquisition_L2 [color = blue]
+  reef_aquisition_L3 [color = blue]
+
+  barge [color = blue]
+  processor [color = blue]
+
+  floor_intake [color = blue]
+  reef_intake_L2 [color = blue]
+  reef_intake_L3 [color = blue]
+  reef_drop_L2 [color = blue]
+  reef_drop_L3 [color = blue]
+
+  score_barge [color = blue]
+  score_processor [color = blue]
+
+  // Edge definitions
+
+  // Initial state
+  start -> stow_down
+
+  // Stow down and intake coral can be entered from each other
+  stow_down -> intake_coral
+  intake_coral -> stow_down
+
+  // any scoring position can be entered from stow down
+  stow_down -> L1
+  stow_down -> L2
+  stow_down -> L3
+  stow_down -> L4
+
+  // Any scoring position can be entered from the other scoring positions except L4+
+  L1 -> L2
+  L1 -> L3
+  L1 -> L4
+
+  L2 -> L1
+  L2 -> L3
+  L2 -> L4
+
+  L3 -> L1
+  L3 -> L2
+  L3 -> L4
+
+  L4 -> L1
+  L4 -> L2
+  L4 -> L3
+ 
+  // L4+ can be entered from L4 only
+  L4 -> L4_plus
+
+  // Scoring actions and their correspoinding states can be entered from each other
+  L1 -> score_L1
+  score_L1 -> L1
+
+  L2 -> score_L2
+  score_L2 -> L2
+
+  L3 -> score_L3
+  score_L3 -> L3
+
+  L4 -> score_L4
+  score_L4 -> L4
+
+  // L4_plus and score_L4_plus can be entered from each other
+  L4_plus -> score_L4_plus
+  score_L4_plus -> L4_plus
+
+  // stow down can be entered from any scoring position
+  L1 -> stow_down
+  L2 -> stow_down
+  L3 -> stow_down
+  L4 -> stow_down
+  L4_plus -> stow_down
   
-  L1_score [color = green]
-  
-  L2_score [color = green]
-  L3_score [color = green]
-  L4_score [color = green]
-  
-  L4_plus_score [color = green]
-  
-  L1_score -> L2_score
-  L1_score -> L3_score
-  L1_score -> L4_score
-  L1_score -> stow
-  
-  L2_score -> L1_score
-  L2_score -> L3_score
-  L2_score -> L4_score
-  L2_score -> stow
-  
-  L3_score -> L2_score
-  L3_score -> L1_score
-  L3_score -> L4_score
-  L3_score -> stow
-  
-  L4_score -> L2_score
-  L4_score -> L3_score
-  L4_score -> L1_score
-  L4_score -> stow
-  
-  L4_plus_score -> L4_score
-  
-  L4_score -> L4_plus_score
-  
-  L4_plus_score -> L1_score
-  L4_plus_score -> L3_score
-  L4_plus_score -> L2_score
-  L4_plus_score -> stow
-  
-  L1_score_eject [color = green]
-  L2_score_eject [color = green]
-  L3_score_eject [color = green]
-  L4_score_eject [color = green]
-  
-  L4_plus_score_eject [color = green]
-  
-  L1_score_eject -> L1_score
-  L1_score -> L1_score_eject
-  
-  L2_score_eject -> L2_score
-  L2_score -> L2_score_eject
-  
-  L3_score_eject -> L3_score
-  L3_score -> L3_score_eject
-  
-  L4_score_eject -> L4_score
-  L4_score -> L4_score_eject
-  
-  L4_plus_score_eject -> L4_plus_score
-  L4_plus_score -> L4_plus_score_eject
+  // All the algae states must be entered from an algae aquisition state
+  floor_aquisition -> arm_safe_angle        // floor aquisition failed
+  floor_aquisition -> arm_intermediate_state     // floor aquisition succeeded
+
+  reef_aquisition_L2 -> arm_safe_angle      // reef aquisition failed
+  reef_aquisition_L2 -> stow_up             // reef aquisition succeeded
+
+  reef_aquisition_L3 -> arm_safe_angle      // reef aquisition failed
+  reef_aquisition_L3 -> stow_up             // reef aquisition succeeded
+
+  arm_safe_angle -> stow_down               // stow can be entered from arm safe angle
+  stow_up -> arm_intermediate_state              // algae safe height can be entered from stow up
+
+  // algae manipulation states can be entered from their corresponding algae aquisition states
+  floor_aquisition -> floor_intake
+  floor_intake -> floor_aquisition
+
+  reef_aquisition_L2 -> reef_intake_L2
+  reef_aquisition_L2 -> reef_drop_L2
+
+  reef_intake_L2 -> reef_aquisition_L2
+  reef_drop_L2 -> reef_aquisition_L2
+
+  reef_aquisition_L3 -> reef_intake_L3
+  reef_aquisition_L3 -> reef_drop_L3
+
+  reef_intake_L3 -> reef_aquisition_L3
+  reef_drop_L3 -> reef_aquisition_L3
+
+  floor_aquisition -> reef_aquisition_L2
+  floor_aquisition -> reef_aquisition_L3
+
+  reef_aquisition_L2 -> floor_aquisition
+  reef_aquisition_L2 -> reef_aquisition_L3
+
+  reef_aquisition_L3 -> floor_aquisition
+  reef_aquisition_L3 -> reef_aquisition_L2
+
+  // connection to coral graph segment
+  arm_intermediate_state -> arm_safe_angle
+  stow_down -> arm_intermediate_state
+
+  // scoring
+  stow_up -> barge
+  stow_up -> processor
+
+  barge -> score_barge
+  score_barge -> barge
+
+  processor -> score_processor
+  score_processor -> processor
+
+  barge -> processor
+  processor -> barge
+
+  barge -> arm_intermediate_state
+  processor -> arm_intermediate_state
+
+  // algae safe height to other states
+  arm_intermediate_state -> reef_aquisition_L2
+  arm_intermediate_state -> reef_aquisition_L3
+  arm_intermediate_state -> barge
+  arm_intermediate_state -> processor
 }
