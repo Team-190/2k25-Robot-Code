@@ -1,0 +1,64 @@
+digraph {
+  start [color = red]
+  stow [color = green]
+  start -> stow
+  
+  L1_score [color = green]
+  
+  L2_score [color = green]
+  L3_score [color = green]
+  L4_score [color = green]
+  
+  L4_plus_score [color = green]
+  
+  L1_score -> L2_score
+  L1_score -> L3_score
+  L1_score -> L4_score
+  L1_score -> stow
+  
+  L2_score -> L1_score
+  L2_score -> L3_score
+  L2_score -> L4_score
+  L2_score -> stow
+  
+  L3_score -> L2_score
+  L3_score -> L1_score
+  L3_score -> L4_score
+  L3_score -> stow
+  
+  L4_score -> L2_score
+  L4_score -> L3_score
+  L4_score -> L1_score
+  L4_score -> stow
+  
+  L4_plus_score -> L4_score
+  
+  L4_score -> L4_plus_score
+  
+  L4_plus_score -> L1_score
+  L4_plus_score -> L3_score
+  L4_plus_score -> L2_score
+  L4_plus_score -> stow
+  
+  L1_score_eject [color = green]
+  L2_score_eject [color = green]
+  L3_score_eject [color = green]
+  L4_score_eject [color = green]
+  
+  L4_plus_score_eject [color = green]
+  
+  L1_score_eject -> L1_score
+  L1_score -> L1_score_eject
+  
+  L2_score_eject -> L2_score
+  L2_score -> L2_score_eject
+  
+  L3_score_eject -> L3_score
+  L3_score -> L3_score_eject
+  
+  L4_score_eject -> L4_score
+  L4_score -> L4_score_eject
+  
+  L4_plus_score_eject -> L4_plus_score
+  L4_plus_score -> L4_plus_score_eject
+}
