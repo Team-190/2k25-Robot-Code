@@ -22,9 +22,10 @@ digraph {
   score_L4 [color = green]
   score_L4_plus [color = green]
 
+  intermediate_wait_for_elevator [color = blue]
+  intermediate_wait_for_arm [color = blue]
+
   stow_up [color = blue]
-  arm_intermediate_state [color = blue]
-  arm_safe_angle [color = blue]
 
   floor_aquisition [color = blue]
   reef_aquisition_L2 [color = blue]
@@ -42,126 +43,192 @@ digraph {
   score_barge [color = blue]
   score_processor [color = blue]
 
-  // Edge definitions
 
-  // Initial state
+
+  // start  
   start -> stow_down
 
-  // Stow down and intake coral can be entered from each other
+  // stow down
   stow_down -> intake_coral
-  intake_coral -> stow_down
-
-  // any scoring position can be entered from stow down
   stow_down -> L1
   stow_down -> L2
   stow_down -> L3
   stow_down -> L4
 
-  // Any scoring position can be entered from the other scoring positions except L4+
+  stow_down -> floor_aquisition
+
+  // intake coral
+  intake_coral -> stow_down
+
+  // L1
+  L1 -> stow_down
+  
   L1 -> L2
   L1 -> L3
   L1 -> L4
+  
+  L1 -> score_L1
+
+  L1 -> intermediate_wait_for_elevator
+
+  L1 -> floor_aquisition
+
+  // L2
+  L2 -> stow_down
 
   L2 -> L1
   L2 -> L3
   L2 -> L4
 
+  L2 -> score_L2
+  
+  L2 -> intermediate_wait_for_elevator
+
+  L2 -> floor_aquisition
+
+  // L3
+  L3 -> stow_down
+
   L3 -> L1
   L3 -> L2
   L3 -> L4
 
+  L3 -> score_L3
+  
+  L3 -> intermediate_wait_for_arm
+  
+  L3 -> reef_aquisition_L2
+  L3 -> reef_aquisition_L3
+  
+  // L4
+  L4 -> stow_down
+  
   L4 -> L1
   L4 -> L2
   L4 -> L3
- 
-  // L4+ can be entered from L4 only
   L4 -> L4_plus
-
-  // Scoring actions and their correspoinding states can be entered from each other
-  L1 -> score_L1
-  score_L1 -> L1
-
-  L2 -> score_L2
-  score_L2 -> L2
-
-  L3 -> score_L3
-  score_L3 -> L3
-
+  
   L4 -> score_L4
-  score_L4 -> L4
-
-  // L4_plus and score_L4_plus can be entered from each other
-  L4_plus -> score_L4_plus
-  score_L4_plus -> L4_plus
-
-  // stow down can be entered from any scoring position
-  L1 -> stow_down
-  L2 -> stow_down
-  L3 -> stow_down
-  L4 -> stow_down
+  
+  L4 -> intermediate_wait_for_arm
+  
+  L4 -> reef_aquisition_L2
+  L4 -> reef_aquisition_L3
+  
+  // L4_plus
   L4_plus -> stow_down
   
-  // All the algae states must be entered from an algae aquisition state
-  floor_aquisition -> arm_safe_angle        // floor aquisition failed
-  floor_aquisition -> arm_intermediate_state     // floor aquisition succeeded
+  L4_plus -> score_L4_plus
+  
+  L4_plus -> intermediate_wait_for_arm
+  
+  // score_L1
+  score_L1 -> L1
+  
+  // score_L2
+  score_L2 -> L2
+  
+  // score_L3
+  score_L3 -> L3
+  
+  // score_L4
+  score_L4 -> L4
+  
+  // score_L4_plus
+  score_L4_plus -> L4_plus
+  
+  // intermediate_wait_for_elevator
+  intermediate_wait_for_elevator -> stow_up
+  
+  intermediate_wait_for_elevator -> reef_aquisition_L2
+  intermediate_wait_for_elevator -> reef_aquisition_L3
+  
+  intermediate_wait_for_elevator -> barge
+  intermediate_wait_for_elevator -> processor
 
-  reef_aquisition_L2 -> arm_safe_angle      // reef aquisition failed
-  reef_aquisition_L2 -> stow_up             // reef aquisition succeeded
-
-  reef_aquisition_L3 -> arm_safe_angle      // reef aquisition failed
-  reef_aquisition_L3 -> stow_up             // reef aquisition succeeded
-
-  arm_safe_angle -> stow_down               // stow can be entered from arm safe angle
-  stow_up -> arm_intermediate_state              // algae safe height can be entered from stow up
-
-  // algae manipulation states can be entered from their corresponding algae aquisition states
+  // intermediate_wait_for_arm
+  intermediate_wait_for_arm -> stow_down
+  
+  intermediate_wait_for_arm -> L1
+  intermediate_wait_for_arm -> L2
+  
+  intermediate_wait_for_arm -> floor_aquisition
+  
+  // stow_up
+  stow_up -> barge
+  stow_up -> processor
+  
+  // floor_aquisition
+  floor_aquisition -> stow_down
+  
+  floor_aquisition -> intermediate_wait_for_elevator
+  
   floor_aquisition -> floor_intake
-  floor_intake -> floor_aquisition
-
+  
+  // reef_aquisition_L2
+  reef_aquisition_L2 -> intermediate_wait_for_arm
+  
+  reef_aquisition_L2 -> stow_up
+  
+  reef_aquisition_L2 -> reef_aquisition_L3
+  
+  reef_aquisition_L2 -> barge
+  reef_aquisition_L2 -> processor
+  
   reef_aquisition_L2 -> reef_intake_L2
   reef_aquisition_L2 -> reef_drop_L2
 
-  reef_intake_L2 -> reef_aquisition_L2
-  reef_drop_L2 -> reef_aquisition_L2
-
+  // reef_aquisition_L3
+  reef_aquisition_L3 -> intermediate_wait_for_arm
+  
+  reef_aquisition_L3 -> stow_up
+  
+  reef_aquisition_L3 -> reef_aquisition_L2
+  
+  reef_aquisition_L3 -> barge
+  reef_aquisition_L3 -> processor
+  
   reef_aquisition_L3 -> reef_intake_L3
   reef_aquisition_L3 -> reef_drop_L3
-
-  reef_intake_L3 -> reef_aquisition_L3
-  reef_drop_L3 -> reef_aquisition_L3
-
-  floor_aquisition -> reef_aquisition_L2
-  floor_aquisition -> reef_aquisition_L3
-
-  reef_aquisition_L2 -> floor_aquisition
-  reef_aquisition_L2 -> reef_aquisition_L3
-
-  reef_aquisition_L3 -> floor_aquisition
-  reef_aquisition_L3 -> reef_aquisition_L2
-
-  // connection to coral graph segment
-  arm_intermediate_state -> arm_safe_angle
-  stow_down -> arm_intermediate_state
-
-  // scoring
-  stow_up -> barge
-  stow_up -> processor
-
-  barge -> score_barge
-  score_barge -> barge
-
-  processor -> score_processor
-  score_processor -> processor
-
+  
+  // barge
+  barge -> intermediate_wait_for_arm
+  
+  barge -> reef_aquisition_L2
+  barge -> reef_aquisition_L3
+  
   barge -> processor
+  
+  barge -> score_barge
+  
+  // processor
+  processor -> intermediate_wait_for_arm
+  
+  processor -> reef_aquisition_L2
+  processor -> reef_aquisition_L3
+  
   processor -> barge
-
-  barge -> arm_intermediate_state
-  processor -> arm_intermediate_state
-
-  // algae safe height to other states
-  arm_intermediate_state -> reef_aquisition_L2
-  arm_intermediate_state -> reef_aquisition_L3
-  arm_intermediate_state -> barge
-  arm_intermediate_state -> processor
+  
+  processor -> score_processor
+  
+  // floor_intake
+  floor_intake -> floor_aquisition
+  
+  // reef_intake_L2
+  reef_intake_L2 -> reef_aquisition_L2
+  
+  // reef_intake_L3
+  reef_intake_L3 -> reef_aquisition_L3
+  
+  // reef_drop_L2
+  reef_drop_L2 -> reef_aquisition_L2
+  
+  // reef_drop_L3
+  reef_drop_L3 -> reef_aquisition_L3
+  
+  // score_barge
+  score_barge -> barge
+  
+  // score_processor
+  score_processor -> processor
 }
