@@ -54,6 +54,8 @@ digraph {
   stow_down -> L2
   stow_down -> L3
   stow_down -> L4
+  
+  stow_down -> intermediate_wait_for_elevator
 
   stow_down -> floor_aquisition
 
@@ -155,6 +157,8 @@ digraph {
   intermediate_wait_for_arm -> floor_aquisition
   
   // stow_up
+  stow_up -> intermediate_wait_for_arm
+  
   stow_up -> barge
   stow_up -> processor
   
