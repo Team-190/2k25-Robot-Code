@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shared.funnel;
+package frc.robot.subsystems.v2_Redundancy.superstructure.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;

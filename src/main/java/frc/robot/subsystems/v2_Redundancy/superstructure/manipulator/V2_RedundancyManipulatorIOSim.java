@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.manipulator;
+package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;

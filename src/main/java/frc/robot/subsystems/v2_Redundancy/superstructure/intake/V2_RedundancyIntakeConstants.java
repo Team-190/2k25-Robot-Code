@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.intake;
+package frc.robot.subsystems.v2_Redundancy.superstructure.intake;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;

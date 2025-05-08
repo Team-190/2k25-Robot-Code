@@ -3,14 +3,14 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.elevator.Elevator;
-import frc.robot.subsystems.shared.elevator.ElevatorConstants;
-import frc.robot.subsystems.shared.funnel.Funnel;
-import frc.robot.subsystems.shared.funnel.FunnelConstants;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {

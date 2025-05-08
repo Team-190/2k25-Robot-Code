@@ -3,12 +3,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.subsystems.shared.elevator.Elevator;
-import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 

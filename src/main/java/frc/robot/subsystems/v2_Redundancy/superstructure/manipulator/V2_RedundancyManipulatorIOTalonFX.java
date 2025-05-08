@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.manipulator;
+package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -18,7 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 

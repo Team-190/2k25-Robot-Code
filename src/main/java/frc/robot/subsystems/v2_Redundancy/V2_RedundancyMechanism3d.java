@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyMechanism3d {

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shared.elevator;
+package frc.robot.subsystems.v1_StackUp.elevator;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
-import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
