@@ -7,10 +7,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.Intake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.Manipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -96,67 +96,63 @@ public class LTNUpdater {
         FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
-  public static final void updateAlgaeArm(V2_RedundancyManipulator manipulator) {
+  public static final void updateAlgaeArm(Manipulator manipulator) {
     LoggedTunableNumber.ifChanged(
         manipulator.hashCode(),
         () -> {
           manipulator.updateArmGains(
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get(),
-              V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kG().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kP().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kD().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kS().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA().get(),
-              V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG().get());
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get(),
+              ManipulatorConstants.WITHOUT_ALGAE_GAINS.kG().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kP().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kD().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kS().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kV().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kA().get(),
+              ManipulatorConstants.WITH_ALGAE_GAINS.kG().get());
           manipulator.updateArmConstraints(
-              V2_RedundancyManipulatorConstants.CONSTRAINTS
-                  .maxAccelerationRotationsPerSecondSquared()
-                  .get(),
-              V2_RedundancyManipulatorConstants.CONSTRAINTS
-                  .cruisingVelocityRotationsPerSecond()
-                  .get());
+              ManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get(),
+              ManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get());
         },
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP(),
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD(),
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS(),
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV(),
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA(),
-        V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kG(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kP(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kD(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kS(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA(),
-        V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond());
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kP(),
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kD(),
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kS(),
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kV(),
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kA(),
+        ManipulatorConstants.WITHOUT_ALGAE_GAINS.kG(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kP(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kD(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kS(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kV(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kA(),
+        ManipulatorConstants.WITH_ALGAE_GAINS.kG(),
+        ManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
+        ManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond());
   }
 
-  public static final void updateIntake(V2_RedundancyIntake intake) {
+  public static final void updateIntake(Intake intake) {
     LoggedTunableNumber.ifChanged(
         intake.hashCode(),
         () -> {
           intake.updateGains(
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA().get());
+              IntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
+              IntakeConstants.EXTENSION_MOTOR_GAINS.kD().get(),
+              IntakeConstants.EXTENSION_MOTOR_GAINS.kS().get(),
+              IntakeConstants.EXTENSION_MOTOR_GAINS.kV().get(),
+              IntakeConstants.EXTENSION_MOTOR_GAINS.kA().get());
           intake.updateConstraints(
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
-              V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+              IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
         },
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
-        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
+        IntakeConstants.EXTENSION_MOTOR_GAINS.kP(),
+        IntakeConstants.EXTENSION_MOTOR_GAINS.kD(),
+        IntakeConstants.EXTENSION_MOTOR_GAINS.kS(),
+        IntakeConstants.EXTENSION_MOTOR_GAINS.kV(),
+        IntakeConstants.EXTENSION_MOTOR_GAINS.kA(),
+        IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 }

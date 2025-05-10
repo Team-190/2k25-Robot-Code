@@ -18,11 +18,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
-public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulatorIO {
+public class V2_RedundancyManipulatorIOTalonFX implements ManipulatorIO {
   private final TalonFX armTalonFX;
   private final TalonFX rollerTalonFX;
 
@@ -52,52 +51,49 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
   private final VoltageOut voltageRequest;
 
   public V2_RedundancyManipulatorIOTalonFX() {
-    armTalonFX = new TalonFX(V2_RedundancyManipulatorConstants.ARM_CAN_ID);
-    rollerTalonFX = new TalonFX(V2_RedundancyManipulatorConstants.ROLLER_CAN_ID);
+    armTalonFX = new TalonFX(ManipulatorConstants.ARM_CAN_ID);
+    rollerTalonFX = new TalonFX(ManipulatorConstants.ROLLER_CAN_ID);
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Feedback.SensorToMechanismRatio =
-        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
+    armConfig.Feedback.SensorToMechanismRatio = ManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.CurrentLimits.withSupplyCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
+        ManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
     armConfig.CurrentLimits.withStatorCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
+        ManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
-    armConfig.Slot0.kD = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get();
-    armConfig.Slot0.kS = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get();
-    armConfig.Slot0.kV = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get();
-    armConfig.Slot0.kA = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get();
-    armConfig.Slot1.kP = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kP().get();
-    armConfig.Slot1.kD = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kD().get();
-    armConfig.Slot1.kS = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kS().get();
-    armConfig.Slot1.kV = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV().get();
-    armConfig.Slot1.kA = V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA().get();
+    armConfig.Slot0.kP = ManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
+    armConfig.Slot0.kD = ManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get();
+    armConfig.Slot0.kS = ManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get();
+    armConfig.Slot0.kV = ManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get();
+    armConfig.Slot0.kA = ManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get();
+    armConfig.Slot1.kP = ManipulatorConstants.WITH_ALGAE_GAINS.kP().get();
+    armConfig.Slot1.kD = ManipulatorConstants.WITH_ALGAE_GAINS.kD().get();
+    armConfig.Slot1.kS = ManipulatorConstants.WITH_ALGAE_GAINS.kS().get();
+    armConfig.Slot1.kV = ManipulatorConstants.WITH_ALGAE_GAINS.kV().get();
+    armConfig.Slot1.kA = ManipulatorConstants.WITH_ALGAE_GAINS.kA().get();
 
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations();
+        ManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations();
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations();
+        ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations();
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     armConfig.MotionMagic.MotionMagicAcceleration =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS
-            .maxAccelerationRotationsPerSecondSquared()
-            .get();
+        ManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
+        ManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+        ManipulatorConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.StatorCurrentLimit =
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
+        ManipulatorConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
@@ -123,12 +119,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     positionControlRequest =
         new DynamicMotionMagicVoltage(
             0,
-            V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .cruisingVelocityRotationsPerSecond()
-                .get(),
-            V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .maxAccelerationRotationsPerSecondSquared()
-                .get(),
+            ManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(),
+            ManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get(),
             0);
     voltageRequest = new VoltageOut(0);
 
@@ -153,8 +145,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
 
-    armTalonFX.setPosition(
-        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
+    armTalonFX.setPosition(ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
 
     PhoenixUtil.registerSignals(
         false,
@@ -263,11 +254,11 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void zeroArmPosition() {
-    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    armTalonFX.setPosition(ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
   }
 
   @Override
   public void armMax() {
-    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+    armTalonFX.setPosition(ManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations());
   }
 }

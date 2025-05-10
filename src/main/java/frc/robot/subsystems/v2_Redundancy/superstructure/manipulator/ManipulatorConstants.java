@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V2_RedundancyManipulatorConstants {
+public class ManipulatorConstants {
   public static final int ARM_CAN_ID;
   public static final ArmParameters ARM_PARAMETERS;
   public static final Gains WITHOUT_ALGAE_GAINS;

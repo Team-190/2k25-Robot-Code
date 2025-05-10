@@ -3,7 +3,7 @@ package frc.robot.subsystems.v2_Redundancy.superstructure.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V2_RedundancyIntakeIO {
+public interface IntakeIO {
   @AutoLog
   public static class IntakeIOInputs {
     public double extensionPositionMeters = 0.0;

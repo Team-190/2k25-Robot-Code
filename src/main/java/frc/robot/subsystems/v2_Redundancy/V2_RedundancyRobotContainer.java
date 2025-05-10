@@ -40,13 +40,13 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants.
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOSim;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.Intake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeIO;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeIOSim;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.Manipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorIO;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
@@ -59,8 +59,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private Elevator elevator;
   private Funnel funnel;
   private Climber climber;
-  private V2_RedundancyManipulator manipulator;
-  private V2_RedundancyIntake intake;
+  private Manipulator manipulator;
+  private Intake intake;
   private V2_RedundancyLEDs leds;
 
   // Controller
@@ -86,8 +86,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX());
           funnel = new Funnel(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
-          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
-          intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
+          manipulator = new Manipulator(new V2_RedundancyManipulatorIOTalonFX());
+          intake = new Intake(new IntakeIOTalonFX());
           leds = new V2_RedundancyLEDs();
           break;
         case V2_REDUNDANCY_SIM:
@@ -102,8 +102,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOSim());
           funnel = new Funnel(new FunnelIOSim());
           climber = new Climber(new ClimberIOSim());
-          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
-          intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
+          manipulator = new Manipulator(new ManipulatorIOSim());
+          intake = new Intake(new IntakeIOSim());
           break;
         default:
           break;
@@ -129,13 +129,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       elevator = new Elevator(new ElevatorIO() {});
     }
     if (manipulator == null) {
-      manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
+      manipulator = new Manipulator(new ManipulatorIO() {});
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
     }
     if (intake == null) {
-      intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIO() {});
+      intake = new Intake(new IntakeIO() {});
     }
     if (leds == null) {
       leds = new V2_RedundancyLEDs();

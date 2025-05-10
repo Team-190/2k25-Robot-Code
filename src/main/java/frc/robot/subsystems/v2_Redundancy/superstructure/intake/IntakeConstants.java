@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V2_RedundancyIntakeConstants {
+public class IntakeConstants {
   public static final int EXTENSION_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final double EXTENSION_MOTOR_GEAR_RATIO;

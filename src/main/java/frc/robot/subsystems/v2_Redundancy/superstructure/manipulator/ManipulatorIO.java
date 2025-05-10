@@ -3,7 +3,7 @@ package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V2_RedundancyManipulatorIO {
+public interface ManipulatorIO {
   @AutoLog
   public static class ManipulatorIOInputs {
     public Rotation2d armPosition = new Rotation2d();
