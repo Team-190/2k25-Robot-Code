@@ -8,7 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
-public class ElevatorIOSim implements ElevatorIO {
+public class V2_RedundancyElevatorIOSim implements V2_RedundancyElevatorIO {
   private final ElevatorSim sim;
 
   private final ProfiledPIDController feedback;
@@ -17,41 +17,41 @@ public class ElevatorIOSim implements ElevatorIO {
   private double appliedVolts;
   private boolean isClosedLoop;
 
-  public ElevatorIOSim() {
+  public V2_RedundancyElevatorIOSim() {
     sim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(
-                ElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
+                V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
                 4,
-                ElevatorConstants.DRUM_RADIUS,
-                ElevatorConstants.ELEVATOR_GEAR_RATIO),
-            ElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
-            ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS(),
-            ElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
+                V2_RedundancyElevatorConstants.DRUM_RADIUS,
+                V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO),
+            V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.ELEVATOR_MOTOR_CONFIG(),
+            V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS(),
+            V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
             true,
-            ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
+            V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
 
     feedback =
         new ProfiledPIDController(
-            ElevatorConstants.GAINS.kP().get(),
+            V2_RedundancyElevatorConstants.GAINS.kP().get(),
             0,
-            ElevatorConstants.GAINS.kD().get(),
+            V2_RedundancyElevatorConstants.GAINS.kD().get(),
             new Constraints(
-                ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
-                ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()));
+                V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
+                V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()));
 
     feedforward =
         new ElevatorFeedforward(
-            ElevatorConstants.GAINS.kS().get(),
-            ElevatorConstants.GAINS.kG().get(),
-            ElevatorConstants.GAINS.kV().get());
+            V2_RedundancyElevatorConstants.GAINS.kS().get(),
+            V2_RedundancyElevatorConstants.GAINS.kG().get(),
+            V2_RedundancyElevatorConstants.GAINS.kV().get());
 
     appliedVolts = 0.0;
     isClosedLoop = true;
   }
 
   @Override
-  public void updateInputs(ElevatorIOInputs inputs) {
+  public void updateInputs(V2_RedundancyElevatorIOInputs inputs) {
     if (isClosedLoop) {
       appliedVolts =
           feedback.calculate(sim.getPositionMeters())
@@ -63,7 +63,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
-    for (int i = 0; i < ElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
+    for (int i = 0; i < V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts;
       inputs.supplyCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();

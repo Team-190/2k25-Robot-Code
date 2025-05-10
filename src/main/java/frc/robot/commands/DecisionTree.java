@@ -3,18 +3,18 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.Intake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeConstants.IntakeState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.Manipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class DecisionTree {
 
-  private static final BooleanSupplier getIntakeStartIn(Intake intake) {
+  private static final BooleanSupplier getIntakeStartIn(V2_RedundancyIntake intake) {
     return () -> intake.atGoal() && intake.getGoal().equals(IntakeState.STOW);
   }
 
@@ -22,19 +22,19 @@ public class DecisionTree {
     return () -> intakeState.equals(IntakeState.STOW);
   }
 
-  private static final BooleanSupplier getElevatorStartBelow(Elevator elevator) {
+  private static final BooleanSupplier getElevatorStartBelow(V2_RedundancyElevator elevator) {
     return () -> elevator.getPositionMeters() < ElevatorPositions.ALGAE_MID.getPosition();
   }
 
   private static final BooleanSupplier getElevatorEndBelow(
-      Elevator elevator, Supplier<ReefHeight> elevatorState) {
+      V2_RedundancyElevator elevator, Supplier<ReefHeight> elevatorState) {
     return () ->
         elevator.getPosition(elevatorState.get()).getPosition()
             < ElevatorPositions.ALGAE_MID.getPosition();
   }
 
   private static final BooleanSupplier getArmCrossStowLine(
-      Manipulator manipulator, ArmState armEnd) {
+      V2_RedundancyManipulator manipulator, ArmState armEnd) {
     return () ->
         (manipulator.getArmAngle().getRadians() < ArmState.STOW_LINE.getAngle().getRadians()
                 && armEnd.getAngle().getRadians() > ArmState.STOW_LINE.getAngle().getRadians())
@@ -43,7 +43,7 @@ public class DecisionTree {
   }
 
   private static final BooleanSupplier getArmCrossIntakeOutLine(
-      Manipulator manipulator, ArmState armEnd) {
+      V2_RedundancyManipulator manipulator, ArmState armEnd) {
     return () ->
         (manipulator.getArmAngle().getRadians() < ArmState.INTAKE_OUT_LINE.getAngle().getRadians()
                 && armEnd.getAngle().getRadians()
@@ -55,8 +55,8 @@ public class DecisionTree {
   }
 
   private static final Command ES_A_EE(
-      Elevator elevator,
-      Manipulator manipulator,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -69,8 +69,8 @@ public class DecisionTree {
   }
 
   private static final Command ES_AEE(
-      Elevator elevator,
-      Manipulator manipulator,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -84,8 +84,8 @@ public class DecisionTree {
   }
 
   private static final Command ESA_EE(
-      Elevator elevator,
-      Manipulator manipulator,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -99,8 +99,8 @@ public class DecisionTree {
   }
 
   private static final Command AEE(
-      Elevator elevator,
-      Manipulator manipulator,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -112,9 +112,9 @@ public class DecisionTree {
   }
 
   private static final Command IOEAI_A_EE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -130,9 +130,9 @@ public class DecisionTree {
   }
 
   private static final Command IOEAI_AEE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -149,9 +149,9 @@ public class DecisionTree {
   }
 
   private static final Command IOEAIA_EE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -167,9 +167,9 @@ public class DecisionTree {
   }
 
   private static final Command IOAEE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -183,9 +183,9 @@ public class DecisionTree {
   }
 
   private static final Command IOES_A_EE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -201,9 +201,9 @@ public class DecisionTree {
   }
 
   private static final Command IOES_AEE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -220,9 +220,9 @@ public class DecisionTree {
   }
 
   private static final Command IOESA_EE(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -238,9 +238,9 @@ public class DecisionTree {
   }
 
   private static final Command EAI_A_EEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -256,9 +256,9 @@ public class DecisionTree {
   }
 
   private static final Command EAI_AEEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -274,9 +274,9 @@ public class DecisionTree {
   }
 
   private static final Command EAIA_EEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -293,9 +293,9 @@ public class DecisionTree {
   }
 
   private static final Command AEEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -309,9 +309,9 @@ public class DecisionTree {
   }
 
   private static final Command ES_A_EEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -327,9 +327,9 @@ public class DecisionTree {
   }
 
   private static final Command ES_AEEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -345,9 +345,9 @@ public class DecisionTree {
   }
 
   private static final Command ESA_EEII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState) {
     return Commands.sequence(
@@ -364,9 +364,9 @@ public class DecisionTree {
   }
 
   private static final Command elevatorSafeHeightSubtree(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
@@ -383,9 +383,9 @@ public class DecisionTree {
   }
 
   private static final Command elevatorSafeHeightSubtreeIO(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
@@ -402,9 +402,9 @@ public class DecisionTree {
   }
 
   private static final Command elevatorSafeHeightSubtreeII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
@@ -421,9 +421,9 @@ public class DecisionTree {
   }
 
   private static final Command elevatorAlgaeIntakeHeightSubtreeIO(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
@@ -440,9 +440,9 @@ public class DecisionTree {
   }
 
   private static final Command elevatorAlgaeIntakeHeightSubtreeII(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {
@@ -459,9 +459,9 @@ public class DecisionTree {
   }
 
   public static final Command moveSequence(
-      Elevator elevator,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Supplier<ReefHeight> elevatorState,
       ArmState armState,
       IntakeState intakeState) {

@@ -36,15 +36,15 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOTalonFX;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIO;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOSim;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOTalonFX;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIO;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOSim;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 
@@ -52,8 +52,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
-  private Elevator elevator;
-  private Funnel funnel;
+  private V2_RedundancyElevator elevator;
+  private V2_RedundancyFunnel funnel;
   private Climber climber;
   private V1_StackUpManipulator manipulator;
   private V1_StackUp_LEDs leds;
@@ -78,8 +78,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          funnel = new Funnel(new FunnelIOTalonFX());
+          elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIOTalonFX());
+          funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
           leds = new V1_StackUp_LEDs();
@@ -93,8 +93,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new Elevator(new ElevatorIOSim());
-          funnel = new Funnel(new FunnelIOSim());
+          elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIOSim());
+          funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
           break;
@@ -116,10 +116,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (elevator == null) {
-      elevator = new Elevator(new ElevatorIO() {});
+      elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIO() {});
     }
     if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {});
+      funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIO() {});
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});

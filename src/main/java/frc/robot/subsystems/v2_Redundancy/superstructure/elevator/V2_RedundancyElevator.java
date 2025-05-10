@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends SubsystemBase {
-  private final ElevatorIO io;
+public class V2_RedundancyElevator extends SubsystemBase {
+  private final V2_RedundancyElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
@@ -30,7 +30,7 @@ public class Elevator extends SubsystemBase {
   @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
-  public Elevator(ElevatorIO io) {
+  public V2_RedundancyElevator(V2_RedundancyElevatorIO io) {
     this.io = io;
     inputs = new ElevatorIOInputsAutoLogged();
 
@@ -236,7 +236,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                () -> io.setPosition(V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -277,8 +277,8 @@ public class Elevator extends SubsystemBase {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.velocityMetersPerSecond
-        * ElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
+        * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -314,7 +314,7 @@ public class Elevator extends SubsystemBase {
    */
   private boolean atGoal(double position) {
     return Math.abs(position - inputs.positionMeters)
-        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= V2_RedundancyElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   /**
@@ -325,7 +325,7 @@ public class Elevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= V2_RedundancyElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   public Command waitUntilAtGoal() {

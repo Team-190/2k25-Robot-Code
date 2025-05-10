@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
-public class ManipulatorIOSim implements ManipulatorIO {
+public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO {
   private final SingleJointedArmSim armSim;
   private final DCMotorSim rollerSim;
 
@@ -21,20 +21,20 @@ public class ManipulatorIOSim implements ManipulatorIO {
   private final ProfiledPIDController feedback;
   private ArmFeedforward feedforward;
 
-  public ManipulatorIOSim() {
+  public V2_RedundancyManipulatorIOSim() {
     armSim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
-                ManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
+                V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
                 0.004,
-                ManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO()),
-            ManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
-            ManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO(),
-            ManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(),
-            ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(),
-            ManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRadians(),
+                V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO()),
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO(),
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(),
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(),
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRadians(),
             true,
-            ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians());
+            V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
@@ -45,21 +45,21 @@ public class ManipulatorIOSim implements ManipulatorIO {
 
     feedback =
         new ProfiledPIDController(
-            ManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
             0.0,
-            ManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
             new Constraints(
-                ManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(),
-                ManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get()));
+                V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(),
+                V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get()));
     feedforward =
         new ArmFeedforward(
-            ManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
-            ManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
-            ManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get());
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
+            V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get());
   }
 
   @Override
-  public void updateInputs(ManipulatorIOInputs inputs) {
+  public void updateInputs(V2_RedundancyManipulatorIOInputs inputs) {
     armAppliedVolts =
         feedback.calculate(armSim.getAngleRads())
             + feedforward.calculate(
