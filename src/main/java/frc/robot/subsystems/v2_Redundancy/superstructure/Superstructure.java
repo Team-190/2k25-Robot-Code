@@ -42,20 +42,16 @@ public class Superstructure {
             ReefState.CORAL_INTAKE, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L1(
         "L1 CORAL SETPOINT",
-        new SubsystemPoses(
-            ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L2(
         "L2 CORAL SETPOINT",
-        new SubsystemPoses(
-            ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L3(
         "L3 CORAL SETPOINT",
-        new SubsystemPoses(
-            ReefState.L3, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L3, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L4(
         "L4 CORAL SETPOINT",
-        new SubsystemPoses(
-            ReefState.L4, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L4, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L4_PLUS(
         "L4+ CORAL SETPOINT",
         new SubsystemPoses(
