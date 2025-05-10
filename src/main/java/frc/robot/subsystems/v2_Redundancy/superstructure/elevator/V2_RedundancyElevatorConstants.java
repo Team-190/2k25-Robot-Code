@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class ElevatorConstants {
+public class V2_RedundancyElevatorConstants {
   public static final int ELEVATOR_CAN_ID;
   public static final double ELEVATOR_GEAR_RATIO;
   public static final double DRUM_RADIUS;

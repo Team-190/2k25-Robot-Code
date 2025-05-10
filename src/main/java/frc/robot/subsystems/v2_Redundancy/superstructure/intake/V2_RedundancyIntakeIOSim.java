@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.Constants;
 
-public class IntakeIOSim implements IntakeIO {
+public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
   public final ElevatorSim extensionSim;
   public final DCMotorSim rollerSim;
 
@@ -21,40 +21,40 @@ public class IntakeIOSim implements IntakeIO {
   private double rollerAppliedVolts;
   private boolean extensionClosedLoop;
 
-  public IntakeIOSim() {
+  public V2_RedundancyIntakeIOSim() {
     extensionSim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(
-                IntakeConstants.EXTENSION_PARAMS.motor(),
-                IntakeConstants.EXTENSION_PARAMS.massKg(),
-                IntakeConstants.EXTENSION_PARAMS.pitchDiameter(),
-                IntakeConstants.EXTENSION_MOTOR_GEAR_RATIO),
-            IntakeConstants.EXTENSION_PARAMS.motor(),
-            IntakeConstants.EXTENSION_PARAMS.minExtension(),
-            IntakeConstants.EXTENSION_PARAMS.maxExtension(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.massKg(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.pitchDiameter(),
+                V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension(),
             false,
-            IntakeConstants.EXTENSION_PARAMS.minExtension());
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                IntakeConstants.ROLLER_PARAMS.motor(),
-                IntakeConstants.ROLLER_PARAMS.momentOfInertia(),
-                IntakeConstants.ROLLER_MOTOR_GEAR_RATIO),
-            IntakeConstants.ROLLER_PARAMS.motor());
+                V2_RedundancyIntakeConstants.ROLLER_PARAMS.motor(),
+                V2_RedundancyIntakeConstants.ROLLER_PARAMS.momentOfInertia(),
+                V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO),
+            V2_RedundancyIntakeConstants.ROLLER_PARAMS.motor());
 
     extensionController =
         new ProfiledPIDController(
-            IntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
+            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
             0.0,
-            IntakeConstants.EXTENSION_MOTOR_GAINS.kD().get(),
+            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
     extensionFeedforward =
         new SimpleMotorFeedforward(
-            IntakeConstants.EXTENSION_MOTOR_GAINS.kS().get(),
-            IntakeConstants.EXTENSION_MOTOR_GAINS.kV().get(),
-            IntakeConstants.EXTENSION_MOTOR_GAINS.kA().get());
+            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS().get(),
+            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV().get(),
+            V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA().get());
 
     extensionAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
@@ -64,7 +64,7 @@ public class IntakeIOSim implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V2_RedundancyIntakeIOInputs inputs) {
     if (extensionClosedLoop) {
       extensionAppliedVolts =
           extensionController.calculate(extensionSim.getPositionMeters())
@@ -86,18 +86,18 @@ public class IntakeIOSim implements IntakeIO {
     inputs.extensionGoal =
         (extensionController.getGoal().position)
             / (2 * Math.PI)
-            * IntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
-            * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
     inputs.extensionPositionSetpoint =
         (extensionController.getSetpoint().position)
             / (2 * Math.PI)
-            * IntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
-            * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
     inputs.extensionPositionError =
         (extensionController.getPositionError())
             / (2 * Math.PI)
-            * IntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
-            * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV;
 
     inputs.rollerPosition = Rotation2d.fromRadians(rollerSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerSim.getAngularVelocityRadPerSec();

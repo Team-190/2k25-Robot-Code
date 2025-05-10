@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.*;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
-public class IntakeIOTalonFX implements IntakeIO {
+public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   private final TalonFX extensionTalonFX;
   private final TalonFX rollerTalonFX;
 
@@ -46,45 +46,47 @@ public class IntakeIOTalonFX implements IntakeIO {
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
 
-  public IntakeIOTalonFX() {
-    extensionTalonFX = new TalonFX(IntakeConstants.EXTENSION_MOTOR_ID);
-    rollerTalonFX = new TalonFX(IntakeConstants.ROLLER_MOTOR_ID);
+  public V2_RedundancyIntakeIOTalonFX() {
+    extensionTalonFX = new TalonFX(V2_RedundancyIntakeConstants.EXTENSION_MOTOR_ID);
+    rollerTalonFX = new TalonFX(V2_RedundancyIntakeConstants.ROLLER_MOTOR_ID);
 
     extensionConfig = new TalonFXConfiguration();
-    extensionConfig.Feedback.SensorToMechanismRatio = IntakeConstants.EXTENSION_MOTOR_GEAR_RATIO;
+    extensionConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO;
     extensionConfig.CurrentLimits.withSupplyCurrentLimit(
-        IntakeConstants.CURRENT_LIMITS.EXTENSION_SUPPLY_CURRENT_LIMIT());
+        V2_RedundancyIntakeConstants.CURRENT_LIMITS.EXTENSION_SUPPLY_CURRENT_LIMIT());
     extensionConfig.CurrentLimits.withStatorCurrentLimit(
-        IntakeConstants.CURRENT_LIMITS.EXTENSION_STATOR_CURRENT_LIMIT());
+        V2_RedundancyIntakeConstants.CURRENT_LIMITS.EXTENSION_STATOR_CURRENT_LIMIT());
     extensionConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     extensionConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    extensionConfig.Slot0.kP = IntakeConstants.EXTENSION_MOTOR_GAINS.kP().get();
-    extensionConfig.Slot0.kD = IntakeConstants.EXTENSION_MOTOR_GAINS.kD().get();
-    extensionConfig.Slot0.kS = IntakeConstants.EXTENSION_MOTOR_GAINS.kS().get();
-    extensionConfig.Slot0.kV = IntakeConstants.EXTENSION_MOTOR_GAINS.kV().get();
-    extensionConfig.Slot0.kA = IntakeConstants.EXTENSION_MOTOR_GAINS.kA().get();
+    extensionConfig.Slot0.kP = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP().get();
+    extensionConfig.Slot0.kD = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kD().get();
+    extensionConfig.Slot0.kS = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kS().get();
+    extensionConfig.Slot0.kV = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kV().get();
+    extensionConfig.Slot0.kA = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA().get();
     extensionConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        (IntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+        (V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
     extensionConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     extensionConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        (IntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+        (V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
     extensionConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     extensionConfig.MotionMagic.MotionMagicAcceleration =
-        IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     extensionConfig.MotionMagic.MotionMagicCruiseVelocity =
-        IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     tryUntilOk(5, () -> extensionTalonFX.getConfigurator().apply(extensionConfig, 0.25));
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
-        IntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
+        V2_RedundancyIntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
     rollerConfig.CurrentLimits.withStatorCurrentLimit(
-        IntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
+        V2_RedundancyIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    rollerConfig.Feedback.SensorToMechanismRatio = IntakeConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
 
@@ -141,19 +143,20 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
-    extensionTalonFX.setPosition(IntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V2_RedundancyIntakeIOInputs inputs) {
     InternalLoggedTracer.reset();
     inputs.extensionPositionMeters =
         (extensionPositionRotations.getValueAsDouble()
-            * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
+            * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
     inputs.extensionVelocityMetersPerSecond =
         Units.rotationsToRadians(
             extensionVelocityRotationsPerSecond.getValueAsDouble()
-                * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
+                * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV);
     inputs.extensionAppliedVolts = extensionAppliedVolts.getValueAsDouble();
     inputs.extensionSupplyCurrentAmps = extensionSupplyCurrentAmps.getValueAsDouble();
     inputs.extensionTorqueCurrentAmps = extensionTorqueCurrentAmps.getValueAsDouble();
@@ -199,7 +202,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     extensionGoal = position;
     extensionTalonFX.setControl(
         positionControlRequest
-            .withPosition(position / IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV)
+            .withPosition(position / V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV)
             .withEnableFOC(true));
     InternalLoggedTracer.record("Set Extension Goal", "Intake/TalonFX");
   }
@@ -209,8 +212,8 @@ public class IntakeIOTalonFX implements IntakeIO {
     return Math.abs(
             extensionGoal
                 - (extensionPositionRotations.getValueAsDouble()
-                    * IntakeConstants.EXTENSION_MOTOR_METERS_PER_REV))
-        < IntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+                    * V2_RedundancyIntakeConstants.EXTENSION_MOTOR_METERS_PER_REV))
+        < V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override
@@ -236,11 +239,13 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void resetExtension() {
-    extensionTalonFX.setPosition(IntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
   }
 
   @Override
   public void maxExt() {
-    extensionTalonFX.setPosition(IntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
   }
 }

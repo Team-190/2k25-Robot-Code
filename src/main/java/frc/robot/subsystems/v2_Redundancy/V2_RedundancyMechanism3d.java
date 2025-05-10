@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyMechanism3d {
@@ -115,7 +115,9 @@ public class V2_RedundancyMechanism3d {
                   0.0,
                   armAngle.getRadians()
                       + Units.degreesToRadians(
-                          -ManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getDegrees()),
+                          -V2_RedundancyManipulatorConstants.ARM_PARAMETERS
+                              .MIN_ANGLE()
+                              .getDegrees()),
                   0.0))),
       ALGAE_INTAKE.transformBy(new Transform3d(-intakePosition, 0.0, 0.0, new Rotation3d()))
     };

@@ -8,7 +8,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class FunnelConstants {
+public class V2_RedundancyFunnelConstants {
   public static final int CLAP_DADDY_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;

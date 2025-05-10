@@ -8,16 +8,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase {
-  private final IntakeIO io;
-  private final IntakeIOInputsAutoLogged inputs;
+public class V2_RedundancyIntake extends SubsystemBase {
+  private final V2_RedundancyIntakeIO io;
+  private final V2_RedundancyIntakeIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
 
@@ -27,9 +27,9 @@ public class Intake extends SubsystemBase {
 
   private boolean isClosedLoop;
 
-  public Intake(IntakeIO io) {
+  public V2_RedundancyIntake(V2_RedundancyIntakeIO io) {
     this.io = io;
-    inputs = new IntakeIOInputsAutoLogged();
+    inputs = new V2_RedundancyIntakeIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(

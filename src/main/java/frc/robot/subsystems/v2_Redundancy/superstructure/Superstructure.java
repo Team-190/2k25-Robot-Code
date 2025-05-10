@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructureState.*;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants.FunnelState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.Intake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.IntakeConstants.IntakeState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.Manipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.ManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -18,10 +18,10 @@ import org.jgrapht.graph.DefaultEdge;
 public class Superstructure {
 
   private final Graph<SuperstructureState, EdgeCommand> graph;
-  private final Elevator elevator;
-  private final Funnel funnel;
-  private final Manipulator manipulator;
-  private final Intake intake;
+  private final V2_RedundancyElevator elevator;
+  private final V2_RedundancyFunnel funnel;
+  private final V2_RedundancyManipulator manipulator;
+  private final V2_RedundancyIntake intake;
 
   private SuperstructureState previousState;
   private SuperstructureState currentState;
@@ -103,7 +103,10 @@ public class Superstructure {
     }
 
     public SuperstructureState createPose(
-        Elevator elevator, Funnel funnel, Manipulator manipulator, Intake intake) {
+        V2_RedundancyElevator elevator,
+        V2_RedundancyFunnel funnel,
+        V2_RedundancyManipulator manipulator,
+        V2_RedundancyIntake intake) {
       if (subsystemPoses != null) {
         return new SuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
       } else {
@@ -125,7 +128,11 @@ public class Superstructure {
     }
   }
 
-  private Superstructure(Elevator elevator, Funnel funnel, Manipulator manipulator, Intake intake) {
+  private Superstructure(
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake) {
     this.elevator = elevator;
     this.funnel = funnel;
     this.manipulator = manipulator;

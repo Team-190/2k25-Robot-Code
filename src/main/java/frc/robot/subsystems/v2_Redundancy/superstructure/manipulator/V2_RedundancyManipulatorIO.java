@@ -3,9 +3,9 @@ package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ManipulatorIO {
+public interface V2_RedundancyManipulatorIO {
   @AutoLog
-  public static class ManipulatorIOInputs {
+  public static class V2_RedundancyManipulatorIOInputs {
     public Rotation2d armPosition = new Rotation2d();
     public double armVelocityRadiansPerSecond = 0.0;
     public double armAppliedVolts = 0.0;
@@ -30,7 +30,7 @@ public interface ManipulatorIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(ManipulatorIOInputs inputs) {}
+  public default void updateInputs(V2_RedundancyManipulatorIOInputs inputs) {}
 
   /**
    * Sets the voltage for the arm.

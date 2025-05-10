@@ -16,11 +16,11 @@ import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants.FunnelState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.Intake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.Manipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedChoreo.LoggedAutoRoutine;
 import frc.robot.util.LoggedChoreo.LoggedAutoTrajectory;
@@ -410,10 +410,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeft(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeft");
 
@@ -482,10 +482,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftNashoba(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftNashoba");
 
@@ -554,10 +554,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftDAVE(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftD.A.V.E.");
 
@@ -626,10 +626,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoARight(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoARight");
@@ -699,10 +699,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBLeft(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoBLeft");
@@ -743,10 +743,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCLeft(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCLeft");
@@ -803,10 +803,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCLeftPush(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCLeft");
@@ -867,10 +867,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRight(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCRight");
@@ -925,10 +925,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRightPush(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCRight");
@@ -987,10 +987,10 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBRight(
       Drive drive,
-      Elevator elevator,
-      Funnel funnel,
-      Manipulator manipulator,
-      Intake intake,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoBRight");
@@ -1030,7 +1030,11 @@ public class AutonomousCommands {
   }
 
   public static final LoggedAutoRoutine autoDCenter(
-      Drive drive, Elevator elevator, Manipulator manipulator, Funnel funnel, Camera... cameras) {
+      Drive drive,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyFunnel funnel,
+      Camera... cameras) {
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoDCenter");
     LoggedAutoTrajectory path1 =
         routine

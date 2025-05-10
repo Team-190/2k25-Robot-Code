@@ -1,21 +1,20 @@
-package frc.robot.subsystems.v2_Redundancy.superstructure.funnel;
+package frc.robot.subsystems.v2_Redundancy.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FunnelIO {
+public interface V2_RedundancyIntakeIO {
   @AutoLog
-  public static class FunnelIOInputs {
-    public Rotation2d clapDaddyPosition = new Rotation2d();
-    public Rotation2d clapDaddyAbsolutePosition = new Rotation2d();
-    public double clapDaddyVelocityRadiansPerSecond = 0.0;
-    public double clapDaddyAppliedVolts = 0.0;
-    public double clapDaddySupplyCurrentAmps = 0.0;
-    public double clapDaddyTorqueCurrentAmps = 0.0;
-    public double clapDaddyTemperatureCelsius = 0.0;
-    public Rotation2d clapDaddyGoal = new Rotation2d();
-    public Rotation2d clapDaddyPositionSetpoint = new Rotation2d();
-    public Rotation2d clapDaddyPositionError = new Rotation2d();
+  public static class V2_RedundancyIntakeIOInputs {
+    public double extensionPositionMeters = 0.0;
+    public double extensionVelocityMetersPerSecond = 0.0;
+    public double extensionAppliedVolts = 0.0;
+    public double extensionSupplyCurrentAmps = 0.0;
+    public double extensionTorqueCurrentAmps = 0.0;
+    public double extensionTemperatureCelsius = 0.0;
+    public double extensionGoal = 0.0;
+    public double extensionPositionSetpoint = 0.0;
+    public double extensionPositionError = 0.0;
 
     public Rotation2d rollerPosition = new Rotation2d();
     public double rollerVelocityRadiansPerSecond = 0.0;
@@ -23,23 +22,21 @@ public interface FunnelIO {
     public double rollerSupplyCurrentAmps = 0.0;
     public double rollerTorqueCurrentAmps = 0.0;
     public double rollerTemperatureCelsius = 0.0;
-
-    public boolean hasCoral = false;
   }
 
   /**
-   * Updates the inputs for the funnel subsystem.
+   * Updates the inputs for the intake subsystem.
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(FunnelIOInputs inputs) {}
+  public default void updateInputs(V2_RedundancyIntakeIOInputs inputs) {}
 
   /**
    * Sets the voltage for the clap daddy.
    *
    * @param volts The voltage to set.
    */
-  public default void setClapDaddyVoltage(double volts) {}
+  public default void setExtensionVoltage(double volts) {}
 
   /**
    * Sets the voltage for the roller.
@@ -53,7 +50,7 @@ public interface FunnelIO {
    *
    * @param position The position to set.
    */
-  public default void setClapDaddyGoal(Rotation2d position) {}
+  public default void setExtensionGoal(double position) {}
 
   /** Stops the roller. */
   public default void stopRoller() {}
@@ -63,12 +60,12 @@ public interface FunnelIO {
    *
    * @return True if the clap daddy is at its goal, false otherwise.
    */
-  public default boolean atClapDaddyPositionGoal() {
+  public default boolean atExtensionPositionGoal() {
     return false;
   }
 
   /**
-   * Updates the control gains for the funnel subsystem.
+   * Updates the control gains for the intake subsystem.
    *
    * @param kP Proportional gain.
    * @param kD Derivative gain.
@@ -79,10 +76,14 @@ public interface FunnelIO {
   public default void updateGains(double kP, double kD, double kS, double kV, double kA) {}
 
   /**
-   * Updates the constraints for the funnel subsystem.
+   * Updates the constraints for the intake subsystem.
    *
    * @param maxAcceleration The maximum acceleration.
    * @param maxVelocity The maximum velocity.
    */
   public default void updateConstraints(double maxAcceleration, double maxVelocity) {}
+
+  public default void resetExtension() {}
+
+  public default void maxExt() {}
 }
