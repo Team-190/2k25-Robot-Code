@@ -1,9 +1,9 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructureState.*;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
+import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructureState.*;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelConstants.FunnelState;
@@ -34,32 +34,32 @@ public class Superstructure {
     STOW_DOWN(
         "STOW DOWN",
         new SubsystemPoses(
-            ReefHeight.STOW, ArmState.STOW_DOWN,
+            ReefState.STOW, ArmState.STOW_DOWN,
             IntakeState.STOW, FunnelState.OPENED)),
     INTAKE(
         "INTAKE CORAL",
         new SubsystemPoses(
-            ReefHeight.CORAL_INTAKE, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.CORAL_INTAKE, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L1(
         "L1 CORAL SETPOINT",
         new SubsystemPoses(
-            ReefHeight.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L2(
         "L2 CORAL SETPOINT",
         new SubsystemPoses(
-            ReefHeight.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L3(
         "L3 CORAL SETPOINT",
         new SubsystemPoses(
-            ReefHeight.L3, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.L3, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L4(
         "L4 CORAL SETPOINT",
         new SubsystemPoses(
-            ReefHeight.L4, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.L4, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L4_PLUS(
         "L4+ CORAL SETPOINT",
         new SubsystemPoses(
-            ReefHeight.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED));
+            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED));
     // SCORE_L1(
     //   "L1 CORAL SCORE",
 
@@ -109,8 +109,7 @@ public class Superstructure {
     public SuperstructureState createPose(
         Elevator elevator, Funnel funnel, Manipulator manipulator, Intake intake) {
       if (subsystemPoses != null) {
-        return new SuperstructurePose(
-            name, subsystemPoses, elevator, funnel, manipulator, intake);
+        return new SuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
       } else {
         return new SuperstructureAction(
             name,

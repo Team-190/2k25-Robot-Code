@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
@@ -131,7 +131,7 @@ public class Elevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(Supplier<ReefHeight> newPosition) {
+  public Command setPosition(Supplier<ReefState> newPosition) {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
@@ -183,7 +183,7 @@ public class Elevator extends SubsystemBase {
         });
   }
 
-  public ElevatorPositions getPosition(ReefHeight newPosition) {
+  public ElevatorPositions getPosition(ReefState newPosition) {
     switch (newPosition) {
       case STOW:
         return ElevatorPositions.STOW;
@@ -258,7 +258,7 @@ public class Elevator extends SubsystemBase {
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        setPosition(() -> ReefHeight.STOW));
+        setPosition(() -> ReefState.STOW));
   }
 
   /**

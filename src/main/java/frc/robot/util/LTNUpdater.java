@@ -3,6 +3,8 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
@@ -48,6 +50,31 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
+  public static final void updateElevator(V1_StackUpElevator elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              ElevatorConstants.GAINS.kP().get(),
+              ElevatorConstants.GAINS.kD().get(),
+              ElevatorConstants.GAINS.kS().get(),
+              ElevatorConstants.GAINS.kV().get(),
+              ElevatorConstants.GAINS.kA().get(),
+              ElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get(),
+              ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
+        },
+        ElevatorConstants.GAINS.kP(),
+        ElevatorConstants.GAINS.kD(),
+        ElevatorConstants.GAINS.kS(),
+        ElevatorConstants.GAINS.kV(),
+        ElevatorConstants.GAINS.kA(),
+        ElevatorConstants.GAINS.kG(),
+        ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
+        ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+  }
+
   public static final void updateElevator(Elevator elevator) {
     LoggedTunableNumber.ifChanged(
         elevator.hashCode(),
@@ -71,6 +98,29 @@ public class LTNUpdater {
         ElevatorConstants.GAINS.kG(),
         ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
         ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+  }
+
+  public static final void updateFunnel(V1_StackUpFunnel funnel) {
+    LoggedTunableNumber.ifChanged(
+        funnel.hashCode(),
+        () -> {
+          funnel.updateGains(
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+          funnel.updateConstraints(
+              FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+        },
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
   public static final void updateFunnel(Funnel funnel) {

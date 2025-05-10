@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
@@ -299,7 +299,7 @@ public class Robot extends LoggedRobot {
     InternalLoggedTracer.record("Set Robotstate Mode", "Robot");
 
     InternalLoggedTracer.reset();
-    RobotState.setReefHeight(ReefHeight.L4);
+    RobotState.setReefHeight(ReefState.L4);
     InternalLoggedTracer.record("Set Reef Height", "Robot");
 
     InternalLoggedTracer.reset();

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,7 +8,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class FunnelConstants {
+public class V1_StackUpFunnelConstants {
   public static final int CLAP_DADDY_MOTOR_ID;
   public static final int ROLLER_MOTOR_ID;
   public static final int CORAL_SENSOR_ID;

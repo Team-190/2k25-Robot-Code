@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
@@ -31,20 +31,20 @@ import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.Elevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.Funnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.FunnelIOTalonFX;
+import frc.robot.subsystems.v1_StackUp.leds.V1_StackUpLEDs;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIO;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIOSim;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIOTalonFX;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelIO;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelIOSim;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelIOTalonFX;
+import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulatorIO;
+import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulatorIOSim;
+import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import org.littletonrobotics.junction.Logger;
 
@@ -52,11 +52,11 @@ public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
-  private Elevator elevator;
-  private Funnel funnel;
+  private V1_StackUpElevator elevator;
+  private V1_StackUpFunnel funnel;
   private Climber climber;
   private V1_StackUpManipulator manipulator;
-  private V1_StackUp_LEDs leds;
+  private V1_StackUpLEDs leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -78,11 +78,11 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          funnel = new Funnel(new FunnelIOTalonFX());
+          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOTalonFX());
+          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
-          leds = new V1_StackUp_LEDs();
+          leds = new V1_StackUpLEDs();
           break;
         case V1_STACKUP_SIM:
           drive =
@@ -93,8 +93,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new Elevator(new ElevatorIOSim());
-          funnel = new Funnel(new FunnelIOSim());
+          elevator = new V1_StackUpElevator(new V1_StackUpElevatorIOSim());
+          funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
           break;
@@ -116,10 +116,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (elevator == null) {
-      elevator = new Elevator(new ElevatorIO() {});
+      elevator = new V1_StackUpElevator(new V1_StackUpElevatorIO() {});
     }
     if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {});
+      funnel = new V1_StackUpFunnel(new V1_StackUpFunnelIO() {});
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
@@ -128,7 +128,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
     }
     if (leds == null) {
-      leds = new V1_StackUp_LEDs();
+      leds = new V1_StackUpLEDs();
     }
 
     configureButtonBindings();
@@ -164,27 +164,27 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> false));
 
     // Driver face buttons
-    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Driver triggers
     driver
@@ -219,27 +219,27 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
     // Operator face buttons
-    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Operator triggers
     operator
@@ -251,7 +251,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(V1_StackUpCompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
     operator

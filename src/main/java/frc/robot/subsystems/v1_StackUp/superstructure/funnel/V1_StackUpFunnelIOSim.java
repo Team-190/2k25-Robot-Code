@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
-public class FunnelIOSim implements FunnelIO {
+public class V1_StackUpFunnelIOSim implements V1_StackUpFunnelIO {
   public final SingleJointedArmSim clapDaddySim;
   public final DCMotorSim rollerSim;
 
@@ -21,41 +21,41 @@ public class FunnelIOSim implements FunnelIO {
   private double rollerAppliedVolts;
   private boolean clapDaddyClosedLoop;
 
-  public FunnelIOSim() {
+  public V1_StackUpFunnelIOSim() {
     clapDaddySim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
-                FunnelConstants.CLAP_DADDY_PARAMS.motor(),
-                FunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
-                FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
-            FunnelConstants.CLAP_DADDY_PARAMS.motor(),
-            FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
+                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
+            V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
             1.0,
             Double.NEGATIVE_INFINITY,
             Double.POSITIVE_INFINITY,
             false,
-            FunnelConstants.FunnelState.OPENED.getAngle().getRadians());
+            V1_StackUpFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.ROLLER_PARAMS.motor(),
-                FunnelConstants.ROLLER_PARAMS.momentOfInertia(),
-                FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
-            FunnelConstants.ROLLER_PARAMS.motor());
+                V1_StackUpFunnelConstants.ROLLER_PARAMS.motor(),
+                V1_StackUpFunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                V1_StackUpFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
+            V1_StackUpFunnelConstants.ROLLER_PARAMS.motor());
 
     clapDaddyController =
         new ProfiledPIDController(
-            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
             0.0,
-            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
     clapDaddyFeedforward =
         new SimpleMotorFeedforward(
-            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
-            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
-            FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
 
     clapDaddyAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
@@ -65,7 +65,7 @@ public class FunnelIOSim implements FunnelIO {
   }
 
   @Override
-  public void updateInputs(FunnelIOInputs inputs) {
+  public void updateInputs(V1_StackUpFunnelIOInputs inputs) {
     if (clapDaddyClosedLoop) {
       clapDaddyAppliedVolts =
           clapDaddyController.calculate(clapDaddySim.getAngleRads())
