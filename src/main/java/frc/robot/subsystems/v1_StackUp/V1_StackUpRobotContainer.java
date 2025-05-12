@@ -33,7 +33,7 @@ import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUpLEDs;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.V1_StackUpElevatorPositions;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIO;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIOSim;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorIOTalonFX;
@@ -140,13 +140,13 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     Trigger elevatorStow =
         new Trigger(
             () ->
-                elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
-                    || elevator.getPosition().equals(ElevatorPositions.STOW));
+                elevator.getPosition().equals(V1_StackUpElevatorPositions.CORAL_INTAKE)
+                    || elevator.getPosition().equals(V1_StackUpElevatorPositions.STOW));
     Trigger elevatorNotStow =
         new Trigger(
             () ->
-                !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
-                    && !elevator.getPosition().equals(ElevatorPositions.STOW));
+                !elevator.getPosition().equals(V1_StackUpElevatorPositions.CORAL_INTAKE)
+                    && !elevator.getPosition().equals(V1_StackUpElevatorPositions.STOW));
     Trigger halfScoreTrigger =
         new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
     Trigger unHalfScoreTrigger =

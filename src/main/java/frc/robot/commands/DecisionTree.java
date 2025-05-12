@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -23,14 +23,15 @@ public class DecisionTree {
   }
 
   private static final BooleanSupplier getElevatorStartBelow(V2_RedundancyElevator elevator) {
-    return () -> elevator.getPositionMeters() < ElevatorPositions.ALGAE_MID.getPosition();
+    return () ->
+        elevator.getPositionMeters() < V2_RedundancyElevatorPositions.ALGAE_MID.getPosition();
   }
 
   private static final BooleanSupplier getElevatorEndBelow(
       V2_RedundancyElevator elevator, Supplier<ReefState> elevatorState) {
     return () ->
         elevator.getPosition(elevatorState.get()).getPosition()
-            < ElevatorPositions.ALGAE_MID.getPosition();
+            < V2_RedundancyElevatorPositions.ALGAE_MID.getPosition();
   }
 
   private static final BooleanSupplier getArmCrossStowLine(

@@ -17,7 +17,7 @@ import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
@@ -81,7 +81,7 @@ public class CompositeCommands {
               elevator.setPosition(),
               () ->
                   RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
-                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
+                      && !elevator.getPosition().equals(V2_RedundancyElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
           Commands.waitSeconds(0.05),
@@ -119,8 +119,8 @@ public class CompositeCommands {
                   .setPosition(() -> ReefState.STOW)
                   .onlyIf(
                       () ->
-                          elevator.getPosition().equals(ElevatorPositions.L3)
-                              || elevator.getPosition().equals(ElevatorPositions.L2))),
+                          elevator.getPosition().equals(V2_RedundancyElevatorPositions.L3)
+                              || elevator.getPosition().equals(V2_RedundancyElevatorPositions.L2))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
@@ -378,7 +378,7 @@ public class CompositeCommands {
                   IntakeState.STOW),
               () ->
                   RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
-                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
+                      && !elevator.getPosition().equals(V2_RedundancyElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           DecisionTree.moveSequence(
               elevator,
@@ -401,8 +401,8 @@ public class CompositeCommands {
                   IntakeState.STOW)
               .onlyIf(
                   () ->
-                      elevator.getPosition().equals(ElevatorPositions.L3)
-                          || elevator.getPosition().equals(ElevatorPositions.L2)));
+                      elevator.getPosition().equals(V2_RedundancyElevatorPositions.L3)
+                          || elevator.getPosition().equals(V2_RedundancyElevatorPositions.L2)));
     }
 
     public static final Command autoScoreCoralSequence(
@@ -448,7 +448,7 @@ public class CompositeCommands {
                           ArmState.STOW_DOWN,
                           IntakeState.STOW),
                       manipulator.scoreCoral().withTimeout(0.5))
-                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
+                  .onlyIf(() -> elevator.getPosition().equals(V2_RedundancyElevatorPositions.L4))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 

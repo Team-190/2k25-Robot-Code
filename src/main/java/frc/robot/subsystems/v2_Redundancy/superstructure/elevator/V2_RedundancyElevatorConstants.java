@@ -195,7 +195,7 @@ public class V2_RedundancyElevatorConstants {
       int NUM_MOTORS) {}
 
   @RequiredArgsConstructor
-  public static enum ElevatorPositions {
+  public static enum V2_RedundancyElevatorPositions {
     STOW(0.0),
     CORAL_INTAKE(0.0),
     ALGAE_INTAKE(0.2161583093038944 + Units.inchesToMeters(1)),

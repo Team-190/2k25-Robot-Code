@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.V1_StackUpElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -27,7 +27,7 @@ public class V1_StackUpElevator extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
 
-  @Getter private ElevatorPositions position;
+  @Getter private V1_StackUpElevatorPositions position;
   private boolean isClosedLoop;
 
   public V1_StackUpElevator(V1_StackUpElevatorIO io) {
@@ -43,7 +43,7 @@ public class V1_StackUpElevator extends SubsystemBase {
                 (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
 
-    position = ElevatorPositions.STOW;
+    position = V1_StackUpElevatorPositions.STOW;
     isClosedLoop = true;
   }
 
@@ -79,46 +79,46 @@ public class V1_StackUpElevator extends SubsystemBase {
           isClosedLoop = true;
           switch (RobotState.getOIData().currentReefHeight()) {
             case STOW:
-              this.position = ElevatorPositions.STOW;
+              this.position = V1_StackUpElevatorPositions.STOW;
               break;
             case CORAL_INTAKE:
-              this.position = ElevatorPositions.CORAL_INTAKE;
+              this.position = V1_StackUpElevatorPositions.CORAL_INTAKE;
               break;
             case ALGAE_FLOOR_INTAKE:
-              this.position = ElevatorPositions.ALGAE_INTAKE;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
-              this.position = ElevatorPositions.ALGAE_MID;
+              this.position = V1_StackUpElevatorPositions.ALGAE_MID;
               break;
             case ASS_TOP:
-              this.position = ElevatorPositions.ASS_TOP;
+              this.position = V1_StackUpElevatorPositions.ASS_TOP;
               break;
             case ASS_BOT:
-              this.position = ElevatorPositions.ASS_BOT;
+              this.position = V1_StackUpElevatorPositions.ASS_BOT;
               break;
             case ALGAE_INTAKE_TOP:
-              this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
               break;
             case ALGAE_INTAKE_BOTTOM:
-              this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
-              this.position = ElevatorPositions.L1;
+              this.position = V1_StackUpElevatorPositions.L1;
               break;
             case L2:
-              this.position = ElevatorPositions.L2;
+              this.position = V1_StackUpElevatorPositions.L2;
               break;
             case L3:
-              this.position = ElevatorPositions.L3;
+              this.position = V1_StackUpElevatorPositions.L3;
               break;
             case L4:
-              this.position = ElevatorPositions.L4;
+              this.position = V1_StackUpElevatorPositions.L4;
               break;
             case L4_PLUS:
-              this.position = ElevatorPositions.L4_PLUS;
+              this.position = V1_StackUpElevatorPositions.L4_PLUS;
               break;
             case ALGAE_SCORE:
-              this.position = ElevatorPositions.ALGAE_SCORE;
+              this.position = V1_StackUpElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
@@ -137,84 +137,84 @@ public class V1_StackUpElevator extends SubsystemBase {
           isClosedLoop = true;
           switch (newPosition.get()) {
             case STOW:
-              this.position = ElevatorPositions.STOW;
+              this.position = V1_StackUpElevatorPositions.STOW;
               break;
             case CORAL_INTAKE:
-              this.position = ElevatorPositions.CORAL_INTAKE;
+              this.position = V1_StackUpElevatorPositions.CORAL_INTAKE;
               break;
             case ALGAE_FLOOR_INTAKE:
-              this.position = ElevatorPositions.ALGAE_INTAKE;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE;
               break;
             case ALGAE_MID:
-              this.position = ElevatorPositions.ALGAE_MID;
+              this.position = V1_StackUpElevatorPositions.ALGAE_MID;
               break;
             case ASS_TOP:
-              this.position = ElevatorPositions.ASS_TOP;
+              this.position = V1_StackUpElevatorPositions.ASS_TOP;
               break;
             case ASS_BOT:
-              this.position = ElevatorPositions.ASS_BOT;
+              this.position = V1_StackUpElevatorPositions.ASS_BOT;
               break;
             case ALGAE_INTAKE_TOP:
-              this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
               break;
             case ALGAE_INTAKE_BOTTOM:
-              this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
+              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
-              this.position = ElevatorPositions.L1;
+              this.position = V1_StackUpElevatorPositions.L1;
               break;
             case L2:
-              this.position = ElevatorPositions.L2;
+              this.position = V1_StackUpElevatorPositions.L2;
               break;
             case L3:
-              this.position = ElevatorPositions.L3;
+              this.position = V1_StackUpElevatorPositions.L3;
               break;
             case L4:
-              this.position = ElevatorPositions.L4;
+              this.position = V1_StackUpElevatorPositions.L4;
               break;
             case L4_PLUS:
-              this.position = ElevatorPositions.L4_PLUS;
+              this.position = V1_StackUpElevatorPositions.L4_PLUS;
               break;
             case ALGAE_SCORE:
-              this.position = ElevatorPositions.ALGAE_SCORE;
+              this.position = V1_StackUpElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
         });
   }
 
-  public ElevatorPositions getPosition(ReefState newPosition) {
+  public V1_StackUpElevatorPositions getPosition(ReefState newPosition) {
     switch (newPosition) {
       case STOW:
-        return ElevatorPositions.STOW;
+        return V1_StackUpElevatorPositions.STOW;
       case CORAL_INTAKE:
-        return ElevatorPositions.CORAL_INTAKE;
+        return V1_StackUpElevatorPositions.CORAL_INTAKE;
       case ALGAE_FLOOR_INTAKE:
-        return ElevatorPositions.ALGAE_INTAKE;
+        return V1_StackUpElevatorPositions.ALGAE_INTAKE;
       case ALGAE_MID:
-        return ElevatorPositions.ALGAE_MID;
+        return V1_StackUpElevatorPositions.ALGAE_MID;
       case ASS_TOP:
-        return ElevatorPositions.ASS_TOP;
+        return V1_StackUpElevatorPositions.ASS_TOP;
       case ASS_BOT:
-        return ElevatorPositions.ASS_BOT;
+        return V1_StackUpElevatorPositions.ASS_BOT;
       case ALGAE_INTAKE_TOP:
-        return ElevatorPositions.ALGAE_INTAKE_TOP;
+        return V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
       case ALGAE_INTAKE_BOTTOM:
-        return ElevatorPositions.ALGAE_INTAKE_BOT;
+        return V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
       case L1:
-        return ElevatorPositions.L1;
+        return V1_StackUpElevatorPositions.L1;
       case L2:
-        return ElevatorPositions.L2;
+        return V1_StackUpElevatorPositions.L2;
       case L3:
-        return ElevatorPositions.L3;
+        return V1_StackUpElevatorPositions.L3;
       case L4:
-        return ElevatorPositions.L4;
+        return V1_StackUpElevatorPositions.L4;
       case L4_PLUS:
-        return ElevatorPositions.L4_PLUS;
+        return V1_StackUpElevatorPositions.L4_PLUS;
       case ALGAE_SCORE:
-        return ElevatorPositions.ALGAE_SCORE;
+        return V1_StackUpElevatorPositions.ALGAE_SCORE;
       default:
-        return ElevatorPositions.STOW;
+        return V1_StackUpElevatorPositions.STOW;
     }
   }
 
@@ -233,7 +233,7 @@ public class V1_StackUpElevator extends SubsystemBase {
    * @return A command that resets the elevator position.
    */
   public Command resetPosition() {
-    return runOnce(() -> this.position = ElevatorPositions.STOW)
+    return runOnce(() -> this.position = V1_StackUpElevatorPositions.STOW)
         .andThen(
             runOnce(
                 () ->
@@ -250,16 +250,30 @@ public class V1_StackUpElevator extends SubsystemBase {
     return Commands.sequence(
         characterizationRoutine
             .quasistatic(Direction.kForward)
-            .until(() -> atGoal(ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(
+                () ->
+                    atGoal(
+                        V1_StackUpElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .quasistatic(Direction.kReverse)
-            .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
+            .until(
+                () ->
+                    atGoal(
+                        V1_StackUpElevatorPositions.STOW.getPosition()
+                            + Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kForward)
-            .until(() -> atGoal(ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(
+                () ->
+                    atGoal(
+                        V1_StackUpElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kReverse)
-            .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
+            .until(
+                () ->
+                    atGoal(
+                        V1_StackUpElevatorPositions.STOW.getPosition()
+                            + Units.inchesToMeters(12.0))),
         setPosition(() -> ReefState.STOW));
   }
 
