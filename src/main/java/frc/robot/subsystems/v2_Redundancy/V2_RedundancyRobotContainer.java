@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
@@ -177,27 +177,27 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             driver.povRight()));
 
     // Driver face buttons
-    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Driver triggers
     driver
@@ -260,27 +260,27 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Operator face buttons
-    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Operator triggers
     operator
@@ -296,7 +296,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(V2_RedundancyCompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()

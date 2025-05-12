@@ -55,7 +55,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     rollerTalonFX = new TalonFX(V2_RedundancyManipulatorConstants.ROLLER_CAN_ID);
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Feedback.SensorToMechanismRatio = V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
+    armConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.CurrentLimits.withSupplyCurrentLimit(
         V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
     armConfig.CurrentLimits.withStatorCurrentLimit(
@@ -81,7 +82,9 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     armConfig.MotionMagic.MotionMagicAcceleration =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get();
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .maxAccelerationRotationsPerSecondSquared()
+            .get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
         V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
 
@@ -119,8 +122,12 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     positionControlRequest =
         new DynamicMotionMagicVoltage(
             0,
-            V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(),
-            V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get(),
+            V2_RedundancyManipulatorConstants.CONSTRAINTS
+                .cruisingVelocityRotationsPerSecond()
+                .get(),
+            V2_RedundancyManipulatorConstants.CONSTRAINTS
+                .maxAccelerationRotationsPerSecondSquared()
+                .get(),
             0);
     voltageRequest = new VoltageOut(0);
 
@@ -145,7 +152,8 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
 
-    armTalonFX.setPosition(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
+    armTalonFX.setPosition(
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
 
     PhoenixUtil.registerSignals(
         false,
@@ -254,11 +262,13 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void zeroArmPosition() {
-    armTalonFX.setPosition(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
+    armTalonFX.setPosition(
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
   }
 
   @Override
   public void armMax() {
-    armTalonFX.setPosition(V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations());
+    armTalonFX.setPosition(
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations());
   }
 }

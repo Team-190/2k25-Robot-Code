@@ -3,6 +3,8 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -48,6 +50,33 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
+  public static final void updateElevator(V1_StackUpElevator elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              V2_RedundancyElevatorConstants.GAINS.kP().get(),
+              V2_RedundancyElevatorConstants.GAINS.kD().get(),
+              V2_RedundancyElevatorConstants.GAINS.kS().get(),
+              V2_RedundancyElevatorConstants.GAINS.kV().get(),
+              V2_RedundancyElevatorConstants.GAINS.kA().get(),
+              V2_RedundancyElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              V2_RedundancyElevatorConstants.CONSTRAINTS
+                  .maxAccelerationMetersPerSecondSquared()
+                  .get(),
+              V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
+        },
+        V2_RedundancyElevatorConstants.GAINS.kP(),
+        V2_RedundancyElevatorConstants.GAINS.kD(),
+        V2_RedundancyElevatorConstants.GAINS.kS(),
+        V2_RedundancyElevatorConstants.GAINS.kV(),
+        V2_RedundancyElevatorConstants.GAINS.kA(),
+        V2_RedundancyElevatorConstants.GAINS.kG(),
+        V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
+        V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+  }
+
   public static final void updateElevator(V2_RedundancyElevator elevator) {
     LoggedTunableNumber.ifChanged(
         elevator.hashCode(),
@@ -60,7 +89,9 @@ public class LTNUpdater {
               V2_RedundancyElevatorConstants.GAINS.kA().get(),
               V2_RedundancyElevatorConstants.GAINS.kG().get());
           elevator.setConstraints(
-              V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get(),
+              V2_RedundancyElevatorConstants.CONSTRAINTS
+                  .maxAccelerationMetersPerSecondSquared()
+                  .get(),
               V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
         },
         V2_RedundancyElevatorConstants.GAINS.kP(),
@@ -71,6 +102,29 @@ public class LTNUpdater {
         V2_RedundancyElevatorConstants.GAINS.kG(),
         V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
         V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+  }
+
+  public static final void updateFunnel(V1_StackUpFunnel funnel) {
+    LoggedTunableNumber.ifChanged(
+        funnel.hashCode(),
+        () -> {
+          funnel.updateGains(
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+          funnel.updateConstraints(
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+        },
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
   public static final void updateFunnel(V2_RedundancyFunnel funnel) {
@@ -114,8 +168,12 @@ public class LTNUpdater {
               V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA().get(),
               V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG().get());
           manipulator.updateArmConstraints(
-              V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get(),
-              V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get());
+              V2_RedundancyManipulatorConstants.CONSTRAINTS
+                  .maxAccelerationRotationsPerSecondSquared()
+                  .get(),
+              V2_RedundancyManipulatorConstants.CONSTRAINTS
+                  .cruisingVelocityRotationsPerSecond()
+                  .get());
         },
         V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP(),
         V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD(),

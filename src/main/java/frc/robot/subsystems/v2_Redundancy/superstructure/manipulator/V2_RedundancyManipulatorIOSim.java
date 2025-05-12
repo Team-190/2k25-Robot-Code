@@ -49,8 +49,12 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
             0.0,
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
             new Constraints(
-                V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(),
-                V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get()));
+                V2_RedundancyManipulatorConstants.CONSTRAINTS
+                    .cruisingVelocityRotationsPerSecond()
+                    .get(),
+                V2_RedundancyManipulatorConstants.CONSTRAINTS
+                    .maxAccelerationRotationsPerSecondSquared()
+                    .get()));
     feedforward =
         new ArmFeedforward(
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),

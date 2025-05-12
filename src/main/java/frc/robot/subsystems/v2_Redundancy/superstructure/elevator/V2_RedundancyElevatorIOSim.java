@@ -38,7 +38,9 @@ public class V2_RedundancyElevatorIOSim implements V2_RedundancyElevatorIO {
             V2_RedundancyElevatorConstants.GAINS.kD().get(),
             new Constraints(
                 V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
-                V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()));
+                V2_RedundancyElevatorConstants.CONSTRAINTS
+                    .maxAccelerationMetersPerSecondSquared()
+                    .get()));
 
     feedforward =
         new ElevatorFeedforward(

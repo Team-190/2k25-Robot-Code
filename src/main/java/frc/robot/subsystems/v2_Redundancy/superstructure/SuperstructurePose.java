@@ -13,10 +13,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 
 public class SuperstructurePose extends SuperstructureState {
 
-    private final ReefHeight elevatorHeight;
-    private final ArmState armState;
-    private final IntakeState intakeState;
-    private final FunnelState funnelState;
+  private final ReefState elevatorHeight;
+  private final ArmState armState;
+  private final IntakeState intakeState;
+  private final FunnelState funnelState;
 
     public SuperstructurePose(
         String key,
@@ -32,52 +32,52 @@ public class SuperstructurePose extends SuperstructureState {
       this.funnelState = poses.funnelState;
     }
 
-    public ReefHeight getElevatorHeight() {
-      return elevatorHeight;
-    }
+  public ReefState getElevatorHeight() {
+    return elevatorHeight;
+  }
 
-    public ArmState getArmState() {
-      return armState;
-    }
+  public ArmState getArmState() {
+    return armState;
+  }
 
-    public IntakeState getIntakeState() {
-      return intakeState;
-    }
+  public IntakeState getIntakeState() {
+    return intakeState;
+  }
 
-    public FunnelState getFunnelState() {
-      return funnelState;
-    }
+  public FunnelState getFunnelState() {
+    return funnelState;
+  }
 
-    public Command setElevatorHeight() {
-      return elevator.setPosition(() -> elevatorHeight);
-    }
+  public Command setElevatorHeight() {
+    return elevator.setPosition(() -> elevatorHeight);
+  }
 
-    public Command setArmState() {
-      return manipulator.setAlgaeArmGoal(armState);
-    }
+  public Command setArmState() {
+    return manipulator.setAlgaeArmGoal(armState);
+  }
 
-    public Command setIntakeState() {
-      return intake.setExtensionGoal(intakeState);
-    }
+  public Command setIntakeState() {
+    return intake.setExtensionGoal(intakeState);
+  }
 
-    public Command setFunnelState() {
-      return funnel.setClapDaddyGoal(funnelState);
-    }
+  public Command setFunnelState() {
+    return funnel.setClapDaddyGoal(funnelState);
+  }
 
-    public Command action() {
-      return Commands.parallel(
-          setElevatorHeight(), setArmState(),
-          setIntakeState(), setFunnelState());
-    }
+  public Command action() {
+    return Commands.parallel(
+        setElevatorHeight(), setArmState(),
+        setIntakeState(), setFunnelState());
+  }
 
-    public record SubsystemPoses(
-        ReefHeight elevatorHeight,
-        ArmState armState,
-        IntakeState intakeState,
-        FunnelState funnelState) {
+  public record SubsystemPoses(
+      ReefState elevatorHeight,
+      ArmState armState,
+      IntakeState intakeState,
+      FunnelState funnelState) {
 
-      public SubsystemPoses() {
-        this(ReefHeight.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED);
-      }
+    public SubsystemPoses() {
+      this(ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED);
     }
   }
+}

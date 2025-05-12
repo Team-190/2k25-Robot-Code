@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.manipulator;
+package frc.robot.subsystems.v1_StackUp.superstructure.manipulator;
 
 import static frc.robot.util.PhoenixUtil.*;
 

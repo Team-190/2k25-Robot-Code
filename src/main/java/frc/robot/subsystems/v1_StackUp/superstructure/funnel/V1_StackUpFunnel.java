@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -9,16 +9,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Funnel extends SubsystemBase {
-  private final FunnelIO io;
-  private final FunnelIOInputsAutoLogged inputs;
+public class V1_StackUpFunnel extends SubsystemBase {
+  private final V1_StackUpFunnelIO io;
+  private final V1_StackUpFunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
@@ -26,9 +26,9 @@ public class Funnel extends SubsystemBase {
 
   private boolean isClosedLoop;
 
-  public Funnel(FunnelIO io) {
+  public V1_StackUpFunnel(V1_StackUpFunnelIO io) {
     this.io = io;
-    inputs = new FunnelIOInputsAutoLogged();
+    inputs = new V1_StackUpFunnelIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(

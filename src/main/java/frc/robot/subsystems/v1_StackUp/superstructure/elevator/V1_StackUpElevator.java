@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.elevator;
+package frc.robot.subsystems.v1_StackUp.superstructure.elevator;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -21,18 +21,18 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends SubsystemBase {
-  private final ElevatorIO io;
-  private final ElevatorIOInputsAutoLogged inputs;
+public class V1_StackUpElevator extends SubsystemBase {
+  private final V1_StackUpElevatorIO io;
+  private final V1_StackUpElevatorIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
 
   @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
-  public Elevator(ElevatorIO io) {
+  public V1_StackUpElevator(V1_StackUpElevatorIO io) {
     this.io = io;
-    inputs = new ElevatorIOInputsAutoLogged();
+    inputs = new V1_StackUpElevatorIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(
@@ -131,7 +131,7 @@ public class Elevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(Supplier<ReefHeight> newPosition) {
+  public Command setPosition(Supplier<ReefState> newPosition) {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
@@ -183,7 +183,7 @@ public class Elevator extends SubsystemBase {
         });
   }
 
-  public ElevatorPositions getPosition(ReefHeight newPosition) {
+  public ElevatorPositions getPosition(ReefState newPosition) {
     switch (newPosition) {
       case STOW:
         return ElevatorPositions.STOW;
@@ -236,7 +236,9 @@ public class Elevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                () ->
+                    io.setPosition(
+                        V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -258,7 +260,7 @@ public class Elevator extends SubsystemBase {
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        setPosition(() -> ReefHeight.STOW));
+        setPosition(() -> ReefState.STOW));
   }
 
   /**
@@ -277,8 +279,8 @@ public class Elevator extends SubsystemBase {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.velocityMetersPerSecond
-        * ElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
+        * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -314,7 +316,7 @@ public class Elevator extends SubsystemBase {
    */
   private boolean atGoal(double position) {
     return Math.abs(position - inputs.positionMeters)
-        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   /**
@@ -325,7 +327,7 @@ public class Elevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= V1_StackUpElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   public Command waitUntilAtGoal() {

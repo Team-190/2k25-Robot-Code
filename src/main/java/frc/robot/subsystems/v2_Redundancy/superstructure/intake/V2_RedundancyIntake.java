@@ -17,7 +17,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyIntake extends SubsystemBase {
   private final V2_RedundancyIntakeIO io;
-  private final IntakeIOInputsAutoLogged inputs;
+  private final V2_RedundancyIntakeIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
 
@@ -29,7 +29,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   public V2_RedundancyIntake(V2_RedundancyIntakeIO io) {
     this.io = io;
-    inputs = new IntakeIOInputsAutoLogged();
+    inputs = new V2_RedundancyIntakeIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(

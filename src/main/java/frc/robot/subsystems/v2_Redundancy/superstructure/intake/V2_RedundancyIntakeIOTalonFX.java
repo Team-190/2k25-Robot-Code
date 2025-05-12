@@ -51,7 +51,8 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     rollerTalonFX = new TalonFX(V2_RedundancyIntakeConstants.ROLLER_MOTOR_ID);
 
     extensionConfig = new TalonFXConfiguration();
-    extensionConfig.Feedback.SensorToMechanismRatio = V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO;
+    extensionConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO;
     extensionConfig.CurrentLimits.withSupplyCurrentLimit(
         V2_RedundancyIntakeConstants.CURRENT_LIMITS.EXTENSION_SUPPLY_CURRENT_LIMIT());
     extensionConfig.CurrentLimits.withStatorCurrentLimit(
@@ -84,7 +85,8 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
         V2_RedundancyIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    rollerConfig.Feedback.SensorToMechanismRatio = V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
 
@@ -141,7 +143,8 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
-    extensionTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
   }
 
   @Override
@@ -236,11 +239,13 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
 
   @Override
   public void resetExtension() {
-    extensionTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
   }
 
   @Override
   public void maxExt() {
-    extensionTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
   }
 }

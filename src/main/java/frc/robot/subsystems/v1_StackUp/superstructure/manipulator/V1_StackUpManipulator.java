@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.manipulator;
+package frc.robot.subsystems.v1_StackUp.superstructure.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;

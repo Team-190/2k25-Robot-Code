@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyFunnel extends SubsystemBase {
   private final V2_RedundancyFunnelIO io;
-  private final FunnelIOInputsAutoLogged inputs;
+  private final V2_RedundancyFunnelIOInputsAutoLogged inputs;
 
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
@@ -28,7 +28,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
 
   public V2_RedundancyFunnel(V2_RedundancyFunnelIO io) {
     this.io = io;
-    inputs = new FunnelIOInputsAutoLogged();
+    inputs = new V2_RedundancyFunnelIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(

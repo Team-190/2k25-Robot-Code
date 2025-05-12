@@ -9,7 +9,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.leds.Leds;
 
-public class V1_StackUp_LEDs extends Leds {
+public class V1_StackUpLEDs extends Leds {
   private static Leds instance;
 
   // Robot state tracking
@@ -28,13 +28,13 @@ public class V1_StackUp_LEDs extends Leds {
   private static final int LEFT_LENGTH_START = 34;
   private static final int LEFT_LENGTH_END = 68;
 
-  public V1_StackUp_LEDs() {
+  public V1_StackUpLEDs() {
     super(LENGTH, PORT);
   }
 
   public static Leds getInstance() {
     if (instance == null) {
-      instance = new V1_StackUp_LEDs();
+      instance = new V1_StackUpLEDs();
     }
     return instance;
   }

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.FieldConstants.Reef.ReefHeight;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
@@ -23,7 +23,11 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyElevator extends SubsystemBase {
   private final V2_RedundancyElevatorIO io;
+<<<<<<< HEAD
   private final ElevatorIOInputsAutoLogged inputs;
+=======
+  private final V2_RedundancyElevatorIOInputsAutoLogged inputs;
+>>>>>>> origin/feature-superstructure-stackup-refactor
 
   private final SysIdRoutine characterizationRoutine;
 
@@ -32,7 +36,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
 
   public V2_RedundancyElevator(V2_RedundancyElevatorIO io) {
     this.io = io;
-    inputs = new ElevatorIOInputsAutoLogged();
+    inputs = new V2_RedundancyElevatorIOInputsAutoLogged();
 
     characterizationRoutine =
         new SysIdRoutine(
@@ -131,7 +135,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(Supplier<ReefHeight> newPosition) {
+  public Command setPosition(Supplier<ReefState> newPosition) {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
@@ -183,7 +187,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
         });
   }
 
-  public ElevatorPositions getPosition(ReefHeight newPosition) {
+  public ElevatorPositions getPosition(ReefState newPosition) {
     switch (newPosition) {
       case STOW:
         return ElevatorPositions.STOW;
@@ -236,7 +240,13 @@ public class V2_RedundancyElevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
+<<<<<<< HEAD
                 () -> io.setPosition(V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+=======
+                () ->
+                    io.setPosition(
+                        V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+>>>>>>> origin/feature-superstructure-stackup-refactor
   }
 
   /**
@@ -258,7 +268,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        setPosition(() -> ReefHeight.STOW));
+        setPosition(() -> ReefState.STOW));
   }
 
   /**

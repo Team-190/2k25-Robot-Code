@@ -738,25 +738,6 @@ public final class DriveCommands {
     return thetaSpeed;
   }
 
-  private static double bargeThetaSpeedCalculate() {
-    ExternalLoggedTracer.reset();
-    double thetaSpeed = 0.0;
-
-    if (!alignHeadingController.atSetpoint())
-      thetaSpeed =
-          alignHeadingController.calculate(
-              RobotState.getRobotPoseField().getRotation().getRadians(),
-              RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                  ? 0
-                  : Math.PI);
-    else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
-
-    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
-
-    ExternalLoggedTracer.record("Barge Theta Speed", "Command Scheduler/Drive Commands");
-    return thetaSpeed;
-  }
-
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();

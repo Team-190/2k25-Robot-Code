@@ -57,14 +57,17 @@ public class V2_RedundancyFunnelIOTalonFX implements V2_RedundancyFunnelIO {
 
   public V2_RedundancyFunnelIOTalonFX() {
     clapDaddyTalonFX =
-        new TalonFX(V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
+        new TalonFX(
+            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
     rollerTalonFX = new TalonFX(V2_RedundancyFunnelConstants.ROLLER_MOTOR_ID);
     coralSensor = new DigitalInput(V2_RedundancyFunnelConstants.CORAL_SENSOR_ID);
     clapDaddyCANcoder =
-        new CANcoder(V2_RedundancyFunnelConstants.CLAP_DADDY_CANCODER_ID, TunerConstantsV1_StackUp.kCANBus);
+        new CANcoder(
+            V2_RedundancyFunnelConstants.CLAP_DADDY_CANCODER_ID, TunerConstantsV1_StackUp.kCANBus);
 
     clapDaddyConfig = new TalonFXConfiguration();
-    clapDaddyConfig.Feedback.SensorToMechanismRatio = V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
+    clapDaddyConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
     clapDaddyConfig.CurrentLimits.withSupplyCurrentLimit(
         V2_RedundancyFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_SUPPLY_CURRENT_LIMIT());
     clapDaddyConfig.CurrentLimits.withStatorCurrentLimit(
@@ -96,7 +99,8 @@ public class V2_RedundancyFunnelIOTalonFX implements V2_RedundancyFunnelIO {
     // rollerConfig.CurrentLimits.withStatorCurrentLimit(
     //     FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.Feedback.SensorToMechanismRatio = V2_RedundancyFunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.Feedback.SensorToMechanismRatio =
+        V2_RedundancyFunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
     rollerConfig.MotorOutput.Inverted = V2_RedundancyFunnelConstants.ROLLER_INVERTED;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
