@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class V1_StackUpManipulator extends SubsystemBase {
   private final V1_StackUpManipulatorIO io;
-  private final ManipulatorIOInputsAutoLogged inputs;
+  private final V1_StackUpManipulatorIOInputsAutoLogged inputs;
 
   private final Timer currentTimer;
   private Rotation2d previousPosition;
@@ -20,7 +20,7 @@ public class V1_StackUpManipulator extends SubsystemBase {
 
   public V1_StackUpManipulator(V1_StackUpManipulatorIO io) {
     this.io = io;
-    inputs = new ManipulatorIOInputsAutoLogged();
+    inputs = new V1_StackUpManipulatorIOInputsAutoLogged();
 
     currentTimer = new Timer();
     previousPosition = inputs.position;

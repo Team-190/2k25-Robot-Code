@@ -22,7 +22,7 @@ public class V1_StackUpManipulatorIOSim implements V1_StackUpManipulatorIO {
   }
 
   @Override
-  public void updateInputs(ManipulatorIOInputs inputs) {
+  public void updateInputs(V1_StackUpManipulatorIOInputs inputs) {
     appliedVolts = MathUtil.clamp(appliedVolts, -12.0, 12.0);
 
     sim.setInputVoltage(appliedVolts);

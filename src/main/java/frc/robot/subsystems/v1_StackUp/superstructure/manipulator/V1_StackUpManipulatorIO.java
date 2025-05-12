@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface V1_StackUpManipulatorIO {
   @AutoLog
-  public static class ManipulatorIOInputs {
+  public static class V1_StackUpManipulatorIOInputs {
     public Rotation2d position = new Rotation2d();
     public double velocityRadiansPerSecond = 0.0;
     public double appliedVolts = 0.0;
@@ -19,7 +19,7 @@ public interface V1_StackUpManipulatorIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(ManipulatorIOInputs inputs) {}
+  public default void updateInputs(V1_StackUpManipulatorIOInputs inputs) {}
 
   /**
    * Sets the voltage for the manipulator.
