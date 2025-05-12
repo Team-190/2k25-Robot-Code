@@ -15,7 +15,11 @@ public class SuperstructureState {
   protected final V2_RedundancyIntake intake;
 
   public SuperstructureState(
-      String key, V2_RedundancyElevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyFunnel funnel, V2_RedundancyIntake intake) {
+      String key,
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyIntake intake) {
     this.key = key;
     this.elevator = elevator;
     this.funnel = funnel;

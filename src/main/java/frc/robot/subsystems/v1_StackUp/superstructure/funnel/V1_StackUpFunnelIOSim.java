@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.superstructure.funnel;
+package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 
-public class V2_RedundancyFunnelIOSim implements V2_RedundancyFunnelIO {
+public class V1_StackUpFunnelIOSim implements V1_StackUpFunnelIO {
   public final SingleJointedArmSim clapDaddySim;
   public final DCMotorSim rollerSim;
 
@@ -21,43 +21,43 @@ public class V2_RedundancyFunnelIOSim implements V2_RedundancyFunnelIO {
   private double rollerAppliedVolts;
   private boolean clapDaddyClosedLoop;
 
-  public V2_RedundancyFunnelIOSim() {
+  public V1_StackUpFunnelIOSim() {
     clapDaddySim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
-                V2_RedundancyFunnelConstants.CLAP_DADDY_PARAMS.motor(),
-                V2_RedundancyFunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
-                V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
-            V2_RedundancyFunnelConstants.CLAP_DADDY_PARAMS.motor(),
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
+                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
+            V1_StackUpFunnelConstants.CLAP_DADDY_PARAMS.motor(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
             1.0,
             Double.NEGATIVE_INFINITY,
             Double.POSITIVE_INFINITY,
             false,
-            V2_RedundancyFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
+            V1_StackUpFunnelConstants.FunnelState.OPENED.getAngle().getRadians());
+
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                V2_RedundancyFunnelConstants.ROLLER_PARAMS.motor(),
-                V2_RedundancyFunnelConstants.ROLLER_PARAMS.momentOfInertia(),
-                V2_RedundancyFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
-            V2_RedundancyFunnelConstants.ROLLER_PARAMS.motor());
+                V1_StackUpFunnelConstants.ROLLER_PARAMS.motor(),
+                V1_StackUpFunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                V1_StackUpFunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
+            V1_StackUpFunnelConstants.ROLLER_PARAMS.motor());
 
     clapDaddyController =
         new ProfiledPIDController(
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
             0.0,
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
             new TrapezoidProfile.Constraints(
-                V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
-                V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS
-                    .MAX_ACCELERATION()
-                    .get()));
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get(),
+                V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get()));
+
     clapDaddyFeedforward =
         new SimpleMotorFeedforward(
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
-            V2_RedundancyFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
 
     clapDaddyAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
@@ -67,7 +67,7 @@ public class V2_RedundancyFunnelIOSim implements V2_RedundancyFunnelIO {
   }
 
   @Override
-  public void updateInputs(V2_RedundancyFunnelIOInputs inputs) {
+  public void updateInputs(V1_StackUpFunnelIOInputs inputs) {
     if (clapDaddyClosedLoop) {
       clapDaddyAppliedVolts =
           clapDaddyController.calculate(clapDaddySim.getAngleRads())

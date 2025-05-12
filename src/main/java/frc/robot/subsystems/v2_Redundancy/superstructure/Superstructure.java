@@ -102,7 +102,10 @@ public class Superstructure {
     }
 
     public SuperstructureState createPose(
-        V2_RedundancyElevator elevator, V2_RedundancyFunnel funnel, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+        V2_RedundancyElevator elevator,
+        V2_RedundancyFunnel funnel,
+        V2_RedundancyManipulator manipulator,
+        V2_RedundancyIntake intake) {
       if (subsystemPoses != null) {
         return new SuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
       } else {
@@ -124,7 +127,11 @@ public class Superstructure {
     }
   }
 
-  private Superstructure(V2_RedundancyElevator elevator, V2_RedundancyFunnel funnel, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
+  private Superstructure(
+      V2_RedundancyElevator elevator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake) {
     this.elevator = elevator;
     this.funnel = funnel;
     this.manipulator = manipulator;

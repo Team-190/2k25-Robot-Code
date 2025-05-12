@@ -41,7 +41,8 @@ public class V2_RedundancyElevatorIOTalonFX implements V2_RedundancyElevatorIO {
 
   public V2_RedundancyElevatorIOTalonFX() {
     talonFX = new TalonFX(V2_RedundancyElevatorConstants.ELEVATOR_CAN_ID);
-    followTalonFX = new TalonFX[V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1];
+    followTalonFX =
+        new TalonFX[V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1];
 
     for (int i = 0; i < V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
       followTalonFX[i] = new TalonFX(V2_RedundancyElevatorConstants.ELEVATOR_CAN_ID + i + 1);
@@ -64,9 +65,11 @@ public class V2_RedundancyElevatorIOTalonFX implements V2_RedundancyElevatorIO {
     config.Slot1.kG = V2_RedundancyElevatorConstants.STOW_GAINS.kG().get();
     config.Slot1.GravityType = GravityTypeValue.Elevator_Static;
 
-    config.CurrentLimits.SupplyCurrentLimit = V2_RedundancyElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit =
+        V2_RedundancyElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = V2_RedundancyElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit =
+        V2_RedundancyElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
@@ -158,7 +161,8 @@ public class V2_RedundancyElevatorIOTalonFX implements V2_RedundancyElevatorIO {
             * V2_RedundancyElevatorConstants.DRUM_RADIUS
             * 2;
     inputs.velocityMetersPerSecond =
-        (velocityRotationsPerSecond.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
+        (velocityRotationsPerSecond.getValueAsDouble()
+                / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
             * V2_RedundancyElevatorConstants.DRUM_RADIUS
             * 2;
@@ -170,12 +174,14 @@ public class V2_RedundancyElevatorIOTalonFX implements V2_RedundancyElevatorIO {
     }
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
-        (positionSetpointRotations.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
+        (positionSetpointRotations.getValueAsDouble()
+                / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
             * V2_RedundancyElevatorConstants.DRUM_RADIUS
             * 2;
     inputs.positionErrorMeters =
-        (positionErrorRotations.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
+        (positionErrorRotations.getValueAsDouble()
+                / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
             * V2_RedundancyElevatorConstants.DRUM_RADIUS
             * 2;

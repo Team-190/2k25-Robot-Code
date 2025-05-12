@@ -18,11 +18,8 @@ import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-public class V2_RedundancyElevatorIOTalonFX implements V2_RedundancyElevatorIO {
-========
 public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
+
   private final TalonFX talonFX;
   private final TalonFX[] followTalonFX;
 
@@ -43,56 +40,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
   private MotionMagicVoltage positionVoltageRequest;
   private VoltageOut voltageRequest;
 
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-  public V2_RedundancyElevatorIOTalonFX() {
-    talonFX = new TalonFX(V2_RedundancyElevatorConstants.ELEVATOR_CAN_ID);
-    followTalonFX = new TalonFX[V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1];
-
-    for (int i = 0; i < V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
-      followTalonFX[i] = new TalonFX(V2_RedundancyElevatorConstants.ELEVATOR_CAN_ID + i + 1);
-    }
-
-    config = new TalonFXConfiguration();
-    config.Slot0.kP = V2_RedundancyElevatorConstants.GAINS.kP().get();
-    config.Slot0.kD = V2_RedundancyElevatorConstants.GAINS.kD().get();
-    config.Slot0.kS = V2_RedundancyElevatorConstants.GAINS.kS().get();
-    config.Slot0.kV = V2_RedundancyElevatorConstants.GAINS.kV().get();
-    config.Slot0.kA = V2_RedundancyElevatorConstants.GAINS.kA().get();
-    config.Slot0.kG = V2_RedundancyElevatorConstants.GAINS.kG().get();
-    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-
-    config.Slot1.kP = V2_RedundancyElevatorConstants.STOW_GAINS.kP().get();
-    config.Slot1.kD = V2_RedundancyElevatorConstants.STOW_GAINS.kD().get();
-    config.Slot1.kS = V2_RedundancyElevatorConstants.STOW_GAINS.kS().get();
-    config.Slot1.kV = V2_RedundancyElevatorConstants.STOW_GAINS.kV().get();
-    config.Slot1.kA = V2_RedundancyElevatorConstants.STOW_GAINS.kA().get();
-    config.Slot1.kG = V2_RedundancyElevatorConstants.STOW_GAINS.kG().get();
-    config.Slot1.GravityType = GravityTypeValue.Elevator_Static;
-
-    config.CurrentLimits.SupplyCurrentLimit = V2_RedundancyElevatorConstants.ELEVATOR_SUPPLY_CURRENT_LIMIT;
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = V2_RedundancyElevatorConstants.ELEVATOR_STATOR_CURRENT_LIMIT;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS()
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS()
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    config.MotionMagic.MotionMagicAcceleration =
-        V2_RedundancyElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get()
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-    config.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get()
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-========
   public V1_StackUpElevatorIOTalonFX() {
     talonFX = new TalonFX(V1_StackUpElevatorConstants.ELEVATOR_CAN_ID);
     followTalonFX = new TalonFX[V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1];
@@ -143,7 +90,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
         V1_StackUpElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get()
             / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
             * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
 
     talonFX.getConfigurator().apply(config);
     for (TalonFX follower : followTalonFX) {
@@ -169,11 +115,7 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
     positionSetpointRotations = talonFX.getClosedLoopReference();
     positionErrorRotations = talonFX.getClosedLoopError();
 
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-    for (int i = 0; i < V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
-========
     for (int i = 0; i < V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS() - 1; i++) {
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
       appliedVolts.add(followTalonFX[i].getMotorVoltage());
       supplyCurrentAmps.add(followTalonFX[i].getSupplyCurrent());
       torqueCurrentAmps.add(followTalonFX[i].getTorqueCurrent());
@@ -211,21 +153,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
   }
 
   @Override
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-  public void updateInputs(V2_RedundancyElevatorIOInputs inputs) {
-    InternalLoggedTracer.reset();
-    inputs.positionMeters =
-        (positionRotations.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-            * Math.PI
-            * V2_RedundancyElevatorConstants.DRUM_RADIUS
-            * 2;
-    inputs.velocityMetersPerSecond =
-        (velocityRotationsPerSecond.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-            * Math.PI
-            * V2_RedundancyElevatorConstants.DRUM_RADIUS
-            * 2;
-    for (int i = 0; i < V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
-========
   public void updateInputs(V1_StackUpElevatorIOInputs inputs) {
     InternalLoggedTracer.reset();
     inputs.positionMeters =
@@ -240,7 +167,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
             * V1_StackUpElevatorConstants.DRUM_RADIUS
             * 2;
     for (int i = 0; i < V1_StackUpElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
       inputs.appliedVolts[i] = appliedVolts.get(i).getValueAsDouble();
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps.get(i).getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps.get(i).getValueAsDouble();
@@ -248,16 +174,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
     }
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-        (positionSetpointRotations.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-            * Math.PI
-            * V2_RedundancyElevatorConstants.DRUM_RADIUS
-            * 2;
-    inputs.positionErrorMeters =
-        (positionErrorRotations.getValueAsDouble() / V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-            * Math.PI
-            * V2_RedundancyElevatorConstants.DRUM_RADIUS
-========
         (positionSetpointRotations.getValueAsDouble()
                 / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
@@ -268,7 +184,6 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
                 / V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
             * V1_StackUpElevatorConstants.DRUM_RADIUS
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
             * 2;
     InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
   }
@@ -285,13 +200,8 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
     InternalLoggedTracer.reset();
     talonFX.setPosition(
         meters
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO);
-========
             / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
             * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO);
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
     InternalLoggedTracer.record("Set Position", "Elevator/TalonFX");
   }
 
@@ -304,26 +214,16 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
           positionVoltageRequest
               .withPosition(
                   meters
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-                      / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-                      * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-========
                       / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
                       * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
               .withSlot(0));
     } else {
       talonFX.setControl(
           positionVoltageRequest
               .withPosition(
                   meters
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-                      / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-                      * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO)
-========
                       / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
                       * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO)
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
               .withSlot(1));
     }
     InternalLoggedTracer.record("Set Position Goal", "Elevator/TalonFX");
@@ -350,21 +250,12 @@ public class V1_StackUpElevatorIOTalonFX implements V1_StackUpElevatorIO {
     InternalLoggedTracer.reset();
     config.MotionMagic.MotionMagicAcceleration =
         maxAcceleration
-<<<<<<<< HEAD:src/main/java/frc/robot/subsystems/v2_Redundancy/superstructure/elevator/V2_RedundancyElevatorIOTalonFX.java
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-    config.MotionMagic.MotionMagicCruiseVelocity =
-        cruisingVelocity
-            / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS)
-            * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO;
-========
             / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
             * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
     config.MotionMagic.MotionMagicCruiseVelocity =
         cruisingVelocity
             / (2 * Math.PI * V1_StackUpElevatorConstants.DRUM_RADIUS)
             * V1_StackUpElevatorConstants.ELEVATOR_GEAR_RATIO;
->>>>>>>> origin/feature-superstructure-stackup-refactor:src/main/java/frc/robot/subsystems/v1_StackUp/superstructure/elevator/V1_StackUpElevatorIOTalonFX.java
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config));
     for (TalonFX follow : followTalonFX) {
       PhoenixUtil.tryUntilOk(5, () -> follow.getConfigurator().apply(config));

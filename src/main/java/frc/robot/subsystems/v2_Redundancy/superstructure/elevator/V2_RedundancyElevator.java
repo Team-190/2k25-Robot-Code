@@ -23,11 +23,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyElevator extends SubsystemBase {
   private final V2_RedundancyElevatorIO io;
-<<<<<<< HEAD
-  private final ElevatorIOInputsAutoLogged inputs;
-=======
   private final V2_RedundancyElevatorIOInputsAutoLogged inputs;
->>>>>>> origin/feature-superstructure-stackup-refactor
 
   private final SysIdRoutine characterizationRoutine;
 
@@ -240,13 +236,9 @@ public class V2_RedundancyElevator extends SubsystemBase {
     return runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             runOnce(
-<<<<<<< HEAD
-                () -> io.setPosition(V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
-=======
                 () ->
                     io.setPosition(
                         V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
->>>>>>> origin/feature-superstructure-stackup-refactor
   }
 
   /**

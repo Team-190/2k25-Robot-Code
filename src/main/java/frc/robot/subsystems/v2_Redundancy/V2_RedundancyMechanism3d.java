@@ -115,13 +115,9 @@ public class V2_RedundancyMechanism3d {
                   0.0,
                   armAngle.getRadians()
                       + Units.degreesToRadians(
-<<<<<<< HEAD
-                          -V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getDegrees()),
-=======
                           -V2_RedundancyManipulatorConstants.ARM_PARAMETERS
                               .MIN_ANGLE()
                               .getDegrees()),
->>>>>>> origin/feature-superstructure-stackup-refactor
                   0.0))),
       ALGAE_INTAKE.transformBy(new Transform3d(-intakePosition, 0.0, 0.0, new Rotation3d()))
     };
