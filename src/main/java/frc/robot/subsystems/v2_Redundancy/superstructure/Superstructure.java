@@ -9,6 +9,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFun
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -54,14 +55,27 @@ public class Superstructure {
     L4_PLUS(
         "L4+ CORAL SETPOINT",
         new SubsystemPoses(
-            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED));
-    // SCORE_L1(
-    //   "L1 CORAL SCORE",
-
-    // ),
-    // SCORE_L2,
-    // SCORE_L3,
-    // SCORE_L4,
+            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+    SCORE_L1(
+        "L1 CORAL SCORE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get(),
+        0.0,
+        0.0),
+    SCORE_L2(
+        "L2 CORAL SCORE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
+        0.0,
+        0.0),
+    SCORE_L3(
+        "L3 CORAL SCORE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
+        0.0,
+        0.0),
+    SCORE_L4(
+        "L4 CORAL SCORE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get(),
+        0.0,
+        0.0);
     // SCORE_L4_PLUS,
     // INTERMEDIATE_WAIT_FOR_ELEVATOR,
     // INTERMEDIATE_WAIT_FOR_ARM,
