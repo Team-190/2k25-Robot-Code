@@ -7,6 +7,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
@@ -75,24 +76,90 @@ public class Superstructure {
         "L4 CORAL SCORE",
         V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get(),
         0.0,
-        0.0);
-    // SCORE_L4_PLUS,
-    // INTERMEDIATE_WAIT_FOR_ELEVATOR,
+        0.0),
+    SCORE_L4_PLUS(
+        "L4+ CORAL SCORE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
+        0.0,
+        0.0),
+    INTERMEDIATE_WAIT_FOR_ELEVATOR(
+        "WAIT FOR ELEVATOR",
+        new SubsystemPoses(
+            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)), //TODO: Fix this
     // INTERMEDIATE_WAIT_FOR_ARM,
-    // STOW_UP,
-    // FLOOR_ACQUISITION,
-    // REEF_ACQUISITION_L2,
-    // REEF_ACQUISITION_L3,
-    // BARGE,
-    // PROCESSOR,
-    // INTAKE_FLOOR,
-    // INTAKE_REEF_L2,
-    // INTAKE_REEF_L3,
-    // DROP_REEF_L2,
-    // DROP_REEF_L3,
-    // SCORE_BARGE,
-    // SCORE_PROCESSOR;
-
+    STOW_UP(
+        "STOW UP",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)
+    ),
+    FLOOR_ACQUISITION(
+        "FLOOR ALGAE SETPOINT",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)
+    ),
+    REEF_ACQUISITION_L2(
+        "L2 ALGAE SETPOINT",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_BOTTOM, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED)
+    ),
+    REEF_ACQUISITION_L3(
+        "L3 ALGAE SETPOINT",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED)
+    ),
+    BARGE(
+        "BARGE SETPOINT",
+        new SubsystemPoses(
+            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)
+    ),
+    PROCESSOR(
+        "PROCESSOR SETPOINT",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.PROCESSOR, IntakeState.STOW, FunnelState.CLOSED)
+    ),
+    INTAKE_FLOOR(
+        "INTAKE FLOOR",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+        0.0,
+        6.0
+    ),
+    INTAKE_REEF_L2(
+        "L2 ALGAE INTAKE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+        0.0,
+        0.0
+    ),
+    INTAKE_REEF_L3(
+        "L3 ALGAE INTAKE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+        0.0,
+        0.0
+    ),
+    DROP_REEF_L2(
+        "DROP L2 ALGAE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(),
+        0.0,
+        0.0
+    ),
+    DROP_REEF_L3(
+        "DROP L3 ALGAE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(),
+        0.0,
+        0.0
+    ),
+    SCORE_BARGE(
+        "SCORE BARGE",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(),
+        0.0,
+        0.0
+    ),
+    SCORE_PROCESSOR(
+        "SCORE PROCESSOR",
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(),
+        0.0,
+        0.0
+    ),
+;
     private final String name;
     private SubsystemPoses subsystemPoses;
     private double manipulatorRollerVoltage;

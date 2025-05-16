@@ -62,7 +62,7 @@ public class V2_RedundancyManipulatorConstants {
             new LoggedTunableNumber("Manipulator/L4 Volts", 4.6 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.8 * 1.56),
             new LoggedTunableNumber("Manipulator/Score Algae Volts", -6),
-            new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
+            new LoggedTunableNumber("Manipulator/Remove Algae Volts", -2),
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
@@ -109,7 +109,6 @@ public class V2_RedundancyManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ArmState {
     STOW_UP(Rotation2d.fromDegrees(75)),
-    PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
