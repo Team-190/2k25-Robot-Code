@@ -1,7 +1,10 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -11,24 +14,33 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.function.Supplier;
+import lombok.Builder;
+import lombok.Getter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
 
-  private final Graph<SuperstructureState, EdgeCommand> graph;
+  private final Graph<SuperstructureStates, EdgeCommand> graph;
   private final V2_RedundancyElevator elevator;
   private final V2_RedundancyFunnel funnel;
   private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
 
-  private SuperstructureState previousState;
-  private SuperstructureState currentState;
-  private SuperstructureState nextState;
+  private SuperstructureStates previousState;
+  private SuperstructureStates currentState;
+  private SuperstructureStates nextState;
 
-  private SuperstructureState targetState;
+  private SuperstructureStates targetState;
+  private EdgeCommand edgeCommand;
 
   public enum SuperstructureStates {
     START("START", new SubsystemPoses()),
@@ -42,8 +54,7 @@ public class Superstructure {
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get(),
             12.0,
-            0.0
-        )),
+            0.0)),
     L1(
         "L1 CORAL SETPOINT",
         new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
@@ -200,30 +211,179 @@ public class Superstructure {
     this.manipulator = manipulator;
     this.intake = intake;
 
-    previousState = SuperstructureStates.START.createPose(elevator, funnel, manipulator, intake);
-    currentState = SuperstructureStates.START.createPose(elevator, funnel, manipulator, intake);
-    nextState = SuperstructureStates.START.createPose(elevator, funnel, manipulator, intake);
+    previousState = null;
+    currentState = SuperstructureStates.START;
+    nextState = null;
 
-    targetState = SuperstructureStates.START.createPose(elevator, funnel, manipulator, intake);
+    targetState = SuperstructureStates.START;
 
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
 
-    for (SuperstructureStates state : SuperstructureStates.values()) {
-      SuperstructureState vertex = state.createPose(elevator, funnel, manipulator, intake);
+    for (SuperstructureStates vertex : SuperstructureStates.values()) {
       graph.addVertex(vertex);
     }
   }
 
-  public class EdgeCommand extends DefaultEdge {
+  private void addEdge(SuperstructureStates from, SuperstructureStates to) {
+    addEdge(from, to, AlgaeEdge.NONE);
+  }
 
+  private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
+    addEdge(from, to, false, algaeEdge, false);
+  }
+
+  private void addEdge(
+      SuperstructureStates from,
+      SuperstructureStates to,
+      boolean reverse,
+      AlgaeEdge algaeEdge,
+      boolean restricted) {
+    graph.addEdge(
+        from,
+        to,
+        EdgeCommand.builder()
+            .command(getEdgeCommand(from, to))
+            .algaeEdgeType(algaeEdge)
+            .restricted(restricted)
+            .build());
+    if (reverse) {
+      graph.addEdge(
+          to,
+          from,
+          EdgeCommand.builder()
+              .command(getEdgeCommand(to, from))
+              .algaeEdgeType(algaeEdge)
+              .restricted(restricted)
+              .build());
+    }
+  }
+
+  public Command runGoal(SuperstructureStates goal) {
+    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
+  }
+
+  public Command runGoal(Supplier<SuperstructureStates> goal) {
+    return run(() -> setGoal(goal.get()));
+  }
+
+  private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
+    return Commands.none();
+  }
+
+  private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
+    return (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
+        && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
+            || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE));
+  }
+
+  public void setAutoStart() {
+    currentState = SuperstructureStates.START;
+    nextState = null;
+    targetState = SuperstructureStates.STOW_DOWN;
+    if (edgeCommand != null) {
+      edgeCommand.getCommand().cancel();
+    }
+  }
+
+  private Optional<SuperstructureStates> bfs(
+      SuperstructureStates start, SuperstructureStates goal) {
+    // Map to track the parent of each visited node
+    Map<SuperstructureStates, SuperstructureStates> parents = new HashMap<>();
+    Queue<SuperstructureStates> queue = new LinkedList<>();
+    queue.add(start);
+    parents.put(start, null); // Mark the start node as visited with no parent
+    // Perform BFS
+    while (!queue.isEmpty()) {
+      SuperstructureStates current = queue.poll();
+      // Check if we've reached the goal
+      if (current == goal) {
+        break;
+      }
+      // Process valid neighbors
+      for (EdgeCommand edge :
+          graph.outgoingEdgesOf(current).stream()
+              .filter(edge -> isEdgeAllowed(edge, goal))
+              .toList()) {
+        SuperstructureStates neighbor = graph.getEdgeTarget(edge);
+        // Only process unvisited neighbors
+        if (!parents.containsKey(neighbor)) {
+          parents.put(neighbor, current);
+          queue.add(neighbor);
+        }
+      }
+    }
+
+    // Reconstruct the path to the goal if found
+    if (!parents.containsKey(goal)) {
+      return Optional.empty(); // Goal not reachable
+    }
+
+    // Trace back the path from goal to start
+    SuperstructureStates nextState = goal;
+    while (!nextState.equals(start)) {
+      SuperstructureStates parent = parents.get(nextState);
+      if (parent == null) {
+        return Optional.empty(); // No valid path found
+      } else if (parent.equals(start)) {
+        // Return the edge from start to the next node
+        return Optional.of(nextState);
+      }
+      nextState = parent;
+    }
+    return Optional.of(nextState);
+  }
+
+  private void setGoal(SuperstructureStates goal) {
+    // Don't do anything if goal is the same
+    if (this.targetState == goal) return;
+    this.targetState = goal;
+
+    if (nextState == null) return;
+
+    var edgeToCurrentState = graph.getEdge(nextState, currentState);
+    // Figure out if we should schedule a different command to get to goal faster
+    if (edgeCommand.getCommand().isScheduled()
+        && edgeToCurrentState != null
+        && isEdgeAllowed(edgeToCurrentState, goal)) {
+      // Figure out where we would have gone from the previous state
+      bfs(currentState, goal)
+          .ifPresent(
+              newNext -> {
+                if (newNext == nextState) {
+                  // We are already on track
+                  return;
+                }
+
+                if (newNext != currentState && graph.getEdge(nextState, newNext) != null) {
+                  // We can skip directly to the newNext edge
+                  edgeCommand.getCommand().cancel();
+                  edgeCommand = graph.getEdge(currentState, newNext);
+                  edgeCommand.getCommand().schedule();
+                  nextState = newNext;
+                } else {
+                  // Follow the reverse edge from next back to the current edge
+                  edgeCommand.getCommand().cancel();
+                  edgeCommand = graph.getEdge(nextState, currentState);
+                  edgeCommand.getCommand().schedule();
+                  var temp = currentState;
+                  currentState = nextState;
+                  nextState = temp;
+                }
+              });
+    }
+  }
+
+  @Builder(toBuilder = true)
+  @Getter
+  public static class EdgeCommand extends DefaultEdge {
     private final Command command;
+    @Builder.Default private final boolean restricted = false;
+    @Builder.Default private final AlgaeEdge algaeEdgeType = AlgaeEdge.NONE;
+  }
 
-    public EdgeCommand(Command command) {
-      this.command = command;
-    }
-
-    public Command getCommand() {
-      return command;
-    }
+  private enum AlgaeEdge {
+    NONE,
+    NO_ALGAE,
+    ALGAE
   }
 }
