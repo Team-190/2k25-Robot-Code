@@ -7,11 +7,11 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import java.util.List;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -39,8 +39,11 @@ public class Superstructure {
             IntakeState.STOW, FunnelState.OPENED)),
     INTAKE(
         "INTAKE CORAL",
-        new SubsystemPoses(
-            ReefState.CORAL_INTAKE, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get(),
+            12.0,
+            0.0
+        )),
     L1(
         "L1 CORAL SETPOINT",
         new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
@@ -59,127 +62,106 @@ public class Superstructure {
             ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     SCORE_L1(
         "L1 CORAL SCORE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get(),
-        0.0,
-        0.0),
+        List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get(), 0.0, 0.0)),
     SCORE_L2(
         "L2 CORAL SCORE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
-        0.0,
-        0.0),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     SCORE_L3(
         "L3 CORAL SCORE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
-        0.0,
-        0.0),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     SCORE_L4(
         "L4 CORAL SCORE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get(),
-        0.0,
-        0.0),
+        List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get(), 0.0, 0.0)),
     SCORE_L4_PLUS(
         "L4+ CORAL SCORE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(),
-        0.0,
-        0.0),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     INTERMEDIATE_WAIT_FOR_ELEVATOR(
         "WAIT FOR ELEVATOR",
         new SubsystemPoses(
-            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)), //TODO: Fix this
+            ReefState.ALGAE_MID,
+            ArmState.STOW_DOWN,
+            IntakeState.STOW,
+            FunnelState.OPENED)), // TODO: Fix this
     // INTERMEDIATE_WAIT_FOR_ARM,
     STOW_UP(
         "STOW UP",
-        new SubsystemPoses(
-            ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)
-    ),
+        new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)),
     FLOOR_ACQUISITION(
         "FLOOR ALGAE SETPOINT",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)
-    ),
+            ReefState.STOW, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)),
     REEF_ACQUISITION_L2(
         "L2 ALGAE SETPOINT",
         new SubsystemPoses(
-            ReefState.ALGAE_INTAKE_BOTTOM, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED)
-    ),
+            ReefState.ALGAE_INTAKE_BOTTOM,
+            ArmState.REEF_INTAKE,
+            IntakeState.STOW,
+            FunnelState.OPENED)),
     REEF_ACQUISITION_L3(
         "L3 ALGAE SETPOINT",
         new SubsystemPoses(
-            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED)
-    ),
+            ReefState.ALGAE_INTAKE_TOP,
+            ArmState.REEF_INTAKE,
+            IntakeState.STOW,
+            FunnelState.OPENED)),
     BARGE(
         "BARGE SETPOINT",
         new SubsystemPoses(
-            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)
-    ),
+            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)),
     PROCESSOR(
         "PROCESSOR SETPOINT",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.PROCESSOR, IntakeState.STOW, FunnelState.CLOSED)
-    ),
+            ReefState.STOW, ArmState.PROCESSOR, IntakeState.STOW, FunnelState.CLOSED)),
     INTAKE_FLOOR(
         "INTAKE FLOOR",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
-        0.0,
-        6.0
-    ),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+            0.0,
+            6.0)),
     INTAKE_REEF_L2(
         "L2 ALGAE INTAKE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
-        0.0,
-        0.0
-    ),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+            0.0,
+            0.0)),
     INTAKE_REEF_L3(
         "L3 ALGAE INTAKE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
-        0.0,
-        0.0
-    ),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
+            0.0,
+            0.0)),
     DROP_REEF_L2(
         "DROP L2 ALGAE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(),
-        0.0,
-        0.0
-    ),
+        List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(), 0.0, 0.0)),
     DROP_REEF_L3(
         "DROP L3 ALGAE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(),
-        0.0,
-        0.0
-    ),
+        List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(), 0.0, 0.0)),
     SCORE_BARGE(
         "SCORE BARGE",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(),
-        0.0,
-        0.0
-    ),
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(), 0.0, 0.0)),
     SCORE_PROCESSOR(
         "SCORE PROCESSOR",
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(),
-        0.0,
-        0.0
-    ),
-;
+        List.of(
+            V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(), 0.0, 0.0)),
+    ;
     private final String name;
     private SubsystemPoses subsystemPoses;
-    private double manipulatorRollerVoltage;
-    private double funnelRollerVoltage;
-    private double intakeRollerVoltage;
+    private List<Double> voltages;
 
     private SuperstructureStates(String name, SubsystemPoses poses) {
       this.name = name;
       this.subsystemPoses = poses;
+      this.voltages = null;
     }
 
-    private SuperstructureStates(
-        String name,
-        double manipulatorRollerVoltage,
-        double funnelRollerVoltage,
-        double intakeRollerVoltage) {
+    private SuperstructureStates(String name, List<Double> voltages) {
       this.name = name;
-      this.manipulatorRollerVoltage = manipulatorRollerVoltage;
-      this.funnelRollerVoltage = funnelRollerVoltage;
-      this.intakeRollerVoltage = intakeRollerVoltage;
+      this.subsystemPoses = null;
+      this.voltages = voltages;
     }
 
     public SuperstructureState createPose(
@@ -192,9 +174,9 @@ public class Superstructure {
       } else {
         return new SuperstructureAction(
             name,
-            manipulatorRollerVoltage,
-            funnelRollerVoltage,
-            intakeRollerVoltage,
+            voltages.get(0),
+            voltages.get(1),
+            voltages.get(2),
             elevator,
             manipulator,
             funnel,
