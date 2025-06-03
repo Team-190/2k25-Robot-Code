@@ -232,8 +232,7 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.L1,
             SuperstructureStates.L2,
             SuperstructureStates.L3,
-            SuperstructureStates.L4,
-            SuperstructureStates.L4_PLUS);
+            SuperstructureStates.L4);
 
     // stow_down <-> each coral level (bidirectional, no algae)
     for (SuperstructureStates level : coralLevels) {
@@ -249,6 +248,14 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
+    // Misellaneous L4+ transitions
+    addEdge(SuperstructureStates.L4_PLUS, SuperstructureStates.L4, true, AlgaeEdge.NONE, false);
+    addEdge(SuperstructureStates.L4_PLUS, SuperstructureStates.STOW_DOWN, AlgaeEdge.NO_ALGAE);
+    addEdge(
+        SuperstructureStates.L4_PLUS,
+        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
+        AlgaeEdge.NO_ALGAE);
+
     // each “level” → its scoring state (one‑way, no algae)
     Map<SuperstructureStates, SuperstructureStates> coralScoreMap =
         Map.of(
@@ -257,15 +264,24 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.L3, SuperstructureStates.SCORE_L3,
             SuperstructureStates.L4, SuperstructureStates.SCORE_L4,
             SuperstructureStates.L4_PLUS, SuperstructureStates.SCORE_L4_PLUS);
-    coralScoreMap.forEach((level, score) -> addEdge(level, score,true, AlgaeEdge.NONE, false));
+    coralScoreMap.forEach((level, score) -> addEdge(level, score, true, AlgaeEdge.NO_ALGAE, false));
 
     // each coral level → FLOOR_ACQUISITION and → INTERMEDIATE_WAIT_FOR_ELEVATOR (one‑way)
-    List<SuperstructureStates> coralToNext =
-        List.of(
-            SuperstructureStates.FLOOR_ACQUISITION,
-            SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR);
-    for (SuperstructureStates level : coralLevels) {
-      for (SuperstructureStates target : coralToNext) {
+    for (SuperstructureStates level : List.of(SuperstructureStates.L1, SuperstructureStates.L2)) {
+      for (SuperstructureStates target :
+          List.of(
+              SuperstructureStates.FLOOR_ACQUISITION,
+              SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR)) {
+        addEdge(level, target, AlgaeEdge.NONE);
+      }
+    }
+
+    for (SuperstructureStates level : List.of(SuperstructureStates.L3, SuperstructureStates.L4)) {
+      for (SuperstructureStates target :
+          List.of(
+              SuperstructureStates.REEF_ACQUISITION_L2,
+              SuperstructureStates.REEF_ACQUISITION_L3,
+              SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM)) {
         addEdge(level, target, AlgaeEdge.NONE);
       }
     }
@@ -287,7 +303,7 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.BARGE,
             SuperstructureStates.PROCESSOR);
     for (SuperstructureStates dest : iveDestinations) {
-      addEdge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR, dest, AlgaeEdge.NONE);
+      addEdge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR, dest, AlgaeEdge.ALGAE);
     }
 
     // INTERMEDIATE_WAIT_FOR_ARM TRANSITIONS (one‑way, no algae)
@@ -298,7 +314,7 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.L2,
             SuperstructureStates.FLOOR_ACQUISITION);
     for (SuperstructureStates dest : iwaDestinations) {
-      addEdge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM, dest, AlgaeEdge.NONE);
+      addEdge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM, dest, AlgaeEdge.NO_ALGAE);
     }
 
     // STOW_UP → multiple targets (one‑way, no algae)
@@ -308,7 +324,7 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.BARGE,
             SuperstructureStates.PROCESSOR);
     for (SuperstructureStates dest : stowUpDestinations) {
-      addEdge(SuperstructureStates.STOW_UP, dest, AlgaeEdge.NONE);
+      addEdge(SuperstructureStates.STOW_UP, dest, AlgaeEdge.ALGAE);
     }
 
     // FLOOR_ACQUISITION → multiple targets (one‑way, no algae)
@@ -318,13 +334,13 @@ public class Superstructure extends SubsystemBase {
             SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
             SuperstructureStates.INTAKE_FLOOR);
     for (SuperstructureStates dest : floorAcqDest) {
-      addEdge(SuperstructureStates.FLOOR_ACQUISITION, dest, AlgaeEdge.NONE);
+      addEdge(SuperstructureStates.FLOOR_ACQUISITION, dest, AlgaeEdge.NO_ALGAE);
     }
 
     // REEF-RELATED ACQUISITION STATES (using algaeMap style)
     // Define “from → to” for algae acquisition (one‑way with ALGAE), then add reverse with
     // NO_ALGAE
-    Map<SuperstructureStates, List<SuperstructureStates>> reefMap =
+    Map<SuperstructureStates, List<SuperstructureStates>> reefMap = //Algae states here are probably wrong
         Map.of(
             SuperstructureStates.REEF_ACQUISITION_L2,
                 List.of(
@@ -355,27 +371,30 @@ public class Superstructure extends SubsystemBase {
         });
 
     // BARGE and PROCESSOR transitions (one‑way, no algae)
-    List<SuperstructureStates> bargeDest =
+    for (SuperstructureStates dest :
+        List.of(SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_BARGE)) {
+      addEdge(SuperstructureStates.BARGE, dest, AlgaeEdge.ALGAE);
+    }
+    for (SuperstructureStates dest :
         List.of(
             SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
             SuperstructureStates.REEF_ACQUISITION_L2,
-            SuperstructureStates.REEF_ACQUISITION_L3,
-            SuperstructureStates.PROCESSOR,
-            SuperstructureStates.SCORE_BARGE);
-    for (SuperstructureStates dest : bargeDest) {
-      addEdge(SuperstructureStates.BARGE, dest, AlgaeEdge.NONE);
+            SuperstructureStates.REEF_ACQUISITION_L3)) {
+      addEdge(SuperstructureStates.BARGE, dest, AlgaeEdge.NO_ALGAE);
     }
+
     addEdge(SuperstructureStates.SCORE_BARGE, SuperstructureStates.BARGE, AlgaeEdge.NONE);
 
-    List<SuperstructureStates> procDest =
+    for (SuperstructureStates dest :
+        List.of(SuperstructureStates.BARGE, SuperstructureStates.SCORE_PROCESSOR)) {
+      addEdge(SuperstructureStates.PROCESSOR, dest, AlgaeEdge.ALGAE);
+    }
+    for (SuperstructureStates dest :
         List.of(
             SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
             SuperstructureStates.REEF_ACQUISITION_L2,
-            SuperstructureStates.REEF_ACQUISITION_L3,
-            SuperstructureStates.BARGE,
-            SuperstructureStates.SCORE_PROCESSOR);
-    for (SuperstructureStates dest : procDest) {
-      addEdge(SuperstructureStates.PROCESSOR, dest, AlgaeEdge.NONE);
+            SuperstructureStates.REEF_ACQUISITION_L3)) {
+      addEdge(SuperstructureStates.PROCESSOR, dest, AlgaeEdge.NO_ALGAE);
     }
     addEdge(SuperstructureStates.SCORE_PROCESSOR, SuperstructureStates.PROCESSOR, AlgaeEdge.NONE);
 
@@ -401,6 +420,12 @@ public class Superstructure extends SubsystemBase {
 
     // START → STOW_DOWN (one‑way, no algae)
     addEdge(SuperstructureStates.START, SuperstructureStates.STOW_DOWN, AlgaeEdge.NONE);
+
+    // Stow Down transitions
+    for (SuperstructureStates dest :
+        List.of(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR, SuperstructureStates.FLOOR_ACQUISITION)) {
+      addEdge(SuperstructureStates.STOW_DOWN, dest, AlgaeEdge.NO_ALGAE);
+    }
   }
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
