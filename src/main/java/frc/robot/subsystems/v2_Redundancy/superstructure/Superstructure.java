@@ -1,14 +1,10 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.shared.leds.Leds;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -344,26 +340,27 @@ public class Superstructure extends SubsystemBase {
     // REEF-RELATED ACQUISITION STATES (using algaeMap style)
     // Define “from → to” for algae acquisition (one‑way with ALGAE), then add reverse with
     // NO_ALGAE
-    Map<SuperstructureStates, List<SuperstructureStates>> reefMap = //Algae states here are probably wrong
+    Map<SuperstructureStates, List<SuperstructureStates>>
+        reefMap = // Algae states here are probably wrong
         Map.of(
-            SuperstructureStates.REEF_ACQUISITION_L2,
-                List.of(
-                    SuperstructureStates.INTAKE_REEF_L2,
-                    SuperstructureStates.DROP_REEF_L2,
-                    SuperstructureStates.REEF_ACQUISITION_L3,
-                    SuperstructureStates.BARGE,
-                    SuperstructureStates.PROCESSOR,
-                    SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
-                    SuperstructureStates.STOW_UP),
-            SuperstructureStates.REEF_ACQUISITION_L3,
-                List.of(
-                    SuperstructureStates.INTAKE_REEF_L3,
-                    SuperstructureStates.DROP_REEF_L3,
-                    SuperstructureStates.REEF_ACQUISITION_L2,
-                    SuperstructureStates.BARGE,
-                    SuperstructureStates.PROCESSOR,
-                    SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
-                    SuperstructureStates.STOW_UP));
+                SuperstructureStates.REEF_ACQUISITION_L2,
+                    List.of(
+                        SuperstructureStates.INTAKE_REEF_L2,
+                        SuperstructureStates.DROP_REEF_L2,
+                        SuperstructureStates.REEF_ACQUISITION_L3,
+                        SuperstructureStates.BARGE,
+                        SuperstructureStates.PROCESSOR,
+                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
+                        SuperstructureStates.STOW_UP),
+                SuperstructureStates.REEF_ACQUISITION_L3,
+                    List.of(
+                        SuperstructureStates.INTAKE_REEF_L3,
+                        SuperstructureStates.DROP_REEF_L3,
+                        SuperstructureStates.REEF_ACQUISITION_L2,
+                        SuperstructureStates.BARGE,
+                        SuperstructureStates.PROCESSOR,
+                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
+                        SuperstructureStates.STOW_UP));
     reefMap.forEach(
         (from, targets) -> {
           for (SuperstructureStates to : targets) {
@@ -427,12 +424,14 @@ public class Superstructure extends SubsystemBase {
 
     // Stow Down transitions
     for (SuperstructureStates dest :
-        List.of(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR, SuperstructureStates.FLOOR_ACQUISITION)) {
+        List.of(
+            SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
+            SuperstructureStates.FLOOR_ACQUISITION)) {
       addEdge(SuperstructureStates.STOW_DOWN, dest, AlgaeEdge.NO_ALGAE);
     }
   }
 
-    @Override
+  @Override
   public void periodic() {
     if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
@@ -453,7 +452,6 @@ public class Superstructure extends SubsystemBase {
       }
     }
   }
-
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
     addEdge(from, to, false, algaeEdge, false);
