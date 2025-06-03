@@ -1,10 +1,14 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.subsystems.shared.leds.Leds;
 import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -427,6 +431,29 @@ public class Superstructure extends SubsystemBase {
       addEdge(SuperstructureStates.STOW_DOWN, dest, AlgaeEdge.NO_ALGAE);
     }
   }
+
+    @Override
+  public void periodic() {
+    if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
+      // Update edge to new state
+      if (nextState != null) {
+        currentState = nextState;
+        nextState = null;
+      }
+
+      // Schedule next command in sequence
+      if (currentState != targetState) {
+        bfs(currentState, targetState)
+            .ifPresent(
+                next -> {
+                  this.nextState = next;
+                  edgeCommand = graph.getEdge(currentState, next);
+                  edgeCommand.getCommand().schedule();
+                });
+      }
+    }
+  }
+
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
     addEdge(from, to, false, algaeEdge, false);
