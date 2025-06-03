@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +36,6 @@ public class Superstructure extends SubsystemBase {
   private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
 
-  private SuperstructureStates previousState;
   private SuperstructureStates currentState;
   private SuperstructureStates nextState;
 
@@ -96,7 +96,13 @@ public class Superstructure extends SubsystemBase {
             ArmState.STOW_DOWN,
             IntakeState.STOW,
             FunnelState.OPENED)), // TODO: Fix this
-    // INTERMEDIATE_WAIT_FOR_ARM,
+    INTERMEDIATE_WAIT_FOR_ARM(
+        "WAIT FOR ELEVATOR",
+        new SubsystemPoses(
+            ReefState.ALGAE_MID,
+            ArmState.STOW_DOWN,
+            IntakeState.STOW,
+            FunnelState.OPENED)),
     STOW_UP(
         "STOW UP",
         new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)),
@@ -211,7 +217,6 @@ public class Superstructure extends SubsystemBase {
     this.manipulator = manipulator;
     this.intake = intake;
 
-    previousState = null;
     currentState = SuperstructureStates.START;
     nextState = null;
 
@@ -222,6 +227,39 @@ public class Superstructure extends SubsystemBase {
     for (SuperstructureStates vertex : SuperstructureStates.values()) {
       graph.addVertex(vertex);
     }
+
+    // Add edges between states
+    final HashMap<SuperstructureStates, SuperstructureStates> coralMap = new HashMap<>();
+    coralMap.put(SuperstructureStates.INTAKE, SuperstructureStates.STOW_DOWN);
+    coralMap.put(SuperstructureStates.L1, SuperstructureStates.SCORE_L1);
+    coralMap.put(SuperstructureStates.L2, SuperstructureStates.SCORE_L2);
+    coralMap.put(SuperstructureStates.L3, SuperstructureStates.SCORE_L3);
+    coralMap.put(SuperstructureStates.L4, SuperstructureStates.SCORE_L4);
+    coralMap.put(SuperstructureStates.L4_PLUS, SuperstructureStates.SCORE_L4_PLUS);
+    coralMap.forEach((from, to) -> addEdge(from, to, true, AlgaeEdge.NO_ALGAE, false));
+    addEdge(SuperstructureStates.L4_PLUS, SuperstructureStates.L4, AlgaeEdge.NONE);
+    addEdge(SuperstructureStates.L4, SuperstructureStates.L4_PLUS, AlgaeEdge.NO_ALGAE);
+
+    final HashMap<SuperstructureStates, SuperstructureStates> algaeMap = new HashMap<>();
+    algaeMap.put(SuperstructureStates.REEF_ACQUISITION_L2, SuperstructureStates.INTAKE_REEF_L2);
+    algaeMap.put(SuperstructureStates.REEF_ACQUISITION_L3, SuperstructureStates.INTAKE_REEF_L3);
+    algaeMap.put(SuperstructureStates.REEF_ACQUISITION_L2, SuperstructureStates.DROP_REEF_L2);
+    algaeMap.put(SuperstructureStates.REEF_ACQUISITION_L3, SuperstructureStates.DROP_REEF_L3);
+    algaeMap.put(SuperstructureStates.FLOOR_ACQUISITION, SuperstructureStates.INTAKE_FLOOR);
+    algaeMap.put(SuperstructureStates.BARGE, SuperstructureStates.SCORE_BARGE);
+    algaeMap.put(SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_PROCESSOR);
+    algaeMap.forEach((from, to) -> addEdge(from, to, false, AlgaeEdge.ALGAE, false));
+    algaeMap.forEach((from, to) -> addEdge(to, from, false, AlgaeEdge.NO_ALGAE, false));
+
+    for (SuperstructureStates state :
+        Set.of(
+            SuperstructureStates.INTAKE,
+            SuperstructureStates.L1,
+            SuperstructureStates.L2,
+            SuperstructureStates.L3,
+            SuperstructureStates.L4,
+            SuperstructureStates.FLOOR_ACQUISITION))
+      addEdge(state, SuperstructureStates.STOW_DOWN, true, AlgaeEdge.NO_ALGAE, false);
   }
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to) {
