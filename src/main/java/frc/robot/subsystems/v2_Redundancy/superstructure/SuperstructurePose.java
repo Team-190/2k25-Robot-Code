@@ -49,15 +49,18 @@ public class SuperstructurePose extends SuperstructureState {
   }
 
   public Command setElevatorHeight() {
-    return elevator.setPosition(() -> elevatorHeight);
+    return Commands.parallel(
+        elevator.setPosition(() -> elevatorHeight), elevator.waitUntilAtGoal());
   }
 
   public Command setArmState() {
-    return manipulator.setAlgaeArmGoal(armState);
+    return Commands.parallel(
+        manipulator.setAlgaeArmGoal(armState), manipulator.waitUntilAlgaeArmAtGoal());
   }
 
   public Command setIntakeState() {
-    return intake.setExtensionGoal(intakeState);
+    return Commands.parallel(
+        intake.setExtensionGoal(intakeState), intake.waitUntilExtensionAtGoal());
   }
 
   public Command setFunnelState() {

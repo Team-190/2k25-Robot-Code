@@ -177,7 +177,7 @@ public class Superstructure extends SubsystemBase {
       this.voltages = voltages;
     }
 
-    public SuperstructureState createPose(
+    public SuperstructureState createState(
         V2_RedundancyElevator elevator,
         V2_RedundancyFunnel funnel,
         V2_RedundancyManipulator manipulator,
@@ -190,6 +190,7 @@ public class Superstructure extends SubsystemBase {
             voltages.get(0),
             voltages.get(1),
             voltages.get(2),
+            () -> false, // TODO: Replace with actual end condition implementation
             elevator,
             manipulator,
             funnel,
@@ -202,6 +203,22 @@ public class Superstructure extends SubsystemBase {
       return name;
     }
   }
+
+  private static final List<SuperstructureStates> actions =
+      List.of(
+          SuperstructureStates.INTAKE,
+          SuperstructureStates.SCORE_L1,
+          SuperstructureStates.SCORE_L2,
+          SuperstructureStates.SCORE_L3,
+          SuperstructureStates.SCORE_L4,
+          SuperstructureStates.SCORE_L4_PLUS,
+          SuperstructureStates.INTAKE_FLOOR,
+          SuperstructureStates.INTAKE_REEF_L2,
+          SuperstructureStates.INTAKE_REEF_L3,
+          SuperstructureStates.DROP_REEF_L2,
+          SuperstructureStates.DROP_REEF_L3,
+          SuperstructureStates.SCORE_BARGE,
+          SuperstructureStates.SCORE_PROCESSOR);
 
   private Superstructure(
       V2_RedundancyElevator elevator,
@@ -218,6 +235,7 @@ public class Superstructure extends SubsystemBase {
 
     targetState = SuperstructureStates.START;
 
+    // Initialize the graph
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
 
     for (SuperstructureStates vertex : SuperstructureStates.values()) {
@@ -225,6 +243,10 @@ public class Superstructure extends SubsystemBase {
     }
 
     // Add edges between states
+    addEdges();
+  }
+
+  private void addEdges() {
 
     // CORAL-RELATED STATES
     List<SuperstructureStates> coralLevels =
@@ -492,7 +514,15 @@ public class Superstructure extends SubsystemBase {
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
-    return Commands.none();
+    if (actions.contains(to)) {
+      return to.createState(elevator, funnel, manipulator, intake).action();
+    }
+    SuperstructurePose pose =
+        ((SuperstructurePose) to.createState(elevator, funnel, manipulator, intake));
+    return pose.setArmState()
+        .andThen(pose.setElevatorHeight())
+        .andThen(pose.setIntakeState())
+        .andThen(pose.setFunnelState()); // need to determine order based on from and to
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
