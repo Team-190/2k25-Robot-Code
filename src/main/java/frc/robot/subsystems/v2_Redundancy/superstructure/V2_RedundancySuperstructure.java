@@ -32,10 +32,10 @@ import org.littletonrobotics.junction.Logger;
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<SuperstructureStates, EdgeCommand> graph;
-  @Getter private final V2_RedundancyElevator elevator;
-  @Getter private final V2_RedundancyFunnel funnel;
-  @Getter private final V2_RedundancyManipulator manipulator;
-  @Getter private final V2_RedundancyIntake intake;
+  private final V2_RedundancyElevator elevator;
+  private final V2_RedundancyFunnel funnel;
+  private final V2_RedundancyManipulator manipulator;
+  private final V2_RedundancyIntake intake;
 
   @Getter private SuperstructureStates previousState;
   @Getter private SuperstructureStates currentState;
@@ -203,7 +203,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       this.voltages = voltages;
     }
 
-    public SuperstructureState createState(
+    public V2_RedundancySuperstructureState createState(
         V2_RedundancyElevator elevator,
         V2_RedundancyFunnel funnel,
         V2_RedundancyManipulator manipulator,

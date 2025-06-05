@@ -8,7 +8,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import lombok.Getter;
 
-public class V2_RedundancySuperstructureAction extends SuperstructureState {
+public class V2_RedundancySuperstructureAction extends V2_RedundancySuperstructureState {
   @Getter private final double manipulatorRollerVoltage;
   @Getter private final double funnelRollerVoltage;
   @Getter private final double intakeRollerVoltage;
