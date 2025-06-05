@@ -15,7 +15,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.NTPrefixes;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +110,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     FLOOR_ACQUISITION(
         "FLOOR ALGAE SETPOINT",
         new SubsystemPoses(
-            ReefState.ALGAE_FLOOR_INTAKE, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)),
+            ReefState.ALGAE_FLOOR_INTAKE,
+            ArmState.FLOOR_INTAKE,
+            IntakeState.INTAKE,
+            FunnelState.OPENED)),
     REEF_ACQUISITION_L2(
         "L2 ALGAE SETPOINT",
         new SubsystemPoses(
@@ -169,10 +171,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     CLIMB(
         "CLIMB",
         new SubsystemPoses(
-            ReefState.STOW,
-            ArmState.STOW_DOWN,
-            IntakeState.STOW,
-            FunnelState.CLIMB)), 
+            ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLIMB)),
     ;
     private final String name;
     private SubsystemPoses subsystemPoses;
@@ -196,7 +195,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       if (subsystemPoses != null) {
-        return new V2_RedundancySuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
+        return new V2_RedundancySuperstructurePose(
+            name, subsystemPoses, elevator, funnel, manipulator, intake);
       } else {
         return new V2_RedundancySuperstructureAction(
             name,
@@ -465,7 +465,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // STOW_DOWN-> CLIMB
-    addEdge(SuperstructureStates.STOW_DOWN, SuperstructureStates.CLIMB, true, AlgaeEdge.NO_ALGAE, false);
+    addEdge(
+        SuperstructureStates.STOW_DOWN,
+        SuperstructureStates.CLIMB,
+        true,
+        AlgaeEdge.NO_ALGAE,
+        false);
   }
 
   @Override
@@ -488,9 +493,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 });
       }
     }
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Goal", targetState);
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Current State", currentState);
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Next State", nextState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Current State", currentState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Next State", nextState);
   }
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
@@ -538,17 +543,19 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     V2_RedundancySuperstructurePose pose =
         (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
 
-    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN) || to == SuperstructureStates.STOW_UP) {
+    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
+        || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN)
+        || to == SuperstructureStates.STOW_UP) {
       return pose.setArmState()
-          .andThen(pose.setIntakeState()
-          .alongWith(pose.setElevatorHeight())
-          .alongWith(pose.setFunnelState()));
+          .andThen(
+              pose.setIntakeState()
+                  .alongWith(pose.setElevatorHeight())
+                  .alongWith(pose.setFunnelState()));
     }
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR) {
       return pose.setElevatorHeight()
-          .andThen(pose.setIntakeState()
-          .alongWith(pose.setArmState())
-          .alongWith(pose.setFunnelState()));
+          .andThen(
+              pose.setIntakeState().alongWith(pose.setArmState()).alongWith(pose.setFunnelState()));
     }
 
     return pose.action(); // need to determine order based on from and to
