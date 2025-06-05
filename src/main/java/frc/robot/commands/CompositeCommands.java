@@ -16,6 +16,8 @@ import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevato
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -616,49 +618,23 @@ public class CompositeCommands {
               .until(() -> RobotState.isHasAlgae()));
     }
 
-    public static final Command postFloorIntakeSequence(
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyElevator elevator,
-        V2_RedundancyIntake intake) {
+    public static final Command postFloorIntakeSequence(V2_RedundancySuperstructure superstructure) {
       return Commands.either(
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefState.STOW,
-              ArmState.STOW_UP,
-              IntakeState.STOW),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefState.STOW,
-              ArmState.STOW_DOWN,
-              IntakeState.STOW),
+          superstructure.runGoal(SuperstructureStates.STOW_UP),
+          superstructure.runGoal(SuperstructureStates.STOW_DOWN),
           RobotState::isHasAlgae);
     }
 
     public static final Command setDynamicReefHeight(
-        ReefState height, V2_RedundancyElevator elevator) {
+        ReefState height, V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(
-          Commands.runOnce(() -> RobotState.setReefHeight(height)), elevator.setPosition());
+          Commands.runOnce(() -> RobotState.setReefHeight(height)), superstructure.setPosition());
     }
 
     public static final Command climb(
-        V2_RedundancyElevator elevator, V2_RedundancyFunnel funnel, Climber climber, Drive drive) {
+        V2_RedundancySuperstructure superstructure, Climber climber, Drive drive) {
       return Commands.sequence(
-          elevator.setPosition(() -> ReefState.STOW),
-          Commands.waitSeconds(0.02),
-          Commands.waitUntil(elevator::atGoal),
-          funnel.setClapDaddyGoal(
-              frc.robot
-                  .subsystems
-                  .v2_Redundancy
-                  .superstructure
-                  .funnel
-                  .V2_RedundancyFunnelConstants
-                  .FunnelState
-                  .CLIMB),
+          superstructure.runGoal(SuperstructureStates.CLIMB),
           Commands.parallel(
               climber.releaseClimber(),
               Commands.waitSeconds(ClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),

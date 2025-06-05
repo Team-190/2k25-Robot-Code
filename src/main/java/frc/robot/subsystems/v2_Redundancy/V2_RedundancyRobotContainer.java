@@ -194,19 +194,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, superstructure));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, superstructure));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, superstructure));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, superstructure));
 
     // Driver triggers
     driver
@@ -227,13 +227,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
         .onFalse(
             Commands.deadline(
-                V2_RedundancyCompositeCommands.postFloorIntakeSequence(
-                    manipulator, elevator, intake),
-                intake.setRollerVoltage(-6)));
+                V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
+                intake.setRollerVoltage(-6))); // Should this still be there??
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
-    driver.povUp().onTrue(elevator.setPosition());
+    driver.povUp().onTrue(superstructure.setPosition());
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
     driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
 
@@ -277,19 +276,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L4, superstructure));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L3, superstructure));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L2, superstructure));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
+        .onTrue(V2_RedundancyCompositeCommands.setDynamicReefHeight(ReefState.L1, superstructure));
 
     // Operator triggers
     operator
@@ -305,7 +304,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(V2_RedundancyCompositeCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(V2_RedundancyCompositeCommands.climb(superstructure, climber, drive));
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
