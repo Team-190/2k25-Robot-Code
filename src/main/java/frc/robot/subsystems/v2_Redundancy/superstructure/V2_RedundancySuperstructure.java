@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.SuperstructurePose.SubsystemPoses;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
@@ -27,7 +27,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-public class Superstructure extends SubsystemBase {
+public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<SuperstructureStates, EdgeCommand> graph;
   private final V2_RedundancyElevator elevator;
@@ -186,9 +186,9 @@ public class Superstructure extends SubsystemBase {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       if (subsystemPoses != null) {
-        return new SuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
+        return new V2_RedundancySuperstructurePose(name, subsystemPoses, elevator, funnel, manipulator, intake);
       } else {
-        return new SuperstructureAction(
+        return new V2_RedundancySuperstructureAction(
             name,
             voltages.get(0),
             voltages.get(1),
@@ -222,7 +222,7 @@ public class Superstructure extends SubsystemBase {
           SuperstructureStates.SCORE_BARGE,
           SuperstructureStates.SCORE_PROCESSOR);
 
-  private Superstructure(
+  private V2_RedundancySuperstructure(
       V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
@@ -519,8 +519,8 @@ public class Superstructure extends SubsystemBase {
     if (actions.contains(to)) {
       return to.createState(elevator, funnel, manipulator, intake).action();
     }
-    SuperstructurePose pose =
-        (SuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
+    V2_RedundancySuperstructurePose pose =
+        (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
 
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN) || to == SuperstructureStates.STOW_UP) {
       return pose.setArmState()

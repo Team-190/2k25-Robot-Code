@@ -6,15 +6,14 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import java.util.function.BooleanSupplier;
 import lombok.Getter;
 
-public class SuperstructureAction extends SuperstructureState {
+public class V2_RedundancySuperstructureAction extends SuperstructureState {
   @Getter private final double manipulatorRollerVoltage;
   @Getter private final double funnelRollerVoltage;
   @Getter private final double intakeRollerVoltage;
 
-  public SuperstructureAction(
+  public V2_RedundancySuperstructureAction(
       String key,
       double manipulatorRollerVoltage,
       double funnelRollerVoltage,

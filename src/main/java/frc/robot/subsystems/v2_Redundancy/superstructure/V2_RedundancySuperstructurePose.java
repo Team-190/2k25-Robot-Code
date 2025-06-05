@@ -11,14 +11,14 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 
-public class SuperstructurePose extends SuperstructureState {
+public class V2_RedundancySuperstructurePose extends SuperstructureState {
 
   private final ReefState elevatorHeight;
   private final ArmState armState;
   private final IntakeState intakeState;
   private final FunnelState funnelState;
 
-  public SuperstructurePose(
+  public V2_RedundancySuperstructurePose(
       String key,
       SubsystemPoses poses,
       V2_RedundancyElevator elevator,
