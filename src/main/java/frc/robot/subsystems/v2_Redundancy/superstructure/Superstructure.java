@@ -94,18 +94,21 @@ public class Superstructure extends SubsystemBase {
             ReefState.ALGAE_MID,
             ArmState.STOW_DOWN,
             IntakeState.STOW,
-            FunnelState.OPENED)), // TODO: Fix this
+            FunnelState.OPENED)), // TODO: Check this
     INTERMEDIATE_WAIT_FOR_ARM(
-        "WAIT FOR ELEVATOR",
+        "WAIT FOR ARM",
         new SubsystemPoses(
-            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+            ReefState.ALGAE_MID,
+            ArmState.STOW_DOWN,
+            IntakeState.STOW,
+            FunnelState.OPENED)), // TODO: Check this
     STOW_UP(
         "STOW UP",
         new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)),
     FLOOR_ACQUISITION(
         "FLOOR ALGAE SETPOINT",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)),
+            ReefState.ALGAE_FLOOR_INTAKE, ArmState.FLOOR_INTAKE, IntakeState.INTAKE, FunnelState.OPENED)),
     REEF_ACQUISITION_L2(
         "L2 ALGAE SETPOINT",
         new SubsystemPoses(
@@ -190,7 +193,6 @@ public class Superstructure extends SubsystemBase {
             voltages.get(0),
             voltages.get(1),
             voltages.get(2),
-            () -> false, // TODO: Replace with actual end condition implementation
             elevator,
             manipulator,
             funnel,
@@ -518,11 +520,22 @@ public class Superstructure extends SubsystemBase {
       return to.createState(elevator, funnel, manipulator, intake).action();
     }
     SuperstructurePose pose =
-        ((SuperstructurePose) to.createState(elevator, funnel, manipulator, intake));
-    return pose.setArmState()
-        .andThen(pose.setElevatorHeight())
-        .andThen(pose.setIntakeState())
-        .andThen(pose.setFunnelState()); // need to determine order based on from and to
+        (SuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
+
+    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN) || to == SuperstructureStates.STOW_UP) {
+      return pose.setArmState()
+          .andThen(pose.setIntakeState()
+          .alongWith(pose.setElevatorHeight())
+          .alongWith(pose.setFunnelState()));
+    }
+    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR) {
+      return pose.setElevatorHeight()
+          .andThen(pose.setIntakeState()
+          .alongWith(pose.setArmState())
+          .alongWith(pose.setFunnelState()));
+    }
+
+    return pose.action(); // need to determine order based on from and to
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {

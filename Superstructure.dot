@@ -1,4 +1,4 @@
-digraph {
+digraph Superstructure {
   /*
    * Graphviz DOT file for the superstructure state machine.
    * States are represented as nodes, and transitions are represented as edges.

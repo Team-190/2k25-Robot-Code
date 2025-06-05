@@ -13,14 +13,12 @@ public class SuperstructureAction extends SuperstructureState {
   @Getter private final double manipulatorRollerVoltage;
   @Getter private final double funnelRollerVoltage;
   @Getter private final double intakeRollerVoltage;
-  private final BooleanSupplier endCondition;
 
   public SuperstructureAction(
       String key,
       double manipulatorRollerVoltage,
       double funnelRollerVoltage,
       double intakeRollerVoltage,
-      BooleanSupplier endCondition,
       V2_RedundancyElevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
@@ -29,7 +27,6 @@ public class SuperstructureAction extends SuperstructureState {
     this.manipulatorRollerVoltage = manipulatorRollerVoltage;
     this.funnelRollerVoltage = funnelRollerVoltage;
     this.intakeRollerVoltage = intakeRollerVoltage;
-    this.endCondition = endCondition;
   }
 
   public Command runManipulator() {
@@ -45,6 +42,6 @@ public class SuperstructureAction extends SuperstructureState {
   }
 
   public Command action() {
-    return Commands.parallel(runManipulator(), runFunnel(), runIntake()).until(endCondition);
+    return Commands.parallel(runManipulator(), runFunnel(), runIntake());
   }
 }
