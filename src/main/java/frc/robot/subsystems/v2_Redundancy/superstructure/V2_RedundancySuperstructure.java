@@ -33,10 +33,10 @@ import org.littletonrobotics.junction.Logger;
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<SuperstructureStates, EdgeCommand> graph;
-  private final V2_RedundancyElevator elevator;
-  private final V2_RedundancyFunnel funnel;
-  private final V2_RedundancyManipulator manipulator;
-  private final V2_RedundancyIntake intake;
+  @Getter private final V2_RedundancyElevator elevator;
+  @Getter private final V2_RedundancyFunnel funnel;
+  @Getter private final V2_RedundancyManipulator manipulator;
+  @Getter private final V2_RedundancyIntake intake;
 
   private SuperstructureStates currentState;
   private SuperstructureStates nextState;
@@ -232,7 +232,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
           SuperstructureStates.SCORE_BARGE,
           SuperstructureStates.SCORE_PROCESSOR);
 
-  private V2_RedundancySuperstructure(
+  public V2_RedundancySuperstructure(
       V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
@@ -669,5 +669,28 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     NONE,
     NO_ALGAE,
     ALGAE
+  }
+
+  public Command setPosition() {
+    switch (RobotState.getOIData().currentReefHeight()) {
+      case STOW, CORAL_INTAKE -> {
+        return runGoal(SuperstructureStates.STOW_DOWN);
+      }
+      case L1 -> {
+        return runGoal(SuperstructureStates.L1);
+      }
+      case L2 -> {
+        return runGoal(SuperstructureStates.L2);
+      }
+      case L3 -> {
+        return runGoal(SuperstructureStates.L3);
+      }
+      case L4 -> {
+        return runGoal(SuperstructureStates.L4);
+      }
+      default -> {
+        return Commands.none();
+      }
+    }
   }
 }
