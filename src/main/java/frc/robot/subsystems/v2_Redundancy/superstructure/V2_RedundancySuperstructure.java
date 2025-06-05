@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
@@ -172,7 +173,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         "CLIMB",
         new SubsystemPoses(
             ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLIMB)),
-    ;
+    FUNNEL_CLOSE_WITH_STOW_UP(
+        "FUNNEL CLOSE WITH STOW UP",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)), // TODO: Check this and add edges
+    FUNNEL_CLOSE_WITH_STOW_DOWN(
+        "FUNNEL CLOSE WITH STOW DOWN",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLOSED)); // TODO: Check this and add edges
     private final String name;
     private SubsystemPoses subsystemPoses;
     private List<Double> voltages;
@@ -464,13 +472,16 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       addEdge(SuperstructureStates.STOW_DOWN, dest, AlgaeEdge.NO_ALGAE);
     }
 
-    // STOW_DOWN-> CLIMB
+    // STOW_DOWN <-> CLIMB
     addEdge(
         SuperstructureStates.STOW_DOWN,
         SuperstructureStates.CLIMB,
         true,
         AlgaeEdge.NO_ALGAE,
         false);
+
+    addEdge(SuperstructureStates.STOW_DOWN, SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN, true, AlgaeEdge.NO_ALGAE, false);
+    addEdge(SuperstructureStates.STOW_UP, SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP, true, AlgaeEdge.ALGAE, false);
   }
 
   @Override
@@ -543,6 +554,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     V2_RedundancySuperstructurePose pose =
         (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
 
+    if (from == SuperstructureStates.INTAKE_FLOOR) {
+      return Commands.parallel(pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); //TODO: Check this
+    }
+    
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
         || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN)
         || to == SuperstructureStates.STOW_UP) {
