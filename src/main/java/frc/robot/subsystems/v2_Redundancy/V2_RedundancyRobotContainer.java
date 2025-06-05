@@ -414,22 +414,23 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             operator.back(),
             driver.povRight()));
 
-    driver.a().whileTrue(superstructure.runGoal(SuperstructureStates.L1));
-    driver.b().whileTrue(superstructure.runGoal(SuperstructureStates.L2));
-    driver.x().whileTrue(superstructure.runGoal(SuperstructureStates.L3));
-    driver.y().whileTrue(superstructure.runGoal(SuperstructureStates.L4));
+    driver.a().onTrue(superstructure.runGoal(SuperstructureStates.L1));
+    driver.b().onTrue(superstructure.runGoal(SuperstructureStates.L2));
+    driver.x().onTrue(superstructure.runGoal(SuperstructureStates.L3));
+    driver.y().onTrue(superstructure.runGoal(SuperstructureStates.L4));
     driver
         .povUp()
         .whileTrue(
             superstructure.runGoal(
                 () ->
                     switch (superstructure.getCurrentState()) {
-                      case L1 -> SuperstructureStates.SCORE_L1;
-                      case L2 -> SuperstructureStates.SCORE_L2;
-                      case L3 -> SuperstructureStates.SCORE_L3;
-                      case L4 -> SuperstructureStates.SCORE_L4;
+                      case L1, SCORE_L1 -> SuperstructureStates.SCORE_L1;
+                      case L2, SCORE_L2 -> SuperstructureStates.SCORE_L2;
+                      case L3, SCORE_L3 -> SuperstructureStates.SCORE_L3;
+                      case L4, SCORE_L4 -> SuperstructureStates.SCORE_L4;
                       default -> SuperstructureStates.L1;
-                    }));
+                    }))
+        .onFalse(superstructure.runGoal(() -> superstructure.getPreviousState()).withTimeout(0.02));
   }
 
   @Override

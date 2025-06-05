@@ -37,10 +37,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Getter private final V2_RedundancyManipulator manipulator;
   @Getter private final V2_RedundancyIntake intake;
 
-  private SuperstructureStates currentState;
-  private SuperstructureStates nextState;
+  @Getter private SuperstructureStates previousState;
+  @Getter private SuperstructureStates currentState;
+  @Getter private SuperstructureStates nextState;
 
-  private SuperstructureStates targetState;
+  @Getter private SuperstructureStates targetState;
   private EdgeCommand edgeCommand;
 
   public enum SuperstructureStates {
@@ -255,6 +256,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     this.manipulator = manipulator;
     this.intake = intake;
 
+    previousState = null;
     currentState = SuperstructureStates.START;
     nextState = null;
 
@@ -269,18 +271,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Add edges between states
     addEdges();
-  }
-
-  public SuperstructureStates getCurrentState() {
-    return currentState;
-  }
-
-  public SuperstructureStates getNextState() {
-    return nextState;
-  }
-
-  public SuperstructureStates getTargetState() {
-    return targetState;
   }
 
   private void addEdges() {
@@ -513,9 +503,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    if (actions.contains(currentState))
+      currentState.createState(elevator, funnel, manipulator, intake).action();
     if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
       if (nextState != null) {
+        previousState = currentState;
         currentState = nextState;
         nextState = null;
       }
@@ -531,9 +525,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 });
       }
     }
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState);
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Current State", currentState);
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Next State", nextState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState.toString());
+    Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "Previous State",
+        previousState == null ? "NULL" : previousState.toString());
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Current State", currentState.toString());
+    Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "Next State",
+        nextState == null ? "NULL" : nextState.toString());
   }
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
@@ -576,7 +575,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
     if (actions.contains(to)) {
-      return to.createState(elevator, funnel, manipulator, intake).action();
+      return Commands.none();
     }
     V2_RedundancySuperstructurePose pose =
         (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
@@ -705,6 +704,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                   edgeCommand = graph.getEdge(nextState, currentState);
                   edgeCommand.getCommand().schedule();
                   var temp = currentState;
+                  previousState = currentState;
                   currentState = nextState;
                   nextState = temp;
                 }
