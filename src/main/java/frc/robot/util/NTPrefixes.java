@@ -10,4 +10,7 @@ public class NTPrefixes {
   public static final String ALGAE_DATA = REEF_DATA + "Algae/";
 
   public static final String CANIVORE_STATUS = ROBOT_STATE + "CANivore Status/";
+
+
+  public static final String SUPERSTRUCTURE = "Superstructure/";
 }

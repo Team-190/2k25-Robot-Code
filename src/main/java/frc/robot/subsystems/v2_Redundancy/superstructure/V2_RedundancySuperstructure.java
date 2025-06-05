@@ -14,6 +14,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.util.NTPrefixes;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +28,7 @@ import lombok.Getter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
@@ -163,6 +166,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         "SCORE PROCESSOR",
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(), 0.0, 0.0)),
+    CLIMB(
+        "CLIMB",
+        new SubsystemPoses(
+            ReefState.STOW,
+            ArmState.STOW_DOWN,
+            IntakeState.STOW,
+            FunnelState.CLIMB)), 
     ;
     private final String name;
     private SubsystemPoses subsystemPoses;
@@ -453,6 +463,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             SuperstructureStates.FLOOR_ACQUISITION)) {
       addEdge(SuperstructureStates.STOW_DOWN, dest, AlgaeEdge.NO_ALGAE);
     }
+
+    // STOW_DOWN-> CLIMB
+    addEdge(SuperstructureStates.STOW_DOWN, SuperstructureStates.CLIMB, true, AlgaeEdge.NO_ALGAE, false);
   }
 
   @Override
@@ -475,6 +488,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 });
       }
     }
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Goal", targetState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Current State", currentState);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE+"Next State", nextState);
   }
 
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
