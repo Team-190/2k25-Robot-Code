@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.commands.CompositeCommands;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
@@ -176,11 +175,17 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     FUNNEL_CLOSE_WITH_STOW_UP(
         "FUNNEL CLOSE WITH STOW UP",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)), // TODO: Check this and add edges
+            ReefState.STOW,
+            ArmState.STOW_UP,
+            IntakeState.STOW,
+            FunnelState.CLOSED)), // TODO: Check this and add edges
     FUNNEL_CLOSE_WITH_STOW_DOWN(
         "FUNNEL CLOSE WITH STOW DOWN",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLOSED)); // TODO: Check this and add edges
+            ReefState.STOW,
+            ArmState.STOW_DOWN,
+            IntakeState.STOW,
+            FunnelState.CLOSED)); // TODO: Check this and add edges
     private final String name;
     private SubsystemPoses subsystemPoses;
     private List<Double> voltages;
@@ -264,6 +269,18 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Add edges between states
     addEdges();
+  }
+
+  public SuperstructureStates getCurrentState() {
+    return currentState;
+  }
+
+  public SuperstructureStates getNextState() {
+    return nextState;
+  }
+
+  public SuperstructureStates getTargetState() {
+    return targetState;
   }
 
   private void addEdges() {
@@ -480,8 +497,18 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         AlgaeEdge.NO_ALGAE,
         false);
 
-    addEdge(SuperstructureStates.STOW_DOWN, SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN, true, AlgaeEdge.NO_ALGAE, false);
-    addEdge(SuperstructureStates.STOW_UP, SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP, true, AlgaeEdge.ALGAE, false);
+    addEdge(
+        SuperstructureStates.STOW_DOWN,
+        SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN,
+        true,
+        AlgaeEdge.NO_ALGAE,
+        false);
+    addEdge(
+        SuperstructureStates.STOW_UP,
+        SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP,
+        true,
+        AlgaeEdge.ALGAE,
+        false);
   }
 
   @Override
@@ -555,9 +582,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
 
     if (from == SuperstructureStates.INTAKE_FLOOR) {
-      return Commands.parallel(pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); //TODO: Check this
+      return Commands.parallel(
+          pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); // TODO: Check this
     }
-    
+
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
         || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN)
         || to == SuperstructureStates.STOW_UP) {
@@ -577,6 +605,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
+    Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "EdgeAllowed/" + goal + "/" + edge,
+        (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
+            && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
+                || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE)));
     return (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
         && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
             || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE));

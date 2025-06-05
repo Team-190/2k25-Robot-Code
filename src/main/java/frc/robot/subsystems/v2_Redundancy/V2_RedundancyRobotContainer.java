@@ -30,6 +30,8 @@ import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIO;
@@ -62,6 +64,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private V2_RedundancyManipulator manipulator;
   private V2_RedundancyIntake intake;
   private V2_RedundancyLEDs leds;
+  private V2_RedundancySuperstructure superstructure;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -89,6 +92,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
           leds = new V2_RedundancyLEDs();
+          superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
           break;
         case V2_REDUNDANCY_SIM:
           drive =
@@ -104,6 +108,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
+          superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
           break;
         default:
           break;
@@ -140,9 +145,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     if (leds == null) {
       leds = new V2_RedundancyLEDs();
     }
+    if (superstructure == null) {
+      superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
+    }
 
-    configureButtonBindings();
-    configureAutos();
+    // configureButtonBindings();
+    // configureAutos();
+    testButtonBindings();
   }
 
   private void configureButtonBindings() {
@@ -391,6 +400,36 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             AutonomousCommands.autoDCenter(
                 drive, elevator, manipulator, funnel, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
+  }
+
+  private void testButtonBindings() {
+    // Default drive command
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            () -> false,
+            operator.back(),
+            driver.povRight()));
+
+    driver.a().whileTrue(superstructure.runGoal(SuperstructureStates.L1));
+    driver.b().whileTrue(superstructure.runGoal(SuperstructureStates.L2));
+    driver.x().whileTrue(superstructure.runGoal(SuperstructureStates.L3));
+    driver.y().whileTrue(superstructure.runGoal(SuperstructureStates.L4));
+    driver
+        .povUp()
+        .whileTrue(
+            superstructure.runGoal(
+                () ->
+                    switch (superstructure.getCurrentState()) {
+                      case L1 -> SuperstructureStates.SCORE_L1;
+                      case L2 -> SuperstructureStates.SCORE_L2;
+                      case L3 -> SuperstructureStates.SCORE_L3;
+                      case L4 -> SuperstructureStates.SCORE_L4;
+                      default -> SuperstructureStates.L1;
+                    }));
   }
 
   @Override
