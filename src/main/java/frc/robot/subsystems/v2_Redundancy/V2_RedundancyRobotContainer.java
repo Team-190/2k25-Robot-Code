@@ -217,16 +217,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             V2_RedundancyCompositeCommands.autoScoreCoralSequence(
-                drive,
-                elevator,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, elevator, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Driver bumpers
     driver
         .leftBumper()
         .whileTrue(
-            V2_RedundancyCompositeCommands.floorIntakeSequence(manipulator, elevator, intake))
+            V2_RedundancyCompositeCommands.floorIntakeSequence(superstructure))
         .onFalse(
             Commands.deadline(
                 V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
@@ -242,18 +239,14 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .leftStick()
         .onTrue(
             V2_RedundancyCompositeCommands.scoreCoralSequence(
-                elevator,
-                superstructure,
-                () -> RobotState.getReefAlignData().atCoralSetpoint()));
+                elevator, superstructure, () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver
         .back()
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
                 drive,
-                elevator,
-                manipulator,
-                intake,
+                superstructure,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
 
@@ -308,21 +301,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
-        .whileTrue(V2_RedundancyCompositeCommands.scoreProcessor(elevator, manipulator, intake))
-        .onFalse(manipulator.scoreAlgae().withTimeout(1));
+        .whileTrue(superstructure.runGoal(SuperstructureStates.PROCESSOR))
+        .onFalse(superstructure.runActionWithTimeout(SuperstructureStates.PROCESSOR,SuperstructureStates.SCORE_PROCESSOR,1));
 
     operator.povRight().whileTrue(manipulator.scoreAlgae());
     operator
         .start()
-        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake));
+        .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
 
     operator
         .back()
-        .whileTrue(V2_RedundancyCompositeCommands.netHeight(elevator, funnel, manipulator, intake))
+        .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE))
         .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
 
-    // operator.leftStick().onTrue(Commands.runOnce(() ->
-    // CommandScheduler.getInstance().cancelAll()));
 
     // Misc
     operatorFunnelOverride
