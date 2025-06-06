@@ -212,13 +212,15 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver
         .leftTrigger(0.5)
         .whileTrue(
-            V2_RedundancyCompositeCommands.intakeCoralDriverSequence(
-                elevator, funnel, manipulator, intake));
+            V2_RedundancyCompositeCommands.intakeCoralDriverSequence(superstructure, intake));
     driver
         .rightTrigger(0.5)
         .whileTrue(
             V2_RedundancyCompositeCommands.autoScoreCoralSequence(
-                drive, elevator, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Driver bumpers
     driver
@@ -241,8 +243,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onTrue(
             V2_RedundancyCompositeCommands.scoreCoralSequence(
                 elevator,
-                manipulator,
-                intake,
+                superstructure,
                 () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
     driver

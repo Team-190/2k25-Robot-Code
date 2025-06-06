@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,7 +45,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   @Getter private SuperstructureStates targetState;
   private EdgeCommand edgeCommand;
-  private Trigger actionTrigger;
 
   public enum SuperstructureStates {
     START("START", new SubsystemPoses()),
@@ -61,7 +61,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             0.0)),
     L1(
         "L1 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.L1_EXT, FunnelState.OPENED)),
     L2(
         "L2 CORAL SETPOINT",
         new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
@@ -274,12 +274,17 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     // Add edges between states
     addEdges();
 
-    actionTrigger = new Trigger(()->actions.contains(currentState));
-    actionTrigger.whileTrue(runAction(()->currentState)).onFalse(Commands.print("Action Trigger False"));
+    new Trigger(() -> actions.contains(currentState))
+        .whileTrue(runAction(() -> this.currentState));
   }
+
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
-    return stateSupplier.get().createState(elevator, funnel, manipulator, intake).action();
+    // Always fetch the latest state
+    return Commands.defer(
+        () -> stateSupplier.get().createState(elevator, funnel, manipulator, intake).action(),
+        Set.of(this));
   }
+
   private void addEdges() {
 
     // CORAL-RELATED STATES
@@ -575,6 +580,43 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
     return run(() -> setGoal(goal.get()));
+  }
+
+  public Command runReefGoal(Supplier<ReefState> goal) {
+    return runGoal(
+        () -> {
+          switch (goal.get()) {
+            case L1:
+              return SuperstructureStates.L1;
+            case L2:
+              return SuperstructureStates.L2;
+            case L3:
+              return SuperstructureStates.L3;
+            case L4:
+              return SuperstructureStates.L4;
+            case L4_PLUS:
+              return SuperstructureStates.L4_PLUS;
+            default:
+              return SuperstructureStates.STOW_DOWN;
+          }
+        }).withTimeout(0.02);
+  }
+
+  public Command runReefScoreGoal(Supplier<ReefState> goal) {
+          switch (goal.get()) {
+            case L1:
+              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L1).withTimeout(0.8), runGoal(SuperstructureStates.L1));
+            case L2:
+              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L2).withTimeout(0.15), runGoal(SuperstructureStates.L2));
+            case L3:
+              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L3).withTimeout(0.15), runGoal(SuperstructureStates.L3));
+            case L4:
+              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L4).withTimeout(0.4), runGoal(SuperstructureStates.L4));
+            case L4_PLUS:
+              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L4_PLUS).withTimeout(0.5), runGoal(SuperstructureStates.L4_PLUS));
+            default:
+              return Commands.none();
+          }
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
