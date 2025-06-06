@@ -340,12 +340,7 @@ public class CompositeCommands {
                       elevator,
                       superstructure,
                       () -> RobotState.getReefAlignData().atCoralSetpoint())),
-              Commands.sequence(
-                      superstructure
-                          .runGoal(SuperstructureStates.SCORE_L4_PLUS)
-                          .withTimeout(
-                              0.5)) // TODO: Might need to increase timeout because all commands are
-                  // now combined
+              superstructure.runReefScoreGoal(()->ReefState.L4_PLUS)
                   .onlyIf(() -> superstructure.getCurrentState().equals(SuperstructureStates.L4))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }

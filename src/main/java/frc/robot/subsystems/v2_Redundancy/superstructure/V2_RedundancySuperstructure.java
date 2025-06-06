@@ -575,7 +575,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
+    return runOnce(() -> setGoal(goal)).andThen(Commands.waitUntil(() -> currentState == goal)).andThen(Commands.idle(this));
   }
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
@@ -605,15 +605,15 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
           switch (goal.get()) {
             case L1:
-              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L1).withTimeout(0.8), runGoal(SuperstructureStates.L1));
+              return Commands.sequence(runGoal(SuperstructureStates.L1), runGoal(SuperstructureStates.SCORE_L1).withTimeout(0.8), runGoal(SuperstructureStates.L1));
             case L2:
-              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L2).withTimeout(0.15), runGoal(SuperstructureStates.L2));
+              return Commands.sequence(runGoal(SuperstructureStates.L2), runGoal(SuperstructureStates.SCORE_L2).withTimeout(0.15), runGoal(SuperstructureStates.L2));
             case L3:
-              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L3).withTimeout(0.15), runGoal(SuperstructureStates.L3));
+              return Commands.sequence(runGoal(SuperstructureStates.L3), runGoal(SuperstructureStates.SCORE_L3).withTimeout(0.15), runGoal(SuperstructureStates.L3));
             case L4:
-              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L4).withTimeout(0.4), runGoal(SuperstructureStates.L4));
+              return Commands.sequence(runGoal(SuperstructureStates.L4), runGoal(SuperstructureStates.SCORE_L4).withTimeout(0.4), runGoal(SuperstructureStates.L4));
             case L4_PLUS:
-              return Commands.sequence(runGoal(SuperstructureStates.SCORE_L4_PLUS).withTimeout(0.5), runGoal(SuperstructureStates.L4_PLUS));
+              return Commands.sequence(runGoal(SuperstructureStates.L4_PLUS), runGoal(SuperstructureStates.SCORE_L4_PLUS).withTimeout(0.5), runGoal(SuperstructureStates.L4_PLUS));
             default:
               return Commands.none();
           }
