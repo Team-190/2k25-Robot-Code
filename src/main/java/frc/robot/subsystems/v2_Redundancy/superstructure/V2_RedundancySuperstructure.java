@@ -41,6 +41,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Getter private SuperstructureStates currentState;
   @Getter private SuperstructureStates nextState;
 
+  @Getter private SuperstructureStates lastSetState;
   @Getter private SuperstructureStates targetState;
   private EdgeCommand edgeCommand;
 
@@ -260,6 +261,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     currentState = SuperstructureStates.START;
     nextState = null;
 
+    lastSetState = null;
     targetState = SuperstructureStates.START;
 
     // Initialize the graph
@@ -527,6 +529,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
     Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState.toString());
     Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "Last Set State",
+        lastSetState == null ? "NULL" : lastSetState.toString());
+    Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Previous State",
         previousState == null ? "NULL" : previousState.toString());
     Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Current State", currentState.toString());
@@ -566,7 +571,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
+    return runOnce(
+            () -> {
+              lastSetState = currentState;
+              setGoal(goal);
+            })
+        .andThen(Commands.idle(this));
   }
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
@@ -747,5 +757,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         return Commands.none();
       }
     }
+  }
+
+  public Command runPreviousState() {
+    return runGoal(() -> lastSetState).withTimeout(0.02);
   }
 }

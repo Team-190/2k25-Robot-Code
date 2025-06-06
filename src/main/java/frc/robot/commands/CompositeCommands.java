@@ -286,22 +286,6 @@ public class CompositeCommands {
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
-    public static final Command intakeCoralOperatorOverrideSequence(
-        V2_RedundancyElevator elevator,
-        V2_RedundancyFunnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
-      return funnel.setClapDaddyGoal(
-          frc.robot
-              .subsystems
-              .v2_Redundancy
-              .superstructure
-              .funnel
-              .V2_RedundancyFunnelConstants
-              .FunnelState
-              .CLOSED);
-    }
-
     public static final Command scoreCoral(V2_RedundancyManipulator manipulator) {
       return manipulator.scoreCoral().withTimeout(0.4);
     }
@@ -618,7 +602,8 @@ public class CompositeCommands {
               .until(() -> RobotState.isHasAlgae()));
     }
 
-    public static final Command postFloorIntakeSequence(V2_RedundancySuperstructure superstructure) {
+    public static final Command postFloorIntakeSequence(
+        V2_RedundancySuperstructure superstructure) {
       return Commands.either(
           superstructure.runGoal(SuperstructureStates.STOW_UP),
           superstructure.runGoal(SuperstructureStates.STOW_DOWN),

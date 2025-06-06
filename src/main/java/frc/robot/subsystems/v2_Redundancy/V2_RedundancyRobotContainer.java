@@ -325,11 +325,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // CommandScheduler.getInstance().cancelAll()));
 
     // Misc
-    operatorFunnelOverride.whileTrue(
-        V2_RedundancyCompositeCommands.intakeCoralOperatorOverrideSequence(
-            elevator, funnel, manipulator, intake));
-    operatorFunnelOverride.onFalse(
-        Commands.sequence(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
+    operatorFunnelOverride
+        .whileTrue(
+            Commands.either(
+                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
+                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
+                () -> RobotState.isHasAlgae()))
+        .onFalse(superstructure.runPreviousState());
   }
 
   private void configureAutos() {
@@ -429,7 +431,15 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                       case L4, SCORE_L4 -> SuperstructureStates.SCORE_L4;
                       default -> SuperstructureStates.L1;
                     }))
-        .onFalse(superstructure.runGoal(() -> superstructure.getPreviousState()).withTimeout(0.02));
+        .onFalse(superstructure.runPreviousState());
+
+        driver.povDown()
+        .whileTrue(
+            Commands.either(
+                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
+                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
+                () -> RobotState.isHasAlgae()))
+        .onFalse(superstructure.runPreviousState());
   }
 
   @Override
