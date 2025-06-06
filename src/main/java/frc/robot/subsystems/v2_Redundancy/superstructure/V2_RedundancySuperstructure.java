@@ -3,6 +3,7 @@ package frc.robot.subsystems.v2_Redundancy.superstructure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
@@ -41,9 +42,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Getter private SuperstructureStates currentState;
   @Getter private SuperstructureStates nextState;
 
-  @Getter private SuperstructureStates lastSetState;
   @Getter private SuperstructureStates targetState;
   private EdgeCommand edgeCommand;
+  private Trigger actionTrigger;
 
   public enum SuperstructureStates {
     START("START", new SubsystemPoses()),
@@ -261,7 +262,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     currentState = SuperstructureStates.START;
     nextState = null;
 
-    lastSetState = null;
     targetState = SuperstructureStates.START;
 
     // Initialize the graph
@@ -273,8 +273,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Add edges between states
     addEdges();
-  }
 
+    actionTrigger = new Trigger(()->actions.contains(currentState));
+    actionTrigger.whileTrue(runAction(()->currentState)).onFalse(Commands.print("Action Trigger False"));
+  }
+  private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
+    return stateSupplier.get().createState(elevator, funnel, manipulator, intake).action();
+  }
   private void addEdges() {
 
     // CORAL-RELATED STATES
@@ -505,9 +510,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    if (actions.contains(currentState))
-      currentState.createState(elevator, funnel, manipulator, intake).action();
     if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
       if (nextState != null) {
@@ -528,9 +530,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       }
     }
     Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState.toString());
-    Logger.recordOutput(
-        NTPrefixes.SUPERSTRUCTURE + "Last Set State",
-        lastSetState == null ? "NULL" : lastSetState.toString());
     Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Previous State",
         previousState == null ? "NULL" : previousState.toString());
@@ -571,12 +570,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(
-            () -> {
-              lastSetState = currentState;
-              setGoal(goal);
-            })
-        .andThen(Commands.idle(this));
+    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
   }
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
@@ -614,11 +608,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
-    Logger.recordOutput(
-        NTPrefixes.SUPERSTRUCTURE + "EdgeAllowed/" + goal + "/" + edge,
-        (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
-            && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
-                || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE)));
     return (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
         && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
             || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE));
@@ -760,6 +749,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runPreviousState() {
-    return runGoal(() -> lastSetState).withTimeout(0.02);
+    return runGoal(() -> previousState).withTimeout(0.02);
   }
 }

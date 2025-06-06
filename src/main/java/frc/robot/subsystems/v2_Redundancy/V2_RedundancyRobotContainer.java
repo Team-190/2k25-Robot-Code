@@ -294,8 +294,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .leftTrigger(0.5)
         .whileTrue(
-            V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(
-                elevator, funnel, manipulator, intake))
+            V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(superstructure, intake))
         .onFalse(
             Commands.parallel(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
     operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
@@ -433,7 +432,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                     }))
         .onFalse(superstructure.runPreviousState());
 
-        driver.povDown()
+    driver
+        .povDown()
         .whileTrue(
             Commands.either(
                 superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),

@@ -266,23 +266,11 @@ public class CompositeCommands {
     }
 
     public static final Command intakeCoralOperatorSequence(
-        V2_RedundancyElevator elevator,
-        V2_RedundancyFunnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              Commands.parallel(
-                  DecisionTree.moveSequence(
-                      elevator,
-                      manipulator,
-                      intake,
-                      () -> ReefState.CORAL_INTAKE,
-                      ArmState.STOW_DOWN,
-                      IntakeState.STOW)),
-              Commands.parallel(
-                  manipulator.intakeCoral(() -> false), funnel.intakeCoral(() -> false)))
-          .until(intake::hasCoral)
+              superstructure.runGoal(SuperstructureStates.INTAKE).until(intake::hasCoral),
+              superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
