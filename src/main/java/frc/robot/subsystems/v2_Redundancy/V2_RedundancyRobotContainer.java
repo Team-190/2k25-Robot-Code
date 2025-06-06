@@ -149,9 +149,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
     }
 
-    // configureButtonBindings();
-    // configureAutos();
-    testButtonBindings();
+    configureButtonBindings();
+    configureAutos();
   }
 
   private void configureButtonBindings() {
@@ -222,8 +221,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Driver bumpers
     driver
         .leftBumper()
-        .whileTrue(
-            V2_RedundancyCompositeCommands.floorIntakeSequence(superstructure))
+        .whileTrue(V2_RedundancyCompositeCommands.floorIntakeSequence(superstructure))
         .onFalse(
             Commands.deadline(
                 V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
@@ -258,6 +256,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 elevator,
                 manipulator,
                 intake,
+                superstructure,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
 
@@ -302,18 +301,17 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .povLeft()
         .whileTrue(superstructure.runGoal(SuperstructureStates.PROCESSOR))
-        .onFalse(superstructure.runActionWithTimeout(SuperstructureStates.PROCESSOR,SuperstructureStates.SCORE_PROCESSOR,1));
+        .onFalse(
+            superstructure.runActionWithTimeout(
+                SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_PROCESSOR, 1));
 
     operator.povRight().whileTrue(manipulator.scoreAlgae());
-    operator
-        .start()
-        .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
+    operator.start().whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
 
     operator
         .back()
         .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE))
         .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
-
 
     // Misc
     operatorFunnelOverride
@@ -337,101 +335,121 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "4 Piece Right",
         () ->
             AutonomousCommands.autoARight(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "4 Piece Left Nashoba",
         () ->
             AutonomousCommands.autoALeftNashoba(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "4 Piece Left D.A.V.E.",
         () ->
             AutonomousCommands.autoALeftDAVE(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Left Push",
         () ->
             AutonomousCommands.autoCLeftPush(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Right Push",
         () ->
             AutonomousCommands.autoCRightPush(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "2 Piece Left",
         () ->
             AutonomousCommands.autoBLeft(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "2 Piece Right",
         () ->
             AutonomousCommands.autoBRight(
-                drive, elevator, funnel, manipulator, intake, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                funnel,
+                manipulator,
+                intake,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
                 drive, elevator, manipulator, funnel, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
-  }
-
-  private void testButtonBindings() {
-    // Default drive command
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> false,
-            operator.back(),
-            driver.povRight()));
-
-    driver.a().onTrue(superstructure.runGoal(SuperstructureStates.L1));
-    driver.b().onTrue(superstructure.runGoal(SuperstructureStates.L2));
-    driver.x().onTrue(superstructure.runGoal(SuperstructureStates.L3));
-    driver.y().onTrue(superstructure.runGoal(SuperstructureStates.L4));
-    driver
-        .povUp()
-        .whileTrue(
-            superstructure.runGoal(
-                () ->
-                    switch (superstructure.getCurrentState()) {
-                      case L1, SCORE_L1 -> SuperstructureStates.SCORE_L1;
-                      case L2, SCORE_L2 -> SuperstructureStates.SCORE_L2;
-                      case L3, SCORE_L3 -> SuperstructureStates.SCORE_L3;
-                      case L4, SCORE_L4 -> SuperstructureStates.SCORE_L4;
-                      default -> SuperstructureStates.L1;
-                    }))
-        .onFalse(superstructure.runPreviousState());
-
-    driver
-        .povDown()
-        .whileTrue(
-            Commands.either(
-                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
-                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
-                () -> RobotState.isHasAlgae()))
-        .onFalse(superstructure.runPreviousState());
   }
 
   @Override

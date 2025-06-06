@@ -22,9 +22,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -222,21 +220,14 @@ public class CompositeCommands {
 
   public static final class V2_RedundancyCompositeCommands {
     public static final Command intakeCoralAuto(
-        V2_RedundancyElevator elevator,
+        V2_RedundancySuperstructure superstructure,
         V2_RedundancyFunnel funnel,
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setHasAlgae(false)),
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              Commands.parallel(
-                  DecisionTree.moveSequence(
-                      elevator,
-                      manipulator,
-                      intake,
-                      () -> ReefState.CORAL_INTAKE,
-                      ArmState.STOW_DOWN,
-                      IntakeState.STOW)),
+              superstructure.runGoal(SuperstructureStates.STOW_DOWN),
               Commands.race(
                   manipulator.intakeCoral(() -> intake.hasCoral()),
                   funnel.intakeCoral(() -> manipulator.hasCoral())))
@@ -368,7 +359,7 @@ public class CompositeCommands {
                   Commands.either(
                       superstructure.runGoal(SuperstructureStates.STOW_UP),
                       Commands.none(),
-                      ()->RobotState.isHasAlgae())),
+                      () -> RobotState.isHasAlgae())),
               Commands.runEnd(
                       () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)));
@@ -379,40 +370,65 @@ public class CompositeCommands {
         V2_RedundancyElevator elevator,
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake,
+        V2_RedundancySuperstructure superstructure,
         Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.deadline(
-              Commands.sequence(
-                  DecisionTree.moveSequence(
-                      elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
-                  DecisionTree.moveSequence(
-                      elevator, manipulator, intake, level, ArmState.REEF_INTAKE, IntakeState.STOW),
-                  Commands.waitSeconds(1.0),
-                  Commands.runEnd(
-                          () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
-                          () -> drive.stop())
-                      .withTimeout(0.5)),
-              manipulator.intakeReefAlgae()),
-          manipulator.scoreAlgae().withTimeout(0.75),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefState.CORAL_INTAKE,
-              ArmState.STOW_DOWN,
-              IntakeState.STOW));
+          Commands.sequence(
+              superstructure
+                  .runGoal(
+                      () -> {
+                        switch (level.get()) {
+                          case ALGAE_INTAKE_TOP:
+                            return SuperstructureStates.INTAKE_REEF_L3;
+                          case ALGAE_INTAKE_BOTTOM:
+                            return SuperstructureStates.INTAKE_REEF_L2;
+                          default:
+                            return SuperstructureStates.STOW_DOWN;
+                        }
+                      })
+                  .until(() -> RobotState.isHasAlgae()),
+              superstructure
+                  .runGoal(
+                      () -> {
+                        switch (level.get()) {
+                          case ALGAE_INTAKE_TOP:
+                            return SuperstructureStates.REEF_ACQUISITION_L3;
+                          case ALGAE_INTAKE_BOTTOM:
+                            return SuperstructureStates.REEF_ACQUISITION_L2;
+                          default:
+                            return SuperstructureStates.STOW_DOWN;
+                        }
+                      })
+                  .withTimeout(0.02),
+              Commands.waitSeconds(1.0),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
+                  .withTimeout(0.5)),
+          superstructure
+              .runGoal(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return SuperstructureStates.DROP_REEF_L3;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return SuperstructureStates.DROP_REEF_L2;
+                      default:
+                        return SuperstructureStates.STOW_DOWN;
+                    }
+                  })
+              .withTimeout(0.75),
+          superstructure.runGoal(SuperstructureStates.STOW_DOWN));
     }
 
-    public static final Command floorIntakeSequence(
-        V2_RedundancySuperstructure superstructure) {
+    public static final Command floorIntakeSequence(V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(
           Commands.sequence(
                   Commands.parallel(
                       superstructure.runGoal(SuperstructureStates.FLOOR_ACQUISITION),
                       Commands.runOnce(() -> RobotState.setHasAlgae(false))),
-                  superstructure.runGoal(()->SuperstructureStates.INTAKE_FLOOR))
+                  superstructure.runGoal(() -> SuperstructureStates.INTAKE_FLOOR))
               .until(() -> RobotState.isHasAlgae()));
     }
 

@@ -62,7 +62,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             0.0)),
     L1(
         "L1 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.L1_EXT, FunnelState.OPENED)),
+        new SubsystemPoses(
+            ReefState.L1, ArmState.STOW_DOWN, IntakeState.L1_EXT, FunnelState.OPENED)),
     L2(
         "L2 CORAL SETPOINT",
         new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
@@ -275,8 +276,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     // Add edges between states
     addEdges();
 
-    new Trigger(() -> actions.contains(currentState))
-        .whileTrue(runAction(() -> this.currentState));
+    new Trigger(() -> actions.contains(currentState)).whileTrue(runAction(() -> this.currentState));
   }
 
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
@@ -576,7 +576,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(() -> setGoal(goal)).andThen(Commands.waitUntil(() -> atGoal())).andThen(Commands.idle(this));
+    return runOnce(() -> setGoal(goal))
+        .andThen(Commands.waitUntil(() -> atGoal()))
+        .andThen(Commands.idle(this));
   }
 
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
@@ -590,49 +592,50 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public Command runReefGoal(Supplier<ReefState> goal) {
     return runGoal(
-        () -> {
-          switch (goal.get()) {
-            case L1:
-              return SuperstructureStates.L1;
-            case L2:
-              return SuperstructureStates.L2;
-            case L3:
-              return SuperstructureStates.L3;
-            case L4:
-              return SuperstructureStates.L4;
-            case L4_PLUS:
-              return SuperstructureStates.L4_PLUS;
-            default:
-              return SuperstructureStates.STOW_DOWN;
-          }
-        }).withTimeout(0.02);
+            () -> {
+              switch (goal.get()) {
+                case L1:
+                  return SuperstructureStates.L1;
+                case L2:
+                  return SuperstructureStates.L2;
+                case L3:
+                  return SuperstructureStates.L3;
+                case L4:
+                  return SuperstructureStates.L4;
+                case L4_PLUS:
+                  return SuperstructureStates.L4_PLUS;
+                default:
+                  return SuperstructureStates.STOW_DOWN;
+              }
+            })
+        .withTimeout(0.02);
   }
 
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
-          switch (goal.get()) {
-            case L1:
-              return runActionWithTimeout(SuperstructureStates.L1, SuperstructureStates.SCORE_L1, 0.8);
-            case L2:
-              return runActionWithTimeout(SuperstructureStates.L2, SuperstructureStates.SCORE_L2, 0.15);
-            case L3:
-              return runActionWithTimeout(SuperstructureStates.L3, SuperstructureStates.SCORE_L3, 0.15);
-            case L4:
-              return runActionWithTimeout(SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.4);
-            case L4_PLUS:
-              return runActionWithTimeout(SuperstructureStates.L4_PLUS, SuperstructureStates.SCORE_L4_PLUS, 0.5);
-            default:
-              return Commands.none();
-          }
+    switch (goal.get()) {
+      case L1:
+        return runActionWithTimeout(SuperstructureStates.L1, SuperstructureStates.SCORE_L1, 0.8);
+      case L2:
+        return runActionWithTimeout(SuperstructureStates.L2, SuperstructureStates.SCORE_L2, 0.15);
+      case L3:
+        return runActionWithTimeout(SuperstructureStates.L3, SuperstructureStates.SCORE_L3, 0.15);
+      case L4:
+        return runActionWithTimeout(SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.4);
+      case L4_PLUS:
+        return runActionWithTimeout(
+            SuperstructureStates.L4_PLUS, SuperstructureStates.SCORE_L4_PLUS, 0.5);
+      default:
+        return Commands.none();
+    }
   }
 
-  public Command runActionWithTimeout(SuperstructureStates pose, SuperstructureStates action, double timeout) {
+  public Command runActionWithTimeout(
+      SuperstructureStates pose, SuperstructureStates action, double timeout) {
     if (!actions.contains(action)) {
       throw new IllegalArgumentException("Action must be one of the predefined actions.");
     }
     return Commands.sequence(
-        runGoal(pose),
-        runGoal(()->action).withTimeout(timeout),
-        runGoal(pose));
+        runGoal(pose), runGoal(() -> action).withTimeout(timeout), runGoal(pose));
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
@@ -645,6 +648,17 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     if (from == SuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
           pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); // TODO: Check this
+    }
+
+    if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {
+      return Commands.sequence(
+          pose.setElevatorHeight()
+              .alongWith(
+                  manipulator
+                      .setAlgaeArmGoal(ArmState.STOW_DOWN)
+                      .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
+              .alongWith(pose.setFunnelState().alongWith(pose.setIntakeState())),
+          pose.setArmState());
     }
 
     if (to == SuperstructureStates.FLOOR_ACQUISITION) {
