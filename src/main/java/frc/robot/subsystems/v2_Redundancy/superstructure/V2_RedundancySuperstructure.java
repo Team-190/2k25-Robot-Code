@@ -44,22 +44,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Getter private SuperstructureStates targetState;
   private EdgeCommand edgeCommand;
 
-  private static final List<SuperstructureStates> actions =
-      List.of(
-          SuperstructureStates.INTAKE,
-          SuperstructureStates.SCORE_L1,
-          SuperstructureStates.SCORE_L2,
-          SuperstructureStates.SCORE_L3,
-          SuperstructureStates.SCORE_L4,
-          SuperstructureStates.SCORE_L4_PLUS,
-          SuperstructureStates.INTAKE_FLOOR,
-          SuperstructureStates.INTAKE_REEF_L2,
-          SuperstructureStates.INTAKE_REEF_L3,
-          SuperstructureStates.DROP_REEF_L2,
-          SuperstructureStates.DROP_REEF_L3,
-          SuperstructureStates.SCORE_BARGE,
-          SuperstructureStates.SCORE_PROCESSOR);
-
   public V2_RedundancySuperstructure(
       V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
@@ -86,7 +70,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     // Add edges between states
     addEdges();
 
-    new Trigger(() -> actions.contains(currentState)).whileTrue(runAction(() -> this.currentState));
+    new Trigger(() -> V2_RedundancyStates.Actions.contains(currentState))
+        .whileTrue(runAction(() -> this.currentState));
   }
 
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
@@ -441,7 +426,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public Command runActionWithTimeout(
       SuperstructureStates pose, SuperstructureStates action, double timeout) {
-    if (!actions.contains(action)) {
+    if (!V2_RedundancyStates.Actions.contains(action)) {
       throw new IllegalArgumentException("Action must be one of the predefined actions.");
     }
     return Commands.sequence(
@@ -449,7 +434,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
-    if (actions.contains(to)) {
+    if (V2_RedundancyStates.Actions.contains(to)) {
       return Commands.none();
     }
     V2_RedundancySuperstructurePose pose =

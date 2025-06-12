@@ -1,7 +1,5 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
-import java.util.List;
-
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
@@ -12,9 +10,26 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import java.util.List;
 
 public class V2_RedundancyStates {
-      public enum SuperstructureStates {
+  public static final List<SuperstructureStates> Actions =
+      List.of(
+          SuperstructureStates.INTAKE,
+          SuperstructureStates.SCORE_L1,
+          SuperstructureStates.SCORE_L2,
+          SuperstructureStates.SCORE_L3,
+          SuperstructureStates.SCORE_L4,
+          SuperstructureStates.SCORE_L4_PLUS,
+          SuperstructureStates.INTAKE_FLOOR,
+          SuperstructureStates.INTAKE_REEF_L2,
+          SuperstructureStates.INTAKE_REEF_L3,
+          SuperstructureStates.DROP_REEF_L2,
+          SuperstructureStates.DROP_REEF_L3,
+          SuperstructureStates.SCORE_BARGE,
+          SuperstructureStates.SCORE_PROCESSOR);
+
+  public enum SuperstructureStates {
     START("START", new SubsystemPoses()),
     STOW_DOWN(
         "STOW DOWN",
