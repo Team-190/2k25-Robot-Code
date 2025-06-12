@@ -31,7 +31,7 @@ import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure.SuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIO;
