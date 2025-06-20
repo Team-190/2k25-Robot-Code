@@ -1,6 +1,5 @@
 package frc.robot;
 
-import choreo.auto.AutoFactory;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -46,8 +45,6 @@ public class Robot extends LoggedRobot {
 
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-
-  public static AutoFactory autoFactory;
 
   public Robot() {
     super(Constants.LOOP_PERIOD_SECONDS);
@@ -128,8 +125,6 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-
-    autoFactory = robotContainer.getAutoFactory();
   }
 
   /** This function is called periodically during all modes. */

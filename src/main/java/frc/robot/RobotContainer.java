@@ -25,7 +25,7 @@ public interface RobotContainer {
     return Commands.none();
   }
 
-  public default AutoFactory getAutoFactory() {
+  public static AutoFactory getAutoFactory() {
     return null;
   }
 }

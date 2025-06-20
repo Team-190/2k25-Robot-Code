@@ -13,6 +13,7 @@
 
 package frc.robot.subsystems.shared.drive;
 
+import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -53,6 +54,7 @@ public class Drive extends SubsystemBase {
   private final SwerveDriveKinematics kinematics;
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
+  @Getter private final AutoFactory autoFactory;
 
   static {
     odometryLock = new ReentrantLock();
@@ -89,6 +91,14 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
         };
+
+    autoFactory =
+        new AutoFactory(
+            RobotState::getRobotPoseField,
+            RobotState::resetRobotPose,
+            this::choreoDrive,
+            true,
+            this);
   }
 
   public void periodic() {
