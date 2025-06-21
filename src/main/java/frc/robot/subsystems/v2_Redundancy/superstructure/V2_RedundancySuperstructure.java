@@ -326,6 +326,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               });
     }
   }
+
   private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
     graph.addEdge(
         from,
@@ -336,6 +337,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             .restricted(false)
             .build());
   }
+
   private void addEdges(List<Edge> edges, AlgaeEdge type) {
     for (Edge edge : edges) {
       addEdge(edge.from(), edge.to(), type);
