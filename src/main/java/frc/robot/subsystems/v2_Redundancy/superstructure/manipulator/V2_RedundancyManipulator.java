@@ -104,7 +104,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         () -> this.rollerGoal = state, () -> this.rollerGoal = ManipulatorRollerState.STOP);
   }
 
-  public Command intakeCoral(BooleanSupplier shouldStop) {
+  public Command intakeCoral(BooleanSupplier shouldStop) { // TODO: Remove this
     Command cmd =
         Commands.sequence(runManipulator(ManipulatorRollerState.CORAL_INTAKE).until(shouldStop));
     cmd.addRequirements(this);

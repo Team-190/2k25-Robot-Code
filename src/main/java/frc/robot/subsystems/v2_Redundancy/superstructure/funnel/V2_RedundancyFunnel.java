@@ -105,7 +105,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     return Commands.run(() -> rollerGoal = state);
   }
 
-  public Command intakeCoral(BooleanSupplier coralLocked) {
+  public Command intakeCoral(BooleanSupplier coralLocked) { // TODO: Remove this
     return Commands.race(
             Commands.sequence(
                 setClapDaddyGoal(FunnelState.OPENED),
@@ -118,18 +118,6 @@ public class V2_RedundancyFunnel extends SubsystemBase {
               clapDaddyGoal = FunnelState.OPENED;
               rollerGoal = FunnelRollerState.STOP;
             });
-  }
-
-  public Command funnelClosedOverride() {
-    return this.runEnd(
-        () -> {
-          clapDaddyGoal = FunnelState.CLOSED;
-          rollerGoal = FunnelRollerState.INTAKE;
-        },
-        () -> {
-          clapDaddyGoal = FunnelState.OPENED;
-          rollerGoal = FunnelRollerState.STOP;
-        });
   }
 
   /**

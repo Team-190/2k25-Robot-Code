@@ -170,19 +170,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
   public Command setIntakeVoltage(double volts) {
     return Commands.run(() -> io.setExtensionVoltage(volts));
   }
-
-  public Command intakeAlgae() {
-    return Commands.sequence(
-        setExtensionGoal(IntakeExtensionState.INTAKE),
-        setRollerGoal(IntakeRollerState.INTAKE).until(() -> RobotState.isHasAlgae()));
-  }
-
-  public Command retractAlgae() {
-    return Commands.sequence(
-            setExtensionGoal(IntakeExtensionState.STOW), setRollerGoal(IntakeRollerState.RETRACT))
-        .withTimeout(2);
-  }
-
+  
   public Command homingSequence() {
     return Commands.sequence(
         Commands.runOnce(
