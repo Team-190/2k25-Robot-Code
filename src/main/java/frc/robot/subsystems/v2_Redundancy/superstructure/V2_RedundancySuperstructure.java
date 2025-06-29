@@ -190,7 +190,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     if (from == SuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
-          pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); // TODO: Check this
+          pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); 
     }
 
     if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {

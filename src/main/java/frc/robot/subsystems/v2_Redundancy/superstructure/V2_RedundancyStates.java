@@ -358,13 +358,14 @@ public class V2_RedundancyStates {
 
     // FLOOR_ACQUISITION → multiple targets (one‑way, no algae)
     List<SuperstructureStates> floorAcqDest =
-        List.of(
-            SuperstructureStates.STOW_DOWN,
-            SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
-            SuperstructureStates.INTAKE_FLOOR);
+        List.of(SuperstructureStates.STOW_DOWN, SuperstructureStates.INTAKE_FLOOR);
     for (SuperstructureStates dest : floorAcqDest) {
       NoAlgaeEdges.add(new Edge(SuperstructureStates.FLOOR_ACQUISITION, dest));
     }
+    NoneEdges.add(
+        new Edge(
+            SuperstructureStates.FLOOR_ACQUISITION,
+            SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR));
 
     // REEF-RELATED ACQUISITION STATES (using algaeMap style)
     // Define “from → to” for algae acquisition (one‑way with ALGAE), then add reverse with
