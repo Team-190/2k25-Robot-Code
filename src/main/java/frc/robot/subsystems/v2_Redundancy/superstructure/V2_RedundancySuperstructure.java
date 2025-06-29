@@ -11,6 +11,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Sup
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.NTPrefixes;
@@ -220,6 +221,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       return pose.setElevatorHeight()
           .andThen(
               pose.setIntakeState().alongWith(pose.setArmState()).alongWith(pose.setFunnelState()));
+    }
+    if (to == SuperstructureStates.L1 && from == SuperstructureStates.SCORE_L1) {
+      return pose.action().andThen(intake.setExtensionGoal(IntakeState.L1_EXT));
     }
 
     return pose.action(); // need to determine order based on from and to

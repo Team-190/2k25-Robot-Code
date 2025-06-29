@@ -45,14 +45,16 @@ public class V2_RedundancyStates {
             IntakeState.STOW, FunnelState.OPENED)),
     INTAKE(
         "INTAKE CORAL",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_DOWN,
+            IntakeState.STOW, FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get(),
             12.0,
             0.0)),
     L1(
         "L1 CORAL SETPOINT",
-        new SubsystemPoses(
-            ReefState.L1, ArmState.STOW_DOWN, IntakeState.L1_EXT, FunnelState.OPENED)),
+        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     L2(
         "L2 CORAL SETPOINT",
         new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
@@ -68,36 +70,36 @@ public class V2_RedundancyStates {
             ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     SCORE_L1(
         "L1 CORAL SCORE",
+        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED),
         List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get(), 0.0, 0.0)),
     SCORE_L2(
         "L2 CORAL SCORE",
+        new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     SCORE_L3(
         "L3 CORAL SCORE",
+        new SubsystemPoses(ReefState.L3, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     SCORE_L4(
         "L4 CORAL SCORE",
+        new SubsystemPoses(ReefState.L4, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED),
         List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get(), 0.0, 0.0)),
     SCORE_L4_PLUS(
         "L4+ CORAL SCORE",
+        new SubsystemPoses(
+            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get(), 0.0, 0.0)),
     INTERMEDIATE_WAIT_FOR_ELEVATOR(
         "WAIT FOR ELEVATOR",
         new SubsystemPoses(
-            ReefState.ALGAE_MID,
-            ArmState.STOW_DOWN,
-            IntakeState.STOW,
-            FunnelState.OPENED)), // TODO: Check this
+            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     INTERMEDIATE_WAIT_FOR_ARM(
         "WAIT FOR ARM",
         new SubsystemPoses(
-            ReefState.ALGAE_MID,
-            ArmState.STOW_DOWN,
-            IntakeState.STOW,
-            FunnelState.OPENED)), // TODO: Check this
+            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED)),
     STOW_UP(
         "STOW UP",
         new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.OPENED)),
@@ -132,34 +134,57 @@ public class V2_RedundancyStates {
             ReefState.STOW, ArmState.PROCESSOR, IntakeState.STOW, FunnelState.CLOSED)),
     INTAKE_FLOOR(
         "INTAKE FLOOR",
+        new SubsystemPoses(
+            ReefState.ALGAE_FLOOR_INTAKE,
+            ArmState.FLOOR_INTAKE,
+            IntakeState.INTAKE,
+            FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
             0.0,
             6.0)),
     INTAKE_REEF_L2(
         "L2 ALGAE INTAKE",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_BOTTOM,
+            ArmState.REEF_INTAKE,
+            IntakeState.STOW,
+            FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
             0.0,
             0.0)),
     INTAKE_REEF_L3(
         "L3 ALGAE INTAKE",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get(),
             0.0,
             0.0)),
     DROP_REEF_L2(
         "DROP L2 ALGAE",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_BOTTOM,
+            ArmState.REEF_INTAKE,
+            IntakeState.STOW,
+            FunnelState.OPENED),
         List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(), 0.0, 0.0)),
     DROP_REEF_L3(
         "DROP L3 ALGAE",
+        new SubsystemPoses(
+            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeState.STOW, FunnelState.OPENED),
         List.of(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.REMOVE_ALGAE().get(), 0.0, 0.0)),
     SCORE_BARGE(
         "SCORE BARGE",
+        new SubsystemPoses(
+            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(), 0.0, 0.0)),
     SCORE_PROCESSOR(
         "SCORE PROCESSOR",
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.PROCESSOR, IntakeState.STOW, FunnelState.CLOSED),
         List.of(
             V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get(), 0.0, 0.0)),
     CLIMB(
@@ -168,18 +193,11 @@ public class V2_RedundancyStates {
             ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLIMB)),
     FUNNEL_CLOSE_WITH_STOW_UP(
         "FUNNEL CLOSE WITH STOW UP",
-        new SubsystemPoses(
-            ReefState.STOW,
-            ArmState.STOW_UP,
-            IntakeState.STOW,
-            FunnelState.CLOSED)), // TODO: Check this and add edges
+        new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeState.STOW, FunnelState.CLOSED)),
     FUNNEL_CLOSE_WITH_STOW_DOWN(
         "FUNNEL CLOSE WITH STOW DOWN",
         new SubsystemPoses(
-            ReefState.STOW,
-            ArmState.STOW_DOWN,
-            IntakeState.STOW,
-            FunnelState.CLOSED)); // TODO: Check this and add edges
+            ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.CLOSED));
     private final String name;
     private SubsystemPoses subsystemPoses;
     private List<Double> voltages;
@@ -187,10 +205,10 @@ public class V2_RedundancyStates {
     private SuperstructureStates(String name, SubsystemPoses poses) {
       this.name = name;
       this.subsystemPoses = poses;
-      this.voltages = null;
+      this.voltages = List.of(0.0, 0.0, 0.0, 0.0);
     }
 
-    private SuperstructureStates(String name, List<Double> voltages) {
+    private SuperstructureStates(String name, SubsystemPoses poses, List<Double> voltages) {
       this.name = name;
       this.subsystemPoses = null;
       this.voltages = voltages;
