@@ -42,6 +42,7 @@ public class V2_RedundancyStates {
   public enum SuperstructureStates {
     START("START", new SubsystemPoses(), RollerStates.empty()),
     STOW_DOWN("STOW DOWN", new SubsystemPoses(), RollerStates.empty()),
+    OVERRIDE("OVERRIDE", new SubsystemPoses(), RollerStates.empty()),
     INTAKE(
         "INTAKE CORAL",
         new SubsystemPoses(),

@@ -128,10 +128,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         nextState == null ? "NULL" : nextState.toString());
     if (edgeCommand != null) {
       Logger.recordOutput(
-          "Superstructure/EdgeCommand",
+          NTPrefixes.SUPERSTRUCTURE + "EdgeCommand",
           graph.getEdgeSource(edgeCommand) + " --> " + graph.getEdgeTarget(edgeCommand));
     } else {
-      Logger.recordOutput("Superstructure/EdgeCommand", "");
+      Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "EdgeCommand", "");
     }
   }
 
@@ -148,6 +148,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
     return run(() -> setGoal(goal.get()));
+  }
+
+  public Command override(Command command, Supplier<SuperstructureStates> oldGoal) {
+    return Commands.sequence(runGoal(SuperstructureStates.OVERRIDE), command)
+        .finallyDo(() -> setGoal(oldGoal.get()));
   }
 
   public Command runReefGoal(Supplier<ReefState> goal) {
@@ -191,9 +196,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public Command runActionWithTimeout(
       SuperstructureStates pose, SuperstructureStates action, double timeout) {
-    if (!V2_RedundancyStates.Actions.contains(action)) {
-      throw new IllegalArgumentException("Action must be one of the predefined actions.");
-    }
     return Commands.sequence(
         runGoal(pose), runGoal(() -> action).withTimeout(timeout), runGoal(pose));
   }

@@ -288,7 +288,6 @@ public class CompositeCommands {
                   RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
                       && !superstructure.getCurrentState().equals(SuperstructureStates.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
-          superstructure.runReefGoal(() -> RobotState.getOIData().currentReefHeight()),
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()),
           superstructure
               .runGoal(SuperstructureStates.STOW_DOWN)

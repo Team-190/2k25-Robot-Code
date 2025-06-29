@@ -47,6 +47,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
@@ -154,11 +155,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
     }
 
-    // configureButtonBindings();
-    // configureAutos();
+    configureButtonBindings();
+    configureAutos();
     superstructureChooser = new LoggedDashboardChooser<>("Superstructure States");
-    superstructureTest();
-    driver.a().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(!RobotState.isHasAlgae())));
+    // superstructureTest();
+    // driver.a().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(!RobotState.isHasAlgae())));
   }
 
   private void configureButtonBindings() {
@@ -297,8 +298,14 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(superstructure, intake))
         .onFalse(superstructure.runGoal(SuperstructureStates.STOW_DOWN));
-    // operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
-    // // WHAT TO DO HERE?
+    operator
+        .rightTrigger(0.5)
+        .whileTrue(
+            superstructure
+                .override(
+                    manipulator.runManipulator(ManipulatorRollerState.SCORE_CORAL),
+                    () -> superstructure.getTargetState())
+                .withTimeout(0.4));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
@@ -313,7 +320,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             superstructure.runActionWithTimeout(
                 SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_PROCESSOR, 1));
 
-    // operator.povRight().whileTrue(manipulator.scoreAlgae()); //WHAT TO DO HERE?
+    operator
+        .povRight()
+        .whileTrue(
+            superstructure.override(
+                manipulator.runManipulator(ManipulatorRollerState.SCORE_ALGAE),
+                () -> superstructure.getTargetState()));
     operator.start().whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
 
     operator

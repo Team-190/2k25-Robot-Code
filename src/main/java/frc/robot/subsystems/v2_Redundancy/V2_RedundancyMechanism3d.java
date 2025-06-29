@@ -105,12 +105,12 @@ public class V2_RedundancyMechanism3d {
                         0.0)))
             .transformBy(
                 new Transform3d(
-                    -0.32, // back along the arm's X axis
+                    -0.32,
                     0.0,
-                    -0.45, // slightly downward along the arm's Z axis
+                    -0.45,
                     new Rotation3d(
-                        Units.degreesToRadians(0), // no extra roll
-                        Units.degreesToRadians(-110), // rotate pitch forward (downward tilt)
+                        Units.degreesToRadians(0),
+                        Units.degreesToRadians(-110),
                         Units.degreesToRadians(0))));
 
     if (RobotState.isHasAlgae()) {
