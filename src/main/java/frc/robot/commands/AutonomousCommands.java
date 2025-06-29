@@ -441,7 +441,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -453,7 +453,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -465,7 +465,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -477,7 +477,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
@@ -518,7 +518,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -530,7 +530,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -542,7 +542,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -554,7 +554,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
@@ -595,7 +595,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -607,7 +607,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -619,7 +619,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -631,7 +631,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
@@ -667,51 +667,52 @@ public class AutonomousCommands {
         .active()
         .onTrue(
             Commands.sequence(
-                path1.resetOdometry(),
-                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
-                path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
-                Commands.parallel(
-                    DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
-                superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
-                Commands.deadline(
-                    path2.cmd(),
-                    V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
-                superstructure.runGoal(SuperstructureStates.L4),
-                Commands.parallel(
-                    DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
-                superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
-                Commands.deadline(
-                    path3.cmd(),
-                    V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
-                superstructure.runGoal(SuperstructureStates.L4),
-                Commands.parallel(
-                    DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
-                superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
-                Commands.deadline(
-                    path4.cmd(),
-                    V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
-                superstructure.runGoal(SuperstructureStates.L4),
-                Commands.parallel(
-                    DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
-                superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    path1.resetOdometry(),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                    path1.cmd(),
+                    superstructure.runGoal(SuperstructureStates.L4),
+                    Commands.parallel(
+                        DriveCommands.autoAlignReefCoral(drive, cameras),
+                        Commands.waitUntil(() -> superstructure.atGoal())),
+                    superstructure.runActionWithTimeout(
+                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    elevator.setPosition(() -> ReefState.STOW),
+                    Commands.deadline(
+                        path2.cmd(),
+                        V2_RedundancyCompositeCommands.intakeCoralAuto(
+                            superstructure, funnel, manipulator, intake),
+                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                    superstructure.runGoal(SuperstructureStates.L4),
+                    Commands.parallel(
+                        DriveCommands.autoAlignReefCoral(drive, cameras),
+                        Commands.waitUntil(() -> superstructure.atGoal())),
+                    superstructure.runActionWithTimeout(
+                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    elevator.setPosition(() -> ReefState.STOW),
+                    Commands.deadline(
+                        path3.cmd(),
+                        V2_RedundancyCompositeCommands.intakeCoralAuto(
+                            superstructure, funnel, manipulator, intake),
+                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+                    superstructure.runGoal(SuperstructureStates.L4),
+                    Commands.parallel(
+                        DriveCommands.autoAlignReefCoral(drive, cameras),
+                        Commands.waitUntil(() -> superstructure.atGoal())),
+                    superstructure.runActionWithTimeout(
+                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    elevator.setPosition(() -> ReefState.STOW),
+                    Commands.deadline(
+                        path4.cmd(),
+                        V2_RedundancyCompositeCommands.intakeCoralAuto(
+                            superstructure, funnel, manipulator, intake),
+                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                    superstructure.runGoal(SuperstructureStates.L4),
+                    Commands.parallel(
+                        DriveCommands.autoAlignReefCoral(drive, cameras),
+                        Commands.waitUntil(() -> superstructure.atGoal())),
+                    superstructure.runActionWithTimeout(
+                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5))
+                .withName("autoARight"));
 
     return routine;
   }
@@ -796,7 +797,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -808,7 +809,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -820,7 +821,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
@@ -864,7 +865,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -876,7 +877,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -888,7 +889,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
@@ -927,7 +928,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -939,7 +940,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -951,7 +952,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
     return routine;
@@ -993,7 +994,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -1005,7 +1006,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
                 elevator.setPosition(() -> ReefState.STOW),
@@ -1017,7 +1018,7 @@ public class AutonomousCommands {
                 superstructure.runGoal(SuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    Commands.waitUntil(elevator::atGoal)),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
     return routine;
