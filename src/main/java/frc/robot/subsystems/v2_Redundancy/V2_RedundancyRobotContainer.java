@@ -158,6 +158,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // configureAutos();
     superstructureChooser = new LoggedDashboardChooser<>("Superstructure States");
     superstructureTest();
+    driver.a().onTrue(Commands.runOnce(() -> RobotState.setHasAlgae(!RobotState.isHasAlgae())));
   }
 
   private void configureButtonBindings() {
