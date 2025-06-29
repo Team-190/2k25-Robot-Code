@@ -13,6 +13,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFun
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
+import lombok.Getter;
+
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -23,8 +25,8 @@ public class V2_RedundancyFunnel extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
-  private FunnelState clapDaddyGoal;
-  private FunnelRollerState rollerState;
+  @Getter @AutoLogOutput(key = "Funnel/ClapDaddy Goal") private FunnelState clapDaddyGoal;
+  @Getter @AutoLogOutput(key = "Funnel/Roller Goal") private FunnelRollerState rollerGoal;
 
   private boolean isClosedLoop;
 
@@ -43,7 +45,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
     clapDaddyGoal = FunnelState.OPENED;
-    rollerState = FunnelRollerState.STOP;
+    rollerGoal = FunnelRollerState.STOP;
 
     isClosedLoop = true;
   }
@@ -63,7 +65,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     if (isClosedLoop) {
       io.setClapDaddyGoal(clapDaddyGoal.getAngle());
     }
-    io.setRollerVoltage(rollerState.getVoltage());
+    io.setRollerVoltage(rollerGoal.getVoltage());
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
     InternalLoggedTracer.reset();
@@ -95,7 +97,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerGoal(FunnelRollerState state) {
-    return Commands.run(() -> rollerState = state);
+    return Commands.run(() -> rollerGoal = state);
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
@@ -109,7 +111,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
         .finallyDo(
             () -> {
               clapDaddyGoal = FunnelState.OPENED;
-              rollerState = FunnelRollerState.STOP;
+              rollerGoal = FunnelRollerState.STOP;
             });
   }
 
@@ -117,11 +119,11 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     return this.runEnd(
         () -> {
           clapDaddyGoal = FunnelState.CLOSED;
-          rollerState = FunnelRollerState.INTAKE;
+          rollerGoal = FunnelRollerState.INTAKE;
         },
         () -> {
           clapDaddyGoal = FunnelState.OPENED;
-          rollerState = FunnelRollerState.STOP;
+          rollerGoal = FunnelRollerState.STOP;
         });
   }
 
