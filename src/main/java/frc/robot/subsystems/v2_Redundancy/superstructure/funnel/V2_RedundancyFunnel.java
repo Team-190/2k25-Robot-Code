@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -22,7 +23,8 @@ public class V2_RedundancyFunnel extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
-  private FunnelState goal;
+  private FunnelState clapDaddyGoal;
+  private FunnelRollerState rollerState;
 
   private boolean isClosedLoop;
 
@@ -40,7 +42,8 @@ public class V2_RedundancyFunnel extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
-    goal = FunnelState.OPENED;
+    clapDaddyGoal = FunnelState.OPENED;
+    rollerState = FunnelRollerState.STOP;
 
     isClosedLoop = true;
   }
@@ -58,8 +61,9 @@ public class V2_RedundancyFunnel extends SubsystemBase {
 
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
-      io.setClapDaddyGoal(goal.getAngle());
+      io.setClapDaddyGoal(clapDaddyGoal.getAngle());
     }
+    io.setRollerVoltage(rollerState.getVoltage());
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
     InternalLoggedTracer.reset();
@@ -80,7 +84,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          this.goal = goal;
+          this.clapDaddyGoal = goal;
         });
   }
 
@@ -90,8 +94,8 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
-    return Commands.run(() -> io.setRollerVoltage(volts));
+  public Command setRollerGoal(FunnelRollerState state) {
+    return Commands.run(() -> rollerState = state);
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) {
@@ -101,32 +105,23 @@ public class V2_RedundancyFunnel extends SubsystemBase {
                 Commands.waitUntil(() -> hasCoral()),
                 setClapDaddyGoal(FunnelState.CLOSED),
                 Commands.waitUntil(coralLocked)),
-            setRollerVoltage(12.0))
+            setRollerGoal(FunnelRollerState.INTAKE))
         .finallyDo(
             () -> {
-              goal = FunnelState.OPENED;
-              io.setRollerVoltage(0.0);
+              clapDaddyGoal = FunnelState.OPENED;
+              rollerState = FunnelRollerState.STOP;
             });
-  }
-
-  /**
-   * Stops the roller.
-   *
-   * @return A command to stop the roller.
-   */
-  public Command stopRoller() {
-    return Commands.runOnce(io::stopRoller);
   }
 
   public Command funnelClosedOverride() {
     return this.runEnd(
         () -> {
-          goal = FunnelState.CLOSED;
-          io.setRollerVoltage(12);
+          clapDaddyGoal = FunnelState.CLOSED;
+          rollerState = FunnelRollerState.INTAKE;
         },
         () -> {
-          goal = FunnelState.OPENED;
-          io.setRollerVoltage(0);
+          clapDaddyGoal = FunnelState.OPENED;
+          rollerState = FunnelRollerState.STOP;
         });
   }
 
@@ -191,9 +186,5 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    */
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
     io.updateConstraints(maxAcceleration, maxVelocity);
-  }
-
-  public Command setFunnelVoltage(double volts) {
-    return Commands.run(() -> io.setClapDaddyVoltage(volts));
   }
 }

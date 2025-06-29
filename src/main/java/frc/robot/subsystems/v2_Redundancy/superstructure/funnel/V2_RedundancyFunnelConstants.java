@@ -170,4 +170,17 @@ public class V2_RedundancyFunnelConstants {
       return angle;
     }
   }
+
+  @RequiredArgsConstructor
+  public enum FunnelRollerState {
+    STOP(0.0),
+    INTAKE(12.0),
+    OUTTAKE(-12.0);
+
+    private final double voltage;
+
+    public double getVoltage() {
+      return voltage;
+    }
+  }
 }
