@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
+import edu.wpi.first.math.Pair;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureAction.RollerStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructurePose.SubsystemPoses;
@@ -13,7 +14,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,108 +41,116 @@ public class V2_RedundancyStates {
 
   public enum SuperstructureStates {
     START("START", new SubsystemPoses(), RollerStates.empty()),
-    STOW_DOWN(
-        "STOW DOWN",
-        new SubsystemPoses(), RollerStates.empty()),
+    STOW_DOWN("STOW DOWN", new SubsystemPoses(), RollerStates.empty()),
     INTAKE(
         "INTAKE CORAL",
         new SubsystemPoses(),
         new RollerStates(
-            ManipulatorRollerState.CORAL_INTAKE,
-            FunnelRollerState.INTAKE,
-            IntakeRollerState.STOP)),
+            ManipulatorRollerState.CORAL_INTAKE, FunnelRollerState.INTAKE, IntakeRollerState.STOP)),
     L1(
         "L1 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     L2(
         "L2 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.L2, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     L3(
         "L3 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L3, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.L3, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     L4(
         "L4 CORAL SETPOINT",
-        new SubsystemPoses(ReefState.L4, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.L4, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     L4_PLUS(
         "L4+ CORAL SETPOINT",
         new SubsystemPoses(
-            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+            ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     SCORE_L1(
         "L1 CORAL SCORE",
-        new SubsystemPoses(ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        new SubsystemPoses(
+            ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
         new RollerStates(
-            ManipulatorRollerState.L1_SCORE,
-            FunnelRollerState.STOP,
-            IntakeRollerState.STOP)),
+            ManipulatorRollerState.L1_SCORE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_L2(
         "L2 CORAL SCORE",
-        new SubsystemPoses(ReefState.L2, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        new SubsystemPoses(
+            ReefState.L2, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
         new RollerStates(
-            ManipulatorRollerState.SCORE_CORAL,
-            FunnelRollerState.STOP,
-            IntakeRollerState.STOP)),
+            ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_L3(
         "L3 CORAL SCORE",
-        new SubsystemPoses(ReefState.L3, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        new SubsystemPoses(
+            ReefState.L3, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
         new RollerStates(
-            ManipulatorRollerState.SCORE_CORAL,
-            FunnelRollerState.STOP,
-            IntakeRollerState.STOP)),
+            ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_L4(
         "L4 CORAL SCORE",
-        new SubsystemPoses(ReefState.L4, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        new SubsystemPoses(
+            ReefState.L4, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
         new RollerStates(
-            ManipulatorRollerState.L4_SCORE,
-            FunnelRollerState.STOP,
-            IntakeRollerState.STOP)),
+            ManipulatorRollerState.L4_SCORE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_L4_PLUS(
         "L4+ CORAL SCORE",
         new SubsystemPoses(
             ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
-            new RollerStates(
-                ManipulatorRollerState.SCORE_CORAL,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+        new RollerStates(
+            ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     INTERMEDIATE_WAIT_FOR_ELEVATOR(
         "WAIT FOR ELEVATOR",
         new SubsystemPoses(
-            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     INTERMEDIATE_WAIT_FOR_ARM(
         "WAIT FOR ARM",
         new SubsystemPoses(
-            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+            ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     STOW_UP(
         "STOW UP",
-        new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.OPENED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.OPENED),
+        RollerStates.empty()),
     FLOOR_ACQUISITION(
         "FLOOR ALGAE SETPOINT",
         new SubsystemPoses(
             ReefState.ALGAE_FLOOR_INTAKE,
             ArmState.FLOOR_INTAKE,
             IntakeExtensionState.INTAKE,
-            FunnelState.OPENED), RollerStates.empty()),
+            FunnelState.OPENED),
+        RollerStates.empty()),
     REEF_ACQUISITION_L2(
         "L2 ALGAE SETPOINT",
         new SubsystemPoses(
             ReefState.ALGAE_INTAKE_BOTTOM,
             ArmState.REEF_INTAKE,
             IntakeExtensionState.STOW,
-            FunnelState.OPENED), RollerStates.empty()),
+            FunnelState.OPENED),
+        RollerStates.empty()),
     REEF_ACQUISITION_L3(
         "L3 ALGAE SETPOINT",
         new SubsystemPoses(
             ReefState.ALGAE_INTAKE_TOP,
             ArmState.REEF_INTAKE,
             IntakeExtensionState.STOW,
-            FunnelState.OPENED), RollerStates.empty()),
+            FunnelState.OPENED),
+        RollerStates.empty()),
     BARGE(
         "BARGE SETPOINT",
         new SubsystemPoses(
-            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED), RollerStates.empty()),
+            ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+        RollerStates.empty()),
     PROCESSOR(
         "PROCESSOR SETPOINT",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED), RollerStates.empty()),
+            ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
+        RollerStates.empty()),
     INTAKE_FLOOR(
         "INTAKE FLOOR",
         new SubsystemPoses(
@@ -150,10 +158,8 @@ public class V2_RedundancyStates {
             ArmState.FLOOR_INTAKE,
             IntakeExtensionState.INTAKE,
             FunnelState.OPENED),
-            new RollerStates(
-            ManipulatorRollerState.ALGAE_INTAKE,
-            FunnelRollerState.STOP,
-            IntakeRollerState.INTAKE)),
+        new RollerStates(
+            ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     INTAKE_REEF_L2(
         "L2 ALGAE INTAKE",
         new SubsystemPoses(
@@ -161,18 +167,17 @@ public class V2_RedundancyStates {
             ArmState.REEF_INTAKE,
             IntakeExtensionState.STOW,
             FunnelState.OPENED),
-            new RollerStates(
-                ManipulatorRollerState.ALGAE_INTAKE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+        new RollerStates(
+            ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     INTAKE_REEF_L3(
         "L3 ALGAE INTAKE",
         new SubsystemPoses(
-            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeExtensionState.STOW, FunnelState.OPENED),
-            new RollerStates(
-                ManipulatorRollerState.ALGAE_INTAKE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+            ReefState.ALGAE_INTAKE_TOP,
+            ArmState.REEF_INTAKE,
+            IntakeExtensionState.STOW,
+            FunnelState.OPENED),
+        new RollerStates(
+            ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     DROP_REEF_L2(
         "DROP L2 ALGAE",
         new SubsystemPoses(
@@ -180,72 +185,64 @@ public class V2_RedundancyStates {
             ArmState.REEF_INTAKE,
             IntakeExtensionState.STOW,
             FunnelState.OPENED),
-            new RollerStates(
-                ManipulatorRollerState.REMOVE_ALGAE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+        new RollerStates(
+            ManipulatorRollerState.REMOVE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     DROP_REEF_L3(
         "DROP L3 ALGAE",
         new SubsystemPoses(
-            ReefState.ALGAE_INTAKE_TOP, ArmState.REEF_INTAKE, IntakeExtensionState.STOW, FunnelState.OPENED),
-            new RollerStates(
-                ManipulatorRollerState.REMOVE_ALGAE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+            ReefState.ALGAE_INTAKE_TOP,
+            ArmState.REEF_INTAKE,
+            IntakeExtensionState.STOW,
+            FunnelState.OPENED),
+        new RollerStates(
+            ManipulatorRollerState.REMOVE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_BARGE(
         "SCORE BARGE",
         new SubsystemPoses(
             ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
-            new RollerStates(
-                ManipulatorRollerState.SCORE_ALGAE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+        new RollerStates(
+            ManipulatorRollerState.SCORE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     SCORE_PROCESSOR(
         "SCORE PROCESSOR",
         new SubsystemPoses(
             ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
-            new RollerStates(
-                ManipulatorRollerState.SCORE_ALGAE,
-                FunnelRollerState.STOP,
-                IntakeRollerState.STOP)),
+        new RollerStates(
+            ManipulatorRollerState.SCORE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
     CLIMB(
         "CLIMB",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLIMB), RollerStates.empty()),
+            ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLIMB),
+        RollerStates.empty()),
     FUNNEL_CLOSE_WITH_STOW_UP(
         "FUNNEL CLOSE WITH STOW UP",
-        new SubsystemPoses(ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED), RollerStates.empty()),
+        new SubsystemPoses(
+            ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+        RollerStates.empty()),
     FUNNEL_CLOSE_WITH_STOW_DOWN(
         "FUNNEL CLOSE WITH STOW DOWN",
         new SubsystemPoses(
-            ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLOSED), RollerStates.empty());
+            ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLOSED),
+        RollerStates.empty());
     private final String name;
     private final SubsystemPoses subsystemPoses;
     private final RollerStates rollerStates;
 
     private SuperstructureStates(String name, SubsystemPoses poses, RollerStates rollerStates) {
       this.name = name;
-      this.subsystemPoses = null;
+      this.subsystemPoses = poses;
       this.rollerStates = rollerStates;
     }
 
-    public V2_RedundancySuperstructureState createState(
+    public Pair<V2_RedundancySuperstructurePose, V2_RedundancySuperstructureAction> createState(
         V2_RedundancyElevator elevator,
         V2_RedundancyFunnel funnel,
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
-      if (subsystemPoses != null) {
-        return new V2_RedundancySuperstructurePose(
-            name, subsystemPoses, elevator, funnel, manipulator, intake);
-      } else {
-        return new V2_RedundancySuperstructureAction(
-            name,
-            rollerStates,
-            elevator,
-            manipulator,
-            funnel,
-            intake);
-      }
+      return Pair.of(
+          new V2_RedundancySuperstructurePose(
+              name, subsystemPoses, elevator, funnel, manipulator, intake),
+          new V2_RedundancySuperstructureAction(
+              name, rollerStates, elevator, manipulator, funnel, intake));
     }
 
     @Override
@@ -295,7 +292,7 @@ public class V2_RedundancyStates {
     NoneEdges.add(new Edge(SuperstructureStates.L4_PLUS, SuperstructureStates.L4));
     NoneEdges.add(new Edge(SuperstructureStates.L4, SuperstructureStates.L4_PLUS));
     NoAlgaeEdges.add(new Edge(SuperstructureStates.L4_PLUS, SuperstructureStates.STOW_DOWN));
-    NoAlgaeEdges.add(
+    NoneEdges.add(
         new Edge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM, SuperstructureStates.L4_PLUS));
 
     // each “level” → its scoring state (one‑way, no algae)
@@ -359,7 +356,7 @@ public class V2_RedundancyStates {
       NoAlgaeEdges.add(new Edge(SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM, dest));
     }
 
-    // STOW_UP → multiple targets (one‑way, no algae)
+    // STOW_UP → multiple targets (two, algae)
     List<SuperstructureStates> stowUpDestinations =
         List.of(
             SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
@@ -367,6 +364,7 @@ public class V2_RedundancyStates {
             SuperstructureStates.PROCESSOR);
     for (SuperstructureStates dest : stowUpDestinations) {
       AlgaeEdges.add(new Edge(SuperstructureStates.STOW_UP, dest));
+      AlgaeEdges.add(new Edge(dest, SuperstructureStates.STOW_UP));
     }
 
     // FLOOR_ACQUISITION → multiple targets (one‑way, no algae)
@@ -388,29 +386,42 @@ public class V2_RedundancyStates {
         Map.of(
                 SuperstructureStates.REEF_ACQUISITION_L2,
                     List.of(
-                        SuperstructureStates.INTAKE_REEF_L2,
-                        SuperstructureStates.DROP_REEF_L2,
-                        SuperstructureStates.REEF_ACQUISITION_L3,
-                        SuperstructureStates.BARGE,
-                        SuperstructureStates.PROCESSOR,
-                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
-                        SuperstructureStates.STOW_UP),
+                        SuperstructureStates.INTAKE_REEF_L2, // no alg
+                        SuperstructureStates.DROP_REEF_L2, // no alg
+                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM, // none
+                        SuperstructureStates.REEF_ACQUISITION_L3, // none
+                        SuperstructureStates.BARGE, // alg
+                        SuperstructureStates.PROCESSOR, // alg
+                        SuperstructureStates.STOW_UP), // alg
                 SuperstructureStates.REEF_ACQUISITION_L3,
                     List.of(
                         SuperstructureStates.INTAKE_REEF_L3,
                         SuperstructureStates.DROP_REEF_L3,
-                        SuperstructureStates.REEF_ACQUISITION_L2,
+                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
                         SuperstructureStates.BARGE,
                         SuperstructureStates.PROCESSOR,
-                        SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
                         SuperstructureStates.STOW_UP));
-    reefMap.forEach( // Still unsure if this works
+    reefMap.forEach(
         (from, targets) -> {
           for (SuperstructureStates to : targets) {
-            // forward edge uses ALGAE
-            AlgaeEdges.add(new Edge(from, to));
-            // reverse edge uses NO_ALGAE
-            NoAlgaeEdges.add(new Edge(to, from));
+            // forward edge can vary
+            if (List.of(
+                    SuperstructureStates.INTAKE_REEF_L2,
+                    SuperstructureStates.DROP_REEF_L2,
+                    SuperstructureStates.INTAKE_REEF_L3,
+                    SuperstructureStates.DROP_REEF_L3)
+                .contains(to)) {
+              NoAlgaeEdges.add(new Edge(from, to));
+            } else if (List.of(
+                    SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM,
+                    SuperstructureStates.REEF_ACQUISITION_L3)
+                .contains(to)) {
+              NoneEdges.add(new Edge(from, to));
+            } else {
+              AlgaeEdges.add(new Edge(from, to));
+            }
+            // reverse edge uses NONE
+            NoneEdges.add(new Edge(to, from));
           }
         });
 

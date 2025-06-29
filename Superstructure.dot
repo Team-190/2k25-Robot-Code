@@ -162,6 +162,10 @@ digraph Superstructure {
   stow_up -> barge
   stow_up -> processor
   
+  intermediate_wait_for_arm -> stow_up
+
+  barge -> stow_up
+  processor -> stow_up
   // floor_acquisition
   floor_acquisition -> stow_down
   

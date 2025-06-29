@@ -11,7 +11,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Sup
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.NTPrefixes;
@@ -75,19 +76,28 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     addEdges(V2_RedundancyStates.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
     addEdges(V2_RedundancyStates.AlgaeEdges, AlgaeEdge.ALGAE);
 
-    new Trigger(() -> V2_RedundancyStates.Actions.contains(currentState))
-        .whileTrue(runAction(() -> this.currentState));
+    new Trigger(() -> targetState == currentState).whileTrue(runAction(() -> this.currentState));
   }
 
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
     // Always fetch the latest state
     return Commands.defer(
-        () -> stateSupplier.get().createState(elevator, funnel, manipulator, intake).action(),
+        () ->
+            stateSupplier
+                .get()
+                .createState(elevator, funnel, manipulator, intake)
+                .getSecond()
+                .asCommand(),
         Set.of(this));
   }
 
   @Override
   public void periodic() {
+    elevator.periodic();
+    funnel.periodic();
+    manipulator.periodic();
+    intake.periodic();
+
     if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
       if (nextState != null) {
@@ -116,6 +126,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Next State",
         nextState == null ? "NULL" : nextState.toString());
+    if (edgeCommand != null) {
+      Logger.recordOutput(
+          "Superstructure/EdgeCommand",
+          graph.getEdgeSource(edgeCommand) + " --> " + graph.getEdgeTarget(edgeCommand));
+    } else {
+      Logger.recordOutput("Superstructure/EdgeCommand", "");
+    }
   }
 
   public Command runGoal(SuperstructureStates goal) {
@@ -182,15 +199,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
-    if (V2_RedundancyStates.Actions.contains(to)) {
-      return Commands.none();
-    }
     V2_RedundancySuperstructurePose pose =
-        (V2_RedundancySuperstructurePose) to.createState(elevator, funnel, manipulator, intake);
+        to.createState(elevator, funnel, manipulator, intake).getFirst();
 
     if (from == SuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
-          pose.action(), intake.setRollerVoltage(-6).withTimeout(1)); 
+          pose.asCommand(), intake.setRollerGoal(IntakeRollerState.OUTTAKE).withTimeout(1));
     }
 
     if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {
@@ -205,7 +219,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     if (to == SuperstructureStates.FLOOR_ACQUISITION) {
-      return Commands.deadline(pose.action(), intake.setRollerVoltage(6.0));
+      return Commands.deadline(pose.asCommand(), intake.setRollerGoal(IntakeRollerState.INTAKE));
     }
 
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
@@ -223,10 +237,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               pose.setIntakeState().alongWith(pose.setArmState()).alongWith(pose.setFunnelState()));
     }
     if (to == SuperstructureStates.L1 && from == SuperstructureStates.SCORE_L1) {
-      return pose.action().andThen(intake.setExtensionGoal(IntakeState.L1_EXT));
+      return pose.asCommand().andThen(intake.setExtensionGoal(IntakeExtensionState.L1_EXT));
     }
 
-    return pose.action(); // need to determine order based on from and to
+    return pose.asCommand(); // need to determine order based on from and to
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {

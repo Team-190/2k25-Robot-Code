@@ -253,7 +253,6 @@ public class CompositeCommands {
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
-
     public static final Command scoreL1Coral(
         Drive drive, V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(

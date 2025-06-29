@@ -38,15 +38,14 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOTalonFX;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOSim;
@@ -297,9 +296,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .leftTrigger(0.5)
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(superstructure, intake))
-        .onFalse(
-            superstructure.runGoal(SuperstructureStates.STOW_DOWN));
-    // operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator)); // WHAT TO DO HERE?
+        .onFalse(superstructure.runGoal(SuperstructureStates.STOW_DOWN));
+    // operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
+    // // WHAT TO DO HERE?
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
@@ -320,7 +319,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .back()
         .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE))
-        .onFalse(superstructure.runActionWithTimeout(SuperstructureStates.BARGE, SuperstructureStates.SCORE_BARGE, 0.1));
+        .onFalse(
+            superstructure.runActionWithTimeout(
+                SuperstructureStates.BARGE, SuperstructureStates.SCORE_BARGE, 0.1));
 
     // Misc
     operatorFunnelOverride
@@ -457,7 +458,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, funnel, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive,
+                elevator,
+                manipulator,
+                funnel,
+                superstructure,
+                RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

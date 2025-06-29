@@ -25,6 +25,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
   @Getter
   @AutoLogOutput(key = "Intake/Extension Goal")
   private IntakeExtensionState extensionGoal;
+
   @Getter
   @AutoLogOutput(key = "Intake/Roller Goal")
   private IntakeRollerState intakeRollerGoal;
@@ -95,7 +96,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerGoal(IntakeRollerState state) {
-    return Commands.runEnd(() -> this.intakeRollerGoal = state, () -> this.intakeRollerGoal = IntakeRollerState.STOP);
+    return Commands.runEnd(
+        () -> this.intakeRollerGoal = state, () -> this.intakeRollerGoal = IntakeRollerState.STOP);
   }
 
   /**
@@ -104,7 +106,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to stop the roller.
    */
   public Command stopRoller() {
-    return runOnce(()-> this.intakeRollerGoal = IntakeRollerState.STOP);
+    return runOnce(() -> this.intakeRollerGoal = IntakeRollerState.STOP);
   }
 
   /**
@@ -176,7 +178,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
   }
 
   public Command retractAlgae() {
-    return Commands.sequence(setExtensionGoal(IntakeExtensionState.STOW), setRollerGoal(IntakeRollerState.RETRACT))
+    return Commands.sequence(
+            setExtensionGoal(IntakeExtensionState.STOW), setRollerGoal(IntakeRollerState.RETRACT))
         .withTimeout(2);
   }
 
