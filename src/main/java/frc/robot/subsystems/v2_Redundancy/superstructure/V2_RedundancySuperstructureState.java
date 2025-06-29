@@ -27,7 +27,7 @@ public class V2_RedundancySuperstructureState {
     this.intake = intake;
   }
 
-  public Command action() {
+  public Command asCommand() {
     return Commands.none();
   }
 

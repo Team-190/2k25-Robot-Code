@@ -41,15 +41,14 @@ public class V2_RedundancySuperstructureAction extends V2_RedundancySuperstructu
     return super.intake.setRollerGoal(intakeRollerState);
   }
 
-  public Command action() {
+  public Command asCommand() {
     return Commands.parallel(runManipulator(), runFunnel(), runIntake());
   }
 
   public record RollerStates(
       ManipulatorRollerState manipulatorRollerState,
       FunnelRollerState funnelRollerState,
-      IntakeRollerState intakeRollerState
-  ) {
+      IntakeRollerState intakeRollerState) {
     public static RollerStates empty() {
       return new RollerStates(
           ManipulatorRollerState.STOP, FunnelRollerState.STOP, IntakeRollerState.STOP);

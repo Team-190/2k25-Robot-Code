@@ -27,9 +27,9 @@ public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructure
       V2_RedundancyIntake intake) {
     super(key, elevator, manipulator, funnel, intake);
     this.elevatorHeight = poses.elevatorHeight();
-    this.armState = poses.armState;
-    this.intakeState = poses.intakeState;
-    this.funnelState = poses.funnelState;
+    this.armState = poses.armState();
+    this.intakeState = poses.intakeState();
+    this.funnelState = poses.funnelState();
   }
 
   public ReefState getElevatorHeight() {
@@ -67,7 +67,7 @@ public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructure
     return funnel.setClapDaddyGoal(funnelState);
   }
 
-  public Command action() {
+  public Command asCommand() {
     return Commands.parallel(
         setElevatorHeight(), setArmState(),
         setIntakeState(), setFunnelState());
