@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
@@ -22,8 +23,11 @@ public class V2_RedundancyIntake extends SubsystemBase {
   private final SysIdRoutine characterizationRoutine;
 
   @Getter
-  @AutoLogOutput(key = "Intake/Goal")
-  private IntakeState goal;
+  @AutoLogOutput(key = "Intake/Extension Goal")
+  private IntakeExtensionState extensionGoal;
+  @Getter
+  @AutoLogOutput(key = "Intake/Roller Goal")
+  private IntakeRollerState intakeRollerGoal;
 
   private boolean isClosedLoop;
 
@@ -40,7 +44,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
                 (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setExtensionVoltage(volts.in(Volts)), null, this));
-    goal = IntakeState.STOW;
+    extensionGoal = IntakeExtensionState.STOW;
+    intakeRollerGoal = IntakeRollerState.STOP;
 
     isClosedLoop = true;
   }
@@ -58,8 +63,9 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
-      io.setExtensionGoal(goal.getDistance());
+      io.setExtensionGoal(extensionGoal.getDistance());
     }
+    io.setRollerVoltage(intakeRollerGoal.getVoltage());
     InternalLoggedTracer.record("Set Extension Goal", "Intake/Periodic");
     ExternalLoggedTracer.record("Intake Total", "Intake/Periodic");
   }
@@ -74,11 +80,11 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @param goal The desired IntakeState.
    * @return A command to set the extension goal.
    */
-  public Command setExtensionGoal(IntakeState goal) {
+  public Command setExtensionGoal(IntakeExtensionState goal) {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
-          this.goal = goal;
+          this.extensionGoal = goal;
         });
   }
 
@@ -88,8 +94,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  public Command setRollerVoltage(double volts) {
-    return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
+  public Command setRollerGoal(IntakeRollerState state) {
+    return Commands.runEnd(() -> this.intakeRollerGoal = state, () -> this.intakeRollerGoal = IntakeRollerState.STOP);
   }
 
   /**
@@ -98,7 +104,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to stop the roller.
    */
   public Command stopRoller() {
-    return runOnce(io::stopRoller);
+    return runOnce(()-> this.intakeRollerGoal = IntakeRollerState.STOP);
   }
 
   /**
@@ -116,15 +122,6 @@ public class V2_RedundancyIntake extends SubsystemBase {
         characterizationRoutine.dynamic(Direction.kForward).until(this::atGoal),
         Commands.waitSeconds(4),
         characterizationRoutine.dynamic(Direction.kReverse).until(this::atGoal));
-  }
-
-  /**
-   * Checks if the intake has algae.
-   *
-   * @return True if the intake has algae, false otherwise.
-   */
-  public boolean hasAlgae() {
-    return false;
   }
 
   public boolean hasCoral() {
@@ -174,12 +171,12 @@ public class V2_RedundancyIntake extends SubsystemBase {
 
   public Command intakeAlgae() {
     return Commands.sequence(
-        setExtensionGoal(IntakeState.INTAKE),
-        setRollerVoltage(6).until(() -> RobotState.isHasAlgae()));
+        setExtensionGoal(IntakeExtensionState.INTAKE),
+        setRollerGoal(IntakeRollerState.INTAKE).until(() -> RobotState.isHasAlgae()));
   }
 
   public Command retractAlgae() {
-    return Commands.sequence(setExtensionGoal(IntakeState.STOW), setRollerVoltage(-2))
+    return Commands.sequence(setExtensionGoal(IntakeExtensionState.STOW), setRollerGoal(IntakeRollerState.RETRACT))
         .withTimeout(2);
   }
 

@@ -50,8 +50,8 @@ public class V2_RedundancyIntakeConstants {
                 DCMotor.getKrakenX60(1),
                 0.0042,
                 Units.inchesToMeters(1.0),
-                IntakeState.STOW.getDistance(),
-                IntakeState.INTAKE.getDistance());
+                IntakeExtensionState.STOW.getDistance(),
+                IntakeExtensionState.INTAKE.getDistance());
         ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
         break;
 
@@ -75,8 +75,8 @@ public class V2_RedundancyIntakeConstants {
                 DCMotor.getKrakenX60(1),
                 0.0042,
                 Units.inchesToMeters(1.0),
-                IntakeState.STOW.getDistance(),
-                IntakeState.INTAKE.getDistance());
+                IntakeExtensionState.STOW.getDistance(),
+                IntakeExtensionState.INTAKE.getDistance());
         ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
         break;
     }
@@ -113,7 +113,7 @@ public class V2_RedundancyIntakeConstants {
   public static final record RollerParams(DCMotor motor, double momentOfInertia) {}
 
   @RequiredArgsConstructor
-  public enum IntakeState {
+  public enum IntakeExtensionState {
     STOW(0),
     INTAKE(0.3496120605),
     L1_EXT(0.0689 - Units.inchesToMeters(.5));
@@ -122,6 +122,20 @@ public class V2_RedundancyIntakeConstants {
 
     public double getDistance() {
       return distanceMeters;
+    }
+  }
+
+  @RequiredArgsConstructor
+  public enum IntakeRollerState {
+    STOP(0.0),
+    INTAKE(6.0),
+    RETRACT(-2.0),
+    OUTTAKE(-6.0);
+
+    private final double voltage;
+
+    public double getVoltage() {
+      return voltage;
     }
   }
 }

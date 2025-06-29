@@ -7,7 +7,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyE
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 
@@ -15,7 +15,7 @@ public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructure
 
   private final ReefState elevatorHeight;
   private final ArmState armState;
-  private final IntakeState intakeState;
+  private final IntakeExtensionState intakeState;
   private final FunnelState funnelState;
 
   public V2_RedundancySuperstructurePose(
@@ -40,7 +40,7 @@ public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructure
     return armState;
   }
 
-  public IntakeState getIntakeState() {
+  public IntakeExtensionState getIntakeState() {
     return intakeState;
   }
 
@@ -76,11 +76,11 @@ public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructure
   public record SubsystemPoses(
       ReefState elevatorHeight,
       ArmState armState,
-      IntakeState intakeState,
+      IntakeExtensionState intakeState,
       FunnelState funnelState) {
 
     public SubsystemPoses() {
-      this(ReefState.STOW, ArmState.STOW_DOWN, IntakeState.STOW, FunnelState.OPENED);
+      this(ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED);
     }
   }
 }
