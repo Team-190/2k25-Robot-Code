@@ -76,7 +76,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     addEdges(V2_RedundancyStates.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
     addEdges(V2_RedundancyStates.AlgaeEdges, AlgaeEdge.ALGAE);
 
-    new Trigger(() -> targetState == currentState).whileTrue(runAction(() -> this.currentState));
+    new Trigger(() -> atGoal()).whileTrue(runAction(() -> this.currentState));
   }
 
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
@@ -136,9 +136,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(() -> setGoal(goal))
-        .andThen(Commands.waitUntil(() -> atGoal()))
-        .andThen(Commands.idle(this));
+    return (runOnce(() -> setGoal(goal)).andThen(Commands.idle(this)));
   }
 
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
