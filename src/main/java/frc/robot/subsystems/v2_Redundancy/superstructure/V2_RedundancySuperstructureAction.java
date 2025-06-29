@@ -50,5 +50,9 @@ public class V2_RedundancySuperstructureAction extends V2_RedundancySuperstructu
       FunnelRollerState funnelRollerState,
       IntakeRollerState intakeRollerState
   ) {
+    public static RollerStates empty() {
+      return new RollerStates(
+          ManipulatorRollerState.STOP, FunnelRollerState.STOP, IntakeRollerState.STOP);
+    }
   }
 }
