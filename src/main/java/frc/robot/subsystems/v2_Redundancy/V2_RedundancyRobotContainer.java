@@ -52,7 +52,9 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
   // Subsystems
@@ -72,6 +74,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
   // Auto chooser
   private final ChoreoChooser autoChooser = new ChoreoChooser();
+
+  // Test chooser
+  private final LoggedDashboardChooser<SuperstructureStates> superstructureChooser;
 
   public V2_RedundancyRobotContainer() {
 
@@ -149,8 +154,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
     }
 
-    configureButtonBindings();
-    configureAutos();
+    // configureButtonBindings();
+    // configureAutos();
+    superstructureChooser = new LoggedDashboardChooser<>("Superstructure States");
+    superstructureTest();
   }
 
   private void configureButtonBindings() {
@@ -452,6 +459,15 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
+  private void superstructureTest() {
+    superstructureChooser.addDefaultOption("START", SuperstructureStates.START);
+    for (SuperstructureStates state : SuperstructureStates.values()) {
+      if (state != SuperstructureStates.START) {
+        superstructureChooser.addOption(state.toString(), state);
+      }
+    }
+  }
+
   @Override
   public void robotPeriodic() {
     RobotState.periodic(
@@ -482,6 +498,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return Commands.defer(
+        () -> superstructure.runGoal(() -> superstructureChooser.get()), Set.of(superstructure));
   }
 }
