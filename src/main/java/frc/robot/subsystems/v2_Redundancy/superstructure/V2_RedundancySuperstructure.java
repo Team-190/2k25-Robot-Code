@@ -69,6 +69,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Add edges between states
+    V2_RedundancyStates.createEdges();
     addEdges(V2_RedundancyStates.NoneEdges, AlgaeEdge.NONE);
     addEdges(V2_RedundancyStates.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
     addEdges(V2_RedundancyStates.AlgaeEdges, AlgaeEdge.ALGAE);
@@ -105,7 +106,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 });
       }
     }
-    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Goal", targetState.toString());
+    Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "Goal", targetState == null ? "NULL" : targetState.toString());
     Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Previous State",
         previousState == null ? "NULL" : previousState.toString());
