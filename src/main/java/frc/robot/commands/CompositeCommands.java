@@ -239,7 +239,9 @@ public class CompositeCommands {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setHasAlgae(false)),
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              superstructure.runGoal(SuperstructureStates.INTAKE).until(() -> intake.hasCoral()),
+              superstructure
+                  .runGoal(() -> SuperstructureStates.INTAKE)
+                  .until(() -> intake.hasCoral()),
               superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
@@ -248,7 +250,7 @@ public class CompositeCommands {
         V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              superstructure.runGoal(SuperstructureStates.INTAKE).until(intake::hasCoral),
+              superstructure.runGoal(() -> SuperstructureStates.INTAKE).until(intake::hasCoral),
               superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
