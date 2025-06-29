@@ -298,7 +298,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(superstructure, intake))
         .onFalse(
             Commands.parallel(funnel.setClapDaddyGoal(FunnelState.OPENED), funnel.stopRoller()));
-    operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator));
+    // operator.rightTrigger(0.5).whileTrue(V2_RedundancyCompositeCommands.scoreCoral(manipulator)); // WHAT TO DO HERE?
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
@@ -313,13 +313,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             superstructure.runActionWithTimeout(
                 SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_PROCESSOR, 1));
 
-    operator.povRight().whileTrue(manipulator.scoreAlgae());
+    // operator.povRight().whileTrue(manipulator.scoreAlgae()); //WHAT TO DO HERE?
     operator.start().whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
 
     operator
         .back()
         .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE))
-        .onFalse(manipulator.scoreAlgae().withTimeout(0.1));
+        .onFalse(superstructure.runActionWithTimeout(SuperstructureStates.BARGE, SuperstructureStates.SCORE_BARGE, 0.1));
 
     // Misc
     operatorFunnelOverride
@@ -456,7 +456,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive, elevator, manipulator, funnel, RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, elevator, manipulator, funnel, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
