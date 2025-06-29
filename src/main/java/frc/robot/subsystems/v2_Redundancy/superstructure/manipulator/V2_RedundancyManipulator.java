@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -23,7 +24,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private final V2_RedundancyManipulatorIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
-  @Getter private ArmState state;
+  @Getter private ArmState armstate;
+  @Getter private ManipulatorRollerState rollerState;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -38,7 +40,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
-    state = ArmState.STOW_DOWN;
+    armstate = ArmState.STOW_DOWN;
+    rollerState = ManipulatorRollerState.STOP;
   }
 
   @Override
@@ -53,10 +56,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
 
     InternalLoggedTracer.reset();
-    if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
+    if (isClosedLoop) io.setArmPositionGoal(armstate.getAngle());
 
-    if (RobotState.isHasAlgae()) {
+    if (RobotState.isHasAlgae() && rollerState == ManipulatorRollerState.STOP) {
       io.setRollerVoltage(holdVoltage());
+    } else {
+      io.setRollerVoltage(rollerState.getVoltage());
     }
 
     if (hasAlgae() && RobotState.isIntakingAlgae()) {
@@ -88,68 +93,18 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
   }
 
-  public Command runManipulator(double volts) {
-    return Commands.runEnd(() -> io.setRollerVoltage(volts), () -> io.setRollerVoltage(0));
+  public Command runManipulator(ManipulatorRollerState state) {
+    return Commands.runEnd(() -> this.rollerState = state, () -> this.rollerState = ManipulatorRollerState.STOP);
   }
 
   public Command intakeCoral(BooleanSupplier shouldStop) {
     Command cmd =
         Commands.sequence(
             runManipulator(
-                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
+                    ManipulatorRollerState.CORAL_INTAKE)
                 .until(shouldStop));
     cmd.addRequirements(this);
     return cmd;
-  }
-
-  public Command intakeReefAlgae() {
-    return Commands.sequence(
-            Commands.parallel(
-                Commands.sequence(
-                    Commands.waitUntil(() -> isIntakingAlgae()),
-                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
-                runManipulator(
-                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
-        .finallyDo(() -> RobotState.setIntakingAlgae(false));
-  }
-
-  public Command intakeFloorAlgae() {
-    return Commands.sequence(
-            Commands.parallel(
-                Commands.sequence(
-                    Commands.waitUntil(() -> isIntakingAlgae()),
-                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
-                runManipulator(
-                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
-        .finallyDo(() -> RobotState.setIntakingAlgae(false));
-  }
-
-  public Command scoreCoral() {
-    return runManipulator(
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get());
-  }
-
-  public Command scoreAlgae() {
-    Command cmd =
-        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get());
-    cmd.addRequirements(this);
-    return cmd.finallyDo(() -> RobotState.setHasAlgae(false));
-  }
-
-  public Command scoreL1Coral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get());
-  }
-
-  public Command scoreL4Coral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get());
-  }
-
-  public Command halfScoreCoral() {
-    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
-  }
-
-  public Command unHalfScoreCoral() {
-    return runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
   }
 
   public Command sysIdRoutine() {
@@ -168,7 +123,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
-          state = goal;
+          armstate = goal;
         });
   }
 
@@ -195,7 +150,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean algaeArmAtGoal() {
-    return inputs.armPosition.getRadians() - state.getAngle().getRadians()
+    return inputs.armPosition.getRadians() - armstate.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
@@ -226,6 +181,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return MathUtil.clamp(
         1.25 * y,
         0.10,
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get() / 1.5);
+        V2_RedundancyManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE.getVoltage() / 1.5);
   }
 }

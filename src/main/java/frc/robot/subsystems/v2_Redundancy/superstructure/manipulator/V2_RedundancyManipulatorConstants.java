@@ -16,7 +16,6 @@ public class V2_RedundancyManipulatorConstants {
   public static final int ROLLER_CAN_ID;
   public static final double ROLLER_CURRENT_THRESHOLD;
   public static final Rotation2d ROLLER_TOGGLE_ARM_ROTATION;
-  public static final Voltages ROLLER_VOLTAGES;
 
   public static final ManipulatorCurrentLimits CURRENT_LIMITS;
 
@@ -55,16 +54,6 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_CAN_ID = 30;
     ROLLER_CURRENT_THRESHOLD = 60.0;
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
-    ROLLER_VOLTAGES =
-        new Voltages(
-            new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
-            new LoggedTunableNumber("Manipulator/Algae Intake Volts", 12.0),
-            new LoggedTunableNumber("Manipulator/L4 Volts", 4.6 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.8 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Algae Volts", -6),
-            new LoggedTunableNumber("Manipulator/Remove Algae Volts", -2),
-            new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
-            new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
     CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
   }
@@ -96,15 +85,22 @@ public class V2_RedundancyManipulatorConstants {
       LoggedTunableNumber cruisingVelocityRotationsPerSecond,
       LoggedTunableNumber goalToleranceRadians) {}
 
-  public static final record Voltages(
-      LoggedTunableNumber CORAL_INTAKE_VOLTS,
-      LoggedTunableNumber ALGAE_INTAKE_VOLTS,
-      LoggedTunableNumber L4_VOLTS,
-      LoggedTunableNumber SCORE_CORAL_VOLTS,
-      LoggedTunableNumber SCORE_ALGAE_VOLTS,
-      LoggedTunableNumber REMOVE_ALGAE,
-      LoggedTunableNumber HALF_VOLTS,
-      LoggedTunableNumber L1_VOLTS) {}
+  @RequiredArgsConstructor
+  public static enum ManipulatorRollerState {
+    STOP(0.0),
+    CORAL_INTAKE(6.0),
+    ALGAE_INTAKE(12.0),
+    L4_SCORE(4.6 * 1.56),
+    SCORE_CORAL(4.8 * 1.56),
+    SCORE_ALGAE(-6),
+    REMOVE_ALGAE(-2),
+    L1_SCORE(3.5 * 1.56);
+    private final double voltage;
+
+    public double getVoltage() {
+      return voltage;
+    }
+  }
 
   @RequiredArgsConstructor
   public static enum ArmState {
