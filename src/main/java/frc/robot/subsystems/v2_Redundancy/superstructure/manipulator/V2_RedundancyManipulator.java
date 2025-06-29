@@ -24,8 +24,14 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   private final V2_RedundancyManipulatorIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
   private final SysIdRoutine algaeCharacterizationRoutine;
-  @Getter private ArmState armstate;
-  @Getter private ManipulatorRollerState rollerState;
+
+  @Getter
+  @AutoLogOutput(key = "Manipulator/Arm Goal")
+  private ArmState armGoal;
+
+  @Getter
+  @AutoLogOutput(key = "Manipulator/Roller Goal")
+  private ManipulatorRollerState rollerGoal;
 
   public V2_RedundancyManipulator(V2_RedundancyManipulatorIO io) {
     this.io = io;
@@ -40,8 +46,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
-    armstate = ArmState.STOW_DOWN;
-    rollerState = ManipulatorRollerState.STOP;
+    armGoal = ArmState.STOW_DOWN;
+    rollerGoal = ManipulatorRollerState.STOP;
   }
 
   @Override
@@ -56,12 +62,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     InternalLoggedTracer.record("Process Inputs", "Manipulator/Periodic");
 
     InternalLoggedTracer.reset();
-    if (isClosedLoop) io.setArmPositionGoal(armstate.getAngle());
+    if (isClosedLoop) io.setArmPositionGoal(armGoal.getAngle());
 
-    if (RobotState.isHasAlgae() && rollerState == ManipulatorRollerState.STOP) {
+    if (RobotState.isHasAlgae() && rollerGoal == ManipulatorRollerState.STOP) {
       io.setRollerVoltage(holdVoltage());
     } else {
-      io.setRollerVoltage(rollerState.getVoltage());
+      io.setRollerVoltage(rollerGoal.getVoltage());
     }
 
     if (hasAlgae() && RobotState.isIntakingAlgae()) {
@@ -94,15 +100,13 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   }
 
   public Command runManipulator(ManipulatorRollerState state) {
-    return Commands.runEnd(() -> this.rollerState = state, () -> this.rollerState = ManipulatorRollerState.STOP);
+    return Commands.runEnd(
+        () -> this.rollerGoal = state, () -> this.rollerGoal = ManipulatorRollerState.STOP);
   }
 
   public Command intakeCoral(BooleanSupplier shouldStop) {
     Command cmd =
-        Commands.sequence(
-            runManipulator(
-                    ManipulatorRollerState.CORAL_INTAKE)
-                .until(shouldStop));
+        Commands.sequence(runManipulator(ManipulatorRollerState.CORAL_INTAKE).until(shouldStop));
     cmd.addRequirements(this);
     return cmd;
   }
@@ -123,7 +127,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
-          armstate = goal;
+          armGoal = goal;
         });
   }
 
@@ -150,7 +154,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean algaeArmAtGoal() {
-    return inputs.armPosition.getRadians() - armstate.getAngle().getRadians()
+    return inputs.armPosition.getRadians() - armGoal.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
