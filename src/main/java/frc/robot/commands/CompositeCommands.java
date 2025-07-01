@@ -222,8 +222,6 @@ public class CompositeCommands {
   public static final class V2_RedundancyCompositeCommands {
     public static final Command intakeCoralAuto(
         V2_RedundancySuperstructure superstructure,
-        V2_RedundancyFunnel funnel,
-        V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),

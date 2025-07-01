@@ -407,8 +407,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeft(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -444,7 +442,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
@@ -457,7 +455,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -469,7 +467,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -484,8 +482,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftNashoba(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -521,7 +517,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -533,7 +529,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -545,7 +541,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -560,8 +556,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftDAVE(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -597,7 +591,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -609,7 +603,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -621,7 +615,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -636,8 +630,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoARight(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -674,7 +666,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -686,7 +678,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -698,7 +690,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -713,8 +705,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBLeft(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -744,7 +734,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
@@ -758,8 +748,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCLeft(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -794,7 +782,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -806,7 +794,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -821,8 +809,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCLeftPush(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -861,7 +847,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -873,7 +859,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -888,8 +874,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRight(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -923,7 +907,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -935,7 +919,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -949,8 +933,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRightPush(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -988,7 +970,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -1000,7 +982,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(SuperstructureStates.L4),
@@ -1014,8 +996,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBRight(
       Drive drive,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
@@ -1045,7 +1025,7 @@ public class AutonomousCommands {
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
-                        superstructure, funnel, manipulator, intake),
+                        superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
@@ -1059,8 +1039,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoDCenter(
       Drive drive,
-      V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnel funnel,
       V2_RedundancySuperstructure superstructure,
       Camera... cameras) {
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoDCenter");

@@ -350,110 +350,59 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "4 Piece Left",
         () ->
             AutonomousCommands.autoALeft(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "4 Piece Right",
         () ->
             AutonomousCommands.autoARight(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "4 Piece Left Nashoba",
         () ->
             AutonomousCommands.autoALeftNashoba(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "4 Piece Left D.A.V.E.",
         () ->
             AutonomousCommands.autoALeftDAVE(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
 
     autoChooser.addRoutine(
         "3 Piece Left",
         () ->
             AutonomousCommands.autoCLeft(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Left Push",
         () ->
             AutonomousCommands.autoCLeftPush(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Right",
         () ->
             AutonomousCommands.autoCRight(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "3 Piece Right Push",
         () ->
             AutonomousCommands.autoCRightPush(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "2 Piece Left",
         () ->
             AutonomousCommands.autoBLeft(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "2 Piece Right",
         () ->
             AutonomousCommands.autoBRight(
-                drive,
-                funnel,
-                manipulator,
-                intake,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, intake, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     autoChooser.addRoutine(
         "1 Piece Center",
         () ->
-            AutonomousCommands.autoDCenter(
-                drive, manipulator, funnel, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
+            AutonomousCommands.autoDCenter(drive, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
