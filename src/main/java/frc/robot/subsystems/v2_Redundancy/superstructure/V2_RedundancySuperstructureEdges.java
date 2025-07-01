@@ -49,7 +49,9 @@ public class V2_RedundancySuperstructureEdges {
     @Builder.Default private final AlgaeEdge algaeEdgeType = AlgaeEdge.NONE;
   }
 
-  private static Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to, 
+  private static Command getEdgeCommand(
+      SuperstructureStates from,
+      SuperstructureStates to,
       V2_RedundancyElevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
@@ -101,7 +103,8 @@ public class V2_RedundancySuperstructureEdges {
           .andThen(Commands.runOnce(() -> intake.setExtensionGoal(IntakeExtensionState.L1_EXT)));
     }
 
-    return pose.asCommand(elevator, manipulator, funnel, intake); // does all subsystem poses in paralell
+    return pose.asCommand(
+        elevator, manipulator, funnel, intake); // does all subsystem poses in paralell
   }
 
   private static void createEdges() {
@@ -333,7 +336,10 @@ public class V2_RedundancySuperstructureEdges {
   }
 
   private static void addEdges(
-      Graph<SuperstructureStates, EdgeCommand> graph, List<Edge> edges, AlgaeEdge type, V2_RedundancyElevator elevator,
+      Graph<SuperstructureStates, EdgeCommand> graph,
+      List<Edge> edges,
+      AlgaeEdge type,
+      V2_RedundancyElevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyIntake intake) {
@@ -342,13 +348,15 @@ public class V2_RedundancySuperstructureEdges {
           edge.from(),
           edge.to(),
           EdgeCommand.builder()
-              .command(getEdgeCommand(edge.from(), edge.to(), elevator, manipulator, funnel, intake))
+              .command(
+                  getEdgeCommand(edge.from(), edge.to(), elevator, manipulator, funnel, intake))
               .algaeEdgeType(type)
               .build());
     }
   }
 
-  public static void addEdges(Graph<SuperstructureStates, EdgeCommand> graph, 
+  public static void addEdges(
+      Graph<SuperstructureStates, EdgeCommand> graph,
       V2_RedundancyElevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
