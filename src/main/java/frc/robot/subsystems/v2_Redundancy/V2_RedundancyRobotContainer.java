@@ -211,8 +211,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     // Driver triggers
     driver
         .leftTrigger(0.5)
-        .whileTrue(
-            V2_RedundancyCompositeCommands.intakeCoralDriverSequence(superstructure, intake));
+        .whileTrue(V2_RedundancyCompositeCommands.intakeCoralDriverSequence(superstructure, intake))
+        .onFalse(superstructure.runGoal(SuperstructureStates.STOW_DOWN));
     driver
         .rightTrigger(0.5)
         .whileTrue(

@@ -19,7 +19,6 @@ import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpMani
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.AllianceFlipUtil;
@@ -419,15 +418,19 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("A_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent(
+                "Funnel",
+                Commands
+                    .none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED)); TODO: Figure out what
+    // to do here
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("A_LEFT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path4 =
         routine
             .trajectory("A_LEFT_PATH4")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -442,7 +445,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -454,7 +456,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -466,7 +467,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -495,15 +495,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("A_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("A_LEFT_PATH_ALT3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path4 =
         routine
             .trajectory("A_LEFT_PATH_ALT4")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -518,7 +518,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -530,7 +529,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -542,7 +540,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -571,15 +568,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("A_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("A_LEFT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path4 =
         routine
             .trajectory("A_LEFT_PATH4_ALT_ALT")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -594,7 +591,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -606,7 +602,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -618,7 +613,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -648,66 +642,62 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("A_RIGHT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("A_RIGHT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path4 =
         routine
             .trajectory("A_RIGHT_PATH4")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
         .onTrue(
             Commands.sequence(
-                    path1.resetOdometry(),
-                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
-                    path1.cmd(),
-                    superstructure.runGoal(SuperstructureStates.L4),
-                    Commands.parallel(
-                        DriveCommands.autoAlignReefCoral(drive, cameras),
-                        Commands.waitUntil(() -> superstructure.atGoal())),
-                    superstructure.runActionWithTimeout(
-                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
-                    Commands.deadline(
-                        path2.cmd(),
-                        V2_RedundancyCompositeCommands.intakeCoralAuto(
-                            superstructure, funnel, manipulator, intake),
-                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
-                    superstructure.runGoal(SuperstructureStates.L4),
-                    Commands.parallel(
-                        DriveCommands.autoAlignReefCoral(drive, cameras),
-                        Commands.waitUntil(() -> superstructure.atGoal())),
-                    superstructure.runActionWithTimeout(
-                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
-                    Commands.deadline(
-                        path3.cmd(),
-                        V2_RedundancyCompositeCommands.intakeCoralAuto(
-                            superstructure, funnel, manipulator, intake),
-                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
-                    superstructure.runGoal(SuperstructureStates.L4),
-                    Commands.parallel(
-                        DriveCommands.autoAlignReefCoral(drive, cameras),
-                        Commands.waitUntil(() -> superstructure.atGoal())),
-                    superstructure.runActionWithTimeout(
-                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
-                    Commands.deadline(
-                        path4.cmd(),
-                        V2_RedundancyCompositeCommands.intakeCoralAuto(
-                            superstructure, funnel, manipulator, intake),
-                        Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
-                    superstructure.runGoal(SuperstructureStates.L4),
-                    Commands.parallel(
-                        DriveCommands.autoAlignReefCoral(drive, cameras),
-                        Commands.waitUntil(() -> superstructure.atGoal())),
-                    superstructure.runActionWithTimeout(
-                        SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5))
-                .withName("autoARight"));
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                path1.cmd(),
+                superstructure.runGoal(SuperstructureStates.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
+                superstructure.runActionWithTimeout(
+                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                Commands.deadline(
+                    path2.cmd(),
+                    V2_RedundancyCompositeCommands.intakeCoralAuto(
+                        superstructure, funnel, manipulator, intake),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                superstructure.runGoal(SuperstructureStates.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
+                superstructure.runActionWithTimeout(
+                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                Commands.deadline(
+                    path3.cmd(),
+                    V2_RedundancyCompositeCommands.intakeCoralAuto(
+                        superstructure, funnel, manipulator, intake),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+                superstructure.runGoal(SuperstructureStates.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
+                superstructure.runActionWithTimeout(
+                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                Commands.deadline(
+                    path4.cmd(),
+                    V2_RedundancyCompositeCommands.intakeCoralAuto(
+                        superstructure, funnel, manipulator, intake),
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+                superstructure.runGoal(SuperstructureStates.L4),
+                Commands.parallel(
+                    DriveCommands.autoAlignReefCoral(drive, cameras),
+                    Commands.waitUntil(() -> superstructure.atGoal())),
+                superstructure.runActionWithTimeout(
+                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -724,11 +714,11 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("B_LEFT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("B_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -742,7 +732,6 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -770,15 +759,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("C_LEFT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("C_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("C_LEFT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -793,7 +782,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -805,7 +793,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -833,15 +820,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("C_LEFT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("C_LEFT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("C_LEFT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -860,7 +847,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -872,7 +858,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -900,15 +885,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("C_RIGHT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("C_RIGHT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("C_RIGHT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     routine
         .active()
         .onTrue(
@@ -922,7 +907,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -934,7 +918,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -961,15 +944,15 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("C_RIGHT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("C_RIGHT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path3 =
         routine
             .trajectory("C_RIGHT_PATH3")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     routine
         .active()
         .onTrue(
@@ -987,7 +970,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -999,7 +981,6 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -1026,11 +1007,11 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("B_RIGHT_PATH1")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
     LoggedAutoTrajectory path2 =
         routine
             .trajectory("B_RIGHT_PATH2")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
@@ -1044,7 +1025,6 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -1070,7 +1050,7 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path1 =
         routine
             .trajectory("D_CENTER_PATH")
-            .bindEvent("Funnel", funnel.setClapDaddyGoal(FunnelState.CLOSED));
+            .bindEvent("Funnel", Commands.none()); // funnel.setClapDaddyGoal(FunnelState.CLOSED));
 
     routine
         .active()
