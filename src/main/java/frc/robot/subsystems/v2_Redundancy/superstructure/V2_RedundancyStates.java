@@ -234,16 +234,12 @@ public class V2_RedundancyStates {
       this.rollerStates = rollerStates;
     }
 
-    public Pair<V2_RedundancySuperstructurePose, V2_RedundancySuperstructureAction> createState(
-        V2_RedundancyElevator elevator,
-        V2_RedundancyFunnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
-      return Pair.of(
-          new V2_RedundancySuperstructurePose(
-              name, subsystemPoses, elevator, funnel, manipulator, intake),
-          new V2_RedundancySuperstructureAction(
-              name, rollerStates, elevator, manipulator, funnel, intake));
+    public V2_RedundancySuperstructurePose getPose() {
+      return new V2_RedundancySuperstructurePose(name, subsystemPoses);
+    }
+
+    public V2_RedundancySuperstructureAction getAction() {
+        return new V2_RedundancySuperstructureAction(name, rollerStates);
     }
 
     @Override

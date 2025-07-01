@@ -226,7 +226,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onFalse(
             Commands.deadline(
                 V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
-                intake.setRollerGoal(IntakeRollerState.OUTTAKE)));
+                intake.setRollerGoal(IntakeRollerState.OUTTAKE)).andThen(intake.setRollerGoal(IntakeRollerState.STOP)));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV

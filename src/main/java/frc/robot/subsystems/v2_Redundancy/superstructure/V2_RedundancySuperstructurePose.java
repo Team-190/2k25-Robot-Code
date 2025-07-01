@@ -10,67 +10,57 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import lombok.Getter;
 
-public class V2_RedundancySuperstructurePose extends V2_RedundancySuperstructureState {
+public class V2_RedundancySuperstructurePose {
 
-  private final ReefState elevatorHeight;
-  private final ArmState armState;
-  private final IntakeExtensionState intakeState;
-  private final FunnelState funnelState;
+  private final String key;
 
-  public V2_RedundancySuperstructurePose(
-      String key,
-      SubsystemPoses poses,
-      V2_RedundancyElevator elevator,
-      V2_RedundancyFunnel funnel,
-      V2_RedundancyManipulator manipulator,
-      V2_RedundancyIntake intake) {
-    super(key, elevator, manipulator, funnel, intake);
+  @Getter private final ReefState elevatorHeight;
+  @Getter private final ArmState armState;
+  @Getter private final IntakeExtensionState intakeState;
+  @Getter private final FunnelState funnelState;
+
+  public V2_RedundancySuperstructurePose(String key, SubsystemPoses poses) {
+    this.key = key;
+
     this.elevatorHeight = poses.elevatorHeight();
     this.armState = poses.armState();
     this.intakeState = poses.intakeState();
     this.funnelState = poses.funnelState();
   }
 
-  public ReefState getElevatorHeight() {
-    return elevatorHeight;
-  }
-
-  public ArmState getArmState() {
-    return armState;
-  }
-
-  public IntakeExtensionState getIntakeState() {
-    return intakeState;
-  }
-
-  public FunnelState getFunnelState() {
-    return funnelState;
-  }
-
-  public Command setElevatorHeight() {
+  public Command setElevatorHeight(V2_RedundancyElevator elevator) {
     return Commands.parallel(
         elevator.setPosition(() -> elevatorHeight), elevator.waitUntilAtGoal());
   }
 
-  public Command setArmState() {
+  public Command setArmState(V2_RedundancyManipulator manipulator) {
     return Commands.parallel(
         manipulator.setAlgaeArmGoal(armState), manipulator.waitUntilAlgaeArmAtGoal());
   }
 
-  public Command setIntakeState() {
+  public Command setIntakeState(V2_RedundancyIntake intake) {
     return Commands.parallel(
         intake.setExtensionGoal(intakeState), intake.waitUntilExtensionAtGoal());
   }
 
-  public Command setFunnelState() {
+  public Command setFunnelState(V2_RedundancyFunnel funnel) {
     return funnel.setClapDaddyGoal(funnelState);
   }
 
-  public Command asCommand() {
+  public Command asCommand(
+      V2_RedundancyElevator elevator,
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyFunnel funnel,
+      V2_RedundancyIntake intake) {
     return Commands.parallel(
-        setElevatorHeight(), setArmState(),
-        setIntakeState(), setFunnelState());
+        setElevatorHeight(elevator), setArmState(manipulator),
+        setIntakeState(intake), setFunnelState(funnel));
+  }
+
+  public String toString() {
+    return key;
   }
 
   public record SubsystemPoses(

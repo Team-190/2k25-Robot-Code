@@ -82,13 +82,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
     // Always fetch the latest state
     return Commands.defer(
-        () ->
-            stateSupplier
-                .get()
-                .createState(elevator, funnel, manipulator, intake)
-                .getSecond()
-                .asCommand(),
-        Set.of(this));
+        () -> stateSupplier.get().getAction().asCommand(manipulator, funnel, intake), Set.of(this));
   }
 
   @Override
@@ -199,48 +193,56 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
-    V2_RedundancySuperstructurePose pose =
-        to.createState(elevator, funnel, manipulator, intake).getFirst();
+    V2_RedundancySuperstructurePose pose = to.getPose();
 
     if (from == SuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
-          pose.asCommand(), intake.setRollerGoal(IntakeRollerState.OUTTAKE).withTimeout(1));
+              pose.asCommand(elevator, manipulator, funnel, intake),
+              intake.setRollerGoal(IntakeRollerState.OUTTAKE).withTimeout(1))
+          .andThen(intake.stopRoller());
     }
 
     if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {
       return Commands.sequence(
-          pose.setElevatorHeight()
+          pose.setElevatorHeight(elevator)
               .alongWith(
                   manipulator
                       .setAlgaeArmGoal(ArmState.STOW_DOWN)
                       .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
-              .alongWith(pose.setFunnelState().alongWith(pose.setIntakeState())),
-          pose.setArmState());
+              .alongWith(pose.setFunnelState(funnel).alongWith(pose.setIntakeState(intake))),
+          pose.setArmState(manipulator));
     }
 
     if (to == SuperstructureStates.FLOOR_ACQUISITION) {
-      return Commands.deadline(pose.asCommand(), intake.setRollerGoal(IntakeRollerState.INTAKE));
+      return Commands.deadline(
+              pose.asCommand(elevator, manipulator, funnel, intake),
+              intake.setRollerGoal(IntakeRollerState.INTAKE))
+          .andThen(intake.stopRoller());
     }
 
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
         || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN)
         || to == SuperstructureStates.STOW_UP) {
-      return pose.setArmState()
+      return pose.setArmState(manipulator)
           .andThen(
-              pose.setIntakeState()
-                  .alongWith(pose.setElevatorHeight())
-                  .alongWith(pose.setFunnelState()));
+              pose.setIntakeState(intake)
+                  .alongWith(pose.setElevatorHeight(elevator))
+                  .alongWith(pose.setFunnelState(funnel)));
     }
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR) {
-      return pose.setElevatorHeight()
+      return pose.setElevatorHeight(elevator)
           .andThen(
-              pose.setIntakeState().alongWith(pose.setArmState()).alongWith(pose.setFunnelState()));
+              pose.setIntakeState(intake)
+                  .alongWith(pose.setArmState(manipulator))
+                  .alongWith(pose.setFunnelState(funnel)));
     }
     if (to == SuperstructureStates.L1 && from == SuperstructureStates.SCORE_L1) {
-      return pose.asCommand().andThen(intake.setExtensionGoal(IntakeExtensionState.L1_EXT));
+      return pose.asCommand(elevator, manipulator, funnel, intake)
+          .andThen(intake.setExtensionGoal(IntakeExtensionState.L1_EXT));
     }
 
-    return pose.asCommand(); // need to determine order based on from and to
+    return pose.asCommand(
+        elevator, manipulator, funnel, intake); // need to determine order based on from and to
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {

@@ -95,8 +95,8 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerGoal(IntakeRollerState state) {
-    return Commands.runEnd(
-        () -> this.intakeRollerGoal = state, () -> this.intakeRollerGoal = IntakeRollerState.STOP);
+    return Commands.runOnce(
+        () -> this.intakeRollerGoal = state);
   }
 
   /**
@@ -105,7 +105,7 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @return A command to stop the roller.
    */
   public Command stopRoller() {
-    return runOnce(() -> this.intakeRollerGoal = IntakeRollerState.STOP);
+    return setRollerGoal(IntakeRollerState.STOP);
   }
 
   /**

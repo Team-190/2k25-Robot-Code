@@ -102,7 +102,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    * @return A command to set the roller voltage.
    */
   public Command setRollerGoal(FunnelRollerState state) {
-    return Commands.run(() -> rollerGoal = state);
+    return Commands.runOnce(() -> rollerGoal = state);
   }
 
   public Command intakeCoral(BooleanSupplier coralLocked) { // TODO: Remove this
