@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -85,6 +85,10 @@ public class V2_RedundancyFunnel extends SubsystemBase {
       if (manipulatorHasCoral) {
         setClapDaddyGoal(FunnelState.OPENED);
       }
+    }
+
+    if (RobotMode.auto() && RobotState.isAutoClapOverride()) {
+      setClapDaddyGoal(FunnelState.CLOSED);
     }
 
     InternalLoggedTracer.reset();
