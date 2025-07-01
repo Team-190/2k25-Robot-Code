@@ -22,7 +22,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -234,11 +233,13 @@ public class CompositeCommands {
               Commands.race(
                   Commands.waitUntil(() -> intake.hasCoral()),
                   Commands.deadline( // TODO: Needs some work
-                      Commands.sequence(
-                          funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.OPENED),
-                          Commands.waitUntil(() -> funnel.hasCoral()),
-                          funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.CLOSED),
-                          Commands.waitUntil(() -> manipulator.hasCoral())),
+                      // Commands.sequence(
+                      //
+                      // funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.OPENED),
+                      //     Commands.waitUntil(() -> funnel.hasCoral()),
+                      //
+                      // funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.CLOSED),
+                      //     Commands.waitUntil(() -> manipulator.hasCoral())),
                       Commands.runOnce(() -> funnel.setRollerGoal(FunnelRollerState.INTAKE)))),
               superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
@@ -249,9 +250,7 @@ public class CompositeCommands {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setHasAlgae(false)),
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              superstructure
-                  .runGoal(() -> SuperstructureStates.INTAKE)
-                  .until(() -> intake.hasCoral()),
+              superstructure.runGoalUntil(SuperstructureStates.INTAKE, () -> intake.hasCoral()),
               superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
@@ -260,7 +259,7 @@ public class CompositeCommands {
         V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              superstructure.runGoal(() -> SuperstructureStates.INTAKE).until(intake::hasCoral),
+              superstructure.runGoalUntil(SuperstructureStates.INTAKE, () -> intake.hasCoral()),
               superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
@@ -431,12 +430,11 @@ public class CompositeCommands {
 
     public static final Command floorIntakeSequence(V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(
-          Commands.sequence(
-                  Commands.parallel(
-                      superstructure.runGoal(SuperstructureStates.FLOOR_ACQUISITION),
-                      Commands.runOnce(() -> RobotState.setHasAlgae(false))),
-                  superstructure.runGoal(() -> SuperstructureStates.INTAKE_FLOOR))
-              .until(() -> RobotState.isHasAlgae()));
+          Commands.parallel(
+              superstructure.runGoal(SuperstructureStates.FLOOR_ACQUISITION),
+              Commands.runOnce(() -> RobotState.setHasAlgae(false))),
+          superstructure.runGoalUntil(
+              SuperstructureStates.INTAKE_FLOOR, () -> RobotState.isHasAlgae()));
     }
 
     public static final Command postFloorIntakeSequence(
@@ -470,10 +468,10 @@ public class CompositeCommands {
       V2_RedundancyIntake intake,
       V2_RedundancyElevator elevator) {
     return Commands.sequence(
-        elevator.setPosition(() -> ReefState.ALGAE_MID),
+        Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
         elevator.waitUntilAtGoal(),
         manipulator.homingSequence(),
         intake.homingSequence(),
-        elevator.setPosition(() -> RobotState.getOIData().currentReefHeight()));
+        Commands.runOnce(() -> elevator.setPosition()));
   }
 }

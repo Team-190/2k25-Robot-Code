@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
@@ -90,7 +92,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     manipulator.periodic();
     intake.periodic();
 
-    if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
+    if (DriverStation.isDisabled()) {
+      nextState = null;
+    } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
       if (nextState != null) {
         previousState = currentState;
@@ -133,7 +137,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return (runOnce(() -> setGoal(goal)).andThen(Commands.idle(this)));
+    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
   }
 
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
@@ -142,7 +146,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
-    return run(() -> setGoal(goal.get()));
+    return runOnce(() -> setGoal(goal.get())).andThen(Commands.idle(this));
   }
 
   public Command override(Runnable action, SuperstructureStates oldGoal) {
@@ -150,25 +154,28 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         .finallyDo(() -> setGoal(oldGoal));
   }
 
+  public Command runGoalUntil(SuperstructureStates goal, BooleanSupplier condition) {
+    return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
+  }
+
   public Command runReefGoal(Supplier<ReefState> goal) {
     return runGoal(
-            () -> {
-              switch (goal.get()) {
-                case L1:
-                  return SuperstructureStates.L1;
-                case L2:
-                  return SuperstructureStates.L2;
-                case L3:
-                  return SuperstructureStates.L3;
-                case L4:
-                  return SuperstructureStates.L4;
-                case L4_PLUS:
-                  return SuperstructureStates.L4_PLUS;
-                default:
-                  return SuperstructureStates.STOW_DOWN;
-              }
-            })
-        .withTimeout(0.02);
+        () -> {
+          switch (goal.get()) {
+            case L1:
+              return SuperstructureStates.L1;
+            case L2:
+              return SuperstructureStates.L2;
+            case L3:
+              return SuperstructureStates.L3;
+            case L4:
+              return SuperstructureStates.L4;
+            case L4_PLUS:
+              return SuperstructureStates.L4_PLUS;
+            default:
+              return SuperstructureStates.STOW_DOWN;
+          }
+        });
   }
 
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
@@ -206,12 +213,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
     }
 
-    if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {
+    if ((to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3)
+        && (from != SuperstructureStates.STOW_UP || from != SuperstructureStates.BARGE)) {
       return Commands.sequence(
           pose.setElevatorHeight(elevator)
               .alongWith(
-                  manipulator
-                      .setAlgaeArmGoal(ArmState.STOW_DOWN)
+                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN))
                       .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
               .alongWith(pose.setFunnelState(funnel).alongWith(pose.setIntakeState(intake))),
           pose.setArmState(manipulator));
@@ -236,16 +243,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       return pose.setElevatorHeight(elevator)
           .andThen(
               pose.setIntakeState(intake)
-                  .alongWith(pose.setArmState(manipulator))
-                  .alongWith(pose.setFunnelState(funnel)));
+                  .alongWith(pose.setArmState(manipulator), pose.setFunnelState(funnel)));
     }
     if (to == SuperstructureStates.L1 && from == SuperstructureStates.SCORE_L1) {
       return pose.asCommand(elevator, manipulator, funnel, intake)
-          .andThen(intake.setExtensionGoal(IntakeExtensionState.L1_EXT));
+          .andThen(Commands.runOnce(() -> intake.setExtensionGoal(IntakeExtensionState.L1_EXT)));
     }
 
-    return pose.asCommand(
-        elevator, manipulator, funnel, intake); // need to determine order based on from and to
+    return pose.asCommand(elevator, manipulator, funnel, intake); // does all action in paralell
   }
 
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
@@ -386,27 +391,31 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     ALGAE
   }
 
-  public Command setPosition() {
+  private SuperstructureStates getElevatorPosition() {
     switch (RobotState.getOIData().currentReefHeight()) {
       case STOW, CORAL_INTAKE -> {
-        return runGoal(SuperstructureStates.STOW_DOWN);
+        return SuperstructureStates.STOW_DOWN;
       }
       case L1 -> {
-        return runGoal(SuperstructureStates.L1);
+        return SuperstructureStates.L1;
       }
       case L2 -> {
-        return runGoal(SuperstructureStates.L2);
+        return SuperstructureStates.L2;
       }
       case L3 -> {
-        return runGoal(SuperstructureStates.L3);
+        return SuperstructureStates.L3;
       }
       case L4 -> {
-        return runGoal(SuperstructureStates.L4);
+        return SuperstructureStates.L4;
       }
       default -> {
-        return Commands.none();
+        return SuperstructureStates.START;
       }
     }
+  }
+
+  public Command setPosition() {
+    return runGoal(() -> getElevatorPosition()).withTimeout(0.02);
   }
 
   public Command runPreviousState() {

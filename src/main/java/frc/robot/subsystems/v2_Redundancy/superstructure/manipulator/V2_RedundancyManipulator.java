@@ -114,12 +114,9 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
-  public Command setAlgaeArmGoal(ArmState goal) {
-    return this.runOnce(
-        () -> {
-          isClosedLoop = true;
-          armGoal = goal;
-        });
+  public void setAlgaeArmGoal(ArmState goal) {
+    isClosedLoop = true;
+    armGoal = goal;
   }
 
   public void updateArmGains(

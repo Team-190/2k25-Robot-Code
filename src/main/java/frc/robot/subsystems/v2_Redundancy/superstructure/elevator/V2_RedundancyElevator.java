@@ -73,56 +73,8 @@ public class V2_RedundancyElevator extends SubsystemBase {
    *
    * @return A command that sets the elevator position.
    */
-  public Command setPosition() {
-    return this.runOnce(
-        () -> {
-          isClosedLoop = true;
-          switch (RobotState.getOIData().currentReefHeight()) {
-            case STOW:
-              this.position = V2_RedundancyElevatorPositions.STOW;
-              break;
-            case CORAL_INTAKE:
-              this.position = V2_RedundancyElevatorPositions.CORAL_INTAKE;
-              break;
-            case ALGAE_FLOOR_INTAKE:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE;
-              break;
-            case ALGAE_MID:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_MID;
-              break;
-            case ASS_TOP:
-              this.position = V2_RedundancyElevatorPositions.ASS_TOP;
-              break;
-            case ASS_BOT:
-              this.position = V2_RedundancyElevatorPositions.ASS_BOT;
-              break;
-            case ALGAE_INTAKE_TOP:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
-              break;
-            case ALGAE_INTAKE_BOTTOM:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_BOT;
-              break;
-            case L1:
-              this.position = V2_RedundancyElevatorPositions.L1;
-              break;
-            case L2:
-              this.position = V2_RedundancyElevatorPositions.L2;
-              break;
-            case L3:
-              this.position = V2_RedundancyElevatorPositions.L3;
-              break;
-            case L4:
-              this.position = V2_RedundancyElevatorPositions.L4;
-              break;
-            case L4_PLUS:
-              this.position = V2_RedundancyElevatorPositions.L4_PLUS;
-              break;
-            case ALGAE_SCORE:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_SCORE;
-            default:
-              break;
-          }
-        });
+  public void setPosition() {
+    setPosition(() -> RobotState.getOIData().currentReefHeight());
   }
 
   /**
@@ -131,56 +83,55 @@ public class V2_RedundancyElevator extends SubsystemBase {
    * @param positionRadians The desired elevator position.
    * @return A command that sets the elevator position.
    */
-  public Command setPosition(Supplier<ReefState> newPosition) {
-    return this.runOnce(
-        () -> {
-          isClosedLoop = true;
-          switch (newPosition.get()) {
-            case STOW:
-              this.position = V2_RedundancyElevatorPositions.STOW;
-              break;
-            case CORAL_INTAKE:
-              this.position = V2_RedundancyElevatorPositions.CORAL_INTAKE;
-              break;
-            case ALGAE_FLOOR_INTAKE:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE;
-              break;
-            case ALGAE_MID:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_MID;
-              break;
-            case ASS_TOP:
-              this.position = V2_RedundancyElevatorPositions.ASS_TOP;
-              break;
-            case ASS_BOT:
-              this.position = V2_RedundancyElevatorPositions.ASS_BOT;
-              break;
-            case ALGAE_INTAKE_TOP:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
-              break;
-            case ALGAE_INTAKE_BOTTOM:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_BOT;
-              break;
-            case L1:
-              this.position = V2_RedundancyElevatorPositions.L1;
-              break;
-            case L2:
-              this.position = V2_RedundancyElevatorPositions.L2;
-              break;
-            case L3:
-              this.position = V2_RedundancyElevatorPositions.L3;
-              break;
-            case L4:
-              this.position = V2_RedundancyElevatorPositions.L4;
-              break;
-            case L4_PLUS:
-              this.position = V2_RedundancyElevatorPositions.L4_PLUS;
-              break;
-            case ALGAE_SCORE:
-              this.position = V2_RedundancyElevatorPositions.ALGAE_SCORE;
-            default:
-              break;
-          }
-        });
+  public void setPosition(Supplier<ReefState> newPosition) {
+
+    isClosedLoop = true;
+    switch (newPosition.get()) {
+      case STOW:
+        this.position = V2_RedundancyElevatorPositions.STOW;
+        break;
+      case CORAL_INTAKE:
+        this.position = V2_RedundancyElevatorPositions.CORAL_INTAKE;
+        break;
+      case ALGAE_FLOOR_INTAKE:
+        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE;
+        break;
+      case ALGAE_MID:
+        this.position = V2_RedundancyElevatorPositions.ALGAE_MID;
+        break;
+      case ASS_TOP:
+        this.position = V2_RedundancyElevatorPositions.ASS_TOP;
+        break;
+      case ASS_BOT:
+        this.position = V2_RedundancyElevatorPositions.ASS_BOT;
+        break;
+      case ALGAE_INTAKE_TOP:
+        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
+        break;
+      case ALGAE_INTAKE_BOTTOM:
+        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_BOT;
+        break;
+      case L1:
+        this.position = V2_RedundancyElevatorPositions.L1;
+        break;
+      case L2:
+        this.position = V2_RedundancyElevatorPositions.L2;
+        break;
+      case L3:
+        this.position = V2_RedundancyElevatorPositions.L3;
+        break;
+      case L4:
+        this.position = V2_RedundancyElevatorPositions.L4;
+        break;
+      case L4_PLUS:
+        this.position = V2_RedundancyElevatorPositions.L4_PLUS;
+        break;
+      case ALGAE_SCORE:
+        this.position = V2_RedundancyElevatorPositions.ALGAE_SCORE;
+      default:
+        break;
+    }
+    ;
   }
 
   public V2_RedundancyElevatorPositions getPosition(ReefState newPosition) {
@@ -216,15 +167,6 @@ public class V2_RedundancyElevator extends SubsystemBase {
       default:
         return V2_RedundancyElevatorPositions.STOW;
     }
-  }
-
-  public Command setVoltage(double volts) {
-    return this.runEnd(
-        () -> {
-          isClosedLoop = false;
-          io.setVoltage(volts);
-        },
-        () -> io.setVoltage(0.0));
   }
 
   /**
@@ -276,7 +218,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
                     atGoal(
                         V2_RedundancyElevatorPositions.STOW.getPosition()
                             + Units.inchesToMeters(12.0))),
-        setPosition(() -> ReefState.STOW));
+        Commands.runOnce(() -> setPosition(() -> ReefState.STOW)));
   }
 
   /**

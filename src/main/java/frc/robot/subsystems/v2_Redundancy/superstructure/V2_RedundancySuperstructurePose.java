@@ -32,21 +32,24 @@ public class V2_RedundancySuperstructurePose {
 
   public Command setElevatorHeight(V2_RedundancyElevator elevator) {
     return Commands.parallel(
-        elevator.setPosition(() -> elevatorHeight), elevator.waitUntilAtGoal());
+        Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
+        elevator.waitUntilAtGoal());
   }
 
   public Command setArmState(V2_RedundancyManipulator manipulator) {
     return Commands.parallel(
-        manipulator.setAlgaeArmGoal(armState), manipulator.waitUntilAlgaeArmAtGoal());
+        Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
+        manipulator.waitUntilAlgaeArmAtGoal());
   }
 
   public Command setIntakeState(V2_RedundancyIntake intake) {
     return Commands.parallel(
-        intake.setExtensionGoal(intakeState), intake.waitUntilExtensionAtGoal());
+        Commands.runOnce(() -> intake.setExtensionGoal(intakeState)),
+        intake.waitUntilExtensionAtGoal());
   }
 
   public Command setFunnelState(V2_RedundancyFunnel funnel) {
-    return funnel.setClapDaddyGoal(funnelState);
+    return Commands.runOnce(() -> funnel.setClapDaddyGoal(funnelState));
   }
 
   public Command asCommand(

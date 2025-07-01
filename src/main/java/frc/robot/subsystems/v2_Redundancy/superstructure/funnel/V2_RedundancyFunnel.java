@@ -86,12 +86,9 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    * @param goal The desired FunnelState.
    * @return A command to set the clapDaddy goal.
    */
-  public Command setClapDaddyGoal(FunnelState goal) {
-    return Commands.runOnce(
-        () -> {
-          isClosedLoop = true;
-          this.clapDaddyGoal = goal;
-        });
+  public void setClapDaddyGoal(FunnelState goal) {
+    isClosedLoop = true;
+    this.clapDaddyGoal = goal;
   }
 
   /**
