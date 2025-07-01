@@ -14,7 +14,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
-import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;

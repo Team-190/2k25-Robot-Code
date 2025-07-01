@@ -26,7 +26,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFun
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -233,7 +232,7 @@ public class CompositeCommands {
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
               superstructure.runGoal(SuperstructureStates.INTAKE),
               Commands.race(
-                      Commands.waitUntil(() -> intake.hasCoral()),
+                  Commands.waitUntil(() -> intake.hasCoral()),
                   Commands.deadline( // TODO: Needs some work
                       Commands.sequence(
                           funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.OPENED),

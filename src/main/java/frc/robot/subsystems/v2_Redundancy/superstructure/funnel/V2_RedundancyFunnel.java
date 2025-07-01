@@ -13,7 +13,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFun
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
-import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
