@@ -21,7 +21,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Sup
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.AllianceFlipUtil;
@@ -221,8 +220,7 @@ public class CompositeCommands {
 
   public static final class V2_RedundancyCompositeCommands {
     public static final Command intakeCoralAuto(
-        V2_RedundancySuperstructure superstructure,
-        V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoal(SuperstructureStates.INTAKE),
