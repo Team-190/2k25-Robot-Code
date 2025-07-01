@@ -137,7 +137,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(SuperstructureStates goal) {
-    return runOnce(() -> setGoal(goal)).andThen(Commands.idle(this));
+    return runOnce(() -> setGoal(goal));
   }
 
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
@@ -146,7 +146,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   public Command runGoal(Supplier<SuperstructureStates> goal) {
-    return runOnce(() -> setGoal(goal.get())).andThen(Commands.idle(this));
+    return runOnce(() -> setGoal(goal.get()));
   }
 
   public Command override(Runnable action, SuperstructureStates oldGoal) {
