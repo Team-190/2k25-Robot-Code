@@ -13,7 +13,7 @@ public class V2_RedundancySuperstructureAction {
   @Getter private final FunnelRollerState funnelRollerState;
   @Getter private final IntakeRollerState intakeRollerState;
 
-  public V2_RedundancySuperstructureAction(String key, RollerStates rollerStates) {
+  public V2_RedundancySuperstructureAction(String key, SubsystemActions rollerStates) {
     this.manipulatorRollerState = rollerStates.manipulatorRollerState();
     this.funnelRollerState = rollerStates.funnelRollerState();
     this.intakeRollerState = rollerStates.intakeRollerState();
@@ -40,12 +40,12 @@ public class V2_RedundancySuperstructureAction {
     runIntake(intake);
   }
 
-  public record RollerStates(
+  public record SubsystemActions(
       ManipulatorRollerState manipulatorRollerState,
       FunnelRollerState funnelRollerState,
       IntakeRollerState intakeRollerState) {
-    public static RollerStates empty() {
-      return new RollerStates(
+    public static SubsystemActions empty() {
+      return new SubsystemActions(
           ManipulatorRollerState.STOP, FunnelRollerState.STOP, IntakeRollerState.STOP);
     }
   }
