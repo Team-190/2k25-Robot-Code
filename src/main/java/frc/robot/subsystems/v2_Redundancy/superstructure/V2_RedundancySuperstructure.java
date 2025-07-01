@@ -6,8 +6,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyEdges.Edge;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.Edge;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
@@ -73,10 +75,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Add edges between states
-    V2_RedundancyEdges.createEdges();
-    addEdges(V2_RedundancyEdges.NoneEdges, AlgaeEdge.NONE);
-    addEdges(V2_RedundancyEdges.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
-    addEdges(V2_RedundancyEdges.AlgaeEdges, AlgaeEdge.ALGAE);
+    V2_RedundancySuperstructureEdges.addEdges(graph, elevator, manipulator, funnel, intake);
   }
 
   private void stopActions() {
@@ -210,61 +209,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         runGoal(pose));
   }
 
-  private Command getEdgeCommand(SuperstructureStates from, SuperstructureStates to) {
-    V2_RedundancySuperstructurePose pose = to.getPose();
-
-    if (from == SuperstructureStates.INTAKE_FLOOR) {
-      return Commands.parallel(
-          pose.asCommand(elevator, manipulator, funnel, intake),
-          Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
-              .withTimeout(1)
-              .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
-    }
-
-    if ((to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3)
-        && (from != SuperstructureStates.STOW_UP || from != SuperstructureStates.BARGE)) {
-      return Commands.sequence(
-          pose.setElevatorHeight(elevator)
-              .alongWith(
-                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN))
-                      .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
-              .alongWith(pose.setFunnelState(funnel).alongWith(pose.setIntakeState(intake))),
-          pose.setArmState(manipulator));
-    }
-
-    if (to == SuperstructureStates.FLOOR_ACQUISITION) {
-      return Commands.deadline(
-          pose.asCommand(elevator, manipulator, funnel, intake),
-          Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.INTAKE)));
-    }
-
-    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
-        || (from == SuperstructureStates.FLOOR_ACQUISITION && to == SuperstructureStates.STOW_DOWN)
-        || to == SuperstructureStates.STOW_UP) {
-      return pose.setArmState(manipulator)
-          .andThen(
-              pose.setIntakeState(intake)
-                  .alongWith(pose.setElevatorHeight(elevator))
-                  .alongWith(pose.setFunnelState(funnel)));
-    }
-    if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR) {
-      return pose.setElevatorHeight(elevator)
-          .andThen(
-              pose.setIntakeState(intake)
-                  .alongWith(pose.setArmState(manipulator), pose.setFunnelState(funnel)));
-    }
-    if (to == SuperstructureStates.L1 && from == SuperstructureStates.SCORE_L1) {
-      return pose.asCommand(elevator, manipulator, funnel, intake)
-          .andThen(Commands.runOnce(() -> intake.setExtensionGoal(IntakeExtensionState.L1_EXT)));
-    }
-
-    return pose.asCommand(elevator, manipulator, funnel, intake); // does all action in paralell
-  }
-
   private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
-    return (!edge.isRestricted() || goal == graph.getEdgeTarget(edge))
-        && (edge.getAlgaeEdgeType() == AlgaeEdge.NONE
-            || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE));
+    return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
+            || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
   public void setAutoStart() {
@@ -366,37 +313,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 }
               });
     }
-  }
-
-  private void addEdge(SuperstructureStates from, SuperstructureStates to, AlgaeEdge algaeEdge) {
-    graph.addEdge(
-        from,
-        to,
-        EdgeCommand.builder()
-            .command(getEdgeCommand(from, to))
-            .algaeEdgeType(algaeEdge)
-            .restricted(false)
-            .build());
-  }
-
-  private void addEdges(List<Edge> edges, AlgaeEdge type) {
-    for (Edge edge : edges) {
-      addEdge(edge.from(), edge.to(), type);
-    }
-  }
-
-  @Builder(toBuilder = true)
-  @Getter
-  public static class EdgeCommand extends DefaultEdge {
-    private final Command command;
-    @Builder.Default private final boolean restricted = false;
-    @Builder.Default private final AlgaeEdge algaeEdgeType = AlgaeEdge.NONE;
-  }
-
-  public enum AlgaeEdge {
-    NONE,
-    NO_ALGAE,
-    ALGAE
   }
 
   private SuperstructureStates getElevatorPosition() {

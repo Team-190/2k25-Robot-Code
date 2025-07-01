@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class V2_RedundancyStates {
+public class V2_RedundancySuperstructureStates {
   public static final List<SuperstructureStates> Actions =
       List.of(
           SuperstructureStates.INTAKE,

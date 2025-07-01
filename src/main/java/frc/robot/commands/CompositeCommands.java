@@ -17,7 +17,7 @@ import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevato
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
