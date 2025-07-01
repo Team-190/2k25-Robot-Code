@@ -17,7 +17,7 @@ import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevato
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates.SuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedChoreo.LoggedAutoRoutine;
@@ -431,46 +431,54 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -503,45 +511,53 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -574,45 +590,53 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -646,45 +670,53 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -714,19 +746,23 @@ public class AutonomousCommands {
                 path1.cmd(),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(SuperstructureStates.L4)),
+                    superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(SuperstructureStates.L4)),
+                    superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)));
 
     return routine;
   }
@@ -758,34 +794,40 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -821,34 +863,40 @@ public class AutonomousCommands {
                     .withTimeout(0.5),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
 
     return routine;
   }
@@ -879,34 +927,40 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
     return routine;
   }
 
@@ -940,34 +994,40 @@ public class AutonomousCommands {
                         () -> drive.stop())
                     .withTimeout(0.5),
                 path1.cmd(),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                superstructure.runGoal(SuperstructureStates.L4),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
     return routine;
   }
 
@@ -996,19 +1056,23 @@ public class AutonomousCommands {
                 path1.cmd(),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(SuperstructureStates.L4)),
+                    superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(SuperstructureStates.L4)),
+                    superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                superstructure.runGoal(SuperstructureStates.STOW_DOWN)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)));
 
     return routine;
   }
@@ -1030,9 +1094,11 @@ public class AutonomousCommands {
                 path1.cmd(),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(SuperstructureStates.L4)),
+                    superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5)));
+                    V2_RedundancySuperstructureStates.L4,
+                    V2_RedundancySuperstructureStates.SCORE_L4,
+                    0.5)));
     return routine;
   }
 }

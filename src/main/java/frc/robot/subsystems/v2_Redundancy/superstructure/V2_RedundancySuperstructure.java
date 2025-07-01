@@ -8,7 +8,6 @@ import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
@@ -32,17 +31,17 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
-  private final Graph<SuperstructureStates, EdgeCommand> graph;
+  private final Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph;
   private final V2_RedundancyElevator elevator;
   private final V2_RedundancyFunnel funnel;
   private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
 
-  @Getter private SuperstructureStates previousState;
-  @Getter private SuperstructureStates currentState;
-  @Getter private SuperstructureStates nextState;
+  @Getter private V2_RedundancySuperstructureStates previousState;
+  @Getter private V2_RedundancySuperstructureStates currentState;
+  @Getter private V2_RedundancySuperstructureStates nextState;
 
-  @Getter private SuperstructureStates targetState;
+  @Getter private V2_RedundancySuperstructureStates targetState;
   private EdgeCommand edgeCommand;
 
   public V2_RedundancySuperstructure(
@@ -56,15 +55,15 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     this.intake = intake;
 
     previousState = null;
-    currentState = SuperstructureStates.START;
+    currentState = V2_RedundancySuperstructureStates.START;
     nextState = null;
 
-    targetState = SuperstructureStates.START;
+    targetState = V2_RedundancySuperstructureStates.START;
 
     // Initialize the graph
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
 
-    for (SuperstructureStates vertex : SuperstructureStates.values()) {
+    for (V2_RedundancySuperstructureStates vertex : V2_RedundancySuperstructureStates.values()) {
       graph.addVertex(vertex);
     }
 
@@ -86,7 +85,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     intake.periodic();
 
     // Set RobotState variables
-    RobotState.setIntakingCoral(targetState == SuperstructureStates.INTAKE);
+    RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE);
     funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
     if (DriverStation.isDisabled()) {
@@ -110,7 +109,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 });
       } else {
         // Run action if we are already at the goal
-        if (targetState != SuperstructureStates.OVERRIDE) {
+        if (targetState != V2_RedundancySuperstructureStates.OVERRIDE) {
           targetState.getAction().get(manipulator, funnel, intake);
         }
       }
@@ -133,7 +132,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
-  public Command runGoal(SuperstructureStates goal) {
+  public Command runGoal(V2_RedundancySuperstructureStates goal) {
     return runOnce(() -> setGoal(goal));
   }
 
@@ -142,16 +141,17 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     return currentState == targetState;
   }
 
-  public Command runGoal(Supplier<SuperstructureStates> goal) {
+  public Command runGoal(Supplier<V2_RedundancySuperstructureStates> goal) {
     return runOnce(() -> setGoal(goal.get()));
   }
 
-  public Command override(Runnable action, SuperstructureStates oldGoal) {
-    return Commands.sequence(runGoal(SuperstructureStates.OVERRIDE), Commands.run(action))
+  public Command override(Runnable action, V2_RedundancySuperstructureStates oldGoal) {
+    return Commands.sequence(
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
         .finallyDo(() -> setGoal(oldGoal));
   }
 
-  public Command runGoalUntil(SuperstructureStates goal, BooleanSupplier condition) {
+  public Command runGoalUntil(V2_RedundancySuperstructureStates goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
@@ -160,17 +160,17 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         () -> {
           switch (goal.get()) {
             case L1:
-              return SuperstructureStates.L1;
+              return V2_RedundancySuperstructureStates.L1;
             case L2:
-              return SuperstructureStates.L2;
+              return V2_RedundancySuperstructureStates.L2;
             case L3:
-              return SuperstructureStates.L3;
+              return V2_RedundancySuperstructureStates.L3;
             case L4:
-              return SuperstructureStates.L4;
+              return V2_RedundancySuperstructureStates.L4;
             case L4_PLUS:
-              return SuperstructureStates.L4_PLUS;
+              return V2_RedundancySuperstructureStates.L4_PLUS;
             default:
-              return SuperstructureStates.STOW_DOWN;
+              return V2_RedundancySuperstructureStates.STOW_DOWN;
           }
         });
   }
@@ -178,23 +178,31 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
     switch (goal.get()) {
       case L1:
-        return runActionWithTimeout(SuperstructureStates.L1, SuperstructureStates.SCORE_L1, 0.8);
+        return runActionWithTimeout(
+            V2_RedundancySuperstructureStates.L1, V2_RedundancySuperstructureStates.SCORE_L1, 0.8);
       case L2:
-        return runActionWithTimeout(SuperstructureStates.L2, SuperstructureStates.SCORE_L2, 0.15);
+        return runActionWithTimeout(
+            V2_RedundancySuperstructureStates.L2, V2_RedundancySuperstructureStates.SCORE_L2, 0.15);
       case L3:
-        return runActionWithTimeout(SuperstructureStates.L3, SuperstructureStates.SCORE_L3, 0.15);
+        return runActionWithTimeout(
+            V2_RedundancySuperstructureStates.L3, V2_RedundancySuperstructureStates.SCORE_L3, 0.15);
       case L4:
-        return runActionWithTimeout(SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.4);
+        return runActionWithTimeout(
+            V2_RedundancySuperstructureStates.L4, V2_RedundancySuperstructureStates.SCORE_L4, 0.4);
       case L4_PLUS:
         return runActionWithTimeout(
-            SuperstructureStates.L4_PLUS, SuperstructureStates.SCORE_L4_PLUS, 0.5);
+            V2_RedundancySuperstructureStates.L4_PLUS,
+            V2_RedundancySuperstructureStates.SCORE_L4_PLUS,
+            0.5);
       default:
         return Commands.none();
     }
   }
 
   public Command runActionWithTimeout(
-      SuperstructureStates pose, SuperstructureStates action, double timeout) {
+      V2_RedundancySuperstructureStates pose,
+      V2_RedundancySuperstructureStates action,
+      double timeout) {
     return Commands.sequence(
         runGoal(pose),
         Commands.waitUntil(() -> atGoal()),
@@ -203,30 +211,31 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         runGoal(pose));
   }
 
-  private boolean isEdgeAllowed(EdgeCommand edge, SuperstructureStates goal) {
+  private boolean isEdgeAllowed(EdgeCommand edge, V2_RedundancySuperstructureStates goal) {
     return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
         || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
   public void setAutoStart() {
-    currentState = SuperstructureStates.START;
+    currentState = V2_RedundancySuperstructureStates.START;
     nextState = null;
-    targetState = SuperstructureStates.STOW_DOWN;
+    targetState = V2_RedundancySuperstructureStates.STOW_DOWN;
     if (edgeCommand != null) {
       edgeCommand.getCommand().cancel();
     }
   }
 
-  private Optional<SuperstructureStates> bfs(
-      SuperstructureStates start, SuperstructureStates goal) {
+  private Optional<V2_RedundancySuperstructureStates> bfs(
+      V2_RedundancySuperstructureStates start, V2_RedundancySuperstructureStates goal) {
     // Map to track the parent of each visited node
-    Map<SuperstructureStates, SuperstructureStates> parents = new HashMap<>();
-    Queue<SuperstructureStates> queue = new LinkedList<>();
+    Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> parents =
+        new HashMap<>();
+    Queue<V2_RedundancySuperstructureStates> queue = new LinkedList<>();
     queue.add(start);
     parents.put(start, null); // Mark the start node as visited with no parent
     // Perform BFS
     while (!queue.isEmpty()) {
-      SuperstructureStates current = queue.poll();
+      V2_RedundancySuperstructureStates current = queue.poll();
       // Check if we've reached the goal
       if (current == goal) {
         break;
@@ -236,7 +245,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
           graph.outgoingEdgesOf(current).stream()
               .filter(edge -> isEdgeAllowed(edge, goal))
               .toList()) {
-        SuperstructureStates neighbor = graph.getEdgeTarget(edge);
+        V2_RedundancySuperstructureStates neighbor = graph.getEdgeTarget(edge);
         // Only process unvisited neighbors
         if (!parents.containsKey(neighbor)) {
           parents.put(neighbor, current);
@@ -251,9 +260,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Trace back the path from goal to start
-    SuperstructureStates nextState = goal;
+    V2_RedundancySuperstructureStates nextState = goal;
     while (!nextState.equals(start)) {
-      SuperstructureStates parent = parents.get(nextState);
+      V2_RedundancySuperstructureStates parent = parents.get(nextState);
       if (parent == null) {
         return Optional.empty(); // No valid path found
       } else if (parent.equals(start)) {
@@ -265,7 +274,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     return Optional.of(nextState);
   }
 
-  private void setGoal(SuperstructureStates goal) {
+  private void setGoal(V2_RedundancySuperstructureStates goal) {
     // Don't do anything if goal is the same
     if (this.targetState == goal) return;
     else {
@@ -309,25 +318,25 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
-  private SuperstructureStates getElevatorPosition() {
+  private V2_RedundancySuperstructureStates getElevatorPosition() {
     switch (RobotState.getOIData().currentReefHeight()) {
       case STOW, CORAL_INTAKE -> {
-        return SuperstructureStates.STOW_DOWN;
+        return V2_RedundancySuperstructureStates.STOW_DOWN;
       }
       case L1 -> {
-        return SuperstructureStates.L1;
+        return V2_RedundancySuperstructureStates.L1;
       }
       case L2 -> {
-        return SuperstructureStates.L2;
+        return V2_RedundancySuperstructureStates.L2;
       }
       case L3 -> {
-        return SuperstructureStates.L3;
+        return V2_RedundancySuperstructureStates.L3;
       }
       case L4 -> {
-        return SuperstructureStates.L4;
+        return V2_RedundancySuperstructureStates.L4;
       }
       default -> {
-        return SuperstructureStates.START;
+        return V2_RedundancySuperstructureStates.START;
       }
     }
   }

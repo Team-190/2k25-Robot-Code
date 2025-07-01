@@ -31,7 +31,7 @@ import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates.SuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIO;
@@ -212,7 +212,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     driver
         .leftTrigger(0.5)
         .whileTrue(V2_RedundancyCompositeCommands.intakeCoralDriverSequence(superstructure, intake))
-        .onFalse(superstructure.runGoal(SuperstructureStates.STOW_DOWN));
+        .onFalse(superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     driver
         .rightTrigger(0.5)
         .whileTrue(
@@ -290,7 +290,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .leftTrigger(0.5)
         .whileTrue(
             V2_RedundancyCompositeCommands.intakeCoralOperatorSequence(superstructure, intake))
-        .onFalse(superstructure.runGoal(SuperstructureStates.STOW_DOWN));
+        .onFalse(superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     operator
         .rightTrigger(0.5)
         .whileTrue(
@@ -308,10 +308,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
-        .whileTrue(superstructure.runGoal(SuperstructureStates.PROCESSOR))
+        .whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.PROCESSOR))
         .onFalse(
             superstructure.runActionWithTimeout(
-                SuperstructureStates.PROCESSOR, SuperstructureStates.SCORE_PROCESSOR, 1));
+                V2_RedundancySuperstructureStates.PROCESSOR,
+                V2_RedundancySuperstructureStates.SCORE_PROCESSOR,
+                1));
 
     operator
         .povRight()
@@ -319,21 +321,24 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             superstructure.override(
                 () -> manipulator.runManipulator(ManipulatorRollerState.SCORE_ALGAE),
                 superstructure.getTargetState()));
-    operator.start().whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
+    operator.start().whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE));
 
     operator
         .back()
-        .whileTrue(superstructure.runGoal(SuperstructureStates.BARGE))
+        .whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE))
         .onFalse(
             superstructure.runActionWithTimeout(
-                SuperstructureStates.BARGE, SuperstructureStates.SCORE_BARGE, 0.1));
+                V2_RedundancySuperstructureStates.BARGE,
+                V2_RedundancySuperstructureStates.SCORE_BARGE,
+                0.1));
 
     // Misc
     operatorFunnelOverride
         .whileTrue(
             Commands.either(
-                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
-                superstructure.runGoal(SuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
+                superstructure.runGoal(V2_RedundancySuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
+                superstructure.runGoal(
+                    V2_RedundancySuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
                 () -> RobotState.isHasAlgae()))
         .onFalse(superstructure.runPreviousState());
   }
