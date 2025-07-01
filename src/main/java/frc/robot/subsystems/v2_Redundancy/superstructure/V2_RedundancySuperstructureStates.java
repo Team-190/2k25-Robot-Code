@@ -11,14 +11,17 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 
 public enum V2_RedundancySuperstructureStates {
+  // Basic States
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
   STOW_DOWN("STOW DOWN", new SubsystemPoses(), SubsystemActions.empty()),
+  STOW_UP(
+      "STOW UP",
+      new SubsystemPoses(
+          ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.OPENED),
+      SubsystemActions.empty()),
   OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
-  INTAKE(
-      "INTAKE CORAL",
-      new SubsystemPoses(),
-      new SubsystemActions(
-          ManipulatorRollerState.CORAL_INTAKE, FunnelRollerState.INTAKE, IntakeRollerState.STOP)),
+
+  // Coral States - Setpoints
   L1(
       "L1 CORAL SETPOINT",
       new SubsystemPoses(
@@ -44,6 +47,13 @@ public enum V2_RedundancySuperstructureStates {
       new SubsystemPoses(
           ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
       SubsystemActions.empty()),
+
+  // Coral States - Actions
+  INTAKE_STATION(
+      "INTAKE CORAL",
+      new SubsystemPoses(),
+      new SubsystemActions(
+          ManipulatorRollerState.CORAL_INTAKE, FunnelRollerState.INTAKE, IntakeRollerState.STOP)),
   SCORE_L1(
       "L1 CORAL SCORE",
       new SubsystemPoses(
@@ -74,21 +84,8 @@ public enum V2_RedundancySuperstructureStates {
           ReefState.L4_PLUS, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
       new SubsystemActions(
           ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
-  INTERMEDIATE_WAIT_FOR_ELEVATOR(
-      "WAIT FOR ELEVATOR",
-      new SubsystemPoses(
-          ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
-      SubsystemActions.empty()),
-  INTERMEDIATE_WAIT_FOR_ARM(
-      "WAIT FOR ARM",
-      new SubsystemPoses(
-          ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
-      SubsystemActions.empty()),
-  STOW_UP(
-      "STOW UP",
-      new SubsystemPoses(
-          ReefState.STOW, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.OPENED),
-      SubsystemActions.empty()),
+
+  // Algae States - Floor Operations
   FLOOR_ACQUISITION(
       "FLOOR ALGAE SETPOINT",
       new SubsystemPoses(
@@ -97,6 +94,17 @@ public enum V2_RedundancySuperstructureStates {
           IntakeExtensionState.INTAKE,
           FunnelState.OPENED),
       SubsystemActions.empty()),
+  INTAKE_FLOOR(
+      "INTAKE FLOOR",
+      new SubsystemPoses(
+          ReefState.ALGAE_FLOOR_INTAKE,
+          ArmState.FLOOR_INTAKE,
+          IntakeExtensionState.INTAKE,
+          FunnelState.OPENED),
+      new SubsystemActions(
+          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+
+  // Algae States - Reef Operations
   REEF_ACQUISITION_L2(
       "L2 ALGAE SETPOINT",
       new SubsystemPoses(
@@ -113,25 +121,6 @@ public enum V2_RedundancySuperstructureStates {
           IntakeExtensionState.STOW,
           FunnelState.OPENED),
       SubsystemActions.empty()),
-  BARGE(
-      "BARGE SETPOINT",
-      new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
-      SubsystemActions.empty()),
-  PROCESSOR(
-      "PROCESSOR SETPOINT",
-      new SubsystemPoses(
-          ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
-      SubsystemActions.empty()),
-  INTAKE_FLOOR(
-      "INTAKE FLOOR",
-      new SubsystemPoses(
-          ReefState.ALGAE_FLOOR_INTAKE,
-          ArmState.FLOOR_INTAKE,
-          IntakeExtensionState.INTAKE,
-          FunnelState.OPENED),
-      new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
   INTAKE_REEF_L2(
       "L2 ALGAE INTAKE",
       new SubsystemPoses(
@@ -168,6 +157,18 @@ public enum V2_RedundancySuperstructureStates {
           FunnelState.OPENED),
       new SubsystemActions(
           ManipulatorRollerState.REMOVE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+
+  // Algae States - Barge/Processor Operations
+  BARGE(
+      "BARGE SETPOINT",
+      new SubsystemPoses(
+          ReefState.ALGAE_SCORE, ArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+      SubsystemActions.empty()),
+  PROCESSOR(
+      "PROCESSOR SETPOINT",
+      new SubsystemPoses(
+          ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
+      SubsystemActions.empty()),
   SCORE_BARGE(
       "SCORE BARGE",
       new SubsystemPoses(
@@ -180,10 +181,17 @@ public enum V2_RedundancySuperstructureStates {
           ReefState.STOW, ArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
       new SubsystemActions(
           ManipulatorRollerState.SCORE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
-  CLIMB(
-      "CLIMB",
+
+  // Utility States
+  INTERMEDIATE_WAIT_FOR_ELEVATOR(
+      "WAIT FOR ELEVATOR",
       new SubsystemPoses(
-          ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLIMB),
+          ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+      SubsystemActions.empty()),
+  INTERMEDIATE_WAIT_FOR_ARM(
+      "WAIT FOR ARM",
+      new SubsystemPoses(
+          ReefState.ALGAE_MID, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
       SubsystemActions.empty()),
   FUNNEL_CLOSE_WITH_STOW_UP(
       "FUNNEL CLOSE WITH STOW UP",
@@ -194,7 +202,16 @@ public enum V2_RedundancySuperstructureStates {
       "FUNNEL CLOSE WITH STOW DOWN",
       new SubsystemPoses(
           ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLOSED),
-      SubsystemActions.empty());
+      SubsystemActions.empty()),
+
+  // Climb State
+  CLIMB(
+      "CLIMB",
+      new SubsystemPoses(
+          ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLIMB),
+      SubsystemActions.empty()),
+  ;
+
   private final String name;
   private final SubsystemPoses subsystemPoses;
   private final SubsystemActions subsystemActions;

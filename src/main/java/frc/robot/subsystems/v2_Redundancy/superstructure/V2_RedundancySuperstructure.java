@@ -29,6 +29,10 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * The V2_RedundancySuperstructure class manages the coordinated movement and state transitions
+ * of the robot's major subsystems including elevator, funnel, manipulator, and intake.
+ */
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph;
@@ -71,12 +75,19 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     V2_RedundancySuperstructureEdges.addEdges(graph, elevator, manipulator, funnel, intake);
   }
 
+  /**
+   * Stops all roller actions across funnel, manipulator, and intake subsystems.
+   */
   private void stopActions() {
     funnel.setRollerGoal(FunnelRollerState.STOP);
     manipulator.runManipulator(ManipulatorRollerState.STOP);
     intake.setRollerGoal(IntakeRollerState.STOP);
   }
 
+  /**
+   * Periodic method that handles state transitions and subsystem updates.
+   * Updates robot state variables and manages command scheduling based on current state.
+   */
   @Override
   public void periodic() {
     elevator.periodic();
@@ -85,7 +96,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     intake.periodic();
 
     // Set RobotState variables
-    RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE);
+    RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
     funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
     if (DriverStation.isDisabled()) {
@@ -114,6 +125,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         }
       }
     }
+
+    // Log the current state of the superstructure and edge command
     Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Goal", targetState == null ? "NULL" : targetState.toString());
     Logger.recordOutput(
@@ -132,29 +145,60 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Creates a command to set a new goal state for the superstructure.
+   * @param goal The target state to achieve
+   * @return Command to execute the state transition
+   */
   public Command runGoal(V2_RedundancySuperstructureStates goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /**
+   * Checks if the superstructure has reached its target state.
+   * @return true if current state matches target state
+   */
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
   public boolean atGoal() {
     return currentState == targetState;
   }
 
+  /**
+   * Creates a command that sets a dynamic goal state based on a supplier.
+   * @param goal Supplier that provides the target state
+   * @return Command to execute the state transition
+   */
   public Command runGoal(Supplier<V2_RedundancySuperstructureStates> goal) {
     return runOnce(() -> setGoal(goal.get()));
   }
 
+  /**
+   * Creates a command to temporarily override normal operation with a custom action.
+   * @param action Action to perform during override
+   * @param oldGoal State to return to after override
+   * @return Command sequence for override operation
+   */
   public Command override(Runnable action, V2_RedundancySuperstructureStates oldGoal) {
     return Commands.sequence(
             runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
         .finallyDo(() -> setGoal(oldGoal));
   }
 
+  /**
+   * Runs a goal state until a specified condition is met.
+   * @param goal Target state to achieve
+   * @param condition Condition that determines when to stop
+   * @return Command sequence that runs until condition is met
+   */
   public Command runGoalUntil(V2_RedundancySuperstructureStates goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
+  /**
+   * Maps reef states to corresponding superstructure states and creates transition command.
+   * @param goal Supplier for the target reef state
+   * @return Command to execute the reef state transition
+   */
   public Command runReefGoal(Supplier<ReefState> goal) {
     return runGoal(
         () -> {
@@ -175,6 +219,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         });
   }
 
+  /**
+   * Executes a scoring sequence for a specific reef level.
+   * @param goal Supplier for the target reef level
+   * @return Command sequence for scoring operation
+   */
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
     switch (goal.get()) {
       case L1:
@@ -199,6 +248,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Creates a timed action sequence for scoring.
+   * @param pose Initial position state
+   * @param action Scoring action state
+   * @param timeout Duration for the scoring action
+   * @return Command sequence for the complete scoring operation
+   */
   public Command runActionWithTimeout(
       V2_RedundancySuperstructureStates pose,
       V2_RedundancySuperstructureStates action,
@@ -211,11 +267,20 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         runGoal(pose));
   }
 
+  /**
+   * Checks if a state transition is allowed based on algae presence.
+   * @param edge The transition edge to check
+   * @param goal The target state
+   * @return true if the transition is allowed
+   */
   private boolean isEdgeAllowed(EdgeCommand edge, V2_RedundancySuperstructureStates goal) {
     return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
         || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
+  /**
+   * Resets the superstructure to initial auto state.
+   */
   public void setAutoStart() {
     currentState = V2_RedundancySuperstructureStates.START;
     nextState = null;
@@ -225,6 +290,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Performs breadth-first search to find the next state in the path to the goal.
+   * @param start Starting state
+   * @param goal Target state
+   * @return Optional containing the next state in the path, empty if no path exists
+   */
   private Optional<V2_RedundancySuperstructureStates> bfs(
       V2_RedundancySuperstructureStates start, V2_RedundancySuperstructureStates goal) {
     // Map to track the parent of each visited node
@@ -274,6 +345,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     return Optional.of(nextState);
   }
 
+  /**
+   * Updates the target state and handles command rescheduling for optimal path.
+   * @param goal New target state to achieve
+   */
   private void setGoal(V2_RedundancySuperstructureStates goal) {
     // Don't do anything if goal is the same
     if (this.targetState == goal) return;
@@ -318,6 +393,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Maps current OI reef height to corresponding elevator position state.
+   * @return Appropriate superstructure state for current reef height
+   */
   private V2_RedundancySuperstructureStates getElevatorPosition() {
     switch (RobotState.getOIData().currentReefHeight()) {
       case STOW, CORAL_INTAKE -> {
@@ -341,10 +420,18 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Creates a command to set position based on current elevator position.
+   * @return Command with a short timeout
+   */
   public Command setPosition() {
     return runGoal(() -> getElevatorPosition()).withTimeout(0.02);
   }
 
+  /**
+   * Creates a command to return to the previous state.
+   * @return Command with a short timeout
+   */
   public Command runPreviousState() {
     return runGoal(() -> previousState).withTimeout(0.02);
   }
