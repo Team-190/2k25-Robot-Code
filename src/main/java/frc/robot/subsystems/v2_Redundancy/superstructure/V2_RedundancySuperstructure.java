@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Edge;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyEdges.Edge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
@@ -73,10 +73,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Add edges between states
-    V2_RedundancyStates.createEdges();
-    addEdges(V2_RedundancyStates.NoneEdges, AlgaeEdge.NONE);
-    addEdges(V2_RedundancyStates.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
-    addEdges(V2_RedundancyStates.AlgaeEdges, AlgaeEdge.ALGAE);
+    V2_RedundancyEdges.createEdges();
+    addEdges(V2_RedundancyEdges.NoneEdges, AlgaeEdge.NONE);
+    addEdges(V2_RedundancyEdges.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
+    addEdges(V2_RedundancyEdges.AlgaeEdges, AlgaeEdge.ALGAE);
   }
 
   private void stopActions() {
@@ -393,7 +393,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     @Builder.Default private final AlgaeEdge algaeEdgeType = AlgaeEdge.NONE;
   }
 
-  private enum AlgaeEdge {
+  public enum AlgaeEdge {
     NONE,
     NO_ALGAE,
     ALGAE
