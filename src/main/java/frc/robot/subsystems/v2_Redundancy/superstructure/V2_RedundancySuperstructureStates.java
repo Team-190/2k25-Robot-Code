@@ -10,6 +10,14 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 
+/**
+ * Represents all possible states of the robot's superstructure system.
+ * States are organized into logical groups:
+ * - Basic States: Default system positions (START, STOW, OVERRIDE)
+ * - Coral States: Positions and actions for coral game pieces
+ * - Algae States: Floor, reef, and barge/processor operations
+ * - Utility States: Intermediate positions and special functions
+ */
 public enum V2_RedundancySuperstructureStates {
   // Basic States
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
@@ -212,10 +220,20 @@ public enum V2_RedundancySuperstructureStates {
       SubsystemActions.empty()),
   ;
 
+  /** Human-readable name of the state */
   private final String name;
+  /** Target positions for all subsystems in this state */
   private final SubsystemPoses subsystemPoses;
+  /** Action commands (like roller speeds) for this state */
   private final SubsystemActions subsystemActions;
 
+  /**
+   * Constructs a new superstructure state.
+   *
+   * @param name The human-readable name of the state
+   * @param poses The target positions for all subsystems
+   * @param rollerStates The action commands for mechanisms like rollers
+   */
   private V2_RedundancySuperstructureStates(
       String name, SubsystemPoses poses, SubsystemActions rollerStates) {
     this.name = name;
@@ -223,14 +241,29 @@ public enum V2_RedundancySuperstructureStates {
     this.subsystemActions = rollerStates;
   }
 
+  /**
+   * Gets the position configuration for this state.
+   *
+   * @return A V2_RedundancySuperstructurePose object containing all subsystem positions
+   */
   public V2_RedundancySuperstructurePose getPose() {
     return new V2_RedundancySuperstructurePose(name, subsystemPoses);
   }
 
+  /**
+   * Gets the action commands for this state.
+   *
+   * @return A V2_RedundancySuperstructureAction object containing all subsystem actions
+   */
   public V2_RedundancySuperstructureAction getAction() {
     return new V2_RedundancySuperstructureAction(name, subsystemActions);
   }
 
+  /**
+   * Returns the name of this state.
+   *
+   * @return The state's name as a String
+   */
   @Override
   public String toString() {
     return name;
