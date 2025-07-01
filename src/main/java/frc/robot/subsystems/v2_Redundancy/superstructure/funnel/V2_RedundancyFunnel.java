@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -23,6 +26,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
 
   private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
+  @Setter private boolean manipulatorHasCoral;
 
   @Getter
   @AutoLogOutput(key = "Funnel/ClapDaddy Goal")
@@ -48,6 +52,8 @@ public class V2_RedundancyFunnel extends SubsystemBase {
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
+    manipulatorHasCoral = false;
+
     clapDaddyGoal = FunnelState.OPENED;
     rollerGoal = FunnelRollerState.STOP;
 
@@ -71,6 +77,15 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     }
     io.setRollerVoltage(rollerGoal.getVoltage());
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
+
+    if (RobotState.isIntakingCoral()) {
+      if (hasCoral()) {
+        setClapDaddyGoal(FunnelState.CLOSED);
+      }
+      if (manipulatorHasCoral) {
+        setClapDaddyGoal(FunnelState.OPENED);
+      }
+    }
 
     InternalLoggedTracer.reset();
     if (!inputs.hasCoral) {

@@ -11,7 +11,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Sup
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
@@ -92,6 +91,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     funnel.periodic();
     manipulator.periodic();
     intake.periodic();
+
+    // Set RobotState variables
+    RobotState.setIntakingCoral(targetState == SuperstructureStates.INTAKE);
+    funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
     if (DriverStation.isDisabled()) {
       nextState = null;
