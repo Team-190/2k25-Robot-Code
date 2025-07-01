@@ -3,18 +3,19 @@ package frc.robot.subsystems.v2_Redundancy.superstructure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.Edge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
@@ -75,14 +75,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     addEdges(V2_RedundancyStates.NoneEdges, AlgaeEdge.NONE);
     addEdges(V2_RedundancyStates.NoAlgaeEdges, AlgaeEdge.NO_ALGAE);
     addEdges(V2_RedundancyStates.AlgaeEdges, AlgaeEdge.ALGAE);
-
-    new Trigger(() -> atGoal()).whileTrue(runAction(() -> this.currentState));
   }
 
-  private Command runAction(Supplier<SuperstructureStates> stateSupplier) {
-    // Always fetch the latest state
-    return Commands.defer(
-        () -> stateSupplier.get().getAction().asCommand(manipulator, funnel, intake), Set.of(this));
+  private void stopActions() {
+    funnel.setRollerGoal(FunnelRollerState.STOP);
+    manipulator.runManipulator(ManipulatorRollerState.STOP);
+    intake.setRollerGoal(IntakeRollerState.STOP);
   }
 
   @Override
@@ -109,6 +107,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                   edgeCommand = graph.getEdge(currentState, next);
                   edgeCommand.getCommand().schedule();
                 });
+      } else {
+        // Run action if we are already at the goal
+        if (targetState != SuperstructureStates.OVERRIDE) {
+          targetState.getAction().get(manipulator, funnel, intake);
+        }
       }
     }
     Logger.recordOutput(
@@ -142,9 +145,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     return run(() -> setGoal(goal.get()));
   }
 
-  public Command override(Command command, Supplier<SuperstructureStates> oldGoal) {
-    return Commands.sequence(runGoal(SuperstructureStates.OVERRIDE), command)
-        .finallyDo(() -> setGoal(oldGoal.get()));
+  public Command override(Runnable action, SuperstructureStates oldGoal) {
+    return Commands.sequence(runGoal(SuperstructureStates.OVERRIDE), Commands.run(action))
+        .finallyDo(() -> setGoal(oldGoal));
   }
 
   public Command runReefGoal(Supplier<ReefState> goal) {
@@ -197,9 +200,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     if (from == SuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
-              pose.asCommand(elevator, manipulator, funnel, intake),
-              intake.setRollerGoal(IntakeRollerState.OUTTAKE).withTimeout(1))
-          .andThen(intake.stopRoller());
+          pose.asCommand(elevator, manipulator, funnel, intake),
+          Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
+              .withTimeout(1)
+              .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
     }
 
     if (to == SuperstructureStates.INTAKE_REEF_L2 || to == SuperstructureStates.INTAKE_REEF_L3) {
@@ -215,9 +219,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     if (to == SuperstructureStates.FLOOR_ACQUISITION) {
       return Commands.deadline(
-              pose.asCommand(elevator, manipulator, funnel, intake),
-              intake.setRollerGoal(IntakeRollerState.INTAKE))
-          .andThen(intake.stopRoller());
+          pose.asCommand(elevator, manipulator, funnel, intake),
+          Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.INTAKE)));
     }
 
     if (to == SuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
@@ -311,7 +314,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   private void setGoal(SuperstructureStates goal) {
     // Don't do anything if goal is the same
     if (this.targetState == goal) return;
-    this.targetState = goal;
+    else {
+      this.targetState = goal;
+      stopActions();
+    }
 
     if (nextState == null) return;
 

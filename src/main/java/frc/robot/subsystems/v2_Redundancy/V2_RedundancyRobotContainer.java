@@ -226,7 +226,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onFalse(
             Commands.deadline(
                 V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
-                intake.setRollerGoal(IntakeRollerState.OUTTAKE)).andThen(intake.setRollerGoal(IntakeRollerState.STOP)));
+                Commands.runOnce(()->intake.setRollerGoal(IntakeRollerState.OUTTAKE))).andThen(Commands.runOnce(()->intake.setRollerGoal(IntakeRollerState.STOP))));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -295,8 +295,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .whileTrue(
             superstructure
                 .override(
-                    manipulator.runManipulator(ManipulatorRollerState.SCORE_CORAL),
-                    () -> superstructure.getTargetState())
+                    ()->manipulator.runManipulator(ManipulatorRollerState.SCORE_CORAL),
+                    superstructure.getTargetState())
                 .withTimeout(0.4));
 
     // Operator bumpers
@@ -316,8 +316,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .povRight()
         .whileTrue(
             superstructure.override(
-                manipulator.runManipulator(ManipulatorRollerState.SCORE_ALGAE),
-                () -> superstructure.getTargetState()));
+                ()->manipulator.runManipulator(ManipulatorRollerState.SCORE_ALGAE),
+                superstructure.getTargetState()));
     operator.start().whileTrue(superstructure.runGoal(SuperstructureStates.BARGE));
 
     operator

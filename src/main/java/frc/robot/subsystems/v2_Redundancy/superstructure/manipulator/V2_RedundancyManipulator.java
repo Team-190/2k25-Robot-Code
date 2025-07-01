@@ -99,16 +99,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
   }
 
-  public Command runManipulator(ManipulatorRollerState state) {
-    return Commands.runOnce(
-        () -> this.rollerGoal = state);
-  }
-
-  public Command intakeCoral(BooleanSupplier shouldStop) { // TODO: Remove this
-    Command cmd =
-        Commands.sequence(runManipulator(ManipulatorRollerState.CORAL_INTAKE).until(shouldStop), runManipulator(ManipulatorRollerState.STOP));
-    cmd.addRequirements(this);
-    return cmd;
+  public void runManipulator(ManipulatorRollerState state) {
+    this.rollerGoal = state;
   }
 
   public Command sysIdRoutine() {

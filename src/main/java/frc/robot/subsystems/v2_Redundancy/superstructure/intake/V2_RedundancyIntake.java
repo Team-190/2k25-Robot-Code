@@ -94,19 +94,10 @@ public class V2_RedundancyIntake extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  public Command setRollerGoal(IntakeRollerState state) {
-    return Commands.runOnce(
-        () -> this.intakeRollerGoal = state);
+  public void setRollerGoal(IntakeRollerState state) {
+     this.intakeRollerGoal = state;
   }
 
-  /**
-   * Stops the roller.
-   *
-   * @return A command to stop the roller.
-   */
-  public Command stopRoller() {
-    return setRollerGoal(IntakeRollerState.STOP);
-  }
 
   /**
    * Runs the SysId routine for the extension.

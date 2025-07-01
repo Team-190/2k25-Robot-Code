@@ -13,6 +13,7 @@ import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.V1_StackUpElevatorPositions;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
@@ -21,8 +22,11 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -81,7 +85,7 @@ public class CompositeCommands {
               elevator.setPosition(),
               () ->
                   RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
-                      && !elevator.getPosition().equals(V2_RedundancyElevatorPositions.L4)),
+                      && !elevator.getPosition().equals(V1_StackUpElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
           Commands.waitSeconds(0.05),
@@ -119,8 +123,8 @@ public class CompositeCommands {
                   .setPosition(() -> ReefState.STOW)
                   .onlyIf(
                       () ->
-                          elevator.getPosition().equals(V2_RedundancyElevatorPositions.L3)
-                              || elevator.getPosition().equals(V2_RedundancyElevatorPositions.L2))),
+                          elevator.getPosition().equals(V1_StackUpElevatorPositions.L3)
+                              || elevator.getPosition().equals(V1_StackUpElevatorPositions.L2))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
@@ -227,10 +231,17 @@ public class CompositeCommands {
       return Commands.sequence(
               Commands.runOnce(() -> RobotState.setHasAlgae(false)),
               Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-              superstructure.runGoal(SuperstructureStates.STOW_DOWN),
+              superstructure.runGoal(SuperstructureStates.INTAKE),
               Commands.race(
-                  manipulator.intakeCoral(() -> intake.hasCoral()),
-                  funnel.intakeCoral(() -> manipulator.hasCoral())))
+                      Commands.waitUntil(() -> intake.hasCoral()),
+                  Commands.deadline( // TODO: Needs some work
+                      Commands.sequence(
+                          funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.OPENED),
+                          Commands.waitUntil(() -> funnel.hasCoral()),
+                          funnel.setClapDaddyGoal(V2_RedundancyFunnelConstants.FunnelState.CLOSED),
+                          Commands.waitUntil(() -> manipulator.hasCoral())),
+                      Commands.runOnce(() -> funnel.setRollerGoal(FunnelRollerState.INTAKE)))),
+              superstructure.runGoal(SuperstructureStates.STOW_DOWN))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 

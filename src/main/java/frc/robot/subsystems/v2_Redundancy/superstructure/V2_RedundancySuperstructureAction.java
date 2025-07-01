@@ -1,8 +1,5 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
@@ -16,31 +13,31 @@ public class V2_RedundancySuperstructureAction {
   @Getter private final FunnelRollerState funnelRollerState;
   @Getter private final IntakeRollerState intakeRollerState;
 
-  public V2_RedundancySuperstructureAction(
-      String key,
-      RollerStates rollerStates) {
+  public V2_RedundancySuperstructureAction(String key, RollerStates rollerStates) {
     this.manipulatorRollerState = rollerStates.manipulatorRollerState();
     this.funnelRollerState = rollerStates.funnelRollerState();
     this.intakeRollerState = rollerStates.intakeRollerState();
   }
 
-  public Command runManipulator(V2_RedundancyManipulator manipulator) {
-    return manipulator.runManipulator(manipulatorRollerState);
+  public void runManipulator(V2_RedundancyManipulator manipulator) {
+    manipulator.runManipulator(manipulatorRollerState);
   }
 
-  public Command runFunnel(V2_RedundancyFunnel funnel) {
-    return funnel.setRollerGoal(funnelRollerState);
+  public void runFunnel(V2_RedundancyFunnel funnel) {
+    funnel.setRollerGoal(funnelRollerState);
   }
 
-  public Command runIntake(V2_RedundancyIntake intake) {
-    return intake.setRollerGoal(intakeRollerState);
+  public void runIntake(V2_RedundancyIntake intake) {
+    intake.setRollerGoal(intakeRollerState);
   }
 
-  public Command asCommand(
+  public void get(
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyIntake intake) {
-    return Commands.parallel(runManipulator(manipulator), runFunnel(funnel), runIntake(intake));
+    runManipulator(manipulator);
+    runFunnel(funnel);
+    runIntake(intake);
   }
 
   public record RollerStates(
