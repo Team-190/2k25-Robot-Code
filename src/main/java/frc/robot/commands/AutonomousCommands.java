@@ -18,7 +18,6 @@ import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
 import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancyStates.SuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
@@ -409,7 +408,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeft(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -444,7 +442,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -456,7 +454,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -468,7 +466,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -486,7 +484,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftNashoba(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -521,7 +518,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -533,7 +530,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -545,7 +542,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -563,7 +560,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoALeftDAVE(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -598,7 +594,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -610,7 +606,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -622,7 +618,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -640,7 +636,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoARight(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -676,7 +671,7 @@ public class AutonomousCommands {
                         Commands.waitUntil(() -> superstructure.atGoal())),
                     superstructure.runActionWithTimeout(
                         SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    elevator.setPosition(() -> ReefState.STOW),
+                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                     Commands.deadline(
                         path2.cmd(),
                         V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -688,7 +683,7 @@ public class AutonomousCommands {
                         Commands.waitUntil(() -> superstructure.atGoal())),
                     superstructure.runActionWithTimeout(
                         SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    elevator.setPosition(() -> ReefState.STOW),
+                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                     Commands.deadline(
                         path3.cmd(),
                         V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -700,7 +695,7 @@ public class AutonomousCommands {
                         Commands.waitUntil(() -> superstructure.atGoal())),
                     superstructure.runActionWithTimeout(
                         SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.25),
-                    elevator.setPosition(() -> ReefState.STOW),
+                    superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                     Commands.deadline(
                         path4.cmd(),
                         V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -719,7 +714,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBLeft(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -748,7 +742,7 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -759,14 +753,13 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW)));
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN)));
 
     return routine;
   }
 
   public static final LoggedAutoRoutine autoCLeft(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -800,7 +793,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -812,7 +805,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -830,7 +823,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCLeftPush(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -868,7 +860,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -880,7 +872,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -898,7 +890,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRight(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -931,7 +922,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -943,7 +934,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -960,7 +951,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoCRightPush(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -997,7 +987,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -1009,7 +999,7 @@ public class AutonomousCommands {
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -1026,7 +1016,6 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine autoBRight(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyFunnel funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake,
@@ -1055,7 +1044,7 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW),
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(
@@ -1066,14 +1055,13 @@ public class AutonomousCommands {
                     superstructure.runGoal(SuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     SuperstructureStates.L4, SuperstructureStates.SCORE_L4, 0.5),
-                elevator.setPosition(() -> ReefState.STOW)));
+                superstructure.runGoal(SuperstructureStates.STOW_DOWN)));
 
     return routine;
   }
 
   public static final LoggedAutoRoutine autoDCenter(
       Drive drive,
-      V2_RedundancyElevator elevator,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyFunnel funnel,
       V2_RedundancySuperstructure superstructure,

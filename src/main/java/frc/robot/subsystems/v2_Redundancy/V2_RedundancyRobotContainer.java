@@ -351,7 +351,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoALeft(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -362,7 +361,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoARight(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -374,7 +372,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoALeftNashoba(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -386,7 +383,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoALeftDAVE(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -398,7 +394,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoCLeft(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -409,7 +404,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoCLeftPush(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -420,7 +414,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoCRight(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -431,7 +424,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoCRightPush(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -442,7 +434,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoBLeft(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -453,7 +444,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         () ->
             AutonomousCommands.autoBRight(
                 drive,
-                elevator,
                 funnel,
                 manipulator,
                 intake,
@@ -463,12 +453,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "1 Piece Center",
         () ->
             AutonomousCommands.autoDCenter(
-                drive,
-                elevator,
-                manipulator,
-                funnel,
-                superstructure,
-                RobotCameras.V2_REDUNDANCY_CAMS));
+                drive, manipulator, funnel, superstructure, RobotCameras.V2_REDUNDANCY_CAMS));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
