@@ -304,37 +304,83 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
   }
 
-  /** Control Commands * */
+  // --- Control Commands ---
+  
+  /**
+   * Returns a command that sets the superstructure to the given goal state.
+   *
+   * @param goal The desired superstructure state
+   * @return Command to run the goal
+   */
   public Command runGoal(V2_RedundancySuperstructureStates goal) {
     return runOnce(() -> setGoal(goal));
   }
 
+  /**
+   * Returns a command that sets the superstructure to the goal provided by a supplier.
+   *
+   * @param goal Supplier providing the desired superstructure state
+   * @return Command to run the goal
+   */
   public Command runGoal(Supplier<V2_RedundancySuperstructureStates> goal) {
     return runOnce(() -> setGoal(goal.get()));
   }
 
+  /**
+   * Checks whether the superstructure has reached its target state.
+   *
+   * @return true if current state matches the target state
+   */
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
   public boolean atGoal() {
     return currentState == targetState;
   }
 
+  /**
+   * Runs a temporary override action, returning to a previous goal after.
+   *
+   * @param action The override action to perform
+   * @param oldGoal The goal to return to after override
+   * @return Command that runs the override and resumes the old goal
+   */
   public Command override(Runnable action, V2_RedundancySuperstructureStates oldGoal) {
     return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
-        .finallyDo(() -> setGoal(oldGoal));
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), // Move to OVERRIDE state
+            Commands.run(action)) // Run the user-provided action
+        .finallyDo(() -> setGoal(oldGoal)); // Return to the previous goal
   }
 
+  /**
+   * Runs the goal state and waits until a given condition becomes true.
+   *
+   * @param goal The desired superstructure state
+   * @param condition The condition to wait for after running the goal
+   * @return Combined command for running and waiting
+   */
   public Command runGoalUntil(V2_RedundancySuperstructureStates goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
+  /**
+   * Returns a short command to run the previous state, useful for temporary state restoration.
+   *
+   * @return Command to go back to the previous state
+   */
   public Command runPreviousState() {
-    return runGoal(() -> previousState).withTimeout(0.02);
+    return runGoal(() -> previousState)
+        .withTimeout(0.02); // Run goal with small timeout to prevent hanging
   }
 
+  /**
+   * Converts a ReefState (field-level enum) into a corresponding elevator goal and runs it.
+   *
+   * @param goal Supplier of ReefState
+   * @return Command to move to the elevator position for the reef level
+   */
   public Command runReefGoal(Supplier<ReefState> goal) {
     return runGoal(
         () -> {
+          // Translate ReefState to superstructure state
           switch (goal.get()) {
             case L1:
               return V2_RedundancySuperstructureStates.L1;
@@ -352,7 +398,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         });
   }
 
+  /**
+   * Moves to a scoring position, executes the score action for a fixed time, then returns to pose.
+   *
+   * @param goal Supplier of the ReefState (target height/level)
+   * @return Command to run the score cycle (pose → action → timeout → pose)
+   */
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
+    // Run appropriate action sequence depending on reef level
     switch (goal.get()) {
       case L1:
         return runActionWithTimeout(
@@ -372,23 +425,40 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             V2_RedundancySuperstructureStates.SCORE_L4_PLUS,
             0.5);
       default:
-        return Commands.none();
+        return Commands.none(); // Do nothing for unrecognized input
     }
   }
 
+  /**
+   * Runs an action by going to a pose, performing the action, waiting, and returning.
+   *
+   * @param pose The pose to return to after action
+   * @param action The action to perform
+   * @param timeout How long to wait during the action phase (in seconds)
+   * @return Full command sequence
+   */
   public Command runActionWithTimeout(
       V2_RedundancySuperstructureStates pose,
       V2_RedundancySuperstructureStates action,
       double timeout) {
     return Commands.sequence(
-        runGoal(pose),
-        Commands.waitUntil(() -> atGoal()),
-        runGoal(action),
-        Commands.waitSeconds(timeout),
-        runGoal(pose));
+        runGoal(pose), // Move to pose
+        Commands.waitUntil(() -> atGoal()), // Wait until we reach it
+        runGoal(action), // Run the action (e.g., SCORE_LX)
+        Commands.waitSeconds(timeout), // Hold action for timeout duration
+        runGoal(pose)); // Return to original pose
   }
 
+  /**
+   * Smart overload that runs an action using a cached pose–action mapping, determining the pose
+   * from the action.
+   *
+   * @param action The scoring or action state
+   * @param timeout Timeout for the action duration
+   * @return Command sequence to perform and recover from the action
+   */
   public Command runActionWithTimeout(V2_RedundancySuperstructureStates action, double timeout) {
+    // Maps each action state to its corresponding pose state
     Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
         new HashMap<>() {
           {
@@ -410,14 +480,22 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                 V2_RedundancySuperstructureStates.PROCESSOR);
           }
         };
+
+    // Reverse the map so we can look up the pose from action if needed
     Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> poseActionMap =
         actionPoseMap.entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
+    // Try to look up pose from action (either direction works)
     return runActionWithTimeout(
         actionPoseMap.getOrDefault(action, poseActionMap.get(action)), action, timeout);
   }
 
+  /**
+   * Updates the superstructure to match the current OI-defined reef height.
+   *
+   * @return Command to move to elevator position state
+   */
   public Command setPosition() {
     return runGoal(() -> getElevatorPosition()).withTimeout(0.02);
   }
