@@ -11,12 +11,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 
 /**
- * Represents all possible states of the robot's superstructure system.
- * States are organized into logical groups:
- * - Basic States: Default system positions (START, STOW, OVERRIDE)
- * - Coral States: Positions and actions for coral game pieces
- * - Algae States: Floor, reef, and barge/processor operations
- * - Utility States: Intermediate positions and special functions
+ * Represents all possible states of the robot's superstructure system. States are organized into
+ * logical groups: - Basic States: Default system positions (START, STOW, OVERRIDE) - Coral States:
+ * Positions and actions for coral game pieces - Algae States: Floor, reef, and barge/processor
+ * operations - Utility States: Intermediate positions and special functions
  */
 public enum V2_RedundancySuperstructureStates {
   // Basic States
@@ -65,7 +63,7 @@ public enum V2_RedundancySuperstructureStates {
   SCORE_L1(
       "L1 CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L1, ArmState.STOW_DOWN, IntakeExtensionState.L1_EXT, FunnelState.OPENED),
       new SubsystemActions(
           ManipulatorRollerState.L1_SCORE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
   SCORE_L2(
