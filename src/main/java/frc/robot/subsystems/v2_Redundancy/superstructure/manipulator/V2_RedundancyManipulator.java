@@ -15,6 +15,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,7 +30,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Arm Goal")
   private ArmState armGoal;
 
-  @Getter
+  @Getter @Setter
   @AutoLogOutput(key = "Manipulator/Roller Goal")
   private ManipulatorRollerState rollerGoal;
 
@@ -96,10 +98,6 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Intaking Algae")
   public boolean isIntakingAlgae() {
     return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
-  }
-
-  public void runManipulator(ManipulatorRollerState state) {
-    this.rollerGoal = state;
   }
 
   public Command sysIdRoutine() {

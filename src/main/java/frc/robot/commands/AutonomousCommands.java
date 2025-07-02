@@ -436,9 +436,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -450,9 +448,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -463,9 +459,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -476,9 +470,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -516,9 +508,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -529,9 +519,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -542,9 +530,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -555,9 +541,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -595,9 +579,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -608,9 +590,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -621,9 +601,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -634,9 +612,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -675,9 +651,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -688,9 +662,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -701,9 +673,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.25),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.25),
                 Commands.deadline(
                     path4.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -714,9 +684,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -748,9 +716,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -759,9 +725,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)));
 
     return routine;
@@ -799,9 +763,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -812,9 +774,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -825,9 +785,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -868,9 +826,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -881,9 +837,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -894,9 +848,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
 
     return routine;
   }
@@ -932,9 +884,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -945,9 +895,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -958,9 +906,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
     return routine;
   }
 
@@ -999,9 +945,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -1012,9 +956,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path3.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -1025,9 +967,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     Commands.waitUntil(() -> superstructure.atGoal())),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
     return routine;
   }
 
@@ -1058,9 +998,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 Commands.deadline(
                     path2.cmd(),
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
@@ -1069,9 +1007,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5),
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5),
                 superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)));
 
     return routine;
@@ -1096,9 +1032,7 @@ public class AutonomousCommands {
                     DriveCommands.autoAlignReefCoral(drive, cameras),
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
-                    V2_RedundancySuperstructureStates.L4,
-                    V2_RedundancySuperstructureStates.SCORE_L4,
-                    0.5)));
+                    V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
     return routine;
   }
 }

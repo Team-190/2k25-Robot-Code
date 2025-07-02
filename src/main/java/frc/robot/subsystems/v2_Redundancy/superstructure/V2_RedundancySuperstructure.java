@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -249,7 +250,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   /** Stops all roller actions across funnel, manipulator, and intake subsystems. */
   private void stopActions() {
     funnel.setRollerGoal(FunnelRollerState.STOP);
-    manipulator.runManipulator(ManipulatorRollerState.STOP);
+    manipulator.setRollerGoal(ManipulatorRollerState.STOP);
     intake.setRollerGoal(IntakeRollerState.STOP);
   }
 
@@ -385,6 +386,36 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
         runGoal(action),
         Commands.waitSeconds(timeout),
         runGoal(pose));
+  }
+
+  public Command runActionWithTimeout(V2_RedundancySuperstructureStates action, double timeout) {
+    Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
+        new HashMap<>() {
+          {
+            put(V2_RedundancySuperstructureStates.SCORE_L1, V2_RedundancySuperstructureStates.L1);
+            put(V2_RedundancySuperstructureStates.SCORE_L2, V2_RedundancySuperstructureStates.L2);
+            put(V2_RedundancySuperstructureStates.SCORE_L3, V2_RedundancySuperstructureStates.L3);
+            put(V2_RedundancySuperstructureStates.SCORE_L4, V2_RedundancySuperstructureStates.L4);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_L4_PLUS,
+                V2_RedundancySuperstructureStates.L4_PLUS);
+            put(
+                V2_RedundancySuperstructureStates.INTAKE_STATION,
+                V2_RedundancySuperstructureStates.STOW_DOWN);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_BARGE,
+                V2_RedundancySuperstructureStates.BARGE);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_PROCESSOR,
+                V2_RedundancySuperstructureStates.PROCESSOR);
+          }
+        };
+    Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> poseActionMap =
+        actionPoseMap.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    return runActionWithTimeout(
+        actionPoseMap.getOrDefault(action, poseActionMap.get(action)), action, timeout);
   }
 
   public Command setPosition() {

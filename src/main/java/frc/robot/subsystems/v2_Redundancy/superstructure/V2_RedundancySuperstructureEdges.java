@@ -149,7 +149,7 @@ public class V2_RedundancySuperstructureEdges {
     // Special case: If transitioning from L1 to SCORE_L1, extend the intake
     if (from == V2_RedundancySuperstructureStates.L1
         && to == V2_RedundancySuperstructureStates.SCORE_L1) {
-      return Commands.runOnce(() -> manipulator.runManipulator(ManipulatorRollerState.L1_SCORE))
+      return Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.L1_SCORE))
           .andThen(
               Commands.waitSeconds(0.05), pose.asCommand(elevator, manipulator, funnel, intake));
     }

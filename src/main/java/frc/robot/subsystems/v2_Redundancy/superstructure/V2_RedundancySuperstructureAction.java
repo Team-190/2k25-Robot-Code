@@ -36,7 +36,7 @@ public class V2_RedundancySuperstructureAction {
    * @param manipulator The manipulator subsystem to control
    */
   public void runManipulator(V2_RedundancyManipulator manipulator) {
-    manipulator.runManipulator(manipulatorRollerState);
+    manipulator.setRollerGoal(manipulatorRollerState);
   }
 
   /**
