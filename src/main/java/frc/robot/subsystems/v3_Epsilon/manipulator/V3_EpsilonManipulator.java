@@ -1,11 +1,21 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotState;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 
 public class V3_EpsilonManipulator extends SubsystemBase {
   private final V3_EpsilonManipulatorIO io;
@@ -15,6 +25,8 @@ public class V3_EpsilonManipulator extends SubsystemBase {
   private Rotation2d previousPosition;
   private Rotation2d desiredRotations;
 
+  private boolean isClosedLoop;
+
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -22,6 +34,16 @@ public class V3_EpsilonManipulator extends SubsystemBase {
     currentTimer = new Timer();
     previousPosition = inputs.position;
     desiredRotations = new Rotation2d();
+
+    isClosedLoop = true;
+    algaeCharacterizationRoutine = 
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(5),
+                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
 
   @Override
@@ -36,7 +58,167 @@ public class V3_EpsilonManipulator extends SubsystemBase {
         > V3_EpsilonManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
   }
 
+  @AutoLogOutput(key = "Manipulator/Has Algae")
+  public boolean hasAlgae() {
+    return Math.abs(inputs.torqueCurrentAmps)
+        > V3_EpsilonManipulatorConstants.MANIPULATOR_CURRENT_THRESHOLD;
+  }
+
+  public Command runArmToPositionCommand(
+      Rotation2d position,
+      double maxVelocity,
+      double maxAcceleration,
+      BooleanSupplier isFinished) {
+    return this.runEnd(
+        () -> {
+          io.setArmPositionGoal(position);
+          isClosedLoop = true;
+        },
+        () -> {
+          io.setArmPositionGoal(inputs.armPosition);
+          isClosedLoop = false;
+        },
+        isFinished);
+  }
   public Command runManipulator(double volts) {
     return this.runEnd(() -> io.setVoltage(volts), () -> io.setVoltage(0));
   }
+
+    public Command intakeCoral(BooleanSupplier shouldStop) {
+    Command cmd =
+        Commands.sequence(
+            runManipulator(
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.CORAL_INTAKE_VOLTS().get())
+                .until(shouldStop));
+    cmd.addRequirements(this);
+    return cmd;
+  }
+
+  public Command intakeReefAlgae() {
+    return Commands.sequence(
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.waitUntil(() -> isIntakingAlgae()),
+                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
+                runManipulator(
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
+        .finallyDo(() -> RobotState.setIntakingAlgae(false));
+  }
+
+  public Command intakeFloorAlgae() {
+    return Commands.sequence(
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.waitUntil(() -> isIntakingAlgae()),
+                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
+                runManipulator(
+                    V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
+        .finallyDo(() -> RobotState.setIntakingAlgae(false));
+  }
+
+  public Command scoreCoral() {
+    return runManipulator(
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_CORAL_VOLTS().get());
+  }
+
+  public Command scoreAlgae() {
+    Command cmd =
+        runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get());
+    cmd.addRequirements(this);
+    return cmd.finallyDo(() -> RobotState.setHasAlgae(false));
+  }
+
+  public Command scoreL1Coral() {
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L1_VOLTS().get());
+  }
+
+  public Command scoreL4Coral() {
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.L4_VOLTS().get());
+  }
+
+  public Command halfScoreCoral() {
+    return runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
+  }
+
+  public Command unHalfScoreCoral() {
+    return runManipulator(-V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.HALF_VOLTS().get());
+  }
+
+  public Command sysIdRoutine() {
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
+        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
+  }
+
+  public Command setAlgaeArmGoal(ArmState goal) {
+    return this.runOnce(
+        () -> {
+          isClosedLoop = true;
+          state = goal;
+        });
+  }
+
+  public void updateArmGains(
+      double kP0,
+      double kD0,
+      double kS0,
+      double kV0,
+      double kA0,
+      double kG0,
+      double kP1,
+      double kD1,
+      double kS1,
+      double kV1,
+      double kA1,
+      double kG1) {
+    io.updateSlot0ArmGains(kP0, kD0, kS0, kV0, kA0, kG0);
+    io.updateSlot1ArmGains(kP1, kD1, kS1, kV1, kA1, kG1);
+  }
+
+  public void updateArmConstraints(double maxAcceleration, double maxVelocity) {
+    io.updateArmConstraints(maxAcceleration, maxVelocity);
+  }
+
+  @AutoLogOutput(key = "Manipulator/Arm At Goal")
+  public boolean algaeArmAtGoal() {
+    return inputs.armPosition.getRadians() - state.getAngle().getRadians()
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
+  }
+
+  public Command waitUntilAlgaeArmAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::algaeArmAtGoal));
+  }
+
+  public Command homingSequence() {
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              isClosedLoop = false;
+              io.armMax();
+            }),
+        Commands.runEnd(() -> io.setArmVoltage(-6), () -> io.setArmVoltage(0))
+            .until(() -> Math.abs(inputs.armTorqueCurrentAmps) > 40),
+        Commands.runOnce(() -> io.zeroArmPosition()));
+  }
+
+  private double holdVoltage() {
+    double y;
+    double x = Math.abs(inputs.rollerTorqueCurrentAmps);
+    if (x <= 20) {
+      y = -0.0003 * Math.pow(x, 3) + 0.0124286 * Math.pow(x, 2) - 0.241071 * x + 4.00643;
+    } else {
+      y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
+    }
+    return MathUtil.clamp(
+        1.25 * y,
+        0.10,
+        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get() / 1.5);
+  }
+}
 }
