@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -307,6 +308,21 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       case L4 -> {
         return V2_RedundancySuperstructureStates.L4;
       }
+      case L4_PLUS -> {
+        return V2_RedundancySuperstructureStates.L4_PLUS;
+      }
+      case ALGAE_FLOOR_INTAKE -> {
+        return V2_RedundancySuperstructureStates.FLOOR_ACQUISITION;
+      }
+      case ALGAE_INTAKE_BOTTOM -> {
+        return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L2;
+      }
+      case ALGAE_INTAKE_TOP -> {
+        return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3;
+      }
+      case ALGAE_SCORE -> {
+        return V2_RedundancySuperstructureStates.BARGE;
+      }
       default -> {
         return V2_RedundancySuperstructureStates.START;
       }
@@ -420,26 +436,25 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
     // Run appropriate action sequence depending on reef level
-    return Commands.defer(
+    return runActionWithTimeout(
         () ->
-            runActionWithTimeout(
-                switch (goal.get()) {
-                  case L1 -> V2_RedundancySuperstructureStates.L1;
-                  case L2 -> V2_RedundancySuperstructureStates.L2;
-                  case L3 -> V2_RedundancySuperstructureStates.L3;
-                  case L4 -> V2_RedundancySuperstructureStates.L4;
-                  case L4_PLUS -> V2_RedundancySuperstructureStates.L4_PLUS;
-                  default -> V2_RedundancySuperstructureStates.STOW_DOWN;
-                },
-                switch (goal.get()) {
-                  case L1 -> 0.8;
-                  case L2 -> 0.15;
-                  case L3 -> 0.15;
-                  case L4 -> 0.4;
-                  case L4_PLUS -> 0.5;
-                  default -> 0;
-                }),
-        Set.of());
+            switch (goal.get()) {
+              case L1 -> V2_RedundancySuperstructureStates.L1;
+              case L2 -> V2_RedundancySuperstructureStates.L2;
+              case L3 -> V2_RedundancySuperstructureStates.L3;
+              case L4 -> V2_RedundancySuperstructureStates.L4;
+              case L4_PLUS -> V2_RedundancySuperstructureStates.L4_PLUS;
+              default -> V2_RedundancySuperstructureStates.STOW_DOWN;
+            },
+        () ->
+            switch (goal.get()) {
+              case L1 -> 0.8;
+              case L2 -> 0.15;
+              case L3 -> 0.15;
+              case L4 -> 0.4;
+              case L4_PLUS -> 0.5;
+              default -> 0;
+            });
   }
 
   /**
@@ -451,14 +466,26 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Full command sequence
    */
   public Command runActionWithTimeout(
+      Supplier<V2_RedundancySuperstructureStates> pose,
+      Supplier<V2_RedundancySuperstructureStates> action,
+      DoubleSupplier timeout) {
+    return Commands.sequence(
+        runGoal(pose), // Move to pose
+        Commands.waitUntil(() -> atGoal()),
+        runGoal(action), // Run the action
+        Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of(this)),
+        runGoal(pose)); // Return to original pose
+  }
+
+  public Command runActionWithTimeout(
       V2_RedundancySuperstructureStates pose,
       V2_RedundancySuperstructureStates action,
       double timeout) {
     return Commands.sequence(
         runGoal(pose), // Move to pose
-        Commands.waitUntil(() -> atGoal()), // Wait until we reach it
-        runGoal(action), // Run the action (e.g., SCORE_LX)
-        Commands.waitSeconds(timeout), // Hold action for timeout duration
+        Commands.waitUntil(() -> atGoal()),
+        runGoal(action), // Run the action
+        Commands.waitSeconds(timeout),
         runGoal(pose)); // Return to original pose
   }
 
@@ -470,6 +497,44 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @param timeout Timeout for the action duration
    * @return Command sequence to perform and recover from the action
    */
+  public Command runActionWithTimeout(
+      Supplier<V2_RedundancySuperstructureStates> action, DoubleSupplier timeout) {
+    // Maps each action state to its corresponding pose state
+    Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
+        new HashMap<>() {
+          {
+            put(V2_RedundancySuperstructureStates.SCORE_L1, V2_RedundancySuperstructureStates.L1);
+            put(V2_RedundancySuperstructureStates.SCORE_L2, V2_RedundancySuperstructureStates.L2);
+            put(V2_RedundancySuperstructureStates.SCORE_L3, V2_RedundancySuperstructureStates.L3);
+            put(V2_RedundancySuperstructureStates.SCORE_L4, V2_RedundancySuperstructureStates.L4);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_L4_PLUS,
+                V2_RedundancySuperstructureStates.L4_PLUS);
+            put(
+                V2_RedundancySuperstructureStates.INTAKE_STATION,
+                V2_RedundancySuperstructureStates.STOW_DOWN);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_BARGE,
+                V2_RedundancySuperstructureStates.BARGE);
+            put(
+                V2_RedundancySuperstructureStates.SCORE_PROCESSOR,
+                V2_RedundancySuperstructureStates.PROCESSOR);
+          }
+        };
+
+    // Reverse the map so we can look up the pose from action if needed
+    Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> poseActionMap =
+        actionPoseMap.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    // Try to look up pose from action (either direction works)
+    if (actionPoseMap.containsKey(action.get())) {
+      return runActionWithTimeout(() -> actionPoseMap.get(action.get()), action, timeout);
+    } else if (actionPoseMap.containsValue(action.get())) {
+      return runActionWithTimeout(action, () -> poseActionMap.get(action.get()), timeout);
+    } else return Commands.none(); // If action is not recognized, do nothing
+  }
+
   public Command runActionWithTimeout(V2_RedundancySuperstructureStates action, double timeout) {
     // Maps each action state to its corresponding pose state
     Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
