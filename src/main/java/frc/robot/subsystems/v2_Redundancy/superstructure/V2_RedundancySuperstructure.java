@@ -109,6 +109,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Set RobotState variables
     RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
+    if ((RobotState.isIntakingAlgae() || manipulator.isIntakingAlgae())
+        && (targetState == V2_RedundancySuperstructureStates.INTAKE_FLOOR
+            || targetState == V2_RedundancySuperstructureStates.INTAKE_REEF_L2
+            || targetState == V2_RedundancySuperstructureStates.INTAKE_REEF_L3)) {
+      RobotState.setIntakingAlgae(true);
+    } else {
+      RobotState.setIntakingAlgae(false);
+    }
     funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
     if (DriverStation.isDisabled()) {
@@ -305,7 +313,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   // --- Control Commands ---
-  
+
   /**
    * Returns a command that sets the superstructure to the given goal state.
    *
@@ -358,6 +366,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Combined command for running and waiting
    */
   public Command runGoalUntil(V2_RedundancySuperstructureStates goal, BooleanSupplier condition) {
+    return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
+  }
+
+  public Command runGoalUntil(
+      Supplier<V2_RedundancySuperstructureStates> goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 

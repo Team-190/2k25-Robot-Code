@@ -333,25 +333,32 @@ public class CompositeCommands {
         Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
-          superstructure
-              .runGoal(
-                  () -> {
-                    switch (level.get()) {
-                      case ALGAE_INTAKE_TOP:
-                        return V2_RedundancySuperstructureStates.INTAKE_REEF_L3;
-                      case ALGAE_INTAKE_BOTTOM:
-                        return V2_RedundancySuperstructureStates.INTAKE_REEF_L2;
-                      default:
-                        return V2_RedundancySuperstructureStates.STOW_DOWN;
-                    }
-                  })
-              .until(() -> RobotState.isHasAlgae()),
+          superstructure.runGoalUntil(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V2_RedundancySuperstructureStates.INTAKE_REEF_L3;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V2_RedundancySuperstructureStates.INTAKE_REEF_L2;
+                  default:
+                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                }
+              },
+              () -> RobotState.isHasAlgae()),
           Commands.parallel(
               Commands.sequence(
                   Commands.waitSeconds(0.25),
                   Commands.either(
                       superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_UP),
-                      Commands.none(),
+                      superstructure.runGoal(
+                          () -> {
+                            switch (level.get()) {
+                              case ALGAE_INTAKE_TOP:
+                                return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3;
+                              default:
+                                return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L2;
+                            }
+                          }),
                       () -> RobotState.isHasAlgae())),
               Commands.runEnd(
                       () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
@@ -417,9 +424,7 @@ public class CompositeCommands {
 
     public static final Command floorIntakeSequence(V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(
-          Commands.parallel(
-              superstructure.runGoal(V2_RedundancySuperstructureStates.FLOOR_ACQUISITION),
-              Commands.runOnce(() -> RobotState.setHasAlgae(false))),
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoalUntil(
               V2_RedundancySuperstructureStates.INTAKE_FLOOR, () -> RobotState.isHasAlgae()));
     }
