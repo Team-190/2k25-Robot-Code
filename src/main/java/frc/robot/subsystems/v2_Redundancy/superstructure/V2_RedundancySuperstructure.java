@@ -1,11 +1,11 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -119,7 +120,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
     funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
-    if (DriverStation.isDisabled()) {
+    if (RobotMode.disabled()) {
       nextState = null;
     } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
       // Update edge to new state
@@ -419,27 +420,26 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
     // Run appropriate action sequence depending on reef level
-    switch (goal.get()) {
-      case L1:
-        return runActionWithTimeout(
-            V2_RedundancySuperstructureStates.L1, V2_RedundancySuperstructureStates.SCORE_L1, 0.8);
-      case L2:
-        return runActionWithTimeout(
-            V2_RedundancySuperstructureStates.L2, V2_RedundancySuperstructureStates.SCORE_L2, 0.15);
-      case L3:
-        return runActionWithTimeout(
-            V2_RedundancySuperstructureStates.L3, V2_RedundancySuperstructureStates.SCORE_L3, 0.15);
-      case L4:
-        return runActionWithTimeout(
-            V2_RedundancySuperstructureStates.L4, V2_RedundancySuperstructureStates.SCORE_L4, 0.4);
-      case L4_PLUS:
-        return runActionWithTimeout(
-            V2_RedundancySuperstructureStates.L4_PLUS,
-            V2_RedundancySuperstructureStates.SCORE_L4_PLUS,
-            0.5);
-      default:
-        return Commands.none(); // Do nothing for unrecognized input
-    }
+    return Commands.defer(
+        () ->
+            runActionWithTimeout(
+                switch (goal.get()) {
+                  case L1 -> V2_RedundancySuperstructureStates.L1;
+                  case L2 -> V2_RedundancySuperstructureStates.L2;
+                  case L3 -> V2_RedundancySuperstructureStates.L3;
+                  case L4 -> V2_RedundancySuperstructureStates.L4;
+                  case L4_PLUS -> V2_RedundancySuperstructureStates.L4_PLUS;
+                  default -> V2_RedundancySuperstructureStates.STOW_DOWN;
+                },
+                switch (goal.get()) {
+                  case L1 -> 0.8;
+                  case L2 -> 0.15;
+                  case L3 -> 0.15;
+                  case L4 -> 0.4;
+                  case L4_PLUS -> 0.5;
+                  default -> 0;
+                }),
+        Set.of());
   }
 
   /**
@@ -500,8 +500,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     // Try to look up pose from action (either direction works)
-    return runActionWithTimeout(
-        actionPoseMap.getOrDefault(action, poseActionMap.get(action)), action, timeout);
+    if (actionPoseMap.containsKey(action)) {
+      return runActionWithTimeout(actionPoseMap.get(action), action, timeout);
+    } else if (actionPoseMap.containsValue(action)) {
+      return runActionWithTimeout(action, poseActionMap.get(action), timeout);
+    } else return Commands.none(); // If action is not recognized, do nothing
   }
 
   /**
