@@ -14,8 +14,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.RobotState.RobotMode;
+import frc.robot.RobotStateLL.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
+import frc.robot.subsystems.v0_GompeiVisionTesting.V0_GompeiVisionTestRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
@@ -45,8 +46,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private static final double lowBatteryVoltage = 10.0;
   private static final double lowBatteryDisabledTime = 1.5;
+
+  @SuppressWarnings("unused")
   private static final double canErrorTimeThreshold = 0.5;
+
+  @SuppressWarnings("unused")
   private static final double canivoreErrorTimeThreshold = 0.5;
+
   private static double startupTimestamp = Double.NEGATIVE_INFINITY;
 
   private final Timer canErrorTimer = new Timer();
@@ -59,10 +65,16 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.WARNING);
+
+  @SuppressWarnings("unused")
   private final Alert canErrorAlert =
       new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
+
+  @SuppressWarnings("unused")
   private final Alert canivoreErrorAlert =
       new Alert("CANivore errors detected, robot may not be controllable.", AlertType.ERROR);
+
+  @SuppressWarnings("unused")
   private final CanivoreReader canivoreReader = new CanivoreReader("Drive");
 
   private static final double loopOverrunWarningTimeout = 1;
@@ -138,6 +150,8 @@ public class Robot extends LoggedRobot {
     robotContainer =
         switch (Constants.ROBOT) {
           case V0_WHIPLASH, V0_WHIPLASH_SIM -> new V0_WhiplashRobotContainer();
+          case V0_GOMPEIVISION_TEST,
+              V0_GOMPEIVISION_TEST_SIM -> new V0_GompeiVisionTestRobotContainer();
           case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
           case V1_STACKUP, V1_STACKUP_SIM -> new V1_StackUpRobotContainer();
           case V2_REDUNDANCY, V2_REDUNDANCY_SIM -> new V2_RedundancyRobotContainer();
@@ -233,7 +247,7 @@ public class Robot extends LoggedRobot {
 
     // Update low battery alert
     InternalLoggedTracer.reset();
-    if (RobotState.RobotMode.enabled()) {
+    if (RobotStateLL.RobotMode.enabled()) {
       disabledTimer.reset();
     }
     if (RobotController.getBatteryVoltage() < lowBatteryVoltage
@@ -284,7 +298,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    RobotState.setMode(RobotMode.DISABLED);
+    RobotStateLL.setMode(RobotMode.DISABLED);
   }
 
   /** This function is called periodically when disabled. */
@@ -295,11 +309,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     InternalLoggedTracer.reset();
-    RobotState.setMode(RobotState.RobotMode.AUTO);
+    RobotStateLL.setMode(RobotStateLL.RobotMode.AUTO);
     InternalLoggedTracer.record("Set Robotstate Mode", "Robot");
 
     InternalLoggedTracer.reset();
-    RobotState.setReefHeight(ReefHeight.L4);
+    RobotStateLL.setReefHeight(ReefHeight.L4);
     InternalLoggedTracer.record("Set Reef Height", "Robot");
 
     InternalLoggedTracer.reset();
@@ -327,7 +341,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    RobotState.setMode(RobotMode.TELEOP);
+    RobotStateLL.setMode(RobotMode.TELEOP);
     Shuffleboard.selectTab("Teleoperated");
   }
 

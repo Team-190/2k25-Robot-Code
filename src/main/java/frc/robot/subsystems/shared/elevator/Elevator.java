@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefHeight;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -77,7 +77,7 @@ public class Elevator extends SubsystemBase {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
-          switch (RobotState.getOIData().currentReefHeight()) {
+          switch (RobotStateLL.getOIData().currentReefHeight()) {
             case STOW:
               this.position = ElevatorPositions.STOW;
               break;

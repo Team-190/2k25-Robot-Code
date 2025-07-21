@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -15,7 +15,7 @@ import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
-import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.visionlimelight.Camera;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
@@ -30,9 +30,9 @@ public class CompositeCommands {
     public static final Command resetHeading(Drive drive) {
       return Commands.runOnce(
               () -> {
-                RobotState.resetRobotPose(
+                RobotStateLL.resetRobotPose(
                     new Pose2d(
-                        RobotState.getRobotPoseField().getTranslation(),
+                        RobotStateLL.getRobotPoseField().getTranslation(),
                         AllianceFlipUtil.apply(new Rotation2d())));
               })
           .ignoringDisable(true);
@@ -53,12 +53,12 @@ public class CompositeCommands {
     }
 
     public static final Command setStaticReefHeight(ReefHeight height) {
-      return Commands.runOnce(() -> RobotState.setReefHeight(height));
+      return Commands.runOnce(() -> RobotStateLL.setReefHeight(height));
     }
 
     public static final Command setDynamicReefHeight(ReefHeight height, Elevator elevator) {
       return Commands.sequence(
-          Commands.runOnce(() -> RobotState.setReefHeight(height)), elevator.setPosition());
+          Commands.runOnce(() -> RobotStateLL.setReefHeight(height)), elevator.setPosition());
     }
   }
 
@@ -66,22 +66,22 @@ public class CompositeCommands {
     public static final Command intakeCoral(
         Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               elevator.setPosition(() -> ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> RobotState.setIntakingCoral(false));
+          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralOverride(
         Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               elevator.setPosition(() -> ReefHeight.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
-          .finallyDo(() -> RobotState.setIntakingCoral(false));
+          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
     }
 
     public static final Command scoreCoral(V1_StackUpManipulator manipulator) {
@@ -95,7 +95,7 @@ public class CompositeCommands {
               elevator.setPosition(() -> ReefHeight.L3),
               elevator.setPosition(),
               () ->
-                  RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
+                  RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)
                       && !elevator.getPosition().equals(ElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
@@ -104,7 +104,7 @@ public class CompositeCommands {
           Commands.either(
               manipulator.scoreL4Coral().withTimeout(0.4),
               manipulator.scoreCoral().withTimeout(0.15),
-              () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)));
+              () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)));
     }
 
     public static final Command autoScoreCoralSequence(
@@ -116,9 +116,9 @@ public class CompositeCommands {
                   elevator.setPosition(() -> ReefHeight.L2),
                   Commands.none(),
                   () ->
-                      RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1)
-                          || RobotState.getOIData().currentReefHeight().equals(ReefHeight.STOW)
-                          || RobotState.getOIData()
+                      RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1)
+                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                          || RobotStateLL.getOIData()
                               .currentReefHeight()
                               .equals(ReefHeight.CORAL_INTAKE)),
               Commands.parallel(
@@ -126,14 +126,14 @@ public class CompositeCommands {
                   scoreCoralSequence(
                       elevator,
                       manipulator,
-                      () -> RobotState.getReefAlignData().atCoralSetpoint())),
+                      () -> RobotStateLL.getReefAlignData().atCoralSetpoint())),
               elevator
                   .setPosition(() -> ReefHeight.STOW)
                   .onlyIf(
                       () ->
                           elevator.getPosition().equals(ElevatorPositions.L3)
                               || elevator.getPosition().equals(ElevatorPositions.L2))),
-          () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
+          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
     public static final Command autoScoreL1CoralSequence(
@@ -156,7 +156,7 @@ public class CompositeCommands {
                   Commands.either(
                       DriveCommands.inchMovement(drive, -1, 0.1),
                       DriveCommands.inchMovement(drive, 1, 0.1),
-                      () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT))));
+                      () -> RobotStateLL.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
 
     public static final Command emergencyEject(
@@ -177,7 +177,7 @@ public class CompositeCommands {
                   drive,
                   elevator,
                   manipulator,
-                  switch (RobotState.getReefAlignData().closestReefTag()) {
+                  switch (RobotStateLL.getReefAlignData().closestReefTag()) {
                     case 10, 6, 8, 21, 17, 19 -> ReefHeight.ASS_BOT;
                     case 9, 11, 7, 22, 20, 18 -> ReefHeight.ASS_TOP;
                     default -> ReefHeight.ASS_BOT;
@@ -211,8 +211,8 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               Commands.parallel(
                   DecisionTree.moveSequence(
                       elevator,
@@ -224,7 +224,7 @@ public class CompositeCommands {
               Commands.race(
                   manipulator.intakeCoral(() -> intake.hasCoral()),
                   funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> RobotState.setIntakingCoral(false));
+          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralDriverSequence(
@@ -233,8 +233,8 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               DecisionTree.moveSequence(
                   elevator,
                   manipulator,
@@ -246,7 +246,7 @@ public class CompositeCommands {
                       manipulator.intakeCoral(() -> intake.hasCoral()),
                       funnel.intakeCoral(() -> intake.hasCoral()))
                   .until(intake::hasCoral))
-          .finallyDo(() -> RobotState.setIntakingCoral(false));
+          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralOperatorSequence(
@@ -255,7 +255,7 @@ public class CompositeCommands {
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               Commands.parallel(
                   DecisionTree.moveSequence(
                       elevator,
@@ -267,7 +267,7 @@ public class CompositeCommands {
               Commands.parallel(
                   manipulator.intakeCoral(() -> false), funnel.intakeCoral(() -> false)))
           .until(intake::hasCoral)
-          .finallyDo(() -> RobotState.setIntakingCoral(false));
+          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
     }
 
     public static final Command intakeCoralOperatorOverrideSequence(
@@ -292,7 +292,7 @@ public class CompositeCommands {
               elevator,
               manipulator,
               intake,
-              () -> RobotState.getOIData().currentReefHeight(),
+              () -> RobotStateLL.getOIData().currentReefHeight(),
               ArmState.STOW_DOWN,
               IntakeState.STOW),
           Commands.parallel(
@@ -302,7 +302,7 @@ public class CompositeCommands {
                   Commands.either(
                       DriveCommands.inchMovement(drive, -1, 0.1),
                       DriveCommands.inchMovement(drive, 1, 0.1),
-                      () -> RobotState.getOIData().currentReefPost() == ReefPose.LEFT)),
+                      () -> RobotStateLL.getOIData().currentReefPost() == ReefPose.LEFT)),
               intake.setExtensionGoal(IntakeState.L1_EXT)));
     }
 
@@ -349,25 +349,25 @@ public class CompositeCommands {
                   elevator,
                   manipulator,
                   intake,
-                  () -> RobotState.getOIData().currentReefHeight(),
+                  () -> RobotStateLL.getOIData().currentReefHeight(),
                   ArmState.STOW_DOWN,
                   IntakeState.STOW),
               () ->
-                  RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4)
+                  RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)
                       && !elevator.getPosition().equals(ElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           DecisionTree.moveSequence(
               elevator,
               manipulator,
               intake,
-              () -> RobotState.getOIData().currentReefHeight(),
+              () -> RobotStateLL.getOIData().currentReefHeight(),
               ArmState.STOW_DOWN,
               IntakeState.STOW),
           Commands.parallel(
               Commands.either(
                   manipulator.scoreL4Coral().withTimeout(0.4),
                   manipulator.scoreCoral().withTimeout(0.15),
-                  () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L4))),
+                  () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4))),
           DecisionTree.moveSequence(
                   elevator,
                   manipulator,
@@ -403,9 +403,9 @@ public class CompositeCommands {
                       IntakeState.STOW),
                   Commands.none(),
                   () ->
-                      RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1)
-                          || RobotState.getOIData().currentReefHeight().equals(ReefHeight.STOW)
-                          || RobotState.getOIData()
+                      RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1)
+                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                          || RobotStateLL.getOIData()
                               .currentReefHeight()
                               .equals(ReefHeight.CORAL_INTAKE)),
               Commands.parallel(
@@ -414,7 +414,7 @@ public class CompositeCommands {
                       elevator,
                       manipulator,
                       intake,
-                      () -> RobotState.getReefAlignData().atCoralSetpoint())),
+                      () -> RobotStateLL.getReefAlignData().atCoralSetpoint())),
               Commands.sequence(
                       DecisionTree.moveSequence(
                           elevator,
@@ -425,7 +425,7 @@ public class CompositeCommands {
                           IntakeState.STOW),
                       manipulator.scoreCoral().withTimeout(0.5))
                   .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
-          () -> RobotState.getOIData().currentReefHeight().equals(ReefHeight.L1));
+          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1));
     }
 
     public static final Command intakeAlgaeFromReefSequence(
@@ -454,7 +454,7 @@ public class CompositeCommands {
                           ArmState.REEF_INTAKE,
                           IntakeState.STOW)),
                   manipulator.intakeReefAlgae())
-              .until(() -> RobotState.isHasAlgae()),
+              .until(() -> RobotStateLL.isHasAlgae()),
           Commands.parallel(
               Commands.sequence(
                   Commands.waitSeconds(0.25),
@@ -467,7 +467,7 @@ public class CompositeCommands {
                           ArmState.STOW_UP,
                           IntakeState.STOW),
                       Commands.none(),
-                      RobotState::isHasAlgae)),
+                      RobotStateLL::isHasAlgae)),
               Commands.runEnd(
                       () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)));
@@ -570,10 +570,10 @@ public class CompositeCommands {
                           () -> ReefHeight.ALGAE_FLOOR_INTAKE,
                           ArmState.FLOOR_INTAKE,
                           IntakeState.INTAKE),
-                      Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+                      Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
                       intake.setRollerVoltage(6.0)),
                   Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
-              .until(() -> RobotState.isHasAlgae()));
+              .until(() -> RobotStateLL.isHasAlgae()));
     }
 
     public static final Command postFloorIntakeSequence(
@@ -593,7 +593,7 @@ public class CompositeCommands {
               () -> ReefHeight.STOW,
               ArmState.STOW_DOWN,
               IntakeState.STOW),
-          RobotState::isHasAlgae);
+          RobotStateLL::isHasAlgae);
     }
   }
 
@@ -604,6 +604,6 @@ public class CompositeCommands {
         elevator.waitUntilAtGoal(),
         manipulator.homingSequence(),
         intake.homingSequence(),
-        elevator.setPosition(() -> RobotState.getOIData().currentReefHeight()));
+        elevator.setPosition(() -> RobotStateLL.getOIData().currentReefHeight()));
   }
 }

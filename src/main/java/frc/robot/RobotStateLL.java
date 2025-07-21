@@ -14,8 +14,8 @@ import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.subsystems.shared.vision.CameraDuty;
+import frc.robot.subsystems.shared.visionlimelight.Camera;
+import frc.robot.subsystems.shared.visionlimelight.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.GeometryUtil;
@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
-public class RobotState {
+public class RobotStateLL {
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
   private static SwerveModulePosition[] modulePositions;
@@ -49,6 +49,9 @@ public class RobotState {
     switch (Constants.ROBOT) {
       case V0_FUNKY:
       case V0_FUNKY_SIM:
+        break;
+      case V0_GOMPEIVISION_TEST:
+      case V0_GOMPEIVISION_TEST_SIM:
         break;
       case V0_WHIPLASH:
       case V0_WHIPLASH_SIM:
@@ -93,7 +96,7 @@ public class RobotState {
     robotConfigurationData = new RobotConfigurationData(0.0, new Rotation2d(), 0.0);
   }
 
-  public RobotState() {}
+  public RobotStateLL() {}
 
   public static void periodic(
       Rotation2d robotHeading,
@@ -103,8 +106,8 @@ public class RobotState {
       SwerveModulePosition[] modulePositions,
       Camera[] cameras) {
     ExternalLoggedTracer.reset();
-    RobotState.robotHeading = robotHeading;
-    RobotState.modulePositions = modulePositions;
+    RobotStateLL.robotHeading = robotHeading;
+    RobotStateLL.modulePositions = modulePositions;
 
     fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
@@ -176,11 +179,11 @@ public class RobotState {
         Reef.reefMap.get(getMinDistanceReefAlgaeTag()).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =
-        RobotState.getRobotPoseReef()
+        RobotStateLL.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignCoralSetpoint.getTranslation());
     double distanceToAlgaeSetpoint =
-        RobotState.getRobotPoseReef()
+        RobotStateLL.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignAlgaeSetpoint.getTranslation());
 
@@ -251,8 +254,8 @@ public class RobotState {
       Camera[] cameras) {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
-    RobotState.robotHeading = robotHeading;
-    RobotState.modulePositions = modulePositions;
+    RobotStateLL.robotHeading = robotHeading;
+    RobotStateLL.modulePositions = modulePositions;
     InternalLoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
@@ -348,11 +351,11 @@ public class RobotState {
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =
-        RobotState.getRobotPoseReef()
+        RobotStateLL.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignCoralSetpoint.getTranslation());
     double distanceToAlgaeSetpoint =
-        RobotState.getRobotPoseReef()
+        RobotStateLL.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignAlgaeSetpoint.getTranslation());
 
@@ -443,7 +446,7 @@ public class RobotState {
     double minDistance = Double.POSITIVE_INFINITY;
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotState.getRobotPoseReef()
+          RobotStateLL.getRobotPoseReef()
               .getTranslation()
               .getDistance(
                   AllianceFlipUtil.apply(FieldConstants.Reef.centerFaces[i]).getTranslation());
@@ -504,7 +507,7 @@ public class RobotState {
     double minDistance = Double.POSITIVE_INFINITY;
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotState.getRobotPoseReef()
+          RobotStateLL.getRobotPoseReef()
               .getTranslation()
               .getDistance(
                   AllianceFlipUtil.overrideApply(FieldConstants.Reef.centerFaces[i])
@@ -517,7 +520,7 @@ public class RobotState {
 
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotState.getRobotPoseReef()
+          RobotStateLL.getRobotPoseReef()
               .getTranslation()
               .getDistance((FieldConstants.Reef.centerFaces[i]).getTranslation());
       if (currentDistance < minDistance) {
@@ -632,19 +635,19 @@ public class RobotState {
     }
 
     public static boolean enabled() {
-      return enabled(RobotState.getMode());
+      return enabled(RobotStateLL.getMode());
     }
 
     public static boolean disabled() {
-      return disabled(RobotState.getMode());
+      return disabled(RobotStateLL.getMode());
     }
 
     public static boolean teleop() {
-      return teleop(RobotState.getMode());
+      return teleop(RobotStateLL.getMode());
     }
 
     public static boolean auto() {
-      return auto(RobotState.getMode());
+      return auto(RobotStateLL.getMode());
     }
   }
 }

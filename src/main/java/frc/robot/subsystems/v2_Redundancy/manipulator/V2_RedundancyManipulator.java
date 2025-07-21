@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -55,12 +55,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(state.getAngle());
 
-    if (RobotState.isHasAlgae()) {
+    if (RobotStateLL.isHasAlgae()) {
       io.setRollerVoltage(holdVoltage());
     }
 
-    if (hasAlgae() && RobotState.isIntakingAlgae()) {
-      RobotState.setHasAlgae(true);
+    if (hasAlgae() && RobotStateLL.isIntakingAlgae()) {
+      RobotStateLL.setHasAlgae(true);
     }
     InternalLoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
     ExternalLoggedTracer.record("Manipulator Total", "Manipulator/Periodic");
@@ -78,7 +78,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return RobotState.isIntakingAlgae()
+    return RobotStateLL.isIntakingAlgae()
         && Math.abs(inputs.rollerAccelerationRadiansPerSecondSquared) < 1000
         && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 70;
   }
@@ -107,10 +107,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             Commands.parallel(
                 Commands.sequence(
                     Commands.waitUntil(() -> isIntakingAlgae()),
-                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
+                    Commands.runOnce(() -> RobotStateLL.setIntakingAlgae(true))),
                 runManipulator(
                     V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
-        .finallyDo(() -> RobotState.setIntakingAlgae(false));
+        .finallyDo(() -> RobotStateLL.setIntakingAlgae(false));
   }
 
   public Command intakeFloorAlgae() {
@@ -118,10 +118,10 @@ public class V2_RedundancyManipulator extends SubsystemBase {
             Commands.parallel(
                 Commands.sequence(
                     Commands.waitUntil(() -> isIntakingAlgae()),
-                    Commands.runOnce(() -> RobotState.setIntakingAlgae(true))),
+                    Commands.runOnce(() -> RobotStateLL.setIntakingAlgae(true))),
                 runManipulator(
                     V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get())))
-        .finallyDo(() -> RobotState.setIntakingAlgae(false));
+        .finallyDo(() -> RobotStateLL.setIntakingAlgae(false));
   }
 
   public Command scoreCoral() {
@@ -133,7 +133,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     Command cmd =
         runManipulator(V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.SCORE_ALGAE_VOLTS().get());
     cmd.addRequirements(this);
-    return cmd.finallyDo(() -> RobotState.setHasAlgae(false));
+    return cmd.finallyDo(() -> RobotStateLL.setHasAlgae(false));
   }
 
   public Command scoreL1Coral() {

@@ -8,7 +8,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -18,8 +18,8 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants;
-import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants;
+import frc.robot.subsystems.shared.visionlimelight.Vision;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
@@ -107,8 +107,8 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
     driver.a().whileTrue(DriveCommands.autoAlignReefCoral(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.RIGHT)));
   }
 
   public void configureAutos() {
@@ -120,7 +120,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   @Override
   public void robotPeriodic() {
-    RobotState.periodic(
+    RobotStateLL.periodic(
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),
