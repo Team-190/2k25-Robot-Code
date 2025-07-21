@@ -131,7 +131,7 @@ public class V2_RedundancySuperstructureEdges {
         || (from == V2_RedundancySuperstructureStates.FLOOR_ACQUISITION
             && to == V2_RedundancySuperstructureStates.STOW_DOWN)
         || to == V2_RedundancySuperstructureStates.STOW_UP) {
-          
+
       return pose.setArmState(manipulator)
           .andThen(
               pose.setIntakeState(intake)

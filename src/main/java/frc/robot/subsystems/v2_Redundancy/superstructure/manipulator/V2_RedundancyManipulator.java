@@ -14,9 +14,9 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,7 +30,8 @@ public class V2_RedundancyManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Arm Goal")
   private ArmState armGoal;
 
-  @Getter @Setter
+  @Getter
+  @Setter
   @AutoLogOutput(key = "Manipulator/Roller Goal")
   private ManipulatorRollerState rollerGoal;
 
@@ -65,7 +66,13 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(armGoal.getAngle());
 
-    if (RobotState.isHasAlgae() && rollerGoal == ManipulatorRollerState.STOP) {
+    if (RobotState.isHasAlgae()
+        && Set.of(
+                ManipulatorRollerState.STOP,
+                ManipulatorRollerState.ALGAE_INTAKE,
+                ManipulatorRollerState.REMOVE_ALGAE,
+                ManipulatorRollerState.CORAL_INTAKE)
+            .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
