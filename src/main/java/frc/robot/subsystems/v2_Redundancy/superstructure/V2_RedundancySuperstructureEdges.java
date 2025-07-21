@@ -94,7 +94,7 @@ public class V2_RedundancySuperstructureEdges {
       return Commands.parallel(
           pose.asCommand(elevator, manipulator, funnel, intake),
           Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
-              .withTimeout(1)
+              .withTimeout(0.75)
               .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
     }
 
@@ -131,6 +131,7 @@ public class V2_RedundancySuperstructureEdges {
         || (from == V2_RedundancySuperstructureStates.FLOOR_ACQUISITION
             && to == V2_RedundancySuperstructureStates.STOW_DOWN)
         || to == V2_RedundancySuperstructureStates.STOW_UP) {
+          
       return pose.setArmState(manipulator)
           .andThen(
               pose.setIntakeState(intake)

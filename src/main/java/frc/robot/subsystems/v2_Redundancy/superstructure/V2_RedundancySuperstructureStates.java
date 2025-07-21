@@ -108,7 +108,7 @@ public enum V2_RedundancySuperstructureStates {
           IntakeExtensionState.INTAKE,
           FunnelState.OPENED),
       new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.INTAKE)),
 
   // Algae States - Reef Operations
   REEF_ACQUISITION_L2(
