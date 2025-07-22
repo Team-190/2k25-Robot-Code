@@ -333,6 +333,7 @@ public class CompositeCommands {
         Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
           superstructure.runGoalUntil(
               () -> {
                 switch (level.get()) {
@@ -389,36 +390,23 @@ public class CompositeCommands {
                         }
                       })
                   .until(() -> RobotState.isHasAlgae()),
-              superstructure
-                  .runGoal(
-                      () -> {
-                        switch (level.get()) {
-                          case ALGAE_INTAKE_TOP:
-                            return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3;
-                          case ALGAE_INTAKE_BOTTOM:
-                            return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L2;
-                          default:
-                            return V2_RedundancySuperstructureStates.STOW_DOWN;
-                        }
-                      })
-                  .withTimeout(0.02),
-              Commands.waitSeconds(1.0),
+              Commands.waitSeconds(2.0),
               Commands.runEnd(
                       () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)),
-          superstructure
-              .runGoal(
-                  () -> {
-                    switch (level.get()) {
-                      case ALGAE_INTAKE_TOP:
-                        return V2_RedundancySuperstructureStates.DROP_REEF_L3;
-                      case ALGAE_INTAKE_BOTTOM:
-                        return V2_RedundancySuperstructureStates.DROP_REEF_L2;
-                      default:
-                        return V2_RedundancySuperstructureStates.STOW_DOWN;
-                    }
-                  })
-              .withTimeout(0.75),
+          superstructure.runGoal(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L3;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L2;
+                  default:
+                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                }
+              }),
+          Commands.waitSeconds(1.0),
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     }
 

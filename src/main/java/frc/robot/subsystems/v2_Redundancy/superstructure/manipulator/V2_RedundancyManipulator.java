@@ -70,7 +70,7 @@ public class V2_RedundancyManipulator extends SubsystemBase {
         && Set.of(
                 ManipulatorRollerState.STOP,
                 ManipulatorRollerState.ALGAE_INTAKE,
-                ManipulatorRollerState.REMOVE_ALGAE,
+                // ManipulatorRollerState.REMOVE_ALGAE,
                 ManipulatorRollerState.CORAL_INTAKE)
             .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());

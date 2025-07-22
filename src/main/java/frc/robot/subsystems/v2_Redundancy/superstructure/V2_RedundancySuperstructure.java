@@ -109,6 +109,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     manipulator.periodic();
     intake.periodic();
 
+    currentState.getAction().get(manipulator, funnel, intake);
+
     // Set RobotState variables
     RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
     if ((RobotState.isIntakingAlgae() || manipulator.isIntakingAlgae())
@@ -140,11 +142,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
                   edgeCommand = graph.getEdge(currentState, next);
                   edgeCommand.getCommand().schedule();
                 });
-      } else {
-        // Run action if we are already at the goal
-        if (targetState != V2_RedundancySuperstructureStates.OVERRIDE) {
-          targetState.getAction().get(manipulator, funnel, intake);
-        }
       }
     }
 
@@ -376,6 +373,22 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   }
 
   /**
+   * Runs a temporary override action, returning to a previous goal after.
+   *
+   * @param action The override action to perform
+   * @param oldGoal The goal to return to after override
+   * @return Command that runs the override and resumes the old goal
+   */
+  public Command override(
+      Runnable action, V2_RedundancySuperstructureStates oldGoal, double timeSeconds) {
+    return Commands.sequence(
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), // Move to OVERRIDE state
+            Commands.run(action))
+        .withTimeout(timeSeconds) // Run the user-provided action
+        .finallyDo(() -> setGoal(oldGoal)); // Return to the previous goal
+  }
+
+  /**
    * Runs the goal state and waits until a given condition becomes true.
    *
    * @param goal The desired superstructure state
@@ -470,8 +483,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       Supplier<V2_RedundancySuperstructureStates> action,
       DoubleSupplier timeout) {
     return Commands.sequence(
-        runGoal(pose), // Move to pose
-        Commands.waitUntil(() -> atGoal()),
         runGoal(action), // Run the action
         Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of(this)),
         runGoal(pose)); // Return to original pose
@@ -482,8 +493,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       V2_RedundancySuperstructureStates action,
       double timeout) {
     return Commands.sequence(
-        runGoal(pose), // Move to pose
-        Commands.waitUntil(() -> atGoal()),
         runGoal(action), // Run the action
         Commands.waitSeconds(timeout),
         runGoal(pose)); // Return to original pose
@@ -570,6 +579,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     } else if (actionPoseMap.containsValue(action)) {
       return runActionWithTimeout(action, poseActionMap.get(action), timeout);
     } else return Commands.none(); // If action is not recognized, do nothing
+  }
+
+  public void autoScoreL4() {
+    manipulator.setRollerGoal(ManipulatorRollerState.L4_SCORE);
   }
 
   /**

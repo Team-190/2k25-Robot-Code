@@ -109,13 +109,22 @@ public enum V2_RedundancySuperstructureStates {
           FunnelState.OPENED),
       new SubsystemActions(
           ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.INTAKE)),
+  POST_FLOOR(
+      "POST FLOOR",
+      new SubsystemPoses(
+          ReefState.ALGAE_MID,
+          ArmState.FLOOR_INTAKE,
+          IntakeExtensionState.STOW,
+          FunnelState.OPENED),
+      new SubsystemActions(
+          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
 
   // Algae States - Reef Operations
   REEF_ACQUISITION_L2(
       "L2 ALGAE SETPOINT",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM,
-          ArmState.REEF_INTAKE,
+          ArmState.STOW_DOWN,
           IntakeExtensionState.STOW,
           FunnelState.OPENED),
       SubsystemActions.empty()),
@@ -123,7 +132,7 @@ public enum V2_RedundancySuperstructureStates {
       "L3 ALGAE SETPOINT",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP,
-          ArmState.REEF_INTAKE,
+          ArmState.STOW_DOWN,
           IntakeExtensionState.STOW,
           FunnelState.OPENED),
       SubsystemActions.empty()),
@@ -149,7 +158,7 @@ public enum V2_RedundancySuperstructureStates {
       "DROP L2 ALGAE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM,
-          ArmState.REEF_INTAKE,
+          ArmState.STOW_DOWN,
           IntakeExtensionState.STOW,
           FunnelState.OPENED),
       new SubsystemActions(
@@ -158,7 +167,7 @@ public enum V2_RedundancySuperstructureStates {
       "DROP L3 ALGAE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP,
-          ArmState.REEF_INTAKE,
+          ArmState.STOW_DOWN,
           IntakeExtensionState.STOW,
           FunnelState.OPENED),
       new SubsystemActions(

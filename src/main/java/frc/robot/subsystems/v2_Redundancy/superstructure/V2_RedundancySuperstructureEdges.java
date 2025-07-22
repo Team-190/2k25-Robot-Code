@@ -2,6 +2,7 @@ package frc.robot.subsystems.v2_Redundancy.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
@@ -95,7 +96,8 @@ public class V2_RedundancySuperstructureEdges {
           pose.asCommand(elevator, manipulator, funnel, intake),
           Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
               .withTimeout(0.75)
-              .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
+              .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP)))
+              .unless(() -> RobotState.isHasAlgae()));
     }
 
     // Special case: If going to INTAKE_REEF_L2 or INTAKE_REEF_L3, but not from STOW_UP or BARGE
@@ -125,10 +127,9 @@ public class V2_RedundancySuperstructureEdges {
           pose.asCommand(elevator, manipulator, funnel, intake),
           Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.INTAKE)));
 
-    // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM, or from FLOOR_ACQUISITION to STOW_DOWN,
+    // Special case: If going from FLOOR_ACQUISITION to STOW_DOWN,
     // or to STOW_UP
-    if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM
-        || (from == V2_RedundancySuperstructureStates.FLOOR_ACQUISITION
+    if ((from == V2_RedundancySuperstructureStates.FLOOR_ACQUISITION
             && to == V2_RedundancySuperstructureStates.STOW_DOWN)
         || to == V2_RedundancySuperstructureStates.STOW_UP) {
 
@@ -139,12 +140,15 @@ public class V2_RedundancySuperstructureEdges {
                   .alongWith(pose.setFunnelState(funnel)));
     }
 
+    // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM
+    if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM) {
+
+      return pose.setArmState(manipulator);
+    }
+
     // Special case: If transitioning to INTERMEDIATE_WAIT_FOR_ELEVATOR
     if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR) {
-      return pose.setElevatorHeight(elevator)
-          .andThen(
-              pose.setIntakeState(intake)
-                  .alongWith(pose.setArmState(manipulator), pose.setFunnelState(funnel)));
+      return pose.setElevatorHeight(elevator);
     }
 
     // Special case: If transitioning from L1 to SCORE_L1, extend the intake
@@ -404,6 +408,14 @@ public class V2_RedundancySuperstructureEdges {
         new Edge(
             V2_RedundancySuperstructureStates.DROP_REEF_L3,
             V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3));
+    AlgaeEdges.add(
+        new Edge(
+            V2_RedundancySuperstructureStates.INTAKE_REEF_L2,
+            V2_RedundancySuperstructureStates.DROP_REEF_L2));
+    AlgaeEdges.add(
+        new Edge(
+            V2_RedundancySuperstructureStates.INTAKE_REEF_L3,
+            V2_RedundancySuperstructureStates.DROP_REEF_L3));
 
     // Create one-way transition from START to STOW_DOWN
     NoneEdges.add(
@@ -444,6 +456,15 @@ public class V2_RedundancySuperstructureEdges {
         new Edge(
             V2_RedundancySuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP,
             V2_RedundancySuperstructureStates.STOW_UP));
+
+    NoneEdges.add(
+        new Edge(
+            V2_RedundancySuperstructureStates.STOW_DOWN,
+            V2_RedundancySuperstructureStates.REEF_ACQUISITION_L2));
+    NoneEdges.add(
+        new Edge(
+            V2_RedundancySuperstructureStates.STOW_DOWN,
+            V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3));
   }
 
   /**

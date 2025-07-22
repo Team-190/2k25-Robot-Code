@@ -442,7 +442,6 @@ public class AutonomousCommands {
                     V2_RedundancyCompositeCommands.intakeCoralAuto(superstructure, intake),
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
                 Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
-                Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
                 superstructure.runGoal(V2_RedundancySuperstructureStates.L4),
                 Commands.parallel(
                     DriveCommands.autoAlignReefCoral(drive, cameras),
