@@ -464,6 +464,10 @@ public class V2_RedundancySuperstructureEdges {
         new Edge(
             V2_RedundancySuperstructureStates.STOW_DOWN,
             V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3));
+    NoAlgaeEdges.add(
+        new Edge(
+            V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
+            V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM));
   }
 
   /**
