@@ -109,7 +109,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     manipulator.periodic();
     intake.periodic();
 
-    currentState.getAction().get(manipulator, funnel, intake);
+    if (currentState != null && currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE))
+      currentState.getAction().get(manipulator, funnel, intake);
 
     // Set RobotState variables
     RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
@@ -455,7 +456,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               case L2 -> V2_RedundancySuperstructureStates.L2;
               case L3 -> V2_RedundancySuperstructureStates.L3;
               case L4 -> V2_RedundancySuperstructureStates.L4;
-              case L4_PLUS -> V2_RedundancySuperstructureStates.L4_PLUS;
               default -> V2_RedundancySuperstructureStates.STOW_DOWN;
             },
         () ->
@@ -464,9 +464,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               case L2 -> 0.15;
               case L3 -> 0.15;
               case L4 -> 0.4;
-              case L4_PLUS -> 0.5;
               default -> 0;
             });
+  }
+
+  public Command l4PlusSequence() {
+    return runActionWithTimeout(
+        V2_RedundancySuperstructureStates.L4, V2_RedundancySuperstructureStates.SCORE_L4_PLUS, 0.5);
   }
 
   /**

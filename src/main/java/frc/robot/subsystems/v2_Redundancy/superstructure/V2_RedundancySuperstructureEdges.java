@@ -136,8 +136,7 @@ public class V2_RedundancySuperstructureEdges {
       return pose.setArmState(manipulator)
           .andThen(
               pose.setIntakeState(intake)
-                  .alongWith(pose.setElevatorHeight(elevator))
-                  .alongWith(pose.setFunnelState(funnel)));
+                  .alongWith(pose.setElevatorHeight(elevator), pose.setFunnelState(funnel)));
     }
 
     // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM

@@ -318,12 +318,8 @@ public class CompositeCommands {
                       superstructure,
                       () -> RobotState.getReefAlignData().atCoralSetpoint())),
               superstructure
-                  .runReefScoreGoal(() -> ReefState.L4_PLUS)
-                  .onlyIf(
-                      () ->
-                          superstructure
-                              .getCurrentState()
-                              .equals(V2_RedundancySuperstructureStates.L4))),
+                  .l4PlusSequence()
+                  .onlyIf(() -> RobotState.getOIData().currentReefHeight() == ReefState.L4)),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
