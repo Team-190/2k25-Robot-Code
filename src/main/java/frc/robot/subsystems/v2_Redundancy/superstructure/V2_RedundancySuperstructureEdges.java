@@ -158,6 +158,15 @@ public class V2_RedundancySuperstructureEdges {
               Commands.waitSeconds(0.05), pose.asCommand(elevator, manipulator, funnel, intake));
     }
 
+    // Special case: If scoring, wait for elevator
+    if (to.toString().contains("SCORE")) {
+      return Commands.parallel(
+          pose.setElevatorHeight(elevator),
+          pose.setArmState(manipulator),
+          pose.setIntakeState(intake),
+          pose.setFunnelState(funnel));
+    }
+
     // Default case: Execute all subsystem poses in parallel
     return pose.asCommand(elevator, manipulator, funnel, intake);
   }
@@ -468,7 +477,7 @@ public class V2_RedundancySuperstructureEdges {
         new Edge(
             V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
             V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM));
-    
+
     // OVERRIDE should not have transitions so that the robot state does not change
   }
 

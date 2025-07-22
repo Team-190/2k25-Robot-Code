@@ -158,7 +158,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
           NTPrefixes.SUPERSTRUCTURE + "EdgeCommand",
           graph.getEdgeSource(edgeCommand) + " --> " + graph.getEdgeTarget(edgeCommand));
     } else {
-      Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "EdgeCommand", "");
+      Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "EdgeCommand", "no edges bitch");
     }
   }
 

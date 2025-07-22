@@ -50,7 +50,7 @@ public class V2_RedundancySuperstructurePose {
   public Command setElevatorHeight(V2_RedundancyElevator elevator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
-        elevator.waitUntilAtGoal());
+        elevator.waitUntilAtGoal()).finallyDo(() -> System.out.println("ended"));
   }
 
   /**
@@ -103,8 +103,9 @@ public class V2_RedundancySuperstructurePose {
       V2_RedundancyFunnel funnel,
       V2_RedundancyIntake intake) {
     return Commands.parallel(
-        setElevatorHeight(elevator), setArmState(manipulator),
-        setIntakeState(intake), setFunnelState(funnel));
+        Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
+            Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
+        Commands.runOnce(() -> intake.setExtensionGoal(intakeState)), setFunnelState(funnel));
   }
 
   /**
