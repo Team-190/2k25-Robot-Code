@@ -105,7 +105,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (currentState != null && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)){
+    if (currentState != null && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)) {
       currentState.getAction().get(manipulator, funnel, intake);
     }
 
@@ -363,11 +363,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @param oldGoal The goal to return to after override
    * @return Command that runs the override and resumes the old goal
    */
-  public Command override(Runnable action, V2_RedundancySuperstructureStates oldGoal) {
+  public Command override(Runnable action) {
     return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), // Move to OVERRIDE state
-            Commands.run(action)) // Run the user-provided action
-        .finallyDo(() -> setGoal(oldGoal)); // Return to the previous goal
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
+        .finallyDo(() -> setGoal(currentState));
   }
 
   /**
@@ -377,13 +376,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @param oldGoal The goal to return to after override
    * @return Command that runs the override and resumes the old goal
    */
-  public Command override(
-      Runnable action, V2_RedundancySuperstructureStates oldGoal, double timeSeconds) {
+  public Command override(Runnable action, double timeSeconds) {
     return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), // Move to OVERRIDE state
-            Commands.run(action))
-        .withTimeout(timeSeconds) // Run the user-provided action
-        .finallyDo(() -> setGoal(oldGoal)); // Return to the previous goal
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
+        .withTimeout(timeSeconds)
+        .finallyDo(() -> setGoal(currentState));
   }
 
   /**

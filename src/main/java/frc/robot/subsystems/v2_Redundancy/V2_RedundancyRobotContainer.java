@@ -295,9 +295,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             superstructure
-                .override(
-                    () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_CORAL),
-                    superstructure.getTargetState())
+                .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_CORAL))
                 .withTimeout(0.4));
 
     // Operator bumpers
@@ -317,8 +315,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .povRight()
         .whileTrue(
             superstructure.override(
-                () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE),
-                superstructure.getTargetState()));
+                () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE)));
     operator.start().whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE));
 
     operator

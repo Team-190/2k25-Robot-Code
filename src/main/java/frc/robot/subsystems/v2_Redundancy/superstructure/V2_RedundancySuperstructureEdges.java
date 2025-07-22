@@ -468,6 +468,8 @@ public class V2_RedundancySuperstructureEdges {
         new Edge(
             V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ELEVATOR,
             V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM));
+    
+    // OVERRIDE should not have transitions so that the robot state does not change
   }
 
   /**
