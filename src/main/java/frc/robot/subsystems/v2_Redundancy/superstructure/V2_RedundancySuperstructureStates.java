@@ -109,16 +109,6 @@ public enum V2_RedundancySuperstructureStates {
           FunnelState.OPENED),
       new SubsystemActions(
           ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.INTAKE)),
-  POST_FLOOR(
-      "POST FLOOR",
-      new SubsystemPoses(
-          ReefState.ALGAE_MID,
-          ArmState.FLOOR_INTAKE,
-          IntakeExtensionState.STOW,
-          FunnelState.OPENED),
-      new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
-
   // Algae States - Reef Operations
   REEF_ACQUISITION_L2(
       "L2 ALGAE SETPOINT",

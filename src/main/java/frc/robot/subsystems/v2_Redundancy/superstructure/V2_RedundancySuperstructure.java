@@ -410,8 +410,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Command to go back to the previous state
    */
   public Command runPreviousState() {
-    return runGoal(() -> previousState)
-        .withTimeout(0.02); // Run goal with small timeout to prevent hanging
+    return runGoal(() -> previousState);
   }
 
   /**
@@ -483,9 +482,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       Supplier<V2_RedundancySuperstructureStates> action,
       DoubleSupplier timeout) {
     return Commands.sequence(
-        runGoal(action), // Run the action
-        Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of(this)),
-        runGoal(pose)); // Return to original pose
+            runGoal(action), // Run the action
+            Commands.waitUntil(() -> atGoal()),
+            Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
+        .finallyDo(() -> setGoal(pose.get())); // Return to original pose
   }
 
   public Command runActionWithTimeout(
@@ -493,9 +493,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       V2_RedundancySuperstructureStates action,
       double timeout) {
     return Commands.sequence(
-        runGoal(action), // Run the action
-        Commands.waitSeconds(timeout),
-        runGoal(pose)); // Return to original pose
+            runGoal(action), // Run the action
+            Commands.waitUntil(() -> atGoal()),
+            Commands.waitSeconds(timeout),
+            runGoal(pose))
+        .finallyDo(() -> setGoal(pose)); // Return to original pose
   }
 
   /**
@@ -579,10 +581,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     } else if (actionPoseMap.containsValue(action)) {
       return runActionWithTimeout(action, poseActionMap.get(action), timeout);
     } else return Commands.none(); // If action is not recognized, do nothing
-  }
-
-  public void autoScoreL4() {
-    manipulator.setRollerGoal(ManipulatorRollerState.L4_SCORE);
   }
 
   /**
