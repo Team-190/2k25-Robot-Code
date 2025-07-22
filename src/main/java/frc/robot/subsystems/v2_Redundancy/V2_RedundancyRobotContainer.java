@@ -308,14 +308,16 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .povLeft()
         .whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.PROCESSOR))
         .onFalse(
-            superstructure.runActionWithTimeout(
-                V2_RedundancySuperstructureStates.SCORE_PROCESSOR, 1));
+            superstructure
+                .runActionWithTimeout(V2_RedundancySuperstructureStates.SCORE_PROCESSOR, 1)
+                .finallyDo(() -> RobotState.setHasAlgae(false)));
 
     operator
         .povRight()
         .whileTrue(
-            superstructure.override(
-                () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE)));
+            superstructure
+                .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE))
+                .finallyDo(() -> RobotState.setHasAlgae(false)));
     operator.start().whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE));
 
     operator

@@ -50,7 +50,7 @@ public class V2_RedundancySuperstructurePose {
   public Command setElevatorHeight(V2_RedundancyElevator elevator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
-        elevator.waitUntilAtGoal()).finallyDo(() -> System.out.println("ended"));
+        elevator.waitUntilAtGoal());
   }
 
   /**

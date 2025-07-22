@@ -47,8 +47,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
     isClosedLoop = true;
   }
 
-  @Override
-  public void periodic() {
+  public void periodi() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
@@ -132,6 +131,7 @@ public class V2_RedundancyElevator extends SubsystemBase {
         break;
     }
     ;
+    io.setPositionGoal(this.position.getPosition());
   }
 
   public V2_RedundancyElevatorPositions getPosition(ReefState newPosition) {

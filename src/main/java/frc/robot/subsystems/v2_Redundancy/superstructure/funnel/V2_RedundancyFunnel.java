@@ -60,8 +60,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     isClosedLoop = true;
   }
 
-  @Override
-  public void periodic() {
+  public void periodi() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);

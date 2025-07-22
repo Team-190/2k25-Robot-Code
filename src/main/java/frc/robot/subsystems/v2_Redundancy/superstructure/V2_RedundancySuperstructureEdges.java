@@ -142,7 +142,7 @@ public class V2_RedundancySuperstructureEdges {
     // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM
     if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM) {
 
-      return pose.setArmState(manipulator);
+      return Commands.deadline(pose.setArmState(manipulator), pose.setElevatorHeight(elevator));
     }
 
     // Special case: If transitioning to INTERMEDIATE_WAIT_FOR_ELEVATOR
@@ -158,8 +158,22 @@ public class V2_RedundancySuperstructureEdges {
               Commands.waitSeconds(0.05), pose.asCommand(elevator, manipulator, funnel, intake));
     }
 
+    // Special case: If climbing, wait for elevator first
+    if (to == V2_RedundancySuperstructureStates.CLIMB) {
+      return pose.setElevatorHeight(elevator)
+          .andThen(pose.asCommand(elevator, manipulator, funnel, intake));
+    }
+
     // Special case: If scoring, wait for elevator
-    if (to.toString().contains("SCORE")) {
+    if (to.toString().contains("SCORE")
+        || List.of(
+                V2_RedundancySuperstructureStates.INTAKE_FLOOR,
+                V2_RedundancySuperstructureStates.INTAKE_REEF_L2,
+                V2_RedundancySuperstructureStates.INTAKE_REEF_L3,
+                V2_RedundancySuperstructureStates.DROP_REEF_L2,
+                V2_RedundancySuperstructureStates.DROP_REEF_L3,
+                V2_RedundancySuperstructureStates.INTAKE_STATION)
+            .contains(to)) {
       return Commands.parallel(
           pose.setElevatorHeight(elevator),
           pose.setArmState(manipulator),

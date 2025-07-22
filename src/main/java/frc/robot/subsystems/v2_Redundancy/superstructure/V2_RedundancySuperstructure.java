@@ -10,11 +10,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -105,7 +102,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (currentState != null && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)) {
+    if (currentState == V2_RedundancySuperstructureStates.L4
+        && nextState == V2_RedundancySuperstructureStates.SCORE_L4
+        && elevator.atGoal()) {
+      targetState.getAction().get(manipulator, funnel, intake);
+    } else if (currentState != null
+        && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)) {
       currentState.getAction().get(manipulator, funnel, intake);
     }
 
@@ -160,6 +162,11 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     } else {
       Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "EdgeCommand", "no edges bitch");
     }
+
+    elevator.periodi();
+    manipulator.periodi();
+    funnel.periodi();
+    intake.periodi();
   }
 
   /**
@@ -172,7 +179,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     if (this.targetState == goal) return;
     else {
       this.targetState = goal;
-      stopActions();
     }
 
     if (nextState == null) return;
@@ -250,13 +256,6 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
       nextState = parent;
     }
     return Optional.of(nextState);
-  }
-
-  /** Stops all roller actions across funnel, manipulator, and intake subsystems. */
-  private void stopActions() {
-    funnel.setRollerGoal(FunnelRollerState.STOP);
-    manipulator.setRollerGoal(ManipulatorRollerState.STOP);
-    intake.setRollerGoal(IntakeRollerState.STOP);
   }
 
   /**
