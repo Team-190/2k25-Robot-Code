@@ -104,13 +104,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    elevator.periodic();
-    funnel.periodic();
-    manipulator.periodic();
-    intake.periodic();
 
-    if (currentState != null && currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE))
+    if (currentState != null && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)){
       currentState.getAction().get(manipulator, funnel, intake);
+    }
 
     // Set RobotState variables
     RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
