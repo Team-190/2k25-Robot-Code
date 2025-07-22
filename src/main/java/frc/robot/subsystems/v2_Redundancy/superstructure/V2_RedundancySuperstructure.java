@@ -458,12 +458,12 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
               case L3 -> 0.15;
               case L4 -> 0.4;
               default -> 0;
-            });
+            }, true);
   }
 
   public Command l4PlusSequence() {
     return runActionWithTimeout(
-        V2_RedundancySuperstructureStates.L4, V2_RedundancySuperstructureStates.SCORE_L4_PLUS, 0.5);
+        V2_RedundancySuperstructureStates.L4, V2_RedundancySuperstructureStates.SCORE_L4_PLUS, 0.5, true);
   }
 
   /**
@@ -477,10 +477,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   public Command runActionWithTimeout(
       Supplier<V2_RedundancySuperstructureStates> pose,
       Supplier<V2_RedundancySuperstructureStates> action,
-      DoubleSupplier timeout) {
+      DoubleSupplier timeout, boolean waitForElevatorInstead) {
     return Commands.sequence(
             runGoal(action), // Run the action
-            Commands.waitUntil(() -> atGoal()),
+            Commands.either(Commands.waitUntil(() -> elevatorAtGoal()), Commands.waitUntil(() -> atGoal()), () -> waitForElevatorInstead),
             Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
         .finallyDo(() -> setGoal(pose.get())); // Return to original pose
   }
@@ -488,10 +488,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   public Command runActionWithTimeout(
       V2_RedundancySuperstructureStates pose,
       V2_RedundancySuperstructureStates action,
-      double timeout) {
+      double timeout, boolean waitForElevatorInstead) {
     return Commands.sequence(
             runGoal(action), // Run the action
-            Commands.waitUntil(() -> atGoal()),
+            Commands.either(Commands.waitUntil(() -> elevatorAtGoal()), Commands.waitUntil(() -> atGoal()), () -> waitForElevatorInstead),
             Commands.waitSeconds(timeout),
             runGoal(pose))
         .finallyDo(() -> setGoal(pose)); // Return to original pose
@@ -506,7 +506,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Command sequence to perform and recover from the action
    */
   public Command runActionWithTimeout(
-      Supplier<V2_RedundancySuperstructureStates> action, DoubleSupplier timeout) {
+      Supplier<V2_RedundancySuperstructureStates> action, DoubleSupplier timeout, boolean waitForElevatorInstead) {
     // Maps each action state to its corresponding pose state
     Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
         new HashMap<>() {
@@ -537,13 +537,13 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Try to look up pose from action (either direction works)
     if (actionPoseMap.containsKey(action.get())) {
-      return runActionWithTimeout(() -> actionPoseMap.get(action.get()), action, timeout);
+      return runActionWithTimeout(() -> actionPoseMap.get(action.get()), action, timeout, waitForElevatorInstead);
     } else if (actionPoseMap.containsValue(action.get())) {
-      return runActionWithTimeout(action, () -> poseActionMap.get(action.get()), timeout);
+      return runActionWithTimeout(action, () -> poseActionMap.get(action.get()), timeout, waitForElevatorInstead);
     } else return Commands.none(); // If action is not recognized, do nothing
   }
 
-  public Command runActionWithTimeout(V2_RedundancySuperstructureStates action, double timeout) {
+  public Command runActionWithTimeout(V2_RedundancySuperstructureStates action, double timeout, boolean waitForElevatorInstead) {
     // Maps each action state to its corresponding pose state
     Map<V2_RedundancySuperstructureStates, V2_RedundancySuperstructureStates> actionPoseMap =
         new HashMap<>() {
@@ -574,9 +574,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
     // Try to look up pose from action (either direction works)
     if (actionPoseMap.containsKey(action)) {
-      return runActionWithTimeout(actionPoseMap.get(action), action, timeout);
+      return runActionWithTimeout(actionPoseMap.get(action), action, timeout, waitForElevatorInstead);
     } else if (actionPoseMap.containsValue(action)) {
-      return runActionWithTimeout(action, poseActionMap.get(action), timeout);
+      return runActionWithTimeout(action, poseActionMap.get(action), timeout,   waitForElevatorInstead);
     } else return Commands.none(); // If action is not recognized, do nothing
   }
 
@@ -587,5 +587,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   public Command setPosition() {
     return runGoal(() -> getElevatorPosition()).withTimeout(0.02);
+  }
+
+  public boolean elevatorAtGoal() {
+    return elevator.atGoal();
   }
 }
