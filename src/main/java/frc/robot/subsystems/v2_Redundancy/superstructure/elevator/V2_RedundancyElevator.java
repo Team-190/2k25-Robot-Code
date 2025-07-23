@@ -98,12 +98,6 @@ public class V2_RedundancyElevator extends SubsystemBase {
       case ALGAE_MID:
         this.position = V2_RedundancyElevatorPositions.ALGAE_MID;
         break;
-      case ASS_TOP:
-        this.position = V2_RedundancyElevatorPositions.ASS_TOP;
-        break;
-      case ASS_BOT:
-        this.position = V2_RedundancyElevatorPositions.ASS_BOT;
-        break;
       case ALGAE_INTAKE_TOP:
         this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
         break;
@@ -144,10 +138,6 @@ public class V2_RedundancyElevator extends SubsystemBase {
         return V2_RedundancyElevatorPositions.ALGAE_INTAKE;
       case ALGAE_MID:
         return V2_RedundancyElevatorPositions.ALGAE_MID;
-      case ASS_TOP:
-        return V2_RedundancyElevatorPositions.ASS_TOP;
-      case ASS_BOT:
-        return V2_RedundancyElevatorPositions.ASS_BOT;
       case ALGAE_INTAKE_TOP:
         return V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
       case ALGAE_INTAKE_BOTTOM:

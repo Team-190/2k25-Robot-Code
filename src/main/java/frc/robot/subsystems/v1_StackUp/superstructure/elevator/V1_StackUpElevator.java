@@ -84,23 +84,11 @@ public class V1_StackUpElevator extends SubsystemBase {
             case CORAL_INTAKE:
               this.position = V1_StackUpElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_FLOOR_INTAKE:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE;
-              break;
-            case ALGAE_MID:
-              this.position = V1_StackUpElevatorPositions.ALGAE_MID;
-              break;
             case ASS_TOP:
               this.position = V1_StackUpElevatorPositions.ASS_TOP;
               break;
             case ASS_BOT:
               this.position = V1_StackUpElevatorPositions.ASS_BOT;
-              break;
-            case ALGAE_INTAKE_TOP:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
-              break;
-            case ALGAE_INTAKE_BOTTOM:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
               this.position = V1_StackUpElevatorPositions.L1;
@@ -114,11 +102,6 @@ public class V1_StackUpElevator extends SubsystemBase {
             case L4:
               this.position = V1_StackUpElevatorPositions.L4;
               break;
-            case L4_PLUS:
-              this.position = V1_StackUpElevatorPositions.L4_PLUS;
-              break;
-            case ALGAE_SCORE:
-              this.position = V1_StackUpElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
@@ -142,23 +125,11 @@ public class V1_StackUpElevator extends SubsystemBase {
             case CORAL_INTAKE:
               this.position = V1_StackUpElevatorPositions.CORAL_INTAKE;
               break;
-            case ALGAE_FLOOR_INTAKE:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE;
-              break;
-            case ALGAE_MID:
-              this.position = V1_StackUpElevatorPositions.ALGAE_MID;
-              break;
             case ASS_TOP:
               this.position = V1_StackUpElevatorPositions.ASS_TOP;
               break;
             case ASS_BOT:
               this.position = V1_StackUpElevatorPositions.ASS_BOT;
-              break;
-            case ALGAE_INTAKE_TOP:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
-              break;
-            case ALGAE_INTAKE_BOTTOM:
-              this.position = V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
               break;
             case L1:
               this.position = V1_StackUpElevatorPositions.L1;
@@ -172,11 +143,6 @@ public class V1_StackUpElevator extends SubsystemBase {
             case L4:
               this.position = V1_StackUpElevatorPositions.L4;
               break;
-            case L4_PLUS:
-              this.position = V1_StackUpElevatorPositions.L4_PLUS;
-              break;
-            case ALGAE_SCORE:
-              this.position = V1_StackUpElevatorPositions.ALGAE_SCORE;
             default:
               break;
           }
@@ -189,18 +155,10 @@ public class V1_StackUpElevator extends SubsystemBase {
         return V1_StackUpElevatorPositions.STOW;
       case CORAL_INTAKE:
         return V1_StackUpElevatorPositions.CORAL_INTAKE;
-      case ALGAE_FLOOR_INTAKE:
-        return V1_StackUpElevatorPositions.ALGAE_INTAKE;
-      case ALGAE_MID:
-        return V1_StackUpElevatorPositions.ALGAE_MID;
       case ASS_TOP:
         return V1_StackUpElevatorPositions.ASS_TOP;
       case ASS_BOT:
         return V1_StackUpElevatorPositions.ASS_BOT;
-      case ALGAE_INTAKE_TOP:
-        return V1_StackUpElevatorPositions.ALGAE_INTAKE_TOP;
-      case ALGAE_INTAKE_BOTTOM:
-        return V1_StackUpElevatorPositions.ALGAE_INTAKE_BOT;
       case L1:
         return V1_StackUpElevatorPositions.L1;
       case L2:
@@ -209,10 +167,6 @@ public class V1_StackUpElevator extends SubsystemBase {
         return V1_StackUpElevatorPositions.L3;
       case L4:
         return V1_StackUpElevatorPositions.L4;
-      case L4_PLUS:
-        return V1_StackUpElevatorPositions.L4_PLUS;
-      case ALGAE_SCORE:
-        return V1_StackUpElevatorPositions.ALGAE_SCORE;
       default:
         return V1_StackUpElevatorPositions.STOW;
     }
