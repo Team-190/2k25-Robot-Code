@@ -6,11 +6,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
 import frc.robot.util.ExternalLoggedTracer;
@@ -20,11 +20,10 @@ import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyFunnel extends SubsystemBase {
+public class V2_RedundancyFunnel {
   private final V2_RedundancyFunnelIO io;
   private final V2_RedundancyFunnelIOInputsAutoLogged inputs;
 
-  private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
   @Setter private boolean manipulatorHasCoral;
 
@@ -42,15 +41,6 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     this.io = io;
     inputs = new V2_RedundancyFunnelIOInputsAutoLogged();
 
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(1),
-                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
     manipulatorHasCoral = false;
 
@@ -60,7 +50,7 @@ public class V2_RedundancyFunnel extends SubsystemBase {
     isClosedLoop = true;
   }
 
-  public void periodi() {
+  public void periodic() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
@@ -124,7 +114,16 @@ public class V2_RedundancyFunnel extends SubsystemBase {
    *
    * @return A command to run the SysId routine.
    */
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
+    SysIdRoutine characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(1),
+                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),

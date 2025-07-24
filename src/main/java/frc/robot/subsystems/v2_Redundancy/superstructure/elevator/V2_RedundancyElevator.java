@@ -7,11 +7,11 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -21,11 +21,9 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyElevator extends SubsystemBase {
+public class V2_RedundancyElevator {
   private final V2_RedundancyElevatorIO io;
   private final V2_RedundancyElevatorIOInputsAutoLogged inputs;
-
-  private final SysIdRoutine characterizationRoutine;
 
   @Getter private V2_RedundancyElevatorPositions position;
   private boolean isClosedLoop;
@@ -34,20 +32,11 @@ public class V2_RedundancyElevator extends SubsystemBase {
     this.io = io;
     inputs = new V2_RedundancyElevatorIOInputsAutoLogged();
 
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(1).per(Second),
-                Volts.of(6),
-                Seconds.of(10),
-                (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
-
     position = V2_RedundancyElevatorPositions.STOW;
     isClosedLoop = true;
   }
 
-  public void periodi() {
+  public void periodic() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
@@ -165,9 +154,9 @@ public class V2_RedundancyElevator extends SubsystemBase {
    * @return A command that resets the elevator position.
    */
   public Command resetPosition() {
-    return runOnce(() -> this.position = V2_RedundancyElevatorPositions.STOW)
+    return Commands.runOnce(() -> this.position = V2_RedundancyElevatorPositions.STOW)
         .andThen(
-            runOnce(
+            Commands.runOnce(
                 () ->
                     io.setPosition(
                         V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
@@ -178,8 +167,18 @@ public class V2_RedundancyElevator extends SubsystemBase {
    *
    * @return A command to run the SysId routine.
    */
-  public Command runSysID() {
+  public Command runSysID(V2_RedundancySuperstructure superstructure) {
+    SysIdRoutine characterizationRoutine =
+    new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.of(1).per(Second),
+            Volts.of(6),
+            Seconds.of(10),
+            (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
+        new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, superstructure));
+      
     return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine
             .quasistatic(Direction.kForward)
             .until(

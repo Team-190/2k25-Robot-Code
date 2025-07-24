@@ -6,10 +6,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.ExternalLoggedTracer;
@@ -19,11 +19,10 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyManipulator extends SubsystemBase {
+public class V2_RedundancyManipulator {
   private final V2_RedundancyManipulatorIO io;
   private final V2_RedundancyManipulatorIOInputsAutoLogged inputs;
   private boolean isClosedLoop;
-  private final SysIdRoutine algaeCharacterizationRoutine;
 
   @Getter
   @AutoLogOutput(key = "Manipulator/Arm Goal")
@@ -37,20 +36,12 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     this.io = io;
     inputs = new V2_RedundancyManipulatorIOInputsAutoLogged();
     isClosedLoop = true;
-    algaeCharacterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(5),
-                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
 
     armGoal = ArmState.STOW_DOWN;
     rollerGoal = ManipulatorRollerState.STOP;
   }
 
-  public void periodi() {
+  public void periodic() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
@@ -117,7 +108,16 @@ public class V2_RedundancyManipulator extends SubsystemBase {
     return Math.abs(inputs.rollerVelocityRadiansPerSecond) >= 100.0;
   }
 
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
+    SysIdRoutine algaeCharacterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(5),
+                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setArmVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         algaeCharacterizationRoutine.quasistatic(Direction.kForward),

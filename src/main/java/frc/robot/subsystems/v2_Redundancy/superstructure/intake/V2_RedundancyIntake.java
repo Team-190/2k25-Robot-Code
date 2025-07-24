@@ -4,9 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.util.ExternalLoggedTracer;
@@ -15,11 +15,9 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyIntake extends SubsystemBase {
+public class V2_RedundancyIntake {
   private final V2_RedundancyIntakeIO io;
   private final V2_RedundancyIntakeIOInputsAutoLogged inputs;
-
-  private final SysIdRoutine characterizationRoutine;
 
   @Getter
   @AutoLogOutput(key = "Intake/Extension Goal")
@@ -35,22 +33,13 @@ public class V2_RedundancyIntake extends SubsystemBase {
     this.io = io;
     inputs = new V2_RedundancyIntakeIOInputsAutoLogged();
 
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(8),
-                (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) -> io.setExtensionVoltage(volts.in(Volts)), null, this));
     extensionGoal = IntakeExtensionState.STOW;
     intakeRollerGoal = IntakeRollerState.STOP;
 
     isClosedLoop = true;
   }
 
-  public void periodi() {
+  public void periodic() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
@@ -99,7 +88,16 @@ public class V2_RedundancyIntake extends SubsystemBase {
    *
    * @return A command to run the SysId routine.
    */
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
+    SysIdRoutine characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(8),
+                (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setExtensionVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward).until(this::atGoal),
