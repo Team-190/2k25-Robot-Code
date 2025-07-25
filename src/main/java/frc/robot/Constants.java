@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V0_GOMPEIVISION_TEST;
+  public static final RobotType ROBOT = RobotType.V2_REDUNDANCY_SIM;
 
   public static Mode getMode() {
     switch (ROBOT) {

@@ -7,7 +7,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.RobotStateLL;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyMechanism3d {
@@ -85,6 +86,38 @@ public class V2_RedundancyMechanism3d {
         new Pose3d[] {
           new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()
         });
+
+    // Algae absolute pose (inside arm)
+    Pose3d ALGAE =
+        ALGAE_ARM
+            .transformBy(
+                new Transform3d(
+                    0.0,
+                    0.0,
+                    carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT,
+                    new Rotation3d(
+                        0.0,
+                        armAngle.getRadians()
+                            + Units.degreesToRadians(
+                                -V2_RedundancyManipulatorConstants.ARM_PARAMETERS
+                                    .MIN_ANGLE()
+                                    .getDegrees()),
+                        0.0)))
+            .transformBy(
+                new Transform3d(
+                    -0.32,
+                    0.0,
+                    -0.45,
+                    new Rotation3d(
+                        Units.degreesToRadians(0),
+                        Units.degreesToRadians(-110),
+                        Units.degreesToRadians(0))));
+
+    if (RobotStateLL.isHasAlgae()) {
+      Logger.recordOutput("Algae Pose", ALGAE);
+    } else {
+      Logger.recordOutput("Algae Pose", new Pose3d(1000, 1000, 1000, new Rotation3d()));
+    }
     return new Pose3d[] {
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,

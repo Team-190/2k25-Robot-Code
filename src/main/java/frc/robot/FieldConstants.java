@@ -55,7 +55,7 @@ public class FieldConstants {
       CENTER
     }
 
-    public static enum ReefHeight {
+    public static enum ReefState {
       STOW,
       CORAL_INTAKE,
       ALGAE_FLOOR_INTAKE,

@@ -5,22 +5,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
-import frc.robot.subsystems.shared.elevator.Elevator;
-import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.shared.funnel.Funnel;
-import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants.IntakeState;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
+import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevatorConstants.V1_StackUpElevatorPositions;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
+import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnelConstants.FunnelState;
+import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -38,36 +40,17 @@ public class CompositeCommands {
           .ignoringDisable(true);
     }
 
-    public static final Command climb(
-        Elevator elevator, Funnel funnel, Climber climber, Drive drive) {
-      return Commands.sequence(
-          elevator.setPosition(() -> ReefHeight.STOW),
-          Commands.waitSeconds(0.02),
-          Commands.waitUntil(elevator::atGoal),
-          funnel.setClapDaddyGoal(FunnelState.CLIMB),
-          Commands.parallel(
-              climber.releaseClimber(),
-              Commands.waitSeconds(ClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
-          Commands.waitUntil(climber::climberReady),
-          Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
-    }
-
-    public static final Command setStaticReefHeight(ReefHeight height) {
+    public static final Command setStaticReefHeight(ReefState height) {
       return Commands.runOnce(() -> RobotStateLL.setReefHeight(height));
-    }
-
-    public static final Command setDynamicReefHeight(ReefHeight height, Elevator elevator) {
-      return Commands.sequence(
-          Commands.runOnce(() -> RobotStateLL.setReefHeight(height)), elevator.setPosition());
     }
   }
 
   public static final class V1_StackUpCompositeCommands {
     public static final Command intakeCoral(
-        Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpFunnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
-              elevator.setPosition(() -> ReefHeight.CORAL_INTAKE),
+              elevator.setPosition(() -> ReefState.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.race(
                   manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
@@ -75,10 +58,10 @@ public class CompositeCommands {
     }
 
     public static final Command intakeCoralOverride(
-        Elevator elevator, Funnel funnel, V1_StackUpManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpFunnel funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
-              elevator.setPosition(() -> ReefHeight.CORAL_INTAKE),
+              elevator.setPosition(() -> ReefState.CORAL_INTAKE),
               Commands.waitUntil(elevator::atGoal),
               Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
           .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
@@ -89,14 +72,16 @@ public class CompositeCommands {
     }
 
     public static final Command scoreCoralSequence(
-        Elevator elevator, V1_StackUpManipulator manipulator, BooleanSupplier autoAligned) {
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        BooleanSupplier autoAligned) {
       return Commands.sequence(
           Commands.either(
-              elevator.setPosition(() -> ReefHeight.L3),
+              elevator.setPosition(() -> ReefState.L3),
               elevator.setPosition(),
               () ->
-                  RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)
-                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
+                  RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L4)
+                      && !elevator.getPosition().equals(V1_StackUpElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
           Commands.waitSeconds(0.05),
@@ -104,23 +89,26 @@ public class CompositeCommands {
           Commands.either(
               manipulator.scoreL4Coral().withTimeout(0.4),
               manipulator.scoreCoral().withTimeout(0.15),
-              () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)));
+              () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L4)));
     }
 
     public static final Command autoScoreCoralSequence(
-        Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        Camera... cameras) {
       return Commands.either(
           autoScoreL1CoralSequence(drive, elevator, manipulator, cameras),
           Commands.sequence(
               Commands.either(
-                  elevator.setPosition(() -> ReefHeight.L2),
+                  elevator.setPosition(() -> ReefState.L2),
                   Commands.none(),
                   () ->
-                      RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1)
-                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                      RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L1)
+                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefState.STOW)
                           || RobotStateLL.getOIData()
                               .currentReefHeight()
-                              .equals(ReefHeight.CORAL_INTAKE)),
+                              .equals(ReefState.CORAL_INTAKE)),
               Commands.parallel(
                   DriveCommands.autoAlignReefCoral(drive, cameras),
                   scoreCoralSequence(
@@ -128,23 +116,26 @@ public class CompositeCommands {
                       manipulator,
                       () -> RobotStateLL.getReefAlignData().atCoralSetpoint())),
               elevator
-                  .setPosition(() -> ReefHeight.STOW)
+                  .setPosition(() -> ReefState.STOW)
                   .onlyIf(
                       () ->
-                          elevator.getPosition().equals(ElevatorPositions.L3)
-                              || elevator.getPosition().equals(ElevatorPositions.L2))),
-          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1));
+                          elevator.getPosition().equals(V1_StackUpElevatorPositions.L3)
+                              || elevator.getPosition().equals(V1_StackUpElevatorPositions.L2))),
+          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
     public static final Command autoScoreL1CoralSequence(
-        Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        Camera... cameras) {
       return Commands.sequence(
           DriveCommands.autoAlignReefCoral(drive, cameras),
           scoreL1Coral(drive, elevator, manipulator));
     }
 
     public static final Command scoreL1Coral(
-        Drive drive, Elevator elevator, V1_StackUpManipulator manipulator) {
+        Drive drive, V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
           elevator.setPosition(),
           Commands.waitSeconds(0.02),
@@ -160,17 +151,20 @@ public class CompositeCommands {
     }
 
     public static final Command emergencyEject(
-        Elevator elevator, V1_StackUpManipulator manipulator) {
+        V1_StackUpElevator elevator, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-          elevator.setPosition(() -> ReefHeight.L1),
+          elevator.setPosition(() -> ReefState.L1),
           Commands.waitSeconds(0.125),
           Commands.waitUntil(elevator::atGoal),
           manipulator.scoreCoral().withTimeout(0.4),
-          elevator.setPosition(() -> ReefHeight.STOW));
+          elevator.setPosition(() -> ReefState.STOW));
     }
 
     public static final Command twerk(
-        Drive drive, Elevator elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
+        Drive drive,
+        V1_StackUpElevator elevator,
+        V1_StackUpManipulator manipulator,
+        Camera... cameras) {
       return Commands.deferredProxy(
           () ->
               twerk(
@@ -178,22 +172,22 @@ public class CompositeCommands {
                   elevator,
                   manipulator,
                   switch (RobotStateLL.getReefAlignData().closestReefTag()) {
-                    case 10, 6, 8, 21, 17, 19 -> ReefHeight.ASS_BOT;
-                    case 9, 11, 7, 22, 20, 18 -> ReefHeight.ASS_TOP;
-                    default -> ReefHeight.ASS_BOT;
+                    case 10, 6, 8, 21, 17, 19 -> ReefState.ASS_BOT;
+                    case 9, 11, 7, 22, 20, 18 -> ReefState.ASS_TOP;
+                    default -> ReefState.ASS_BOT;
                   },
                   cameras));
     }
 
     public static final Command twerk(
         Drive drive,
-        Elevator elevator,
+        V1_StackUpElevator elevator,
         V1_StackUpManipulator manipulator,
-        ReefHeight level,
+        ReefState level,
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.autoAlignReefAlgae(drive, cameras),
-          elevator.setPosition(() -> ReefHeight.L4),
+          elevator.setPosition(() -> ReefState.L4),
           Commands.waitUntil(elevator::atGoal),
           manipulator.toggleAlgaeArm(),
           Commands.waitSeconds(0.1),
@@ -202,408 +196,258 @@ public class CompositeCommands {
           manipulator.removeAlgae().withTimeout(0.35),
           manipulator.toggleAlgaeArm());
     }
+
+    public static final Command setDynamicReefHeight(
+        ReefState height, V1_StackUpElevator elevator) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotStateLL.setReefHeight(height)), elevator.setPosition());
+    }
+
+    public static final Command climb(
+        V1_StackUpElevator elevator, V1_StackUpFunnel funnel, Climber climber, Drive drive) {
+      return Commands.sequence(
+          elevator.setPosition(() -> ReefState.STOW),
+          Commands.waitSeconds(0.02),
+          Commands.waitUntil(elevator::atGoal),
+          funnel.setClapDaddyGoal(FunnelState.CLIMB),
+          Commands.parallel(
+              climber.releaseClimber(),
+              Commands.waitSeconds(ClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
+          Commands.waitUntil(climber::climberReady),
+          Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
+    }
   }
 
   public static final class V2_RedundancyCompositeCommands {
     public static final Command intakeCoralAuto(
-        Elevator elevator,
-        Funnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
-              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
-              Commands.parallel(
-                  DecisionTree.moveSequence(
-                      elevator,
-                      manipulator,
-                      intake,
-                      () -> ReefHeight.CORAL_INTAKE,
-                      ArmState.STOW_DOWN,
-                      IntakeState.STOW)),
-              Commands.race(
-                  manipulator.intakeCoral(() -> intake.hasCoral()),
-                  funnel.intakeCoral(() -> manipulator.hasCoral())))
-          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
+          Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.INTAKE_STATION),
+          Commands.waitUntil(() -> intake.hasCoral()),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     }
 
     public static final Command intakeCoralDriverSequence(
-        Elevator elevator,
-        Funnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
-              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
-              DecisionTree.moveSequence(
-                  elevator,
-                  manipulator,
-                  intake,
-                  () -> ReefHeight.CORAL_INTAKE,
-                  ArmState.STOW_DOWN,
-                  IntakeState.STOW),
-              Commands.race(
-                      manipulator.intakeCoral(() -> intake.hasCoral()),
-                      funnel.intakeCoral(() -> intake.hasCoral()))
-                  .until(intake::hasCoral))
-          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
+          Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+          superstructure.runGoalUntil(
+              V2_RedundancySuperstructureStates.INTAKE_STATION, () -> intake.hasCoral()),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     }
 
     public static final Command intakeCoralOperatorSequence(
-        Elevator elevator,
-        Funnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure, V2_RedundancyIntake intake) {
       return Commands.sequence(
-              Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
-              Commands.parallel(
-                  DecisionTree.moveSequence(
-                      elevator,
-                      manipulator,
-                      intake,
-                      () -> ReefHeight.CORAL_INTAKE,
-                      ArmState.STOW_DOWN,
-                      IntakeState.STOW)),
-              Commands.parallel(
-                  manipulator.intakeCoral(() -> false), funnel.intakeCoral(() -> false)))
-          .until(intake::hasCoral)
-          .finallyDo(() -> RobotStateLL.setIntakingCoral(false));
-    }
-
-    public static final Command intakeCoralOperatorOverrideSequence(
-        Elevator elevator,
-        Funnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
-      return funnel.setClapDaddyGoal(FunnelState.CLOSED);
-    }
-
-    public static final Command scoreCoral(V2_RedundancyManipulator manipulator) {
-      return manipulator.scoreCoral().withTimeout(0.4);
+          superstructure.runGoalUntil(
+              V2_RedundancySuperstructureStates.INTAKE_STATION, () -> intake.hasCoral()),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
     }
 
     public static final Command scoreL1Coral(
-        Drive drive,
-        Elevator elevator,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
+        Drive drive, V2_RedundancySuperstructure superstructure) {
       return Commands.sequence(
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> RobotStateLL.getOIData().currentReefHeight(),
-              ArmState.STOW_DOWN,
-              IntakeState.STOW),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.L1),
           Commands.parallel(
-              manipulator.scoreL1Coral().withTimeout(0.8),
+              superstructure.runReefScoreGoal(() -> ReefState.L1),
               Commands.sequence(
                   Commands.waitSeconds(0.05),
                   Commands.either(
                       DriveCommands.inchMovement(drive, -1, 0.1),
                       DriveCommands.inchMovement(drive, 1, 0.1),
-                      () -> RobotStateLL.getOIData().currentReefPost() == ReefPose.LEFT)),
-              intake.setExtensionGoal(IntakeState.L1_EXT)));
+                      () -> RobotStateLL.getOIData().currentReefPost() == ReefPose.LEFT))));
     }
 
     public static final Command autoScoreL1CoralSequence(
         Drive drive,
-        Elevator elevator,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake,
+        V2_RedundancyElevator elevator,
+        V2_RedundancySuperstructure superstructure,
         Camera... cameras) {
       return Commands.sequence(
-              DriveCommands.autoAlignReefCoral(drive, cameras),
-              scoreL1Coral(drive, elevator, manipulator, intake))
-          .finallyDo(
-              () -> {
-                elevator.setPosition(() -> ReefHeight.STOW);
-                manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN);
-                intake.setExtensionGoal(IntakeState.STOW);
-              });
-    }
-
-    public static final Command postL1Score(
-        Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-      return Commands.sequence(
-          elevator.setPosition(() -> ReefHeight.STOW),
-          manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN),
-          intake.setExtensionGoal(IntakeState.STOW));
+          DriveCommands.autoAlignReefCoral(drive, cameras), scoreL1Coral(drive, superstructure));
     }
 
     public static final Command scoreCoralSequence(
-        Elevator elevator,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake,
+        V2_RedundancyElevator elevator,
+        V2_RedundancySuperstructure superstructure,
         BooleanSupplier autoAligned) {
       return Commands.sequence(
           Commands.either(
-              DecisionTree.moveSequence(
-                  elevator,
-                  manipulator,
-                  intake,
-                  () -> ReefHeight.L3,
-                  ArmState.STOW_DOWN,
-                  IntakeState.STOW),
-              DecisionTree.moveSequence(
-                  elevator,
-                  manipulator,
-                  intake,
-                  () -> RobotStateLL.getOIData().currentReefHeight(),
-                  ArmState.STOW_DOWN,
-                  IntakeState.STOW),
+              superstructure.runGoal(V2_RedundancySuperstructureStates.L3),
+              superstructure.runReefGoal(() -> RobotStateLL.getOIData().currentReefHeight()),
               () ->
-                  RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4)
-                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
+                  RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L4)
+                      && !superstructure
+                          .getCurrentState()
+                          .equals(V2_RedundancySuperstructureStates.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> RobotStateLL.getOIData().currentReefHeight(),
-              ArmState.STOW_DOWN,
-              IntakeState.STOW),
-          Commands.parallel(
-              Commands.either(
-                  manipulator.scoreL4Coral().withTimeout(0.4),
-                  manipulator.scoreCoral().withTimeout(0.15),
-                  () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L4))),
-          DecisionTree.moveSequence(
-                  elevator,
-                  manipulator,
-                  intake,
-                  () -> ReefHeight.STOW,
-                  ArmState.STOW_DOWN,
-                  IntakeState.STOW)
+          superstructure.runReefScoreGoal(() -> RobotStateLL.getOIData().currentReefHeight()),
+          superstructure
+              .runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)
               .onlyIf(
                   () ->
-                      elevator.getPosition().equals(ElevatorPositions.L3)
-                          || elevator.getPosition().equals(ElevatorPositions.L2)));
+                      elevator.getPosition().equals(V2_RedundancyElevatorPositions.L3)
+                          || elevator.getPosition().equals(V2_RedundancyElevatorPositions.L2)));
     }
 
     public static final Command autoScoreCoralSequence(
         Drive drive,
-        Elevator elevator,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake,
+        V2_RedundancyElevator elevator,
+        V2_RedundancySuperstructure superstructure,
         Camera... cameras) {
 
       return Commands.either(
           Commands.sequence(
-              autoScoreL1CoralSequence(drive, elevator, manipulator, intake, cameras),
-              postL1Score(elevator, manipulator, intake)),
+              autoScoreL1CoralSequence(drive, elevator, superstructure, cameras),
+              superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)),
           Commands.sequence(
               Commands.either(
-                  DecisionTree.moveSequence(
-                      elevator,
-                      manipulator,
-                      intake,
-                      () -> ReefHeight.L2,
-                      ArmState.STOW_DOWN,
-                      IntakeState.STOW),
+                  superstructure.runGoal(V2_RedundancySuperstructureStates.L2),
                   Commands.none(),
                   () ->
-                      RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1)
-                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.STOW)
+                      RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L1)
+                          || RobotStateLL.getOIData().currentReefHeight().equals(ReefState.STOW)
                           || RobotStateLL.getOIData()
                               .currentReefHeight()
-                              .equals(ReefHeight.CORAL_INTAKE)),
+                              .equals(ReefState.CORAL_INTAKE)),
               Commands.parallel(
                   DriveCommands.autoAlignReefCoral(drive, cameras),
                   scoreCoralSequence(
                       elevator,
-                      manipulator,
-                      intake,
+                      superstructure,
                       () -> RobotStateLL.getReefAlignData().atCoralSetpoint())),
-              Commands.sequence(
-                      DecisionTree.moveSequence(
-                          elevator,
-                          manipulator,
-                          intake,
-                          () -> ReefHeight.L4_PLUS,
-                          ArmState.STOW_DOWN,
-                          IntakeState.STOW),
-                      manipulator.scoreCoral().withTimeout(0.5))
-                  .onlyIf(() -> elevator.getPosition().equals(ElevatorPositions.L4))),
-          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefHeight.L1));
+              superstructure
+                  .l4PlusSequence()
+                  .onlyIf(() -> RobotStateLL.getOIData().currentReefHeight() == ReefState.L4)),
+          () -> RobotStateLL.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
     public static final Command intakeAlgaeFromReefSequence(
         Drive drive,
-        Elevator elevator,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake,
-        Supplier<ReefHeight> level,
+        V2_RedundancySuperstructure superstructure,
+        Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
-          Commands.parallel(
-                  DriveCommands.autoAlignReefAlgae(drive, cameras),
-                  Commands.sequence(
-                      DecisionTree.moveSequence(
-                          elevator,
-                          manipulator,
-                          intake,
-                          level,
-                          ArmState.STOW_DOWN,
-                          IntakeState.STOW),
-                      DecisionTree.moveSequence(
-                          elevator,
-                          manipulator,
-                          intake,
-                          level,
-                          ArmState.REEF_INTAKE,
-                          IntakeState.STOW)),
-                  manipulator.intakeReefAlgae())
-              .until(() -> RobotStateLL.isHasAlgae()),
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          superstructure.runGoalUntil(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V2_RedundancySuperstructureStates.INTAKE_REEF_L3;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V2_RedundancySuperstructureStates.INTAKE_REEF_L2;
+                  default:
+                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                }
+              },
+              () -> RobotStateLL.isHasAlgae()),
           Commands.parallel(
               Commands.sequence(
                   Commands.waitSeconds(0.25),
                   Commands.either(
-                      DecisionTree.moveSequence(
-                          elevator,
-                          manipulator,
-                          intake,
-                          () -> ReefHeight.STOW,
-                          ArmState.STOW_UP,
-                          IntakeState.STOW),
-                      Commands.none(),
-                      RobotStateLL::isHasAlgae)),
+                      superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_UP),
+                      superstructure.runGoal(
+                          () -> {
+                            switch (level.get()) {
+                              case ALGAE_INTAKE_TOP:
+                                return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L3;
+                              default:
+                                return V2_RedundancySuperstructureStates.REEF_ACQUISITION_L2;
+                            }
+                          }),
+                      () -> RobotStateLL.isHasAlgae())),
               Commands.runEnd(
                       () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)));
     }
 
-    public static final Command scoreAlgae(
-        Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-      return Commands.sequence(
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.ALGAE_SCORE,
-              ArmState.STOW_UP,
-              IntakeState.STOW),
-          Commands.waitSeconds(0.5),
-          manipulator.scoreAlgae().withTimeout(0.5));
-    }
-
     public static final Command dropAlgae(
         Drive drive,
-        Elevator elevator,
+        V2_RedundancyElevator elevator,
         V2_RedundancyManipulator manipulator,
         V2_RedundancyIntake intake,
-        Supplier<ReefHeight> level,
+        V2_RedundancySuperstructure superstructure,
+        Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
           DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.deadline(
-              Commands.sequence(
-                  DecisionTree.moveSequence(
-                      elevator, manipulator, intake, level, ArmState.STOW_DOWN, IntakeState.STOW),
-                  DecisionTree.moveSequence(
-                      elevator, manipulator, intake, level, ArmState.REEF_INTAKE, IntakeState.STOW),
-                  Commands.waitSeconds(1.0),
-                  Commands.runEnd(
-                          () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
-                          () -> drive.stop())
-                      .withTimeout(0.5)),
-              manipulator.intakeReefAlgae()),
-          manipulator.scoreAlgae().withTimeout(0.75),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.CORAL_INTAKE,
-              ArmState.STOW_DOWN,
-              IntakeState.STOW));
-    }
-
-    public static final Command netHeight(
-        Elevator elevator,
-        Funnel funnel,
-        V2_RedundancyManipulator manipulator,
-        V2_RedundancyIntake intake) {
-      return Commands.sequence(
-          funnel.setClapDaddyGoal(FunnelState.CLOSED),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.ALGAE_SCORE,
-              ArmState.STOW_UP,
-              IntakeState.STOW));
-    }
-
-    public static final Command scoreProcessorNew(
-        Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-      return Commands.sequence(
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.ALGAE_FLOOR_INTAKE,
-              ArmState.STOW_DOWN,
-              IntakeState.INTAKE),
-          intake.setRollerVoltage(-6));
-    }
-
-    public static final Command scoreProcessor(
-        Elevator elevator, V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake) {
-      return DecisionTree.moveSequence(
-          elevator,
-          manipulator,
-          intake,
-          () -> ReefHeight.STOW,
-          ArmState.PROCESSOR,
-          IntakeState.STOW);
-    }
-
-    public static final Command floorIntakeSequence(
-        V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
-      return Commands.sequence(
           Commands.sequence(
-                  Commands.deadline(
-                      DecisionTree.moveSequence(
-                          elevator,
-                          manipulator,
-                          intake,
-                          () -> ReefHeight.ALGAE_FLOOR_INTAKE,
-                          ArmState.FLOOR_INTAKE,
-                          IntakeState.INTAKE),
-                      Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
-                      intake.setRollerVoltage(6.0)),
-                  Commands.parallel(intake.intakeAlgae(), manipulator.intakeFloorAlgae()))
-              .until(() -> RobotStateLL.isHasAlgae()));
+              superstructure
+                  .runGoal(
+                      () -> {
+                        switch (level.get()) {
+                          case ALGAE_INTAKE_TOP:
+                            return V2_RedundancySuperstructureStates.INTAKE_REEF_L3;
+                          case ALGAE_INTAKE_BOTTOM:
+                            return V2_RedundancySuperstructureStates.INTAKE_REEF_L2;
+                          default:
+                            return V2_RedundancySuperstructureStates.STOW_DOWN;
+                        }
+                      })
+                  .until(() -> RobotStateLL.isHasAlgae()),
+              Commands.waitSeconds(2.0),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
+                  .withTimeout(0.5)),
+          superstructure.runGoal(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L3;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L2;
+                  default:
+                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                }
+              }),
+          Commands.waitSeconds(1.0),
+          Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN));
+    }
+
+    public static final Command floorIntakeSequence(V2_RedundancySuperstructure superstructure) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotStateLL.setHasAlgae(false)),
+          superstructure.runGoalUntil(
+              V2_RedundancySuperstructureStates.INTAKE_FLOOR, () -> RobotStateLL.isHasAlgae()));
     }
 
     public static final Command postFloorIntakeSequence(
-        V2_RedundancyManipulator manipulator, Elevator elevator, V2_RedundancyIntake intake) {
+        V2_RedundancySuperstructure superstructure) {
       return Commands.either(
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.STOW,
-              ArmState.STOW_UP,
-              IntakeState.STOW),
-          DecisionTree.moveSequence(
-              elevator,
-              manipulator,
-              intake,
-              () -> ReefHeight.STOW,
-              ArmState.STOW_DOWN,
-              IntakeState.STOW),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_UP),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN),
           RobotStateLL::isHasAlgae);
+    }
+
+    public static final Command setDynamicReefHeight(
+        ReefState height, V2_RedundancySuperstructure superstructure) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotStateLL.setReefHeight(height)), superstructure.setPosition());
+    }
+
+    public static final Command climb(
+        V2_RedundancySuperstructure superstructure, Climber climber, Drive drive) {
+      return Commands.sequence(
+          superstructure.runGoal(V2_RedundancySuperstructureStates.CLIMB),
+          Commands.parallel(
+              climber.releaseClimber(),
+              Commands.waitSeconds(ClimberConstants.WAIT_AFTER_RELEASE_SECONDS)),
+          Commands.waitUntil(climber::climberReady),
+          Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
     }
   }
 
   public static final Command homingSequences(
-      V2_RedundancyManipulator manipulator, V2_RedundancyIntake intake, Elevator elevator) {
+      V2_RedundancyManipulator manipulator,
+      V2_RedundancyIntake intake,
+      V2_RedundancyElevator elevator) {
     return Commands.sequence(
-        elevator.setPosition(() -> ReefHeight.ALGAE_MID),
+        Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
         elevator.waitUntilAtGoal(),
         manipulator.homingSequence(),
         intake.homingSequence(),
-        elevator.setPosition(() -> RobotStateLL.getOIData().currentReefHeight()));
+        Commands.runOnce(() -> elevator.setPosition()));
   }
 }

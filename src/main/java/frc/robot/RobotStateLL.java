@@ -11,8 +11,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants.Reef;
-import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
 import frc.robot.subsystems.shared.visionlimelight.CameraDuty;
@@ -44,6 +44,7 @@ public class RobotStateLL {
   @Getter @Setter private static boolean isIntakingCoral;
   @Getter @Setter private static boolean isIntakingAlgae;
   @Getter @Setter private static boolean isAutoAligning;
+  @Getter @Setter private static boolean autoClapOverride;
 
   static {
     switch (Constants.ROBOT) {
@@ -64,7 +65,7 @@ public class RobotStateLL {
         break;
     }
 
-    OIData = new OperatorInputData(ReefPose.LEFT, ReefHeight.STOW);
+    OIData = new OperatorInputData(ReefPose.LEFT, ReefState.STOW);
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -92,7 +93,7 @@ public class RobotStateLL {
 
     reefAlignData =
         new ReefAlignData(
-            -1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false, ReefHeight.ALGAE_INTAKE_BOTTOM);
+            -1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false, ReefState.ALGAE_INTAKE_BOTTOM);
     robotConfigurationData = new RobotConfigurationData(0.0, new Rotation2d(), 0.0);
   }
 
@@ -172,7 +173,7 @@ public class RobotStateLL {
     }
 
     Pose2d autoAlignCoralSetpoint =
-        OIData.currentReefHeight().equals(ReefHeight.L1)
+        OIData.currentReefHeight().equals(ReefState.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
     Pose2d autoAlignAlgaeSetpoint =
@@ -194,16 +195,16 @@ public class RobotStateLL {
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
-    ReefHeight algaeHeight;
+    ReefState algaeHeight;
     switch (closestReefTag) {
       case 10, 6, 8, 21, 17, 19:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
+        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
         break;
       case 9, 11, 7, 22, 20, 18:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_TOP;
+        algaeHeight = ReefState.ALGAE_INTAKE_TOP;
         break;
       default:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
+        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
         break;
     }
     ;
@@ -345,7 +346,7 @@ public class RobotStateLL {
 
     InternalLoggedTracer.reset();
     Pose2d autoAlignCoralSetpoint =
-        OIData.currentReefHeight().equals(ReefHeight.L1)
+        OIData.currentReefHeight().equals(ReefState.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
@@ -366,7 +367,7 @@ public class RobotStateLL {
         Math.abs(distanceToAlgaeSetpoint)
             <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
 
-    ReefHeight algaeHeight;
+    ReefState algaeHeight;
     switch (closestReefTag) {
       case 10:
       case 6:
@@ -374,7 +375,7 @@ public class RobotStateLL {
       case 21:
       case 17:
       case 19:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
+        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
         break;
       case 9:
       case 11:
@@ -382,10 +383,10 @@ public class RobotStateLL {
       case 22:
       case 20:
       case 18:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_TOP;
+        algaeHeight = ReefState.ALGAE_INTAKE_TOP;
         break;
       default:
-        algaeHeight = ReefHeight.ALGAE_INTAKE_BOTTOM;
+        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
         break;
     }
     InternalLoggedTracer.record("Generate Setpoints", "RobotState/Periodic");
@@ -578,12 +579,12 @@ public class RobotStateLL {
   }
 
   public static void setReefPost(ReefPose post) {
-    ReefHeight height = OIData.currentReefHeight();
+    ReefState height = OIData.currentReefHeight();
     OIData = new OperatorInputData(post, height);
   }
 
   public static void toggleReefPost() {
-    ReefHeight height = OIData.currentReefHeight();
+    ReefState height = OIData.currentReefHeight();
     if (OIData.currentReefPost().equals(ReefPose.LEFT)) {
       OIData = new OperatorInputData(ReefPose.RIGHT, height);
     } else {
@@ -591,7 +592,7 @@ public class RobotStateLL {
     }
   }
 
-  public static void setReefHeight(ReefHeight height) {
+  public static void setReefHeight(ReefState height) {
     ReefPose post = OIData.currentReefPost();
     OIData = new OperatorInputData(post, height);
   }
@@ -604,11 +605,11 @@ public class RobotStateLL {
       double distanceToAlgaeSetpoint,
       boolean atCoralSetpoint,
       boolean atAlgaeSetpoint,
-      ReefHeight algaeIntakeHeight,
+      ReefState algaeIntakeHeight,
       Camera... cameras) {}
 
   public static final record OperatorInputData(
-      ReefPose currentReefPost, ReefHeight currentReefHeight) {}
+      ReefPose currentReefPost, ReefState currentReefHeight) {}
 
   public static final record RobotConfigurationData(
       double intakeStart, Rotation2d armStart, double elevatorStart) {}
