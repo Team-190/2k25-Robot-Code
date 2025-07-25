@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
-import frc.robot.RobotStateLL;
+import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -98,7 +98,7 @@ public class V0_WhiplashRobotContainer implements RobotContainer {
 
   @Override
   public void robotPeriodic() {
-    RobotStateLL.periodic(
+    RobotState.periodic(
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),

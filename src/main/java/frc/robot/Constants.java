@@ -10,14 +10,12 @@ public final class Constants {
   public static Mode getMode() {
     switch (ROBOT) {
       case V0_FUNKY:
-      case V0_GOMPEIVISION_TEST:
       case V0_WHIPLASH:
       case V1_STACKUP:
       case V2_REDUNDANCY:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case V0_FUNKY_SIM:
-      case V0_GOMPEIVISION_TEST_SIM:
       case V0_WHIPLASH_SIM:
       case V1_STACKUP_SIM:
       case V2_REDUNDANCY_SIM:

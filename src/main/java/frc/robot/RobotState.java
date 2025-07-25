@@ -5,7 +5,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
@@ -15,7 +14,6 @@ import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.visiongompeivision.Vision.VisionObservation;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
 import frc.robot.subsystems.shared.visionlimelight.CameraDuty;
 import frc.robot.util.AllianceFlipUtil;
@@ -23,12 +21,11 @@ import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
-import java.util.NoSuchElementException;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
-public class RobotStateGV {
+public class RobotState {
   private static Rotation2d robotHeading;
   private static Rotation2d headingOffset;
   private static SwerveModulePosition[] modulePositions;
@@ -47,10 +44,7 @@ public class RobotStateGV {
   @Getter @Setter private static boolean isIntakingCoral;
   @Getter @Setter private static boolean isIntakingAlgae;
   @Getter @Setter private static boolean isAutoAligning;
-
-  private static final double poseBufferSizeSec = 2.0;
-  private static final TimeInterpolatableBuffer<Pose2d> poseBuffer =
-      TimeInterpolatableBuffer.createBuffer(poseBufferSizeSec);
+  @Getter @Setter private static boolean autoClapOverride;
 
   static {
     switch (Constants.ROBOT) {
@@ -103,18 +97,80 @@ public class RobotStateGV {
     robotConfigurationData = new RobotConfigurationData(0.0, new Rotation2d(), 0.0);
   }
 
-  public RobotStateGV() {}
+  public RobotState() {}
 
-  public static void periodic() {
+  public static void periodic(
+      Rotation2d robotHeading,
+      long latestRobotHeadingTimestamp,
+      double robotYawVelocity,
+      Translation2d robotFieldRelativeVelocity,
+      SwerveModulePosition[] modulePositions,
+      Camera[] cameras) {
     ExternalLoggedTracer.reset();
+    RobotState.robotHeading = robotHeading;
+    RobotState.modulePositions = modulePositions;
 
     fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
 
+    for (Camera camera : cameras) {
+      double[] limelightHeadingData = {
+        robotHeading.minus(headingOffset).getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
+      };
+      camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
+    }
+
     NetworkTableInstance.getDefault().flush();
 
+    for (Camera camera : cameras) {
+      if (camera.getCameraDuties().contains(CameraDuty.FIELD_LOCALIZATION)
+          && camera.getTargetAquired()
+          && !GeometryUtil.isZero(camera.getPrimaryPose())
+          && !GeometryUtil.isZero(camera.getSecondaryPose())
+          && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
+          && Math.abs(robotFieldRelativeVelocity.getNorm()) <= 1.0
+          && camera.getTotalTargets() > 0) {
+        double xyStddevPrimary =
+            camera.getPrimaryXYStandardDeviationCoefficient()
+                * Math.pow(camera.getAverageDistance(), 2.0)
+                / camera.getTotalTargets()
+                * camera.getHorizontalFOV();
+        fieldLocalizer.addVisionMeasurement(
+            camera.getPrimaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+        if (camera.getTotalTargets() > 1) {
+          double xyStddevSecondary =
+              camera.getSecondaryXYStandardDeviationCoefficient()
+                  * Math.pow(camera.getAverageDistance(), 2.0)
+                  / camera.getTotalTargets()
+                  * camera.getHorizontalFOV();
+          fieldLocalizer.addVisionMeasurement(
+              camera.getSecondaryPose(),
+              camera.getFrameTimestamp(),
+              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+        }
+      }
+    }
+
     int closestReefTag = getMinDistanceReefTag();
+
+    for (Camera camera : cameras) {
+      if (camera.getCameraDuties().contains(CameraDuty.REEF_LOCALIZATION)
+          && !GeometryUtil.isZero(camera.getPrimaryPose())
+          && camera.getTotalTargets() > 0) {
+        double xyStddevPrimary =
+            camera.getPrimaryXYStandardDeviationCoefficient()
+                * Math.pow(camera.getAverageDistance(), 2.0)
+                / camera.getTotalTargets()
+                * camera.getHorizontalFOV();
+        reefLocalizer.addVisionMeasurement(
+            camera.getPrimaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+      }
+    }
 
     Pose2d autoAlignCoralSetpoint =
         OIData.currentReefHeight().equals(ReefState.L1)
@@ -124,11 +180,11 @@ public class RobotStateGV {
         Reef.reefMap.get(getMinDistanceReefAlgaeTag()).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =
-        RobotStateGV.getRobotPoseReef()
+        RobotState.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignCoralSetpoint.getTranslation());
     double distanceToAlgaeSetpoint =
-        RobotStateGV.getRobotPoseReef()
+        RobotState.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignAlgaeSetpoint.getTranslation());
 
@@ -162,7 +218,8 @@ public class RobotStateGV {
             distanceToAlgaeSetpoint,
             atCoralSetpoint,
             atAlgaeSetpoint,
-            algaeHeight);
+            algaeHeight,
+            cameras);
 
     Logger.recordOutput(NTPrefixes.ROBOT_STATE + "Has Algae", hasAlgae);
 
@@ -198,8 +255,8 @@ public class RobotStateGV {
       Camera[] cameras) {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
-    RobotStateGV.robotHeading = robotHeading;
-    RobotStateGV.modulePositions = modulePositions;
+    RobotState.robotHeading = robotHeading;
+    RobotState.modulePositions = modulePositions;
     InternalLoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
@@ -295,11 +352,11 @@ public class RobotStateGV {
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
 
     double distanceToCoralSetpoint =
-        RobotStateGV.getRobotPoseReef()
+        RobotState.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignCoralSetpoint.getTranslation());
     double distanceToAlgaeSetpoint =
-        RobotStateGV.getRobotPoseReef()
+        RobotState.getRobotPoseReef()
             .getTranslation()
             .getDistance(autoAlignAlgaeSetpoint.getTranslation());
 
@@ -390,7 +447,7 @@ public class RobotStateGV {
     double minDistance = Double.POSITIVE_INFINITY;
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotStateGV.getRobotPoseReef()
+          RobotState.getRobotPoseReef()
               .getTranslation()
               .getDistance(
                   AllianceFlipUtil.apply(FieldConstants.Reef.centerFaces[i]).getTranslation());
@@ -451,7 +508,7 @@ public class RobotStateGV {
     double minDistance = Double.POSITIVE_INFINITY;
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotStateGV.getRobotPoseReef()
+          RobotState.getRobotPoseReef()
               .getTranslation()
               .getDistance(
                   AllianceFlipUtil.overrideApply(FieldConstants.Reef.centerFaces[i])
@@ -464,7 +521,7 @@ public class RobotStateGV {
 
     for (int i = 0; i < 6; i++) {
       double currentDistance =
-          RobotStateGV.getRobotPoseReef()
+          RobotState.getRobotPoseReef()
               .getTranslation()
               .getDistance((FieldConstants.Reef.centerFaces[i]).getTranslation());
       if (currentDistance < minDistance) {
@@ -512,26 +569,6 @@ public class RobotStateGV {
         break;
     }
     return minDistanceTag;
-  }
-
-  public static void addVisionObservation(VisionObservation observation) {
-    // If measurement is old enough to be outside the pose buffer's timespan, skip.
-    try {
-      if (poseBuffer.getInternalBuffer().lastKey() - poseBufferSizeSec > observation.timestamp()) {
-        return;
-      }
-    } catch (NoSuchElementException ex) {
-      return;
-    }
-    // Get odometry based pose at timestamp
-    var sample = poseBuffer.getSample(observation.timestamp());
-    if (sample.isEmpty()) {
-      // exit if not there
-      return;
-    }
-
-    fieldLocalizer.addVisionMeasurement(observation.visionPose(), observation.timestamp());
-    reefLocalizer.addVisionMeasurement(observation.visionPose(), observation.timestamp());
   }
 
   public static void resetRobotPose(Pose2d pose) {
@@ -599,19 +636,19 @@ public class RobotStateGV {
     }
 
     public static boolean enabled() {
-      return enabled(RobotStateGV.getMode());
+      return enabled(RobotState.getMode());
     }
 
     public static boolean disabled() {
-      return disabled(RobotStateGV.getMode());
+      return disabled(RobotState.getMode());
     }
 
     public static boolean teleop() {
-      return teleop(RobotStateGV.getMode());
+      return teleop(RobotState.getMode());
     }
 
     public static boolean auto() {
-      return auto(RobotStateGV.getMode());
+      return auto(RobotState.getMode());
     }
   }
 }

@@ -14,9 +14,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
-import frc.robot.subsystems.v0_GompeiVisionTesting.V0_GompeiVisionTestRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
@@ -150,8 +149,6 @@ public class Robot extends LoggedRobot {
     robotContainer =
         switch (Constants.ROBOT) {
           case V0_WHIPLASH, V0_WHIPLASH_SIM -> new V0_WhiplashRobotContainer();
-          case V0_GOMPEIVISION_TEST,
-              V0_GOMPEIVISION_TEST_SIM -> new V0_GompeiVisionTestRobotContainer();
           case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
           case V1_STACKUP, V1_STACKUP_SIM -> new V1_StackUpRobotContainer();
           case V2_REDUNDANCY, V2_REDUNDANCY_SIM -> new V2_RedundancyRobotContainer();
@@ -247,7 +244,7 @@ public class Robot extends LoggedRobot {
 
     // Update low battery alert
     InternalLoggedTracer.reset();
-    if (RobotStateLL.RobotMode.enabled()) {
+    if (RobotState.RobotMode.enabled()) {
       disabledTimer.reset();
     }
     if (RobotController.getBatteryVoltage() < lowBatteryVoltage
@@ -298,7 +295,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    RobotStateLL.setMode(RobotMode.DISABLED);
+    RobotState.setMode(RobotMode.DISABLED);
   }
 
   /** This function is called periodically when disabled. */
@@ -309,11 +306,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     InternalLoggedTracer.reset();
-    RobotStateLL.setMode(RobotStateLL.RobotMode.AUTO);
+    RobotState.setMode(RobotState.RobotMode.AUTO);
     InternalLoggedTracer.record("Set Robotstate Mode", "Robot");
 
     InternalLoggedTracer.reset();
-    RobotStateLL.setReefHeight(ReefState.L4);
+    RobotState.setReefHeight(ReefState.L4);
     InternalLoggedTracer.record("Set Reef Height", "Robot");
 
     InternalLoggedTracer.reset();
@@ -341,7 +338,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    RobotStateLL.setMode(RobotMode.TELEOP);
+    RobotState.setMode(RobotMode.TELEOP);
     Shuffleboard.selectTab("Teleoperated");
   }
 

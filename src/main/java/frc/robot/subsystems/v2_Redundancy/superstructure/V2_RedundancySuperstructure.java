@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.RobotStateLL;
-import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
@@ -112,14 +112,14 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Set RobotState variables
-    RobotStateLL.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
-    if ((RobotStateLL.isIntakingAlgae() || manipulator.isIntakingAlgae())
+    RobotState.setIntakingCoral(targetState == V2_RedundancySuperstructureStates.INTAKE_STATION);
+    if ((RobotState.isIntakingAlgae() || manipulator.isIntakingAlgae())
         && (targetState == V2_RedundancySuperstructureStates.INTAKE_FLOOR
             || targetState == V2_RedundancySuperstructureStates.INTAKE_REEF_L2
             || targetState == V2_RedundancySuperstructureStates.INTAKE_REEF_L3)) {
-      RobotStateLL.setIntakingAlgae(true);
+      RobotState.setIntakingAlgae(true);
     } else {
-      RobotStateLL.setIntakingAlgae(false);
+      RobotState.setIntakingAlgae(false);
     }
     funnel.setManipulatorHasCoral(manipulator.hasCoral());
 
@@ -267,7 +267,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V2_RedundancySuperstructureStates goal) {
     return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
-        || RobotStateLL.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
+        || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */
@@ -286,7 +286,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Appropriate superstructure state for current reef height
    */
   private V2_RedundancySuperstructureStates getElevatorPosition() {
-    switch (RobotStateLL.getOIData().currentReefHeight()) {
+    switch (RobotState.getOIData().currentReefHeight()) {
       case STOW, CORAL_INTAKE -> {
         return V2_RedundancySuperstructureStates.STOW_DOWN;
       }

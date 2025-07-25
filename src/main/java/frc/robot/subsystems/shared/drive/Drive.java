@@ -28,8 +28,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotStateLL;
-import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -97,8 +97,8 @@ public class Drive extends SubsystemBase {
 
     autoFactory =
         new LoggedAutoFactory(
-            RobotStateLL::getRobotPoseField,
-            RobotStateLL::resetRobotPose,
+            RobotState::getRobotPoseField,
+            RobotState::resetRobotPose,
             this::choreoDrive,
             true,
             this);
@@ -354,7 +354,7 @@ public class Drive extends SubsystemBase {
 
   /** Runs a choreo path from swerve samples */
   public void choreoDrive(SwerveSample sample) {
-    Pose2d pose = RobotStateLL.getRobotPoseField();
+    Pose2d pose = RobotState.getRobotPoseField();
     double xFF = sample.vx;
     double yFF = sample.vy;
     double rotationFF = sample.omega;

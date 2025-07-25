@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.RobotStateLL;
+import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO.ElevatorIOInputs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
@@ -64,34 +64,7 @@ public class Elevator {
    * @return The corresponding elevator position.
    */
   private ElevatorPositions getPosition(ReefState newPosition) {
-    switch (newPosition) {
-      case STOW:
-        return ElevatorPositions.STOW;
-      case CORAL_INTAKE:
-        return ElevatorPositions.CORAL_INTAKE;
-      case ALGAE_FLOOR_INTAKE:
-        return ElevatorPositions.ALGAE_INTAKE;
-      case ALGAE_MID:
-        return ElevatorPositions.ALGAE_MID;
-      case ALGAE_INTAKE_TOP:
-        return ElevatorPositions.ALGAE_INTAKE_TOP;
-      case ALGAE_INTAKE_BOTTOM:
-        return ElevatorPositions.ALGAE_INTAKE_BOT;
-      case L1:
-        return ElevatorPositions.L1;
-      case L2:
-        return ElevatorPositions.L2;
-      case L3:
-        return ElevatorPositions.L3;
-      case L4:
-        return ElevatorPositions.L4;
-      case L4_PLUS:
-        return ElevatorPositions.L4_PLUS;
-      case ALGAE_SCORE:
-        return ElevatorPositions.ALGAE_SCORE;
-      default:
-        return ElevatorPositions.STOW;
-    }
+    return ElevatorConstants.REEF_STATE_ELEVATOR_POSITION_MAP.get(newPosition);
   }
 
   /**
@@ -214,7 +187,7 @@ public class Elevator {
    * @return A command that sets the elevator position.
    */
   private void setPosition() {
-    setPosition(() -> RobotStateLL.getOIData().currentReefHeight());
+    setPosition(() -> RobotState.getOIData().currentReefHeight());
   }
 
   /**

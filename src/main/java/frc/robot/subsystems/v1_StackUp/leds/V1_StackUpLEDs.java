@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.FieldConstants.Reef.ReefPose;
-import frc.robot.RobotStateLL;
-import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.RobotState;
+import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.leds.Leds;
 
 public class V1_StackUpLEDs extends Leds {
@@ -85,11 +85,11 @@ public class V1_StackUpLEDs extends Leds {
         rainbow(LENGTH, 5.0);
       }
     } else if (RobotMode.enabled()) {
-      if (RobotStateLL.isAutoAligning()) {
+      if (RobotState.isAutoAligning()) {
         rainbow(LENGTH, 0.25);
       } else {
-        if (RobotStateLL.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
-          if (RobotStateLL.isIntakingCoral()) {
+        if (RobotState.getOIData().currentReefPost().equals(ReefPose.RIGHT)) {
+          if (RobotState.isIntakingCoral()) {
             solid(Color.kAqua, LEFT_LENGTH_START, LEFT_LENGTH_END);
           } else {
             breath(
@@ -99,8 +99,8 @@ public class V1_StackUpLEDs extends Leds {
                 LEFT_LENGTH_START,
                 LEFT_LENGTH_END);
           }
-        } else if (RobotStateLL.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
-          if (RobotStateLL.isIntakingCoral()) {
+        } else if (RobotState.getOIData().currentReefPost().equals(ReefPose.LEFT)) {
+          if (RobotState.isIntakingCoral()) {
             solid(Color.kAqua, RIGHT_LENGTH_START, RIGHT_LENGTH_END);
           } else {
             breath(

@@ -8,7 +8,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.RobotContainer;
-import frc.robot.RobotStateLL;
+import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -107,8 +107,8 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
     driver.a().whileTrue(DriveCommands.autoAlignReefCoral(drive, vision.getCameras()));
 
-    driver.povLeft().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.LEFT)));
-    driver.povRight().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.RIGHT)));
+    driver.povLeft().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
+    driver.povRight().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
   }
 
   public void configureAutos() {
@@ -120,7 +120,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   @Override
   public void robotPeriodic() {
-    RobotStateLL.periodic(
+    RobotState.periodic(
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),

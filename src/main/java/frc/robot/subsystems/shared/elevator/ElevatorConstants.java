@@ -3,7 +3,9 @@ package frc.robot.subsystems.shared.elevator;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 public class ElevatorConstants {
@@ -20,7 +22,24 @@ public class ElevatorConstants {
   public static final Gains STOW_GAINS;
   public static final Constraints STOW_CONSTRAINTS;
 
+  public static final Map<ReefState, ElevatorPositions> REEF_STATE_ELEVATOR_POSITION_MAP;
+
   static {
+    REEF_STATE_ELEVATOR_POSITION_MAP =
+        Map.ofEntries(
+            Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
+            Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
+            Map.entry(ReefState.ALGAE_MID, ElevatorPositions.ALGAE_MID),
+            Map.entry(ReefState.ALGAE_INTAKE_TOP, ElevatorPositions.ALGAE_INTAKE_TOP),
+            Map.entry(ReefState.ALGAE_INTAKE_BOTTOM, ElevatorPositions.ALGAE_INTAKE_BOT),
+            Map.entry(ReefState.L1, ElevatorPositions.L1),
+            Map.entry(ReefState.L2, ElevatorPositions.L2),
+            Map.entry(ReefState.L3, ElevatorPositions.L3),
+            Map.entry(ReefState.L4, ElevatorPositions.L4),
+            Map.entry(ReefState.L4_PLUS, ElevatorPositions.L4_PLUS),
+            Map.entry(ReefState.ALGAE_SCORE, ElevatorPositions.ALGAE_SCORE));
+
     switch (Constants.ROBOT) {
       case V1_STACKUP:
       case V1_STACKUP_SIM:

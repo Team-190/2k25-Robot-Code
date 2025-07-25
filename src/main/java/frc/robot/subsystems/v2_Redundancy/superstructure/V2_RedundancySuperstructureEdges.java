@@ -2,7 +2,7 @@ package frc.robot.subsystems.v2_Redundancy.superstructure;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotStateLL;
+import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
@@ -97,7 +97,7 @@ public class V2_RedundancySuperstructureEdges {
           Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
               .withTimeout(0.75)
               .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP)))
-              .unless(() -> RobotStateLL.isHasAlgae()));
+              .unless(() -> RobotState.isHasAlgae()));
     }
 
     // Special case: If going to INTAKE_REEF_L2 or INTAKE_REEF_L3, but not from STOW_UP or BARGE
