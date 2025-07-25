@@ -4,7 +4,10 @@
 
 This repository contains the complete software for the FRC Team 190 2k25 robot. This document outlines the core architectural decisions, subsystem interactions, and operational strategies.
 
-![Robot Image](https://www.chiefdelphi.com/uploads/default/original/4X/9/c/2/9c2b01f10837312b45fb2918aae24ecef5c673ec.jpeg)
+<div style="display: flex; justify-content: center; gap: 10px;">
+    <img src="https://www.chiefdelphi.com/uploads/default/original/4X/9/5/5/955054c2aab38e32107c9eff2cb52e4653172877.jpeg" alt="Robot Image 2" style="width: 45%; height: auto;">
+    <img src="https://www.chiefdelphi.com/uploads/default/original/4X/9/c/2/9c2b01f10837312b45fb2918aae24ecef5c673ec.jpeg" alt="Robot Image 1" style="width: 45%; height: auto;">
+</div>
 
 ---
 
