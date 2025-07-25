@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -179,6 +180,7 @@ public class V2_RedundancyElevator {
                 (volts) -> io.setVoltage(volts.in(Volts)), null, superstructure));
 
     return Commands.sequence(
+        superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine
             .quasistatic(Direction.kForward)

@@ -109,7 +109,6 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
-          superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
           break;
         default:
           break;
@@ -146,9 +145,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     if (leds == null) {
       leds = new V2_RedundancyLEDs();
     }
-    if (superstructure == null) {
-      superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
-    }
+    superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
 
     configureButtonBindings();
     configureAutos();
@@ -294,9 +291,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     operator
         .rightTrigger(0.5)
         .whileTrue(
-            superstructure
-                .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_CORAL))
-                .withTimeout(0.4));
+            superstructure.override(
+                () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_CORAL), 0.4));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.LEFT)));
@@ -324,8 +320,9 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .back()
         .whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE))
         .onFalse(
-            superstructure.runActionWithTimeout(
-                V2_RedundancySuperstructureStates.SCORE_BARGE, 0.1));
+            superstructure
+                .runActionWithTimeout(V2_RedundancySuperstructureStates.SCORE_BARGE, 0.1)
+                .finallyDo(() -> RobotStateLL.setHasAlgae(false)));
 
     // Misc
     operatorFunnelOverride
@@ -346,6 +343,12 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+
+    // elevator.runSysID(superstructure)
+    // funnel.sysIdRoutine(superstructure)
+    // intake.sysIdRoutine(superstructure)
+    // manipulator.sysIdRoutine(superstructure)
+
     autoChooser.addRoutine(
         "4 Piece Left",
         () ->

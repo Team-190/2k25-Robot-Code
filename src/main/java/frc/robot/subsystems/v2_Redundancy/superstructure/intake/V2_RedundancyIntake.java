@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.util.ExternalLoggedTracer;
@@ -99,6 +100,7 @@ public class V2_RedundancyIntake {
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setExtensionVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
+        superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward).until(this::atGoal),
         Commands.waitSeconds(4),

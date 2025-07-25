@@ -364,7 +364,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   public Command override(Runnable action) {
     return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
+            Commands.run(action),
+            Commands.idle(this))
         .finallyDo(() -> setGoal(currentState));
   }
 
@@ -376,10 +378,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    * @return Command that runs the override and resumes the old goal
    */
   public Command override(Runnable action, double timeSeconds) {
-    return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
-        .withTimeout(timeSeconds)
-        .finallyDo(() -> setGoal(currentState));
+    return override(action).withTimeout(timeSeconds);
   }
 
   /**
