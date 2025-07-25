@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
@@ -62,7 +62,7 @@ public class V2_RedundancyElevator {
    * @return A command that sets the elevator position.
    */
   public void setPosition() {
-    setPosition(() -> RobotState.getOIData().currentReefHeight());
+    setPosition(() -> RobotStateLL.getOIData().currentReefHeight());
   }
 
   /**
@@ -169,14 +169,15 @@ public class V2_RedundancyElevator {
    */
   public Command runSysID(V2_RedundancySuperstructure superstructure) {
     SysIdRoutine characterizationRoutine =
-    new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Volts.of(1).per(Second),
-            Volts.of(6),
-            Seconds.of(10),
-            (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
-        new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, superstructure));
-      
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(1).per(Second),
+                Volts.of(6),
+                Seconds.of(10),
+                (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setVoltage(volts.in(Volts)), null, superstructure));
+
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine

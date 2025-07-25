@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -113,7 +113,7 @@ public class V2_RedundancyMechanism3d {
                         Units.degreesToRadians(-110),
                         Units.degreesToRadians(0))));
 
-    if (RobotState.isHasAlgae()) {
+    if (RobotStateLL.isHasAlgae()) {
       Logger.recordOutput("Algae Pose", ALGAE);
     } else {
       Logger.recordOutput("Algae Pose", new Pose3d(1000, 1000, 1000, new Rotation3d()));

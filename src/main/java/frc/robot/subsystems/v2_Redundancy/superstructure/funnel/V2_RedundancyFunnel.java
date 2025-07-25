@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.RobotState;
-import frc.robot.RobotState.RobotMode;
+import frc.robot.RobotStateLL;
+import frc.robot.RobotStateLL.RobotMode;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
@@ -67,7 +67,7 @@ public class V2_RedundancyFunnel {
     io.setRollerVoltage(rollerGoal.getVoltage());
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
 
-    if (RobotState.isIntakingCoral()) {
+    if (RobotStateLL.isIntakingCoral()) {
       if (hasCoral()) {
         setClapDaddyGoal(FunnelState.CLOSED);
       }
@@ -76,7 +76,7 @@ public class V2_RedundancyFunnel {
       }
     }
 
-    if (RobotMode.auto() && RobotState.isAutoClapOverride()) {
+    if (RobotMode.auto() && RobotStateLL.isAutoClapOverride()) {
       setClapDaddyGoal(FunnelState.CLOSED);
     }
 
