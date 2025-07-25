@@ -59,15 +59,15 @@ import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
   // Subsystems
+  private Climber climber;
   private Drive drive;
-  private Vision vision;
   private ElevatorFSM elevator;
   private FunnelFSM funnel;
-  private Climber climber;
-  private V2_RedundancyManipulator manipulator;
   private V2_RedundancyIntake intake;
   private V2_RedundancyLEDs leds;
+  private V2_RedundancyManipulator manipulator;
   private V2_RedundancySuperstructure superstructure;
+  private Vision vision;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -81,6 +81,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V2_REDUNDANCY:
+          climber = new Climber(new ClimberIOTalonFX());
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -88,16 +89,16 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           funnel = new Funnel(new FunnelIOTalonFX()).getFSM();
-          climber = new Climber(new ClimberIOTalonFX());
-          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
           leds = new V2_RedundancyLEDs();
-          superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
+          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
+          superstructure = new V2_RedundancySuperstructure(elevator, funnel, intake, manipulator);
+          vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           break;
         case V2_REDUNDANCY_SIM:
+          climber = new Climber(new ClimberIOSim());
           drive =
               new Drive(
                   new GyroIO() {},
@@ -105,18 +106,20 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
           elevator = new Elevator(new ElevatorIOSim()).getFSM();
           funnel = new Funnel(new FunnelIOSim()).getFSM();
-          climber = new Climber(new ClimberIOSim());
-          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
+          manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
+          vision = new Vision();
           break;
         default:
           break;
       }
     }
 
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
+    }
     if (drive == null) {
       drive =
           new Drive(
@@ -126,20 +129,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
-    if (vision == null) {
-      vision = new Vision();
-    }
-    if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {}).getFSM();
-    }
     if (elevator == null) {
       elevator = new Elevator(new ElevatorIO() {}).getFSM();
     }
-    if (manipulator == null) {
-      manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
-    }
-    if (climber == null) {
-      climber = new Climber(new ClimberIO() {});
+    if (funnel == null) {
+      funnel = new Funnel(new FunnelIO() {}).getFSM();
     }
     if (intake == null) {
       intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIO() {});
@@ -147,7 +141,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     if (leds == null) {
       leds = new V2_RedundancyLEDs();
     }
-    superstructure = new V2_RedundancySuperstructure(elevator, funnel, manipulator, intake);
+    if (manipulator == null) {
+      manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
+    }
+    if (vision == null) {
+      vision = new Vision();
+    }
+    superstructure = new V2_RedundancySuperstructure(elevator, funnel, intake, manipulator);
 
     configureButtonBindings();
     configureAutos();

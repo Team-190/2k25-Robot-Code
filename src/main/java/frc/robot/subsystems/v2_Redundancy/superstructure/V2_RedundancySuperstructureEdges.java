@@ -8,7 +8,7 @@ import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,15 +69,15 @@ public class V2_RedundancySuperstructureEdges {
 
   /**
    * Gets the command to execute for a given edge in the superstructure state graph. This command
-   * typically involves coordinating the elevator, manipulator, funnel, and intake subsystems to
+   * typically involves coordinating the elevator, funnel, intake, and manipulator subsystems to
    * move from one state to another.
    *
    * @param from The starting state of the superstructure.
    * @param to The target state of the superstructure.
    * @param elevator The elevator subsystem.
-   * @param manipulator The manipulator subsystem.
    * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
+   * @param manipulator The manipulator subsystem.
    * @return A {@link Command} that, when executed, transitions the superstructure from the 'from'
    *     state to the 'to' state.
    */
@@ -85,15 +85,15 @@ public class V2_RedundancySuperstructureEdges {
       V2_RedundancySuperstructureStates from,
       V2_RedundancySuperstructureStates to,
       ElevatorFSM elevator,
-      V2_RedundancyManipulator manipulator,
       FunnelFSM funnel,
-      V2_RedundancyIntake intake) {
+      V2_RedundancyIntake intake,
+      V2_RedundancyManipulator manipulator) {
     V2_RedundancySuperstructurePose pose = to.getPose();
 
     // Special case: If coming from INTAKE_FLOOR, run outtake for 1s then stop
     if (from == V2_RedundancySuperstructureStates.INTAKE_FLOOR) {
       return Commands.parallel(
-          pose.asCommand(elevator, manipulator, funnel, intake),
+          pose.asCommand(elevator, funnel, intake, manipulator),
           Commands.run(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE))
               .withTimeout(0.75)
               .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP)))
@@ -108,10 +108,10 @@ public class V2_RedundancySuperstructureEdges {
       return Commands.sequence(
           pose.setElevatorHeight(elevator)
               .alongWith(
-                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN))
+                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ManipulatorArmState.STOW_DOWN))
                       .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
               .alongWith(pose.setFunnelState(funnel).alongWith(pose.setIntakeState(intake))),
-          pose.setArmState(manipulator));
+          pose.setManipulatorState(manipulator));
     }
 
     // Special case: If going to FLOOR_ACQUISITION from any state EXCEPT INTAKE_FLOOR
@@ -119,12 +119,12 @@ public class V2_RedundancySuperstructureEdges {
       return pose.setIntakeState(intake)
           .andThen(
               pose.setElevatorHeight(elevator)
-                  .alongWith(pose.setFunnelState(funnel), pose.setArmState(manipulator)));
+                  .alongWith(pose.setFunnelState(funnel), pose.setManipulatorState(manipulator)));
 
     // Special case: If going to INTAKE_FLOOR, run intake roller as deadline
     if (to == V2_RedundancySuperstructureStates.INTAKE_FLOOR)
       return Commands.deadline(
-          pose.asCommand(elevator, manipulator, funnel, intake),
+          pose.asCommand(elevator, funnel, intake, manipulator),
           Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.INTAKE)));
 
     // Special case: If going from FLOOR_ACQUISITION to STOW_DOWN,
@@ -133,7 +133,7 @@ public class V2_RedundancySuperstructureEdges {
             && to == V2_RedundancySuperstructureStates.STOW_DOWN)
         || to == V2_RedundancySuperstructureStates.STOW_UP) {
 
-      return pose.setArmState(manipulator)
+      return pose.setManipulatorState(manipulator)
           .andThen(
               pose.setIntakeState(intake)
                   .alongWith(pose.setElevatorHeight(elevator), pose.setFunnelState(funnel)));
@@ -142,7 +142,7 @@ public class V2_RedundancySuperstructureEdges {
     // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM
     if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM) {
 
-      return Commands.deadline(pose.setArmState(manipulator), pose.setElevatorHeight(elevator));
+      return Commands.deadline(pose.setManipulatorState(manipulator), pose.setElevatorHeight(elevator));
     }
 
     // Special case: If transitioning to INTERMEDIATE_WAIT_FOR_ELEVATOR
@@ -155,13 +155,13 @@ public class V2_RedundancySuperstructureEdges {
         && to == V2_RedundancySuperstructureStates.SCORE_L1) {
       return Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.L1_SCORE))
           .andThen(
-              Commands.waitSeconds(0.05), pose.asCommand(elevator, manipulator, funnel, intake));
+              Commands.waitSeconds(0.05), pose.asCommand(elevator, funnel, intake, manipulator));
     }
 
     // Special case: If climbing, wait for elevator first
     if (to == V2_RedundancySuperstructureStates.CLIMB) {
       return pose.setElevatorHeight(elevator)
-          .andThen(pose.asCommand(elevator, manipulator, funnel, intake));
+          .andThen(pose.asCommand(elevator, funnel, intake, manipulator));
     }
 
     // Special case: If scoring, wait for elevator
@@ -176,13 +176,13 @@ public class V2_RedundancySuperstructureEdges {
             .contains(to)) {
       return Commands.parallel(
           pose.setElevatorHeight(elevator),
-          pose.setArmState(manipulator),
+          pose.setManipulatorState(manipulator),
           pose.setIntakeState(intake),
           pose.setFunnelState(funnel));
     }
 
     // Default case: Execute all subsystem poses in parallel
-    return pose.asCommand(elevator, manipulator, funnel, intake);
+    return pose.asCommand(elevator, funnel, intake, manipulator);
   }
 
   /**
@@ -523,7 +523,7 @@ public class V2_RedundancySuperstructureEdges {
           edge.to(),
           EdgeCommand.builder()
               .command(
-                  getEdgeCommand(edge.from(), edge.to(), elevator, manipulator, funnel, intake))
+                  getEdgeCommand(edge.from(), edge.to(), elevator, funnel, intake, manipulator))
               .algaeEdgeType(type)
               .build());
     }
@@ -541,9 +541,9 @@ public class V2_RedundancySuperstructureEdges {
   public static void addEdges(
       Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph,
       ElevatorFSM elevator,
-      V2_RedundancyManipulator manipulator,
       FunnelFSM funnel,
-      V2_RedundancyIntake intake) {
+      V2_RedundancyIntake intake,
+      V2_RedundancyManipulator manipulator) {
     // Create all edge lists (NoneEdges, NoAlgaeEdges, AlgaeEdges)
     createEdges();
 

@@ -9,7 +9,7 @@ import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import lombok.Getter;
 
 /**
@@ -22,7 +22,7 @@ public class V2_RedundancySuperstructurePose {
   private final String key;
 
   @Getter private final ReefState elevatorHeight;
-  @Getter private final ArmState armState;
+  @Getter private final ManipulatorArmState armState;
   @Getter private final IntakeExtensionState intakeState;
   @Getter private final FunnelState funnelState;
 
@@ -36,7 +36,7 @@ public class V2_RedundancySuperstructurePose {
     this.key = key;
 
     this.elevatorHeight = poses.elevatorHeight();
-    this.armState = poses.armState();
+    this.armState = poses.manipulatorArmState();
     this.intakeState = poses.intakeState();
     this.funnelState = poses.funnelState();
   }
@@ -54,15 +54,13 @@ public class V2_RedundancySuperstructurePose {
   }
 
   /**
-   * Creates a command to set the manipulator arm to the specified state for this pose.
+   * Creates a command to set the funnel to the specified state for this pose.
    *
-   * @param manipulator The manipulator subsystem to control.
-   * @return A Command that sets the arm state and waits until it reaches the goal.
+   * @param funnel The funnel subsystem to control.
+   * @return A Command that sets the funnel state.
    */
-  public Command setArmState(V2_RedundancyManipulator manipulator) {
-    return Commands.parallel(
-        Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
-        manipulator.waitUntilAlgaeArmAtGoal());
+  public Command setFunnelState(FunnelFSM funnel) {
+    return Commands.runOnce(() -> funnel.setClapDaddyGoal(funnelState));
   }
 
   /**
@@ -78,13 +76,15 @@ public class V2_RedundancySuperstructurePose {
   }
 
   /**
-   * Creates a command to set the funnel to the specified state for this pose.
+   * Creates a command to set the manipulator arm to the specified state for this pose.
    *
-   * @param funnel The funnel subsystem to control.
-   * @return A Command that sets the funnel state.
+   * @param manipulator The manipulator subsystem to control.
+   * @return A Command that sets the arm state and waits until it reaches the goal.
    */
-  public Command setFunnelState(FunnelFSM funnel) {
-    return Commands.runOnce(() -> funnel.setClapDaddyGoal(funnelState));
+  public Command setManipulatorState(V2_RedundancyManipulator manipulator) {
+    return Commands.parallel(
+        Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
+        manipulator.waitUntilAlgaeArmAtGoal());
   }
 
   /**
@@ -92,20 +92,21 @@ public class V2_RedundancySuperstructurePose {
    * states defined by this pose.
    *
    * @param elevator The elevator subsystem.
-   * @param manipulator The manipulator subsystem.
    * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
+   * @param manipulator The manipulator subsystem.
    * @return A Command that sets all subsystems to their respective states in parallel.
    */
   public Command asCommand(
       ElevatorFSM elevator,
-      V2_RedundancyManipulator manipulator,
       FunnelFSM funnel,
-      V2_RedundancyIntake intake) {
+      V2_RedundancyIntake intake,
+      V2_RedundancyManipulator manipulator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
-            Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
-        Commands.runOnce(() -> intake.setExtensionGoal(intakeState)), setFunnelState(funnel));
+        Commands.runOnce(() -> manipulator.setAlgaeArmGoal(armState)),
+        Commands.runOnce(() -> intake.setExtensionGoal(intakeState)),
+        setFunnelState(funnel));
   }
 
   /**
@@ -123,16 +124,20 @@ public class V2_RedundancySuperstructurePose {
    */
   public record SubsystemPoses(
       ReefState elevatorHeight,
-      ArmState armState,
+      FunnelState funnelState,
       IntakeExtensionState intakeState,
-      FunnelState funnelState) {
+      ManipulatorArmState manipulatorArmState) {
 
     /**
      * Creates a SubsystemPoses instance with default states (STOW for elevator, arm, and intake;
      * OPENED for funnel).
      */
     public SubsystemPoses() {
-      this(ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED);
+      this(
+          ReefState.STOW,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN);
     }
   }
 }

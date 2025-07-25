@@ -58,9 +58,9 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armConfig.Feedback.SensorToMechanismRatio =
         V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.CurrentLimits.withSupplyCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ARM_SUPPLY_CURRENT_LIMIT());
     armConfig.CurrentLimits.withStatorCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ARM_STATOR_CURRENT_LIMIT());
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
@@ -83,10 +83,10 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     armConfig.MotionMagic.MotionMagicAcceleration =
         V2_RedundancyManipulatorConstants.CONSTRAINTS
-            .maxAccelerationRotationsPerSecondSquared()
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
             .get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
+        V2_RedundancyManipulatorConstants.CONSTRAINTS.CRUISING_VELOCITY_ROTATIONS_PER_SECOND().get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -123,10 +123,10 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         new DynamicMotionMagicVoltage(
             0,
             V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .cruisingVelocityRotationsPerSecond()
+                .CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
                 .get(),
             V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .maxAccelerationRotationsPerSecondSquared()
+                .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
                 .get(),
             0);
     voltageRequest = new VoltageOut(0);

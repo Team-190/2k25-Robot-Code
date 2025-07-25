@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -27,7 +27,7 @@ public class V2_RedundancyManipulator {
 
   @Getter
   @AutoLogOutput(key = "Manipulator/Arm Goal")
-  private ArmState armGoal;
+  private ManipulatorArmState armGoal;
 
   @Getter
   @AutoLogOutput(key = "Manipulator/Roller Goal")
@@ -38,7 +38,7 @@ public class V2_RedundancyManipulator {
     inputs = new V2_RedundancyManipulatorIOInputsAutoLogged();
     isClosedLoop = true;
 
-    armGoal = ArmState.STOW_DOWN;
+    armGoal = ManipulatorArmState.STOW_DOWN;
     rollerGoal = ManipulatorRollerState.STOP;
   }
 
@@ -131,7 +131,7 @@ public class V2_RedundancyManipulator {
         algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
-  public void setAlgaeArmGoal(ArmState goal) {
+  public void setAlgaeArmGoal(ManipulatorArmState goal) {
     isClosedLoop = true;
     armGoal = goal;
   }
@@ -160,7 +160,7 @@ public class V2_RedundancyManipulator {
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean algaeArmAtGoal() {
     return inputs.armPosition.getRadians() - armGoal.getAngle().getRadians()
-        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
 
   public Command waitUntilAlgaeArmAtGoal() {
@@ -190,6 +190,6 @@ public class V2_RedundancyManipulator {
     return MathUtil.clamp(
         1.25 * y,
         0.10,
-        V2_RedundancyManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE.getVoltage() / 1.5);
+        ManipulatorRollerState.ALGAE_INTAKE.getVoltage() / 1.5);
   }
 }

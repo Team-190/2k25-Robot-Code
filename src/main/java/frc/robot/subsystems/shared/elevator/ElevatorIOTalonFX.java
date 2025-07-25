@@ -20,17 +20,21 @@ import java.util.ArrayList;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
+  // Core hardware components
   private final TalonFX talonFX;
   private final TalonFX[] followTalonFX;
 
+  // Configuration
   private final TalonFXConfiguration config;
 
+  // Sensor inputs
   private StatusSignal<Angle> positionRotations;
   private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
   private ArrayList<StatusSignal<Voltage>> appliedVolts;
   private ArrayList<StatusSignal<Current>> supplyCurrentAmps;
   private ArrayList<StatusSignal<Current>> torqueCurrentAmps;
   private ArrayList<StatusSignal<Temperature>> temperatureCelsius;
+
   private double positionGoalMeters;
   private StatusSignal<Double> positionSetpointRotations;
   private StatusSignal<Double> positionErrorRotations;
@@ -153,6 +157,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     InternalLoggedTracer.reset();
+
+    // Position and velocity
     inputs.positionMeters =
         (positionRotations.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
@@ -163,12 +169,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * Math.PI
             * ElevatorConstants.DRUM_RADIUS
             * 2;
+
     for (int i = 0; i < ElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts.get(i).getValueAsDouble();
       inputs.supplyCurrentAmps[i] = supplyCurrentAmps.get(i).getValueAsDouble();
       inputs.torqueCurrentAmps[i] = torqueCurrentAmps.get(i).getValueAsDouble();
       inputs.temperatureCelsius[i] = temperatureCelsius.get(i).getValueAsDouble();
     }
+
     inputs.positionGoalMeters = positionGoalMeters;
     inputs.positionSetpointMeters =
         (positionSetpointRotations.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
@@ -180,6 +188,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * Math.PI
             * ElevatorConstants.DRUM_RADIUS
             * 2;
+
     InternalLoggedTracer.record("Update Inputs", "Elevator/TalonFX");
   }
 
