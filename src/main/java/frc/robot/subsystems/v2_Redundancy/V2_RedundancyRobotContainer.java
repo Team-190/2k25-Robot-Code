@@ -11,7 +11,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V2_RedundancyCompositeCommands;
@@ -27,8 +27,8 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
+import frc.robot.subsystems.shared.visionlimelight.Vision;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
@@ -228,7 +228,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                     V2_RedundancyCompositeCommands.postFloorIntakeSequence(superstructure),
                     Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE)))
                 .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
-    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
+    driver.rightBumper().onTrue(Commands.runOnce(() -> RobotStateLL.toggleReefPost()));
 
     // Driver POV
     driver.povUp().onTrue(superstructure.setPosition());
@@ -239,7 +239,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .leftStick()
         .onTrue(
             V2_RedundancyCompositeCommands.scoreCoralSequence(
-                elevator, superstructure, () -> RobotState.getReefAlignData().atCoralSetpoint()));
+                elevator, superstructure, () -> RobotStateLL.getReefAlignData().atCoralSetpoint()));
 
     driver
         .back()
@@ -247,7 +247,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
             V2_RedundancyCompositeCommands.intakeAlgaeFromReefSequence(
                 drive,
                 superstructure,
-                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+                () -> RobotStateLL.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
 
     driver
@@ -259,7 +259,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 manipulator,
                 intake,
                 superstructure,
-                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+                () -> RobotStateLL.getReefAlignData().algaeIntakeHeight(),
                 RobotCameras.V2_REDUNDANCY_CAMS));
 
     // Operator face buttons
@@ -299,8 +299,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 .withTimeout(0.4));
 
     // Operator bumpers
-    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
-    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
+    operator.leftBumper().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.LEFT)));
+    operator.rightBumper().onTrue(Commands.runOnce(() -> RobotStateLL.setReefPost(ReefPose.RIGHT)));
 
     operator.povUp().onTrue(V2_RedundancyCompositeCommands.climb(superstructure, climber, drive));
     operator.povDown().whileTrue(climber.winchClimberManual());
@@ -310,14 +310,14 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         .onFalse(
             superstructure
                 .runActionWithTimeout(V2_RedundancySuperstructureStates.SCORE_PROCESSOR, 1)
-                .finallyDo(() -> RobotState.setHasAlgae(false)));
+                .finallyDo(() -> RobotStateLL.setHasAlgae(false)));
 
     operator
         .povRight()
         .whileTrue(
             superstructure
                 .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE))
-                .finallyDo(() -> RobotState.setHasAlgae(false)));
+                .finallyDo(() -> RobotStateLL.setHasAlgae(false)));
     operator.start().whileTrue(superstructure.runGoal(V2_RedundancySuperstructureStates.BARGE));
 
     operator
@@ -334,7 +334,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                 superstructure.runGoal(V2_RedundancySuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
                 superstructure.runGoal(
                     V2_RedundancySuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
-                () -> RobotState.isHasAlgae()))
+                () -> RobotStateLL.isHasAlgae()))
         .onFalse(superstructure.runPreviousState());
   }
 
@@ -408,7 +408,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
 
   @Override
   public void robotPeriodic() {
-    RobotState.periodic(
+    RobotStateLL.periodic(
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),

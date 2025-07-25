@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.RobotState;
+import frc.robot.RobotStateLL;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
@@ -54,7 +54,7 @@ public class V2_RedundancyManipulator {
     InternalLoggedTracer.reset();
     if (isClosedLoop) io.setArmPositionGoal(armGoal.getAngle());
 
-    if (RobotState.isHasAlgae()
+    if (RobotStateLL.isHasAlgae()
         && Set.of(
                 ManipulatorRollerState.STOP,
                 ManipulatorRollerState.ALGAE_INTAKE,
@@ -65,8 +65,8 @@ public class V2_RedundancyManipulator {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
 
-    if (hasAlgae() && RobotState.isIntakingAlgae()) {
-      RobotState.setHasAlgae(true);
+    if (hasAlgae() && RobotStateLL.isIntakingAlgae()) {
+      RobotStateLL.setHasAlgae(true);
     }
     InternalLoggedTracer.record("Manipulator Logic", "Manipulator/Periodic");
     ExternalLoggedTracer.record("Manipulator Total", "Manipulator/Periodic");
@@ -78,7 +78,7 @@ public class V2_RedundancyManipulator {
 
   public void setRollerGoal(ManipulatorRollerState goal) {
     rollerGoal = goal;
-    if (RobotState.isHasAlgae()
+    if (RobotStateLL.isHasAlgae()
         && Set.of(
                 ManipulatorRollerState.STOP,
                 ManipulatorRollerState.ALGAE_INTAKE,
@@ -98,7 +98,7 @@ public class V2_RedundancyManipulator {
 
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return RobotState.isIntakingAlgae()
+    return RobotStateLL.isIntakingAlgae()
         && Math.abs(inputs.rollerAccelerationRadiansPerSecondSquared) < 1000
         && Math.abs(inputs.rollerVelocityRadiansPerSecond) <= 70;
   }
