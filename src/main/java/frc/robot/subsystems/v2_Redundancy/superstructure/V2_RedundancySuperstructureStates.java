@@ -23,7 +23,10 @@ public enum V2_RedundancySuperstructureStates {
   STOW_UP(
       "STOW UP",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.STOW,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_UP),
       SubsystemActions.empty()),
   OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
 
@@ -31,27 +34,42 @@ public enum V2_RedundancySuperstructureStates {
   L1(
       "L1 CORAL SETPOINT",
       new SubsystemPoses(
-          ReefState.L1, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L1,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   L2(
       "L2 CORAL SETPOINT",
       new SubsystemPoses(
-          ReefState.L2, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L2,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   L3(
       "L3 CORAL SETPOINT",
       new SubsystemPoses(
-          ReefState.L3, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L3,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   L4(
       "L4 CORAL SETPOINT",
       new SubsystemPoses(
-          ReefState.L4, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L4,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   L4_PLUS(
       "L4+ CORAL SETPOINT",
       new SubsystemPoses(
-          ReefState.L4_PLUS, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L4_PLUS,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
 
   // Coral States - Actions
@@ -59,161 +77,192 @@ public enum V2_RedundancySuperstructureStates {
       "INTAKE CORAL",
       new SubsystemPoses(),
       new SubsystemActions(
-          ManipulatorRollerState.CORAL_INTAKE, FunnelRollerState.INTAKE, IntakeRollerState.STOP)),
+          FunnelRollerState.INTAKE, IntakeRollerState.STOP, ManipulatorRollerState.CORAL_INTAKE)),
   SCORE_L1(
       "L1 CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L1, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.L1_EXT, FunnelState.OPENED),
+          ReefState.L1,
+          FunnelState.OPENED,
+          IntakeExtensionState.L1_EXT,
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.L1_SCORE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.L1_SCORE)),
   SCORE_L2(
       "L2 CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L2, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L2,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.SCORE_CORAL)),
   SCORE_L3(
       "L3 CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L3, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L3,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.SCORE_CORAL)),
   SCORE_L4(
       "L4 CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L4, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L4,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.L4_SCORE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.L4_SCORE)),
   SCORE_L4_PLUS(
       "L4+ CORAL SCORE",
       new SubsystemPoses(
-          ReefState.L4_PLUS, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.L4_PLUS,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.SCORE_CORAL, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.SCORE_CORAL)),
 
   // Algae States - Floor Operations
   FLOOR_ACQUISITION(
       "FLOOR ALGAE SETPOINT",
       new SubsystemPoses(
           ReefState.ALGAE_FLOOR_INTAKE,
-          ManipulatorArmState.FLOOR_INTAKE,
+          FunnelState.OPENED,
           IntakeExtensionState.INTAKE,
-          FunnelState.OPENED),
+          ManipulatorArmState.FLOOR_INTAKE),
       SubsystemActions.empty()),
   INTAKE_FLOOR(
       "INTAKE FLOOR",
       new SubsystemPoses(
           ReefState.ALGAE_FLOOR_INTAKE,
-          ManipulatorArmState.FLOOR_INTAKE,
+          FunnelState.OPENED,
           IntakeExtensionState.INTAKE,
-          FunnelState.OPENED),
+          ManipulatorArmState.FLOOR_INTAKE),
       new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.INTAKE)),
+          FunnelRollerState.STOP, IntakeRollerState.INTAKE, ManipulatorRollerState.ALGAE_INTAKE)),
+
   // Algae States - Reef Operations
   REEF_ACQUISITION_L2(
       "L2 ALGAE SETPOINT",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM,
-          ManipulatorArmState.STOW_DOWN,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   REEF_ACQUISITION_L3(
       "L3 ALGAE SETPOINT",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP,
-          ManipulatorArmState.STOW_DOWN,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   INTAKE_REEF_L2(
       "L2 ALGAE INTAKE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM,
-          ManipulatorArmState.REEF_INTAKE,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.REEF_INTAKE),
       new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.ALGAE_INTAKE)),
   INTAKE_REEF_L3(
       "L3 ALGAE INTAKE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP,
-          ManipulatorArmState.REEF_INTAKE,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.REEF_INTAKE),
       new SubsystemActions(
-          ManipulatorRollerState.ALGAE_INTAKE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.ALGAE_INTAKE)),
   DROP_REEF_L2(
       "DROP L2 ALGAE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM,
-          ManipulatorArmState.STOW_DOWN,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.REMOVE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.REMOVE_ALGAE)),
   DROP_REEF_L3(
       "DROP L3 ALGAE",
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP,
-          ManipulatorArmState.STOW_DOWN,
+          FunnelState.OPENED,
           IntakeExtensionState.STOW,
-          FunnelState.OPENED),
+          ManipulatorArmState.STOW_DOWN),
       new SubsystemActions(
-          ManipulatorRollerState.REMOVE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.REMOVE_ALGAE)),
 
   // Algae States - Barge/Processor Operations
   BARGE(
       "BARGE SETPOINT",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.ALGAE_SCORE, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.STOW_UP),
       SubsystemActions.empty()),
   PROCESSOR(
       "PROCESSOR SETPOINT",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.STOW, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.PROCESSOR),
       SubsystemActions.empty()),
   SCORE_BARGE(
       "SCORE BARGE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.ALGAE_SCORE, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.STOW_UP),
       new SubsystemActions(
-          ManipulatorRollerState.SCORE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.SCORE_ALGAE)),
   SCORE_PROCESSOR(
       "SCORE PROCESSOR",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.STOW, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.PROCESSOR),
       new SubsystemActions(
-          ManipulatorRollerState.SCORE_ALGAE, FunnelRollerState.STOP, IntakeRollerState.STOP)),
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.SCORE_ALGAE)),
 
   // Utility States
   INTERMEDIATE_WAIT_FOR_ELEVATOR(
       "WAIT FOR ELEVATOR",
       new SubsystemPoses(
-          ReefState.ALGAE_MID, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.ALGAE_MID,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   INTERMEDIATE_WAIT_FOR_ARM(
       "WAIT FOR ARM",
       new SubsystemPoses(
-          ReefState.ALGAE_MID, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED),
+          ReefState.ALGAE_MID,
+          FunnelState.OPENED,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   FUNNEL_CLOSE_WITH_STOW_UP(
       "FUNNEL CLOSE WITH STOW UP",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.STOW_UP, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.STOW, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.STOW_UP),
       SubsystemActions.empty()),
   FUNNEL_CLOSE_WITH_STOW_DOWN(
       "FUNNEL CLOSE WITH STOW DOWN",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLOSED),
+          ReefState.STOW, FunnelState.CLOSED,
+          IntakeExtensionState.STOW, ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
 
   // Climb State
   CLIMB(
       "CLIMB",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.CLIMB),
+          ReefState.STOW,
+          FunnelState.CLIMB,
+          IntakeExtensionState.STOW,
+          ManipulatorArmState.STOW_DOWN),
       SubsystemActions.empty()),
   ;
 

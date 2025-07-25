@@ -38,8 +38,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   private final Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph;
   private final ElevatorFSM elevator;
   private final FunnelFSM funnel;
-  private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
+  private final V2_RedundancyManipulator manipulator;
 
   /**
    * The previous, current, and next states of the superstructure. These are used to track the state
@@ -73,18 +73,18 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    *
    * @param elevator The elevator subsystem.
    * @param funnel The funnel subsystem.
-   * @param manipulator The manipulator subsystem.
    * @param intake The intake subsystem.
+   * @param manipulator The manipulator subsystem.
    */
   public V2_RedundancySuperstructure(
       ElevatorFSM elevator,
       FunnelFSM funnel,
-      V2_RedundancyManipulator manipulator,
-      V2_RedundancyIntake intake) {
+      V2_RedundancyIntake intake,
+      V2_RedundancyManipulator manipulator) {
     this.elevator = elevator;
     this.funnel = funnel;
-    this.manipulator = manipulator;
     this.intake = intake;
+    this.manipulator = manipulator;
 
     previousState = null;
     currentState = V2_RedundancySuperstructureStates.START;
@@ -100,7 +100,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     // Add edges between states
-    V2_RedundancySuperstructureEdges.addEdges(graph, elevator, manipulator, funnel, intake);
+    V2_RedundancySuperstructureEdges.addEdges(graph, elevator, funnel, intake, manipulator);
   }
 
   /**
@@ -113,10 +113,10 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     if (currentState == V2_RedundancySuperstructureStates.L4
         && nextState == V2_RedundancySuperstructureStates.SCORE_L4
         && elevator.atGoal()) {
-      targetState.getAction().get(manipulator, funnel, intake);
+      targetState.getAction().get(funnel, intake, manipulator);
     } else if (currentState != null
         && !currentState.equals(V2_RedundancySuperstructureStates.OVERRIDE)) {
-      currentState.getAction().get(manipulator, funnel, intake);
+      currentState.getAction().get(funnel, intake, manipulator);
     }
 
     // Set RobotState variables
@@ -172,9 +172,9 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
     }
 
     elevator.periodic();
-    manipulator.periodic();
     funnel.periodic();
     intake.periodic();
+    manipulator.periodic();
   }
 
   /**

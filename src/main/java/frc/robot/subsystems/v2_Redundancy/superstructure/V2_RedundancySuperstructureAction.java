@@ -14,9 +14,9 @@ import lombok.Getter;
  * manner.
  */
 public class V2_RedundancySuperstructureAction {
-  @Getter private final ManipulatorRollerState manipulatorRollerState;
   @Getter private final FunnelRollerState funnelRollerState;
   @Getter private final IntakeRollerState intakeRollerState;
+  @Getter private final ManipulatorRollerState manipulatorRollerState;
 
   /**
    * Creates a new SuperstructureAction with specified roller states.
@@ -25,9 +25,9 @@ public class V2_RedundancySuperstructureAction {
    * @param rollerStates Combined states for all subsystem rollers
    */
   public V2_RedundancySuperstructureAction(String key, SubsystemActions rollerStates) {
-    this.manipulatorRollerState = rollerStates.manipulatorRollerState();
     this.funnelRollerState = rollerStates.funnelRollerState();
     this.intakeRollerState = rollerStates.intakeRollerState();
+    this.manipulatorRollerState = rollerStates.manipulatorRollerState();
   }
 
   /**
@@ -60,15 +60,15 @@ public class V2_RedundancySuperstructureAction {
   /**
    * Executes all roller actions simultaneously across all subsystems.
    *
-   * @param manipulator The manipulator subsystem
    * @param funnel The funnel subsystem
    * @param intake The intake subsystem
+   * @param manipulator The manipulator subsystem
    */
   public void get(
-      V2_RedundancyManipulator manipulator, FunnelFSM funnel, V2_RedundancyIntake intake) {
-    runManipulator(manipulator);
+      FunnelFSM funnel, V2_RedundancyIntake intake, V2_RedundancyManipulator manipulator) {
     runFunnel(funnel);
     runIntake(intake);
+    runManipulator(manipulator);
   }
 
   /**
@@ -76,9 +76,9 @@ public class V2_RedundancySuperstructureAction {
    * multiple roller states as a single unit.
    */
   public record SubsystemActions(
-      ManipulatorRollerState manipulatorRollerState,
       FunnelRollerState funnelRollerState,
-      IntakeRollerState intakeRollerState) {
+      IntakeRollerState intakeRollerState,
+      ManipulatorRollerState manipulatorRollerState) {
     /**
      * Creates a SubsystemActions instance with all rollers in STOP state.
      *
@@ -86,7 +86,7 @@ public class V2_RedundancySuperstructureAction {
      */
     public static SubsystemActions empty() {
       return new SubsystemActions(
-          ManipulatorRollerState.STOP, FunnelRollerState.STOP, IntakeRollerState.STOP);
+          FunnelRollerState.STOP, IntakeRollerState.STOP, ManipulatorRollerState.STOP);
     }
   }
 }

@@ -52,26 +52,26 @@ import org.littletonrobotics.junction.Logger;
 
 public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
+  private Climber climber;
   private Drive drive;
-  private Vision vision;
   private ElevatorCSB elevator;
   private FunnelCSB funnel;
-  private Climber climber;
-  private V1_StackUpManipulator manipulator;
   private V1_StackUpLEDs leds;
+  private V1_StackUpManipulator manipulator;
+  private Vision vision;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-
   private final AutoChooser autoChooser = new AutoChooser();
 
   public V1_StackUpRobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V1_STACKUP:
+          climber = new Climber(new ClimberIOTalonFX());
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -79,14 +79,14 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX()).getCSB();
           funnel = new Funnel(new FunnelIOTalonFX()).getCSB();
-          climber = new Climber(new ClimberIOTalonFX());
-          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
           leds = new V1_StackUpLEDs();
+          manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
+          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           break;
         case V1_STACKUP_SIM:
+          climber = new Climber(new ClimberIOSim());
           drive =
               new Drive(
                   new GyroIO() {},
@@ -94,17 +94,19 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
           elevator = new Elevator(new ElevatorIOSim()).getCSB();
           funnel = new Funnel(new FunnelIOSim()).getCSB();
-          climber = new Climber(new ClimberIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
+          vision = new Vision();
           break;
         default:
           break;
       }
     }
 
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
+    }
     if (drive == null) {
       drive =
           new Drive(
@@ -114,23 +116,20 @@ public class V1_StackUpRobotContainer implements RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
-    if (vision == null) {
-      vision = new Vision();
-    }
     if (elevator == null) {
       elevator = new Elevator(new ElevatorIO() {}).getCSB();
     }
     if (funnel == null) {
       funnel = new Funnel(new FunnelIO() {}).getCSB();
     }
-    if (climber == null) {
-      climber = new Climber(new ClimberIO() {});
+    if (leds == null) {
+      leds = new V1_StackUpLEDs();
     }
     if (manipulator == null) {
       manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
     }
-    if (leds == null) {
-      leds = new V1_StackUpLEDs();
+    if (vision == null) {
+      vision = new Vision();
     }
 
     configureButtonBindings();
