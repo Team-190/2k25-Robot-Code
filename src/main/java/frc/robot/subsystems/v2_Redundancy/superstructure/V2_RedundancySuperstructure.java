@@ -7,7 +7,7 @@ import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
 import frc.robot.RobotStateLL.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
-import frc.robot.subsystems.shared.funnel.FunnelFSM;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;

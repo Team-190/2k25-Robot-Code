@@ -14,7 +14,7 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.shared.funnel.FunnelCSB;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;

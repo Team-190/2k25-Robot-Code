@@ -33,7 +33,8 @@ import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.shared.funnel.FunnelFSM;
+import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
@@ -89,7 +90,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
-          funnel = new FunnelFSM(new FunnelIOTalonFX());
+          funnel = new Funnel(new FunnelIOTalonFX()).getFSM();
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
@@ -106,7 +107,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           elevator = new Elevator(new ElevatorIOSim()).getFSM();
-          funnel = new FunnelFSM(new FunnelIOSim());
+          funnel = new Funnel(new FunnelIOSim()).getFSM();
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
@@ -129,7 +130,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (funnel == null) {
-      funnel = new FunnelFSM(new FunnelIO() {});
+      funnel = new Funnel(new FunnelIO() {}).getFSM();
     }
     if (elevator == null) {
       elevator = new Elevator(new ElevatorIO() {}).getFSM();

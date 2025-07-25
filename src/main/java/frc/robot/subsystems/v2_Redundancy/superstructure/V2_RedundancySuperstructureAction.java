@@ -1,7 +1,7 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelRollerState;
-import frc.robot.subsystems.shared.funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;

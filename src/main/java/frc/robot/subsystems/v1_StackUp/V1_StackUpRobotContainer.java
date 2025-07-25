@@ -35,7 +35,8 @@ import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.shared.funnel.FunnelCSB;
+import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
@@ -80,7 +81,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           elevator = new Elevator(new ElevatorIOTalonFX()).getCSB();
-          funnel = new FunnelCSB(new FunnelIOTalonFX());
+          funnel = new Funnel(new FunnelIOTalonFX()).getCSB();
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
           leds = new V1_StackUpLEDs();
@@ -95,7 +96,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
           elevator = new Elevator(new ElevatorIOSim()).getCSB();
-          funnel = new FunnelCSB(new FunnelIOSim());
+          funnel = new Funnel(new FunnelIOSim()).getCSB();
           climber = new Climber(new ClimberIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
           break;
@@ -120,7 +121,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       elevator = new Elevator(new ElevatorIO() {}).getCSB();
     }
     if (funnel == null) {
-      funnel = new FunnelCSB(new FunnelIO() {});
+      funnel = new Funnel(new FunnelIO() {}).getCSB();
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});

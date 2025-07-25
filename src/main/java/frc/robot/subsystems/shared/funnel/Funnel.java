@@ -10,35 +10,41 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotStateLL;
+import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelRollerState;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
+import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
+import java.util.function.BooleanSupplier;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public abstract class Funnel extends SubsystemBase {
-  protected FunnelIO io;
-  protected FunnelIOInputsAutoLogged inputs;
+public class Funnel {
+  private final FunnelIO io;
+  private final FunnelIOInputsAutoLogged inputs;
 
-  protected boolean isClosedLoop;
+  private double debounceTimestamp;
 
-  @Getter
   @AutoLogOutput(key = "Funnel/ClapDaddy Goal")
-  protected FunnelState clapDaddyGoal;
+  private FunnelState clapDaddyGoal;
 
-  protected double debounceTimestamp;
+  private boolean isClosedLoop;
 
-  public Funnel(FunnelIO io, FunnelIOInputsAutoLogged inputs) {
+  public Funnel(FunnelIO io) {
     this.io = io;
-    this.inputs = inputs;
-
-    isClosedLoop = true;
-    clapDaddyGoal = FunnelState.OPENED;
+    inputs = new FunnelIOInputsAutoLogged();
 
     debounceTimestamp = Timer.getFPGATimestamp();
+    clapDaddyGoal = FunnelState.OPENED;
+    isClosedLoop = true;
   }
 
-  public void periodic() {
+  private void periodic() {
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Funnel/Periodic");
@@ -61,11 +67,22 @@ public abstract class Funnel extends SubsystemBase {
   }
 
   /**
+   * Sets the goal state of the clapDaddy.
+   *
+   * @param goal The desired FunnelState.
+   * @return A command to set the clapDaddy goal.
+   */
+  private void setClapDaddyGoal(FunnelState goal) {
+    isClosedLoop = true;
+    clapDaddyGoal = goal;
+  }
+
+  /**
    * Runs the SysId routine for the clapDaddy.
    *
    * @return A command to run the SysId routine.
    */
-  public Command sysIdRoutine(Subsystem subsystem) {
+  private Command sysIdRoutine(Subsystem subsystem) {
     SysIdRoutine characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -91,7 +108,7 @@ public abstract class Funnel extends SubsystemBase {
    *
    * @return True if the funnel has coral, false otherwise.
    */
-  public boolean hasCoral() {
+  private boolean hasCoral() {
     return inputs.hasCoral && Timer.getFPGATimestamp() > debounceTimestamp + 0.05;
   }
 
@@ -101,11 +118,11 @@ public abstract class Funnel extends SubsystemBase {
    * @return True if the clapDaddy motor is at the goal, false otherwise.
    */
   @AutoLogOutput(key = "Funnel/At Goal")
-  public boolean atGoal() {
+  private boolean atGoal() {
     return io.atClapDaddyPositionGoal();
   }
 
-  public Rotation2d getAngle() {
+  private Rotation2d getAngle() {
     return inputs.clapDaddyAbsolutePosition;
   }
 
@@ -118,7 +135,7 @@ public abstract class Funnel extends SubsystemBase {
    * @param kV The velocity gain.
    * @param kA The acceleration gain.
    */
-  public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+  private void updateGains(double kP, double kD, double kS, double kV, double kA) {
     io.updateGains(kP, kD, kS, kV, kA);
   }
 
@@ -128,7 +145,237 @@ public abstract class Funnel extends SubsystemBase {
    * @param maxAcceleration The maximum acceleration.
    * @param maxVelocity The maximum velocity.
    */
-  public void updateConstraints(double maxAcceleration, double maxVelocity) {
+  private void updateConstraints(double maxAcceleration, double maxVelocity) {
     io.updateConstraints(maxAcceleration, maxVelocity);
+  }
+
+  public class FunnelFSM {
+    @Setter private boolean manipulatorHasCoral;
+
+    @Getter
+    @AutoLogOutput(key = "Funnel/Roller Goal")
+    private FunnelRollerState rollerGoal;
+
+    public FunnelFSM() {
+      manipulatorHasCoral = false;
+      rollerGoal = FunnelRollerState.STOP;
+    }
+
+    public FunnelState getClapDaddyGoal() {
+      return clapDaddyGoal;
+    }
+
+    public void periodic() {
+      ExternalLoggedTracer.reset();
+      Funnel.this.periodic();
+      io.setRollerVoltage(rollerGoal.getVoltage());
+      if (RobotStateLL.isIntakingCoral()) {
+        if (hasCoral()) {
+          setClapDaddyGoal(FunnelState.CLOSED);
+        }
+        if (manipulatorHasCoral) {
+          setClapDaddyGoal(FunnelState.OPENED);
+        }
+      }
+
+      if (RobotMode.auto() && RobotStateLL.isAutoClapOverride()) {
+        setClapDaddyGoal(FunnelState.CLOSED);
+      }
+      ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
+    }
+
+    /**
+     * Sets the goal state of the clapDaddy.
+     *
+     * @param goal The desired FunnelState.
+     * @return A command to set the clapDaddy goal.
+     */
+    public void setClapDaddyGoal(FunnelState goal) {
+      Funnel.this.setClapDaddyGoal(goal);
+    }
+
+    /**
+     * Sets the voltage of the roller.
+     *
+     * @param volts The desired voltage.
+     * @return A command to set the roller voltage.
+     */
+    public void setRollerGoal(FunnelRollerState state) {
+      rollerGoal = state;
+    }
+
+    public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
+      return Commands.sequence(
+          superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
+          Funnel.this.sysIdRoutine(superstructure));
+    }
+
+    /**
+     * Checks if the funnel has coral.
+     *
+     * @return True if the funnel has coral, false otherwise.
+     */
+    public boolean hasCoral() {
+      return Funnel.this.hasCoral();
+    }
+
+    /**
+     * Checks if the clapDaddy motor is at the goal position.
+     *
+     * @return True if the clapDaddy motor is at the goal, false otherwise.
+     */
+    public boolean atGoal() {
+      return Funnel.this.atGoal();
+    }
+
+    public Rotation2d getAngle() {
+      return Funnel.this.getAngle();
+    }
+
+    /**
+     * Updates the PID gains for the clapDaddy.
+     *
+     * @param kP The proportional gain.
+     * @param kD The derivative gain.
+     * @param kS The static gain.
+     * @param kV The velocity gain.
+     * @param kA The acceleration gain.
+     */
+    public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+      Funnel.this.updateGains(kP, kD, kS, kV, kA);
+    }
+
+    /**
+     * Updates the motion constraints for the clapDaddy.
+     *
+     * @param maxAcceleration The maximum acceleration.
+     * @param maxVelocity The maximum velocity.
+     */
+    public void updateConstraints(double maxAcceleration, double maxVelocity) {
+      Funnel.this.updateConstraints(maxAcceleration, maxVelocity);
+    }
+  }
+
+  public class FunnelCSB extends SubsystemBase {
+
+    @Override
+    public void periodic() {
+      ExternalLoggedTracer.reset();
+      Funnel.this.periodic();
+      ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
+    }
+
+    /**
+     * Sets the goal state of the clapDaddy.
+     *
+     * @param goal The desired FunnelState.
+     * @return A command to set the clapDaddy goal.
+     */
+    public Command setClapDaddyGoal(FunnelState goal) {
+      return Commands.runOnce(() -> Funnel.this.setClapDaddyGoal(goal));
+    }
+
+    public FunnelState getClapDaddyGoal() {
+      return clapDaddyGoal;
+    }
+
+    /**
+     * Sets the voltage of the roller.
+     *
+     * @param volts The desired voltage.
+     * @return A command to set the roller voltage.
+     */
+    private Command setRollerVoltage(double volts) {
+      return Commands.run(() -> io.setRollerVoltage(volts));
+    }
+
+    public Command intakeCoral(BooleanSupplier coralLocked) {
+      return Commands.race(
+              Commands.sequence(
+                  setClapDaddyGoal(FunnelState.OPENED),
+                  Commands.waitUntil(() -> hasCoral()),
+                  setClapDaddyGoal(FunnelState.CLOSED),
+                  Commands.waitUntil(coralLocked)),
+              setRollerVoltage(12.0))
+          .finallyDo(
+              () -> {
+                clapDaddyGoal = FunnelState.OPENED;
+                io.setRollerVoltage(0.0);
+              });
+    }
+
+    public Command funnelClosedOverride() {
+      return this.runEnd(
+          () -> {
+            clapDaddyGoal = FunnelState.CLOSED;
+            io.setRollerVoltage(12);
+          },
+          () -> {
+            clapDaddyGoal = FunnelState.OPENED;
+            io.setRollerVoltage(0);
+          });
+    }
+
+    /**
+     * Runs the SysId routine for the clapDaddy.
+     *
+     * @return A command to run the SysId routine.
+     */
+    public Command sysIdRoutine() {
+      return Funnel.this.sysIdRoutine(this);
+    }
+
+    /**
+     * Checks if the funnel has coral.
+     *
+     * @return True if the funnel has coral, false otherwise.
+     */
+    public boolean hasCoral() {
+      return Funnel.this.hasCoral();
+    }
+
+    /**
+     * Checks if the clapDaddy motor is at the goal position.
+     *
+     * @return True if the clapDaddy motor is at the goal, false otherwise.
+     */
+    public boolean atGoal() {
+      return Funnel.this.atGoal();
+    }
+
+    public Rotation2d getAngle() {
+      return Funnel.this.getAngle();
+    }
+
+    /**
+     * Updates the PID gains for the clapDaddy.
+     *
+     * @param kP The proportional gain.
+     * @param kD The derivative gain.
+     * @param kS The static gain.
+     * @param kV The velocity gain.
+     * @param kA The acceleration gain.
+     */
+    public void updateGains(double kP, double kD, double kS, double kV, double kA) {
+      Funnel.this.updateGains(kP, kD, kS, kV, kA);
+    }
+
+    /**
+     * Updates the motion constraints for the clapDaddy.
+     *
+     * @param maxAcceleration The maximum acceleration.
+     * @param maxVelocity The maximum velocity.
+     */
+    public void updateConstraints(double maxAcceleration, double maxVelocity) {
+      Funnel.this.updateConstraints(maxAcceleration, maxVelocity);
+    }
+  }
+
+  public FunnelFSM getFSM() {
+    return new FunnelFSM();
+  }
+
+  public FunnelCSB getCSB() {
+    return new FunnelCSB();
   }
 }
