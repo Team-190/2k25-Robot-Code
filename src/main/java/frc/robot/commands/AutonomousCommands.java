@@ -12,10 +12,10 @@ import frc.robot.RobotStateLL;
 import frc.robot.commands.CompositeCommands.V1_StackUpCompositeCommands;
 import frc.robot.commands.CompositeCommands.V2_RedundancyCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
-import frc.robot.subsystems.v1_StackUp.superstructure.elevator.V1_StackUpElevator;
-import frc.robot.subsystems.v1_StackUp.superstructure.funnel.V1_StackUpFunnel;
-import frc.robot.subsystems.v1_StackUp.superstructure.manipulator.V1_StackUpManipulator;
+import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
@@ -152,8 +152,8 @@ public class AutonomousCommands {
 
   public static final Command autoALeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -199,8 +199,8 @@ public class AutonomousCommands {
 
   public static final Command autoARight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -246,8 +246,8 @@ public class AutonomousCommands {
 
   public static final Command autoBLeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -276,8 +276,8 @@ public class AutonomousCommands {
 
   public static final Command autoCLeft(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -315,8 +315,8 @@ public class AutonomousCommands {
 
   public static final Command autoCRight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -354,8 +354,8 @@ public class AutonomousCommands {
 
   public static final Command autoBRight(
       Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpFunnel funnel,
+      ElevatorCSB elevator,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -383,10 +383,7 @@ public class AutonomousCommands {
   }
 
   public static final Command autoDCenter(
-      Drive drive,
-      V1_StackUpElevator elevator,
-      V1_StackUpManipulator manipulator,
-      Camera... cameras) {
+      Drive drive, ElevatorCSB elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
     return Commands.sequence(
         Commands.runOnce(
             () ->

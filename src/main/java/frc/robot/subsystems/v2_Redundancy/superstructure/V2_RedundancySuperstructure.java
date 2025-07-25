@@ -6,10 +6,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
 import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.NTPrefixes;
@@ -36,8 +36,8 @@ import org.littletonrobotics.junction.Logger;
 public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph;
-  private final V2_RedundancyElevator elevator;
-  private final V2_RedundancyFunnel funnel;
+  private final ElevatorFSM elevator;
+  private final FunnelFSM funnel;
   private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
 
@@ -69,8 +69,8 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
   private EdgeCommand edgeCommand;
 
   public V2_RedundancySuperstructure(
-      V2_RedundancyElevator elevator,
-      V2_RedundancyFunnel funnel,
+      ElevatorFSM elevator,
+      FunnelFSM funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake) {
     this.elevator = elevator;
