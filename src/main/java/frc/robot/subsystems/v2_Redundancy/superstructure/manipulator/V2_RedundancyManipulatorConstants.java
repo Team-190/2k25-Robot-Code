@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.manipulator;
+package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -16,9 +16,8 @@ public class V2_RedundancyManipulatorConstants {
   public static final int ROLLER_CAN_ID;
   public static final double ROLLER_CURRENT_THRESHOLD;
   public static final Rotation2d ROLLER_TOGGLE_ARM_ROTATION;
-  public static final Voltages ROLLER_VOLTAGES;
 
-  public static final ManipulatorCurrentLimits CURRENT_LIMITS;
+  public static final CurrentLimits CURRENT_LIMITS;
 
   static {
     ARM_CAN_ID = 31;
@@ -55,18 +54,8 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_CAN_ID = 30;
     ROLLER_CURRENT_THRESHOLD = 60.0;
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
-    ROLLER_VOLTAGES =
-        new Voltages(
-            new LoggedTunableNumber("Manipulator/Coral Intake Volts", 6.0),
-            new LoggedTunableNumber("Manipulator/Algae Intake Volts", 12.0),
-            new LoggedTunableNumber("Manipulator/L4 Volts", 4.6 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Coral Volts", 4.8 * 1.56),
-            new LoggedTunableNumber("Manipulator/Score Algae Volts", -6),
-            new LoggedTunableNumber("Manipulator/Remove Algae Volts", 12),
-            new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
-            new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
-    CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+    CURRENT_LIMITS = new CurrentLimits(40, 40, 40, 40);
   }
 
   public static record ArmParameters(
@@ -85,31 +74,38 @@ public class V2_RedundancyManipulatorConstants {
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public static final record ManipulatorCurrentLimits(
-      double MANIPULATOR_SUPPLY_CURRENT_LIMIT,
+  public static record CurrentLimits(
+      double ARM_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
-      double MANIPULATOR_STATOR_CURRENT_LIMIT,
+      double ARM_STATOR_CURRENT_LIMIT,
       double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRotationsPerSecondSquared,
-      LoggedTunableNumber cruisingVelocityRotationsPerSecond,
-      LoggedTunableNumber goalToleranceRadians) {}
-
-  public static final record Voltages(
-      LoggedTunableNumber CORAL_INTAKE_VOLTS,
-      LoggedTunableNumber ALGAE_INTAKE_VOLTS,
-      LoggedTunableNumber L4_VOLTS,
-      LoggedTunableNumber SCORE_CORAL_VOLTS,
-      LoggedTunableNumber SCORE_ALGAE_VOLTS,
-      LoggedTunableNumber REMOVE_ALGAE,
-      LoggedTunableNumber HALF_VOLTS,
-      LoggedTunableNumber L1_VOLTS) {}
+      LoggedTunableNumber MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED,
+      LoggedTunableNumber CRUISING_VELOCITY_ROTATIONS_PER_SECOND,
+      LoggedTunableNumber GOAL_TOLERANCE_RADIANS) {}
 
   @RequiredArgsConstructor
-  public static enum ArmState {
+  public static enum ManipulatorRollerState {
+    STOP(0.0),
+    CORAL_INTAKE(6.0),
+    ALGAE_INTAKE(12.0),
+    L4_SCORE(4.6 * 1.56),
+    SCORE_CORAL(4.8 * 1.56),
+    SCORE_ALGAE(-6),
+    REMOVE_ALGAE(-12),
+    L1_SCORE(3.5 * 1.56);
+
+    private final double voltage;
+
+    public double getVoltage() {
+      return voltage;
+    }
+  }
+
+  @RequiredArgsConstructor
+  public static enum ManipulatorArmState {
     STOW_UP(Rotation2d.fromDegrees(75)),
-    PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),

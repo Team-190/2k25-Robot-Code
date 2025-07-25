@@ -1,0 +1,242 @@
+digraph Superstructure {
+  /*
+   * Graphviz DOT file for the superstructure state machine.
+   * States are represented as nodes, and transitions are represented as edges.
+  */
+
+  // Node definitions
+  start [color = red]
+  stow_down [color = green]
+
+  intake_coral [color = green]
+
+  L1 [color = green]
+  L2 [color = green]
+  L3 [color = green]
+  L4 [color = green]
+  L4_plus [color = green]
+
+  score_L1 [color = green]
+  score_L2 [color = green]
+  score_L3 [color = green]
+  score_L4 [color = green]
+  score_L4_plus [color = green]
+
+  intermediate_wait_for_elevator [color = blue]
+  intermediate_wait_for_arm [color = blue]
+
+  stow_up [color = blue]
+
+  floor_acquisition [color = blue]
+  reef_acquisition_L2 [color = blue]
+  reef_acquisition_L3 [color = blue]
+
+  barge [color = blue]
+  processor [color = blue]
+
+  floor_intake [color = blue]
+  reef_intake_L2 [color = blue]
+  reef_intake_L3 [color = blue]
+  reef_drop_L2 [color = blue]
+  reef_drop_L3 [color = blue]
+
+  score_barge [color = blue]
+  score_processor [color = blue]
+
+
+
+  // start  
+  start -> stow_down
+
+  // stow down
+  stow_down -> intake_coral
+  stow_down -> L1
+  stow_down -> L2
+  stow_down -> L3
+  stow_down -> L4
+  
+  stow_down -> intermediate_wait_for_elevator
+
+  stow_down -> floor_acquisition
+
+  // intake coral
+  intake_coral -> stow_down
+
+  // L1
+  L1 -> stow_down
+  
+  L1 -> L2
+  L1 -> L3
+  L1 -> L4
+  
+  L1 -> score_L1
+
+  L1 -> intermediate_wait_for_elevator
+
+  L1 -> floor_acquisition
+
+  // L2
+  L2 -> stow_down
+
+  L2 -> L1
+  L2 -> L3
+  L2 -> L4
+
+  L2 -> score_L2
+  
+  L2 -> intermediate_wait_for_elevator
+
+  L2 -> floor_acquisition
+
+  // L3
+  L3 -> stow_down
+
+  L3 -> L1
+  L3 -> L2
+  L3 -> L4
+
+  L3 -> score_L3
+  
+  L3 -> intermediate_wait_for_arm
+  
+  L3 -> reef_acquisition_L2
+  L3 -> reef_acquisition_L3
+  
+  // L4
+  L4 -> stow_down
+  
+  L4 -> L1
+  L4 -> L2
+  L4 -> L3
+  L4 -> L4_plus
+  
+  L4 -> score_L4
+  
+  L4 -> intermediate_wait_for_arm
+  
+  L4 -> reef_acquisition_L2
+  L4 -> reef_acquisition_L3
+  
+  // L4_plus
+  L4_plus -> stow_down
+  
+  L4_plus -> score_L4_plus
+  
+  L4_plus -> intermediate_wait_for_arm
+  
+  // score_L1
+  score_L1 -> L1
+  
+  // score_L2
+  score_L2 -> L2
+  
+  // score_L3
+  score_L3 -> L3
+  
+  // score_L4
+  score_L4 -> L4
+  
+  // score_L4_plus
+  score_L4_plus -> L4_plus
+  
+  // intermediate_wait_for_elevator
+  intermediate_wait_for_elevator -> stow_up
+  
+  intermediate_wait_for_elevator -> reef_acquisition_L2
+  intermediate_wait_for_elevator -> reef_acquisition_L3
+  
+  intermediate_wait_for_elevator -> barge
+  intermediate_wait_for_elevator -> processor
+
+  // intermediate_wait_for_arm
+  intermediate_wait_for_arm -> stow_down
+  
+  intermediate_wait_for_arm -> L1
+  intermediate_wait_for_arm -> L2
+  
+  intermediate_wait_for_arm -> floor_acquisition
+  
+  // stow_up
+  stow_up -> intermediate_wait_for_arm
+  
+  stow_up -> barge
+  stow_up -> processor
+  
+  intermediate_wait_for_arm -> stow_up
+
+  barge -> stow_up
+  processor -> stow_up
+  // floor_acquisition
+  floor_acquisition -> stow_down
+  
+  floor_acquisition -> intermediate_wait_for_elevator
+  
+  floor_acquisition -> floor_intake
+  
+  // reef_acquisition_L2
+  reef_acquisition_L2 -> intermediate_wait_for_arm
+  
+  reef_acquisition_L2 -> stow_up
+  
+  reef_acquisition_L2 -> reef_acquisition_L3
+  
+  reef_acquisition_L2 -> barge
+  reef_acquisition_L2 -> processor
+  
+  reef_acquisition_L2 -> reef_intake_L2
+  reef_acquisition_L2 -> reef_drop_L2
+
+  // reef_acquisition_L3
+  reef_acquisition_L3 -> intermediate_wait_for_arm
+  
+  reef_acquisition_L3 -> stow_up
+  
+  reef_acquisition_L3 -> reef_acquisition_L2
+  
+  reef_acquisition_L3 -> barge
+  reef_acquisition_L3 -> processor
+  
+  reef_acquisition_L3 -> reef_intake_L3
+  reef_acquisition_L3 -> reef_drop_L3
+  
+  // barge
+  barge -> intermediate_wait_for_arm
+  
+  barge -> reef_acquisition_L2
+  barge -> reef_acquisition_L3
+  
+  barge -> processor
+  
+  barge -> score_barge
+  
+  // processor
+  processor -> intermediate_wait_for_arm
+  
+  processor -> reef_acquisition_L2
+  processor -> reef_acquisition_L3
+  
+  processor -> barge
+  
+  processor -> score_processor
+  
+  // floor_intake
+  floor_intake -> floor_acquisition
+  
+  // reef_intake_L2
+  reef_intake_L2 -> reef_acquisition_L2
+  
+  // reef_intake_L3
+  reef_intake_L3 -> reef_acquisition_L3
+  
+  // reef_drop_L2
+  reef_drop_L2 -> reef_acquisition_L2
+  
+  // reef_drop_L3
+  reef_drop_L3 -> reef_acquisition_L3
+  
+  // score_barge
+  score_barge -> barge
+  
+  // score_processor
+  score_processor -> processor
+}

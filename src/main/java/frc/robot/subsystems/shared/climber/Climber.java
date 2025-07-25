@@ -13,14 +13,15 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
-  private Timer redundantSwitchesTimer;
-  private Timer redundantTrustTimer;
-
   @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
   private boolean trustRedundantSwitchOne;
 
+  private Timer redundantSwitchesTimer;
+
   @AutoLogOutput(key = "Climber/trustRedundantSwitchTwo")
   private boolean trustRedundantSwitchTwo;
+
+  private Timer redundantTrustTimer;
 
   @AutoLogOutput(key = "Climber/override")
   private boolean override;
@@ -28,15 +29,23 @@ public class Climber extends SubsystemBase {
   @AutoLogOutput(key = "Climber/isClimbed")
   private boolean isClimbed;
 
+  /**
+   * Creates a new Climber subsystem.
+   *
+   * @param io The I/O interface for the climber.
+   */
   public Climber(ClimberIO io) {
     this.io = io;
     inputs = new ClimberIOInputsAutoLogged();
 
     isClimbed = false;
+
     redundantSwitchesTimer = new Timer();
-    redundantTrustTimer = new Timer();
     trustRedundantSwitchOne = true;
+
+    redundantTrustTimer = new Timer();
     trustRedundantSwitchTwo = true;
+
     override = false;
   }
 
@@ -61,6 +70,13 @@ public class Climber extends SubsystemBase {
     ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
   }
 
+  /**
+   * Checks if the climber is ready to be deployed. This is determined by the state of two redundant
+   * switches. It includes logic to handle disagreements between the switches and a delay to ensure
+   * they are consistently pressed.
+   *
+   * @return True if the climber is ready, false otherwise.
+   */
   public boolean climberReady() {
     if (override) {
       return true;
@@ -69,7 +85,8 @@ public class Climber extends SubsystemBase {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(ClimberConstants.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS)) {
+      if (redundantTrustTimer.hasElapsed(
+          ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS())) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (inputs.redundantSwitchOne) {
@@ -91,7 +108,8 @@ public class Climber extends SubsystemBase {
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
       return inputs.redundantSwitchOne
           && inputs.redundantSwitchTwo
-          && redundantSwitchesTimer.hasElapsed(ClimberConstants.REDUNDANCY_DELAY_SECONDS);
+          && redundantSwitchesTimer.hasElapsed(
+              ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_DELAY_SECONDS());
     } else if (trustRedundantSwitchOne) {
       return inputs.redundantSwitchOne;
     } else if (trustRedundantSwitchTwo) {
@@ -101,23 +119,52 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  /**
+   * Creates a command to set the voltage of the climber motor.
+   *
+   * @param volts The voltage to set.
+   * @return A command to set the voltage.
+   */
   public Command setVoltage(double volts) {
     return Commands.run(() -> io.setVoltage(volts));
   }
 
+  /**
+   * Creates a command to release the climber. The climber is released by applying voltage until the
+   * position is greater than or equal to 20 radians.
+   *
+   * @return A command to release the climber.
+   */
   public Command releaseClimber() {
     return this.runEnd(() -> io.setVoltage(1), () -> io.setVoltage(0))
         .until(() -> inputs.positionRadians >= 20);
   }
 
+  /**
+   * Creates a command to winch the climber. The climber is winched by applying voltage until the
+   * climb is complete.
+   *
+   * @return A command to winch the climber.
+   */
   public Command winchClimber() {
     return Commands.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
   }
 
+  /**
+   * Creates a command to manually winch the climber with a lower voltage.
+   *
+   * @return A command to manually winch the climber.
+   */
   public Command winchClimberManual() {
     return this.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0));
   }
 
+  /**
+   * Creates a command to override the climber deployment readiness check.
+   *
+   * @param override True to override, false otherwise.
+   * @return A command to set the override.
+   */
   public Command manualDeployOverride(boolean override) { // set using debug board button
     return Commands.runOnce(() -> this.override = override);
   }

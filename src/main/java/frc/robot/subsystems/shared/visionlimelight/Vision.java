@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shared.vision;
+package frc.robot.subsystems.shared.visionlimelight;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Getter;

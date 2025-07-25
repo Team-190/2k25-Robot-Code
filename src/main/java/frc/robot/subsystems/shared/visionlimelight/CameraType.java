@@ -1,9 +1,9 @@
-package frc.robot.subsystems.shared.vision;
+package frc.robot.subsystems.shared.visionlimelight;
 
-import frc.robot.subsystems.shared.vision.CameraConstants.Limelight2PlusConstants;
-import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3Constants;
-import frc.robot.subsystems.shared.vision.CameraConstants.Limelight3GConstants;
-import frc.robot.subsystems.shared.vision.CameraConstants.Limelight4Constants;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.Limelight2PlusConstants;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.Limelight3Constants;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.Limelight3GConstants;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.Limelight4Constants;
 
 public enum CameraType {
   LIMELIGHT_2_PLUS(

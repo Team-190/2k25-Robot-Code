@@ -15,11 +15,10 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
 import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
-import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants;
-import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants;
+import frc.robot.subsystems.shared.visionlimelight.Vision;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
@@ -30,9 +29,8 @@ public class V0_FunkyRobotContainer implements RobotContainer {
 
   // Subsystems
   private Drive drive;
-  private Vision vision;
-
   private V0_FunkyRoller roller;
+  private Vision vision;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -53,8 +51,8 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          vision = new Vision(CameraConstants.RobotCameras.V0_FUNKY_CAMS);
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
+          vision = new Vision(CameraConstants.RobotCameras.V0_FUNKY_CAMS);
           break;
         case V0_FUNKY_SIM:
           drive =
@@ -64,32 +62,13 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
           roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+          vision = new Vision();
           break;
         default:
           break;
       }
     }
-
-    if (drive == null) {
-      drive =
-          new Drive(
-              new GyroIO() {},
-              new ModuleIO() {},
-              new ModuleIO() {},
-              new ModuleIO() {},
-              new ModuleIO() {});
-    }
-    if (vision == null) {
-      vision = new Vision();
-    }
-    if (roller == null) {
-      roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
-    }
-
-    configureButtonBindings();
-    configureAutos();
   }
 
   public void configureButtonBindings() {

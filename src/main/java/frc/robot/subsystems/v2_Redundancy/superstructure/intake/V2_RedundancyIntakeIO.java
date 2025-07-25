@@ -1,11 +1,11 @@
-package frc.robot.subsystems.v2_Redundancy.intake;
+package frc.robot.subsystems.v2_Redundancy.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface V2_RedundancyIntakeIO {
   @AutoLog
-  public static class IntakeIOInputs {
+  public static class V2_RedundancyIntakeIOInputs {
     public double extensionPositionMeters = 0.0;
     public double extensionVelocityMetersPerSecond = 0.0;
     public double extensionAppliedVolts = 0.0;
@@ -29,7 +29,7 @@ public interface V2_RedundancyIntakeIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(IntakeIOInputs inputs) {}
+  public default void updateInputs(V2_RedundancyIntakeIOInputs inputs) {}
 
   /**
    * Sets the voltage for the clap daddy.
@@ -82,4 +82,8 @@ public interface V2_RedundancyIntakeIO {
    * @param maxVelocity The maximum velocity.
    */
   public default void updateConstraints(double maxAcceleration, double maxVelocity) {}
+
+  public default void resetExtension() {}
+
+  public default void maxExt() {}
 }

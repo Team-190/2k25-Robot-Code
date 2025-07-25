@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.intake;
+package frc.robot.subsystems.v2_Redundancy.superstructure.intake;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -148,7 +148,7 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V2_RedundancyIntakeIOInputs inputs) {
     InternalLoggedTracer.reset();
     inputs.extensionPositionMeters =
         (extensionPositionRotations.getValueAsDouble()
@@ -235,5 +235,17 @@ public class V2_RedundancyIntakeIOTalonFX implements V2_RedundancyIntakeIO {
     extensionConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
     tryUntilOk(5, () -> extensionTalonFX.getConfigurator().apply(extensionConfig, 0.25));
     InternalLoggedTracer.record("Update Constraints", "Intake/TalonFX");
+  }
+
+  @Override
+  public void resetExtension() {
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+  }
+
+  @Override
+  public void maxExt() {
+    extensionTalonFX.setPosition(
+        V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
   }
 }

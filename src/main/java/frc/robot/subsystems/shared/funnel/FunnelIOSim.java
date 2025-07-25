@@ -25,10 +25,10 @@ public class FunnelIOSim implements FunnelIO {
     clapDaddySim =
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
-                FunnelConstants.CLAP_DADDY_PARAMS.motor(),
-                FunnelConstants.CLAP_DADDY_PARAMS.momentOfInertia(),
+                FunnelConstants.CLAP_DADDY_PARAMS.MOTOR(),
+                FunnelConstants.CLAP_DADDY_PARAMS.MOMENT_OF_INERTIA(),
                 FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO),
-            FunnelConstants.CLAP_DADDY_PARAMS.motor(),
+            FunnelConstants.CLAP_DADDY_PARAMS.MOTOR(),
             FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO,
             1.0,
             Double.NEGATIVE_INFINITY,
@@ -38,10 +38,10 @@ public class FunnelIOSim implements FunnelIO {
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                FunnelConstants.ROLLER_PARAMS.motor(),
-                FunnelConstants.ROLLER_PARAMS.momentOfInertia(),
+                FunnelConstants.ROLLER_PARAMS.MOTOR(),
+                FunnelConstants.ROLLER_PARAMS.MOMENT_OF_INERTIA(),
                 FunnelConstants.ROLLER_MOTOR_GEAR_RATIO),
-            FunnelConstants.ROLLER_PARAMS.motor());
+            FunnelConstants.ROLLER_PARAMS.MOTOR());
 
     clapDaddyController =
         new ProfiledPIDController(

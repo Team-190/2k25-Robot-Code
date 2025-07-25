@@ -33,7 +33,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.vision.Camera;
+import frc.robot.subsystems.shared.visionlimelight.Camera;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -735,25 +735,6 @@ public final class DriveCommands {
     Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
     InternalLoggedTracer.record("Reef Align Theta", "Command Scheduler/Drive Commands");
 
-    return thetaSpeed;
-  }
-
-  private static double bargeThetaSpeedCalculate() {
-    ExternalLoggedTracer.reset();
-    double thetaSpeed = 0.0;
-
-    if (!alignHeadingController.atSetpoint())
-      thetaSpeed =
-          alignHeadingController.calculate(
-              RobotState.getRobotPoseField().getRotation().getRadians(),
-              RobotState.getRobotPoseField().getX() <= FieldConstants.fieldLength / 2
-                  ? 0
-                  : Math.PI);
-    else alignHeadingController.reset(RobotState.getRobotPoseField().getRotation().getRadians());
-
-    Logger.recordOutput("Drive/thetaSpeed", thetaSpeed);
-
-    ExternalLoggedTracer.record("Barge Theta Speed", "Command Scheduler/Drive Commands");
     return thetaSpeed;
   }
 

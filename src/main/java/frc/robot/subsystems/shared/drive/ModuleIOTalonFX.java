@@ -28,7 +28,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -83,10 +82,6 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final TorqueCurrentFOC torqueCurrentRequest;
   private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest;
   private final MotionMagicTorqueCurrentFOC positionTorqueCurrentRequest;
-
-  private final Debouncer driveConnectedDebounce;
-  private final Debouncer turnConnectedDebounce;
-  private final Debouncer turnEncoderConnectedDebounce;
 
   private final int id;
 
@@ -177,10 +172,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     torqueCurrentRequest = new TorqueCurrentFOC(0.0);
     velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
     positionTorqueCurrentRequest = new MotionMagicTorqueCurrentFOC(0.0);
-
-    driveConnectedDebounce = new Debouncer(0.5);
-    turnConnectedDebounce = new Debouncer(0.5);
-    turnEncoderConnectedDebounce = new Debouncer(0.5);
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(
