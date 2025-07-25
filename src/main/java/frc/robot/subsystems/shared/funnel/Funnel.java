@@ -122,6 +122,11 @@ public class Funnel {
     return io.atClapDaddyPositionGoal();
   }
 
+  /**
+   * Gets the current angle of the clapDaddy.
+   *
+   * @return The current angle as a Rotation2d.
+   */
   private Rotation2d getAngle() {
     return inputs.clapDaddyAbsolutePosition;
   }
@@ -184,22 +189,10 @@ public class Funnel {
       ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
     }
 
-    /**
-     * Sets the goal state of the clapDaddy.
-     *
-     * @param goal The desired FunnelState.
-     * @return A command to set the clapDaddy goal.
-     */
     public void setClapDaddyGoal(FunnelState goal) {
       Funnel.this.setClapDaddyGoal(goal);
     }
 
-    /**
-     * Sets the voltage of the roller.
-     *
-     * @param volts The desired voltage.
-     * @return A command to set the roller voltage.
-     */
     public void setRollerGoal(FunnelRollerState state) {
       rollerGoal = state;
     }
@@ -210,20 +203,10 @@ public class Funnel {
           Funnel.this.sysIdRoutine(superstructure));
     }
 
-    /**
-     * Checks if the funnel has coral.
-     *
-     * @return True if the funnel has coral, false otherwise.
-     */
     public boolean hasCoral() {
       return Funnel.this.hasCoral();
     }
 
-    /**
-     * Checks if the clapDaddy motor is at the goal position.
-     *
-     * @return True if the clapDaddy motor is at the goal, false otherwise.
-     */
     public boolean atGoal() {
       return Funnel.this.atGoal();
     }
@@ -232,25 +215,10 @@ public class Funnel {
       return Funnel.this.getAngle();
     }
 
-    /**
-     * Updates the PID gains for the clapDaddy.
-     *
-     * @param kP The proportional gain.
-     * @param kD The derivative gain.
-     * @param kS The static gain.
-     * @param kV The velocity gain.
-     * @param kA The acceleration gain.
-     */
     public void updateGains(double kP, double kD, double kS, double kV, double kA) {
       Funnel.this.updateGains(kP, kD, kS, kV, kA);
     }
 
-    /**
-     * Updates the motion constraints for the clapDaddy.
-     *
-     * @param maxAcceleration The maximum acceleration.
-     * @param maxVelocity The maximum velocity.
-     */
     public void updateConstraints(double maxAcceleration, double maxVelocity) {
       Funnel.this.updateConstraints(maxAcceleration, maxVelocity);
     }
@@ -265,12 +233,6 @@ public class Funnel {
       ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
     }
 
-    /**
-     * Sets the goal state of the clapDaddy.
-     *
-     * @param goal The desired FunnelState.
-     * @return A command to set the clapDaddy goal.
-     */
     public Command setClapDaddyGoal(FunnelState goal) {
       return Commands.runOnce(() -> Funnel.this.setClapDaddyGoal(goal));
     }
@@ -279,12 +241,6 @@ public class Funnel {
       return clapDaddyGoal;
     }
 
-    /**
-     * Sets the voltage of the roller.
-     *
-     * @param volts The desired voltage.
-     * @return A command to set the roller voltage.
-     */
     private Command setRollerVoltage(double volts) {
       return Commands.run(() -> io.setRollerVoltage(volts));
     }
@@ -316,29 +272,15 @@ public class Funnel {
           });
     }
 
-    /**
-     * Runs the SysId routine for the clapDaddy.
-     *
-     * @return A command to run the SysId routine.
-     */
+
     public Command sysIdRoutine() {
       return Funnel.this.sysIdRoutine(this);
     }
 
-    /**
-     * Checks if the funnel has coral.
-     *
-     * @return True if the funnel has coral, false otherwise.
-     */
     public boolean hasCoral() {
       return Funnel.this.hasCoral();
     }
 
-    /**
-     * Checks if the clapDaddy motor is at the goal position.
-     *
-     * @return True if the clapDaddy motor is at the goal, false otherwise.
-     */
     public boolean atGoal() {
       return Funnel.this.atGoal();
     }
@@ -347,25 +289,10 @@ public class Funnel {
       return Funnel.this.getAngle();
     }
 
-    /**
-     * Updates the PID gains for the clapDaddy.
-     *
-     * @param kP The proportional gain.
-     * @param kD The derivative gain.
-     * @param kS The static gain.
-     * @param kV The velocity gain.
-     * @param kA The acceleration gain.
-     */
     public void updateGains(double kP, double kD, double kS, double kV, double kA) {
       Funnel.this.updateGains(kP, kD, kS, kV, kA);
     }
 
-    /**
-     * Updates the motion constraints for the clapDaddy.
-     *
-     * @param maxAcceleration The maximum acceleration.
-     * @param maxVelocity The maximum velocity.
-     */
     public void updateConstraints(double maxAcceleration, double maxVelocity) {
       Funnel.this.updateConstraints(maxAcceleration, maxVelocity);
     }

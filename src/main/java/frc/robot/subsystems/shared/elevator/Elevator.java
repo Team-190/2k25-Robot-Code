@@ -161,14 +161,31 @@ public class Elevator {
         <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
+  /**
+   * Waits until the elevator is at the goal position.
+   *
+   * @return A command that waits until the elevator is at the goal position.
+   */
   private Command waitUntilAtGoal() {
     return Commands.waitSeconds(0.02).andThen(Commands.waitUntil(() -> atGoal()));
   }
 
+  /**
+   * Checks if the elevator is within a fast scoring tolerance of the goal position.
+   *
+   * @return A BooleanSupplier that returns true if the elevator is within the fast scoring
+   *     tolerance, false otherwise.
+   */
   private BooleanSupplier inFastScoringTolerance() {
     return () -> Math.abs(inputs.positionMeters - inputs.positionGoalMeters) <= 0.03;
   }
 
+  /**
+   * Runs the SysId routine for the elevator subsystem.
+   *
+   * @param subsystem The subsystem to run the SysId routine on.
+   * @return A command that runs the SysId routine.
+   */
   private Command sysIdRoutine(Subsystem subsystem) {
 
     SysIdRoutine characterizationRoutine =
@@ -238,11 +255,6 @@ public class Elevator {
       ExternalLoggedTracer.record("Elevator Total", "Elevator/Periodic");
     }
 
-    /**
-     * Sets the position of the elevator.
-     *
-     * @return A command that sets the elevator position.
-     */
     public Command setPosition() {
       return this.runOnce(() -> Elevator.this.setPosition());
     }
@@ -251,12 +263,6 @@ public class Elevator {
       return Elevator.this.position;
     }
 
-    /**
-     * Sets the position of the elevator.
-     *
-     * @param positionRadians The desired elevator position.
-     * @return A command that sets the elevator position.
-     */
     public Command setPosition(Supplier<ReefState> newPosition) {
       return this.runOnce(() -> Elevator.this.setPosition(newPosition));
     }
@@ -270,11 +276,6 @@ public class Elevator {
           () -> io.setVoltage(0.0));
     }
 
-    /**
-     * Resets the elevator position to the stow position.
-     *
-     * @return A command that resets the elevator position.
-     */
     public Command resetPosition() {
       return runOnce(() -> Elevator.this.position = ElevatorPositions.STOW)
           .andThen(
@@ -282,62 +283,26 @@ public class Elevator {
                   () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
     }
 
-    /**
-     * Runs the SysId routine for the elevator.
-     *
-     * @return A command to run the SysId routine.
-     */
     public Command sysIdRoutine() {
       return Elevator.this.sysIdRoutine(this);
     }
 
-    /**
-     * Gets the current position of the elevator.
-     *
-     * @return The current elevator position.
-     */
     public double getPositionMeters() {
       return Elevator.this.getPositionMeters(inputs);
     }
 
-    /**
-     * Gets the feedforward characterization velocity.
-     *
-     * @return The feedforward characterization velocity.
-     */
     public double getFFCharacterizationVelocity() {
       return Elevator.this.getFFCharacterizationVelocity(inputs);
     }
 
-    /**
-     * Sets the control gains for the elevator.
-     *
-     * @param kP The proportional gain.
-     * @param kD The derivative gain.
-     * @param kS The static gain.
-     * @param kV The velocity gain.
-     * @param kA The acceleration gain.
-     * @param kG The gravity gain.
-     */
     public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
       Elevator.this.setGains(kP, kD, kS, kV, kA, kG);
     }
 
-    /**
-     * Sets the motion constraints for the elevator.
-     *
-     * @param maxAcceleration The maximum acceleration.
-     * @param cruisingVelocity The cruising velocity.
-     */
     public void setConstraints(double maxAcceleration, double cruisingVelocity) {
       Elevator.this.setConstraints(maxAcceleration, cruisingVelocity);
     }
 
-    /**
-     * Checks if the elevator is at the goal position.
-     *
-     * @return True if the elevator is at the goal position, false otherwise.
-     */
     public boolean atGoal() {
       return Elevator.this.atGoal();
     }
@@ -363,30 +328,14 @@ public class Elevator {
       return Elevator.this.position;
     }
 
-    /**
-     * Sets the position of the elevator.
-     *
-     * @return A command that sets the elevator position.
-     */
     public void setPosition() {
       Elevator.this.setPosition();
     }
 
-    /**
-     * Sets the position of the elevator.
-     *
-     * @param positionRadians The desired elevator position.
-     * @return A command that sets the elevator position.
-     */
     public void setPosition(Supplier<ReefState> newPosition) {
       Elevator.this.setPosition(newPosition);
     }
 
-    /**
-     * Resets the elevator position to the stow position.
-     *
-     * @return A command that resets the elevator position.
-     */
     public Command resetPosition() {
       return Commands.runOnce(() -> Elevator.this.position = ElevatorPositions.STOW)
           .andThen(
@@ -394,11 +343,6 @@ public class Elevator {
                   () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
     }
 
-    /**
-     * Runs the SysId routine for the elevator.
-     *
-     * @return A command to run the SysId routine.
-     */
     public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
 
       return Commands.sequence(
@@ -406,53 +350,22 @@ public class Elevator {
           Elevator.this.sysIdRoutine(superstructure));
     }
 
-    /**
-     * Gets the current position of the elevator.
-     *
-     * @return The current elevator position.
-     */
     public double getPositionMeters() {
       return Elevator.this.getPositionMeters(inputs);
     }
 
-    /**
-     * Gets the feedforward characterization velocity.
-     *
-     * @return The feedforward characterization velocity.
-     */
     public double getFFCharacterizationVelocity() {
       return Elevator.this.getFFCharacterizationVelocity(inputs);
     }
 
-    /**
-     * Sets the control gains for the elevator.
-     *
-     * @param kP The proportional gain.
-     * @param kD The derivative gain.
-     * @param kS The static gain.
-     * @param kV The velocity gain.
-     * @param kA The acceleration gain.
-     * @param kG The gravity gain.
-     */
     public void setGains(double kP, double kD, double kS, double kV, double kA, double kG) {
       Elevator.this.setGains(kP, kD, kS, kV, kA, kG);
     }
 
-    /**
-     * Sets the motion constraints for the elevator.
-     *
-     * @param maxAcceleration The maximum acceleration.
-     * @param cruisingVelocity The cruising velocity.
-     */
     public void setConstraints(double maxAcceleration, double cruisingVelocity) {
       Elevator.this.setConstraints(maxAcceleration, cruisingVelocity);
     }
 
-    /**
-     * Checks if the elevator is at the goal position.
-     *
-     * @return True if the elevator is at the goal position, false otherwise.
-     */
     public boolean atGoal() {
       return Elevator.this.atGoal();
     }
