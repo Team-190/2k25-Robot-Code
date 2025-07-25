@@ -9,7 +9,7 @@ import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import lombok.Getter;
 
 /**
@@ -22,7 +22,7 @@ public class V2_RedundancySuperstructurePose {
   private final String key;
 
   @Getter private final ReefState elevatorHeight;
-  @Getter private final ArmState armState;
+  @Getter private final ManipulatorArmState armState;
   @Getter private final IntakeExtensionState intakeState;
   @Getter private final FunnelState funnelState;
 
@@ -123,7 +123,7 @@ public class V2_RedundancySuperstructurePose {
    */
   public record SubsystemPoses(
       ReefState elevatorHeight,
-      ArmState armState,
+      ManipulatorArmState armState,
       IntakeExtensionState intakeState,
       FunnelState funnelState) {
 
@@ -132,7 +132,7 @@ public class V2_RedundancySuperstructurePose {
      * OPENED for funnel).
      */
     public SubsystemPoses() {
-      this(ReefState.STOW, ArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED);
+      this(ReefState.STOW, ManipulatorArmState.STOW_DOWN, IntakeExtensionState.STOW, FunnelState.OPENED);
     }
   }
 }

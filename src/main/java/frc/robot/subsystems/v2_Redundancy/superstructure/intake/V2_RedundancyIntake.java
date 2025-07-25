@@ -108,7 +108,7 @@ public class V2_RedundancyIntake {
                 () ->
                     Math.abs(
                             inputs.extensionPositionMeters
-                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension())
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MAX_EXTENSION())
                         <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
                             .GOAL_TOLERANCE()
                             .get()),
@@ -119,7 +119,7 @@ public class V2_RedundancyIntake {
                 () ->
                     Math.abs(
                             inputs.extensionPositionMeters
-                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension())
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MIN_EXTENSION())
                         <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
                             .GOAL_TOLERANCE()
                             .get()),
@@ -130,7 +130,7 @@ public class V2_RedundancyIntake {
                 () ->
                     Math.abs(
                             inputs.extensionPositionMeters
-                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension())
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MAX_EXTENSION())
                         <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
                             .GOAL_TOLERANCE()
                             .get()),
@@ -141,7 +141,7 @@ public class V2_RedundancyIntake {
                 () ->
                     Math.abs(
                             inputs.extensionPositionMeters
-                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension())
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MIN_EXTENSION())
                         <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
                             .GOAL_TOLERANCE()
                             .get()));

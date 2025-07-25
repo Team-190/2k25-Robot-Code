@@ -17,7 +17,7 @@ public class V2_RedundancyManipulatorConstants {
   public static final double ROLLER_CURRENT_THRESHOLD;
   public static final Rotation2d ROLLER_TOGGLE_ARM_ROTATION;
 
-  public static final ManipulatorCurrentLimits CURRENT_LIMITS;
+  public static final CurrentLimits CURRENT_LIMITS;
 
   static {
     ARM_CAN_ID = 31;
@@ -55,7 +55,7 @@ public class V2_RedundancyManipulatorConstants {
     ROLLER_CURRENT_THRESHOLD = 60.0;
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
 
-    CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+    CURRENT_LIMITS = new CurrentLimits(40, 40, 40, 40);
   }
 
   public static record ArmParameters(
@@ -74,16 +74,16 @@ public class V2_RedundancyManipulatorConstants {
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {}
 
-  public static final record ManipulatorCurrentLimits(
-      double MANIPULATOR_SUPPLY_CURRENT_LIMIT,
+  public static record CurrentLimits(
+      double ARM_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
-      double MANIPULATOR_STATOR_CURRENT_LIMIT,
+      double ARM_STATOR_CURRENT_LIMIT,
       double ROLLER_STATOR_CURRENT_LIMIT) {}
 
   public static record Constraints(
-      LoggedTunableNumber maxAccelerationRotationsPerSecondSquared,
-      LoggedTunableNumber cruisingVelocityRotationsPerSecond,
-      LoggedTunableNumber goalToleranceRadians) {}
+      LoggedTunableNumber MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED,
+      LoggedTunableNumber CRUISING_VELOCITY_ROTATIONS_PER_SECOND,
+      LoggedTunableNumber GOAL_TOLERANCE_RADIANS) {}
 
   @RequiredArgsConstructor
   public static enum ManipulatorRollerState {
@@ -95,6 +95,7 @@ public class V2_RedundancyManipulatorConstants {
     SCORE_ALGAE(-6),
     REMOVE_ALGAE(-12),
     L1_SCORE(3.5 * 1.56);
+    
     private final double voltage;
 
     public double getVoltage() {
@@ -103,7 +104,7 @@ public class V2_RedundancyManipulatorConstants {
   }
 
   @RequiredArgsConstructor
-  public static enum ArmState {
+  public static enum ManipulatorArmState {
     STOW_UP(Rotation2d.fromDegrees(75)),
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),

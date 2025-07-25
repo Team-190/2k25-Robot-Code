@@ -272,7 +272,6 @@ public class Funnel {
           });
     }
 
-
     public Command sysIdRoutine() {
       return Funnel.this.sysIdRoutine(this);
     }

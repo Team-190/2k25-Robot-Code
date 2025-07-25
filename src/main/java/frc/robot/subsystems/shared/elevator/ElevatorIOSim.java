@@ -10,10 +10,10 @@ import frc.robot.Constants;
 
 public class ElevatorIOSim implements ElevatorIO {
   private final ElevatorSim sim;
-
+  
   private final ProfiledPIDController feedback;
   private ElevatorFeedforward feedforward;
-
+  
   private double appliedVolts;
   private boolean isClosedLoop;
 
@@ -61,14 +61,17 @@ public class ElevatorIOSim implements ElevatorIO {
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
+    // Position and velocity
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
+    
     for (int i = 0; i < ElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts;
       inputs.supplyCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.torqueCurrentAmps[i] = sim.getCurrentDrawAmps();
       inputs.temperatureCelsius[i] = 0.0;
     }
+    
     inputs.positionGoalMeters = feedback.getGoal().position;
     inputs.positionSetpointMeters = feedback.getSetpoint().position;
     inputs.positionErrorMeters = feedback.getPositionError();

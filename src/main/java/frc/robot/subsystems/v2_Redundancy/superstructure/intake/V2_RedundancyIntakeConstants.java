@@ -13,12 +13,12 @@ public class V2_RedundancyIntakeConstants {
   public static final double EXTENSION_MOTOR_METERS_PER_REV;
   public static final double ROLLER_MOTOR_GEAR_RATIO;
 
-  public static final IntakeCurrentLimits CURRENT_LIMITS;
+  public static final CurrentLimits CURRENT_LIMITS;
   public static final Gains EXTENSION_MOTOR_GAINS;
   public static final Thresholds ANGLE_THRESHOLDS;
   public static final Constraints EXTENSION_MOTOR_CONSTRAINTS;
-  public static final ExtensionParams EXTENSION_PARAMS;
-  public static final RollerParams ROLLER_PARAMS;
+  public static final ExtensionParameters EXTENSION_PARAMS;
+  public static final RollerParameters ROLLER_PARAMS;
 
   static {
     EXTENSION_MOTOR_ID = 60;
@@ -31,7 +31,7 @@ public class V2_RedundancyIntakeConstants {
       case REAL:
       case REPLAY:
       default:
-        CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
+        CURRENT_LIMITS = new CurrentLimits(40.0, 40.0, 40.0, 40.0);
         EXTENSION_MOTOR_GAINS =
             new Gains(
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 100.0),
@@ -46,17 +46,17 @@ public class V2_RedundancyIntakeConstants {
                 new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 500.0),
                 new LoggedTunableNumber("Intake/Goal Tolerance", 0.01));
         EXTENSION_PARAMS =
-            new ExtensionParams(
+            new ExtensionParameters(
                 DCMotor.getKrakenX60(1),
                 0.0042,
                 Units.inchesToMeters(1.0),
                 IntakeExtensionState.STOW.getDistance(),
                 IntakeExtensionState.INTAKE.getDistance());
-        ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new RollerParameters(DCMotor.getKrakenX60(1), 0.0042);
         break;
 
       case SIM:
-        CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
+        CURRENT_LIMITS = new CurrentLimits(40.0, 40.0, 40.0, 40.0);
         EXTENSION_MOTOR_GAINS =
             new Gains(
                 new LoggedTunableNumber("Intake/Extension Motor Gains/kP", 40),
@@ -71,18 +71,18 @@ public class V2_RedundancyIntakeConstants {
                 new LoggedTunableNumber("Intake/Extension Motor/Max Velocity", 100.0),
                 new LoggedTunableNumber("Intake/Goal Tolerance", 0.0));
         EXTENSION_PARAMS =
-            new ExtensionParams(
+            new ExtensionParameters(
                 DCMotor.getKrakenX60(1),
                 0.0042,
                 Units.inchesToMeters(1.0),
                 IntakeExtensionState.STOW.getDistance(),
                 IntakeExtensionState.INTAKE.getDistance());
-        ROLLER_PARAMS = new RollerParams(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new RollerParameters(DCMotor.getKrakenX60(1), 0.0042);
         break;
     }
   }
 
-  public static final record IntakeCurrentLimits(
+  public static final record CurrentLimits(
       double EXTENSION_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
       double EXTENSION_STATOR_CURRENT_LIMIT,
@@ -103,14 +103,14 @@ public class V2_RedundancyIntakeConstants {
       LoggedTunableNumber MAX_VELOCITY,
       LoggedTunableNumber GOAL_TOLERANCE) {}
 
-  public static final record ExtensionParams(
-      DCMotor motor,
-      double massKg,
-      double pitchDiameter,
-      double minExtension,
-      double maxExtension) {}
+  public static final record ExtensionParameters(
+      DCMotor MOTOR,
+      double MASS_KG,
+      double PITCH_DIAMETER,
+      double MIN_EXTENSION,
+      double MAX_EXTENSION) {}
 
-  public static final record RollerParams(DCMotor motor, double momentOfInertia) {}
+  public static final record RollerParameters(DCMotor MOTOR, double MOMENT_OF_INERTIA) {}
 
   @RequiredArgsConstructor
   public enum IntakeExtensionState {

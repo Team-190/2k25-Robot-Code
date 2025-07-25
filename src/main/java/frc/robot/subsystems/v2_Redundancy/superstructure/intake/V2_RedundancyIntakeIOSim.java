@@ -25,22 +25,22 @@ public class V2_RedundancyIntakeIOSim implements V2_RedundancyIntakeIO {
     extensionSim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(
-                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
-                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.massKg(),
-                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.pitchDiameter(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MOTOR(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MASS_KG(),
+                V2_RedundancyIntakeConstants.EXTENSION_PARAMS.PITCH_DIAMETER(),
                 V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GEAR_RATIO),
-            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.motor(),
-            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension(),
-            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MOTOR(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MIN_EXTENSION(),
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MAX_EXTENSION(),
             false,
-            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension());
+            V2_RedundancyIntakeConstants.EXTENSION_PARAMS.MIN_EXTENSION());
     rollerSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                V2_RedundancyIntakeConstants.ROLLER_PARAMS.motor(),
-                V2_RedundancyIntakeConstants.ROLLER_PARAMS.momentOfInertia(),
+                V2_RedundancyIntakeConstants.ROLLER_PARAMS.MOTOR(),
+                V2_RedundancyIntakeConstants.ROLLER_PARAMS.MOMENT_OF_INERTIA(),
                 V2_RedundancyIntakeConstants.ROLLER_MOTOR_GEAR_RATIO),
-            V2_RedundancyIntakeConstants.ROLLER_PARAMS.motor());
+            V2_RedundancyIntakeConstants.ROLLER_PARAMS.MOTOR());
 
     extensionController =
         new ProfiledPIDController(

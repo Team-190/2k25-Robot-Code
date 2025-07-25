@@ -8,7 +8,7 @@ import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class V2_RedundancySuperstructureEdges {
       return Commands.sequence(
           pose.setElevatorHeight(elevator)
               .alongWith(
-                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ArmState.STOW_DOWN))
+                  Commands.runOnce(() -> manipulator.setAlgaeArmGoal(ManipulatorArmState.STOW_DOWN))
                       .alongWith(manipulator.waitUntilAlgaeArmAtGoal()))
               .alongWith(pose.setFunnelState(funnel).alongWith(pose.setIntakeState(intake))),
           pose.setArmState(manipulator));
