@@ -13,8 +13,8 @@ import frc.robot.commands.CompositeCommands.V1_StackUpCompositeCommands;
 import frc.robot.commands.CompositeCommands.V2_RedundancyCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.elevator.ElevatorCSB;
+import frc.robot.subsystems.shared.funnel.FunnelCSB;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelCSB;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
@@ -153,7 +153,7 @@ public class AutonomousCommands {
   public static final Command autoALeft(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -200,7 +200,7 @@ public class AutonomousCommands {
   public static final Command autoARight(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -247,7 +247,7 @@ public class AutonomousCommands {
   public static final Command autoBLeft(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -277,7 +277,7 @@ public class AutonomousCommands {
   public static final Command autoCLeft(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -316,7 +316,7 @@ public class AutonomousCommands {
   public static final Command autoCRight(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 
@@ -355,7 +355,7 @@ public class AutonomousCommands {
   public static final Command autoBRight(
       Drive drive,
       ElevatorCSB elevator,
-      V1_StackUpFunnelCSB funnel,
+      FunnelCSB funnel,
       V1_StackUpManipulator manipulator,
       Camera... cameras) {
 

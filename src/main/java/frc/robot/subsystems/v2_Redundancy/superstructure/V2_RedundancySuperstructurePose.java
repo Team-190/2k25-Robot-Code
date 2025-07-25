@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.elevator.ElevatorFSM;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
+import frc.robot.subsystems.shared.funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -83,7 +83,7 @@ public class V2_RedundancySuperstructurePose {
    * @param funnel The funnel subsystem to control.
    * @return A Command that sets the funnel state.
    */
-  public Command setFunnelState(V2_RedundancyFunnelFSM funnel) {
+  public Command setFunnelState(FunnelFSM funnel) {
     return Commands.runOnce(() -> funnel.setClapDaddyGoal(funnelState));
   }
 
@@ -100,7 +100,7 @@ public class V2_RedundancySuperstructurePose {
   public Command asCommand(
       ElevatorFSM elevator,
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnelFSM funnel,
+      FunnelFSM funnel,
       V2_RedundancyIntake intake) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),

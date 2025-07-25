@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotStateLL;
 import frc.robot.subsystems.shared.elevator.ElevatorFSM;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
+import frc.robot.subsystems.shared.funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -86,7 +86,7 @@ public class V2_RedundancySuperstructureEdges {
       V2_RedundancySuperstructureStates to,
       ElevatorFSM elevator,
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnelFSM funnel,
+      FunnelFSM funnel,
       V2_RedundancyIntake intake) {
     V2_RedundancySuperstructurePose pose = to.getPose();
 
@@ -513,7 +513,7 @@ public class V2_RedundancySuperstructureEdges {
       AlgaeEdge type,
       ElevatorFSM elevator,
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnelFSM funnel,
+      FunnelFSM funnel,
       V2_RedundancyIntake intake) {
     // Iterate through each edge in the provided list
     for (Edge edge : edges) {
@@ -542,7 +542,7 @@ public class V2_RedundancySuperstructureEdges {
       Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph,
       ElevatorFSM elevator,
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnelFSM funnel,
+      FunnelFSM funnel,
       V2_RedundancyIntake intake) {
     // Create all edge lists (NoneEdges, NoAlgaeEdges, AlgaeEdges)
     createEdges();

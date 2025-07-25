@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -21,7 +21,7 @@ import frc.robot.subsystems.shared.drive.TunerConstantsV1_StackUp;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
-public class V1_StackUpFunnelIOTalonFX implements V1_StackUpFunnelIO {
+public class FunnelIOTalonFX implements FunnelIO {
   private final TalonFX clapDaddyTalonFX;
   private final TalonFX rollerTalonFX;
   private final DigitalInput coralSensor;
@@ -55,59 +55,55 @@ public class V1_StackUpFunnelIOTalonFX implements V1_StackUpFunnelIO {
   private VoltageOut voltageRequest;
   private NeutralOut neutralRequest;
 
-  public V1_StackUpFunnelIOTalonFX() {
+  public FunnelIOTalonFX() {
     clapDaddyTalonFX =
-        new TalonFX(
-            V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
-    rollerTalonFX = new TalonFX(V1_StackUpFunnelConstants.ROLLER_MOTOR_ID);
-    coralSensor = new DigitalInput(V1_StackUpFunnelConstants.CORAL_SENSOR_ID);
+        new TalonFX(FunnelConstants.CLAP_DADDY_MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
+    rollerTalonFX = new TalonFX(FunnelConstants.ROLLER_MOTOR_ID);
+    coralSensor = new DigitalInput(FunnelConstants.CORAL_SENSOR_ID);
     clapDaddyCANcoder =
-        new CANcoder(
-            V1_StackUpFunnelConstants.CLAP_DADDY_CANCODER_ID, TunerConstantsV1_StackUp.kCANBus);
+        new CANcoder(FunnelConstants.CLAP_DADDY_CANCODER_ID, TunerConstantsV1_StackUp.kCANBus);
 
     clapDaddyConfig = new TalonFXConfiguration();
-    clapDaddyConfig.Feedback.SensorToMechanismRatio =
-        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
+    clapDaddyConfig.Feedback.SensorToMechanismRatio = FunnelConstants.CLAP_DADDY_MOTOR_GEAR_RATIO;
     clapDaddyConfig.CurrentLimits.withSupplyCurrentLimit(
-        V1_StackUpFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_SUPPLY_CURRENT_LIMIT());
+        FunnelConstants.CURRENT_LIMITS.CLAP_DADDY_SUPPLY_CURRENT_LIMIT());
     clapDaddyConfig.CurrentLimits.withStatorCurrentLimit(
-        V1_StackUpFunnelConstants.CURRENT_LIMITS.CLAP_DADDY_STATOR_CURRENT_LIMIT());
+        FunnelConstants.CURRENT_LIMITS.CLAP_DADDY_STATOR_CURRENT_LIMIT());
     clapDaddyConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    clapDaddyConfig.MotorOutput.Inverted = V1_StackUpFunnelConstants.CLAP_DADDY_INVERTED;
-    clapDaddyConfig.Slot0.kP = V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get();
-    clapDaddyConfig.Slot0.kD = V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get();
-    clapDaddyConfig.Slot0.kS = V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get();
-    clapDaddyConfig.Slot0.kV = V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get();
-    clapDaddyConfig.Slot0.kA = V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get();
+    clapDaddyConfig.MotorOutput.Inverted = FunnelConstants.CLAP_DADDY_INVERTED;
+    clapDaddyConfig.Slot0.kP = FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get();
+    clapDaddyConfig.Slot0.kD = FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get();
+    clapDaddyConfig.Slot0.kS = FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get();
+    clapDaddyConfig.Slot0.kV = FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get();
+    clapDaddyConfig.Slot0.kA = FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get();
     clapDaddyConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        Units.radiansToRotations(V1_StackUpFunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS());
+        Units.radiansToRotations(FunnelConstants.ANGLE_THRESHOLDS.MAX_ANGLE_RADIANS());
     clapDaddyConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     clapDaddyConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        Units.radiansToRotations(V1_StackUpFunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
+        Units.radiansToRotations(FunnelConstants.ANGLE_THRESHOLDS.MIN_ANGLE_RADIANS());
     clapDaddyConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     clapDaddyConfig.MotionMagic.MotionMagicAcceleration =
-        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get();
     clapDaddyConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get();
 
     tryUntilOk(5, () -> clapDaddyTalonFX.getConfigurator().apply(clapDaddyConfig, 0.25));
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.withSupplyCurrentLimit(
-        V1_StackUpFunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
+        FunnelConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT());
     // rollerConfig.CurrentLimits.withStatorCurrentLimit(
     //     FunnelConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT());
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.Feedback.SensorToMechanismRatio =
-        V1_StackUpFunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
-    rollerConfig.MotorOutput.Inverted = V1_StackUpFunnelConstants.ROLLER_INVERTED;
+    rollerConfig.Feedback.SensorToMechanismRatio = FunnelConstants.ROLLER_MOTOR_GEAR_RATIO;
+    rollerConfig.MotorOutput.Inverted = FunnelConstants.ROLLER_INVERTED;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
 
     cancoderConfig = new CANcoderConfiguration();
     cancoderConfig.MagnetSensor.MagnetOffset =
-        V1_StackUpFunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.getRotations();
+        FunnelConstants.CANCODER_ABSOLUTE_OFFSET_RADIANS.getRotations();
     cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     cancoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
@@ -117,7 +113,7 @@ public class V1_StackUpFunnelIOTalonFX implements V1_StackUpFunnelIO {
         () ->
             clapDaddyTalonFX.setPosition(
                 clapDaddyCANcoder.getPosition().getValueAsDouble()
-                    / V1_StackUpFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO,
+                    / FunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO,
                 0.25));
 
     clapDaddyPositionRotations = clapDaddyTalonFX.getPosition();
@@ -184,13 +180,13 @@ public class V1_StackUpFunnelIOTalonFX implements V1_StackUpFunnelIO {
   }
 
   @Override
-  public void updateInputs(V1_StackUpFunnelIOInputs inputs) {
+  public void updateInputs(FunnelIOInputs inputs) {
     inputs.clapDaddyPosition =
         Rotation2d.fromRotations(clapDaddyPositionRotations.getValueAsDouble());
     inputs.clapDaddyAbsolutePosition =
         Rotation2d.fromRotations(
             cancoderPositionRotations.getValueAsDouble()
-                / V1_StackUpFunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO);
+                / FunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO);
     inputs.clapDaddyVelocityRadiansPerSecond =
         Units.rotationsToRadians(clapDaddyVelocityRotationsPerSecond.getValueAsDouble());
     inputs.clapDaddyAppliedVolts = clapDaddyAppliedVolts.getValueAsDouble();
@@ -250,7 +246,7 @@ public class V1_StackUpFunnelIOTalonFX implements V1_StackUpFunnelIO {
     return Math.abs(
             clapDaddyGoal.getRadians()
                 - Units.rotationsToRadians(clapDaddyPositionRotations.getValueAsDouble()))
-        < V1_StackUpFunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
+        < FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.GOAL_TOLERANCE().get();
   }
 
   @Override

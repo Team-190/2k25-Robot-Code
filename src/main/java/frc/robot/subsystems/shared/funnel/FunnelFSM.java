@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -6,46 +6,51 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
+import frc.robot.RobotStateLL;
+import frc.robot.RobotStateLL.RobotMode;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelRollerState;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
+import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
-import java.util.function.BooleanSupplier;
+import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V1_StackUpFunnelCSB extends SubsystemBase {
-  private final V1_StackUpFunnelIO io;
-  private final V1_StackUpFunnelIOInputsAutoLogged inputs;
+public class FunnelFSM {
+  private final FunnelIO io;
+  private final FunnelIOInputsAutoLogged inputs;
 
-  private final SysIdRoutine characterizationRoutine;
   private double debounceTimestamp;
-  private FunnelState goal;
+  @Setter private boolean manipulatorHasCoral;
+
+  @Getter
+  @AutoLogOutput(key = "Funnel/ClapDaddy Goal")
+  private FunnelState clapDaddyGoal;
+
+  @Getter
+  @AutoLogOutput(key = "Funnel/Roller Goal")
+  private FunnelRollerState rollerGoal;
 
   private boolean isClosedLoop;
 
-  public V1_StackUpFunnelCSB(V1_StackUpFunnelIO io) {
+  public FunnelFSM(FunnelIO io) {
     this.io = io;
-    inputs = new V1_StackUpFunnelIOInputsAutoLogged();
+    inputs = new FunnelIOInputsAutoLogged();
 
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(1),
-                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, this));
     debounceTimestamp = Timer.getFPGATimestamp();
-    goal = FunnelState.OPENED;
+    manipulatorHasCoral = false;
+
+    clapDaddyGoal = FunnelState.OPENED;
+    rollerGoal = FunnelRollerState.STOP;
 
     isClosedLoop = true;
   }
 
-  @Override
   public void periodic() {
     ExternalLoggedTracer.reset();
     InternalLoggedTracer.reset();
@@ -58,9 +63,23 @@ public class V1_StackUpFunnelCSB extends SubsystemBase {
 
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
-      io.setClapDaddyGoal(goal.getAngle());
+      io.setClapDaddyGoal(clapDaddyGoal.getAngle());
     }
+    io.setRollerVoltage(rollerGoal.getVoltage());
     InternalLoggedTracer.record("Set Funnel Goal", "Funnel/Periodic");
+
+    if (RobotStateLL.isIntakingCoral()) {
+      if (hasCoral()) {
+        setClapDaddyGoal(FunnelState.CLOSED);
+      }
+      if (manipulatorHasCoral) {
+        setClapDaddyGoal(FunnelState.OPENED);
+      }
+    }
+
+    if (RobotMode.auto() && RobotStateLL.isAutoClapOverride()) {
+      setClapDaddyGoal(FunnelState.CLOSED);
+    }
 
     InternalLoggedTracer.reset();
     if (!inputs.hasCoral) {
@@ -76,12 +95,9 @@ public class V1_StackUpFunnelCSB extends SubsystemBase {
    * @param goal The desired FunnelState.
    * @return A command to set the clapDaddy goal.
    */
-  public Command setClapDaddyGoal(FunnelState goal) {
-    return Commands.runOnce(
-        () -> {
-          isClosedLoop = true;
-          this.goal = goal;
-        });
+  public void setClapDaddyGoal(FunnelState goal) {
+    isClosedLoop = true;
+    this.clapDaddyGoal = goal;
   }
 
   /**
@@ -90,44 +106,8 @@ public class V1_StackUpFunnelCSB extends SubsystemBase {
    * @param volts The desired voltage.
    * @return A command to set the roller voltage.
    */
-  private Command setRollerVoltage(double volts) {
-    return Commands.run(() -> io.setRollerVoltage(volts));
-  }
-
-  public Command intakeCoral(BooleanSupplier coralLocked) {
-    return Commands.race(
-            Commands.sequence(
-                setClapDaddyGoal(FunnelState.OPENED),
-                Commands.waitUntil(() -> hasCoral()),
-                setClapDaddyGoal(FunnelState.CLOSED),
-                Commands.waitUntil(coralLocked)),
-            setRollerVoltage(12.0))
-        .finallyDo(
-            () -> {
-              goal = FunnelState.OPENED;
-              io.setRollerVoltage(0.0);
-            });
-  }
-
-  /**
-   * Stops the roller.
-   *
-   * @return A command to stop the roller.
-   */
-  public Command stopRoller() {
-    return Commands.runOnce(io::stopRoller);
-  }
-
-  public Command funnelClosedOverride() {
-    return this.runEnd(
-        () -> {
-          goal = FunnelState.CLOSED;
-          io.setRollerVoltage(12);
-        },
-        () -> {
-          goal = FunnelState.OPENED;
-          io.setRollerVoltage(0);
-        });
+  public void setRollerGoal(FunnelRollerState state) {
+    rollerGoal = state;
   }
 
   /**
@@ -135,15 +115,25 @@ public class V1_StackUpFunnelCSB extends SubsystemBase {
    *
    * @return A command to run the SysId routine.
    */
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
+    SysIdRoutine characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(1),
+                (state) -> Logger.recordOutput("Funnel/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setClapDaddyVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
+        superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.dynamic(Direction.kReverse));
   }
 
@@ -191,9 +181,5 @@ public class V1_StackUpFunnelCSB extends SubsystemBase {
    */
   public void updateConstraints(double maxAcceleration, double maxVelocity) {
     io.updateConstraints(maxAcceleration, maxVelocity);
-  }
-
-  public Command setFunnelVoltage(double volts) {
-    return Commands.run(() -> io.setClapDaddyVoltage(volts));
   }
 }

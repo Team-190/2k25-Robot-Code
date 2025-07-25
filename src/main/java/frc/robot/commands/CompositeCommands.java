@@ -14,9 +14,9 @@ import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.elevator.ElevatorCSB;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.funnel.FunnelCSB;
+import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
 import frc.robot.subsystems.shared.visionlimelight.Camera;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelCSB;
-import frc.robot.subsystems.v1_StackUp.funnel.V1_StackUpFunnelConstants.FunnelState;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
@@ -46,7 +46,7 @@ public class CompositeCommands {
 
   public static final class V1_StackUpCompositeCommands {
     public static final Command intakeCoral(
-        ElevatorCSB elevator, V1_StackUpFunnelCSB funnel, V1_StackUpManipulator manipulator) {
+        ElevatorCSB elevator, FunnelCSB funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               elevator.setPosition(() -> ReefState.CORAL_INTAKE),
@@ -57,7 +57,7 @@ public class CompositeCommands {
     }
 
     public static final Command intakeCoralOverride(
-        ElevatorCSB elevator, V1_StackUpFunnelCSB funnel, V1_StackUpManipulator manipulator) {
+        ElevatorCSB elevator, FunnelCSB funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
               Commands.runOnce(() -> RobotStateLL.setIntakingCoral(true)),
               elevator.setPosition(() -> ReefState.CORAL_INTAKE),
@@ -191,7 +191,7 @@ public class CompositeCommands {
     }
 
     public static final Command climb(
-        ElevatorCSB elevator, V1_StackUpFunnelCSB funnel, Climber climber, Drive drive) {
+        ElevatorCSB elevator, FunnelCSB funnel, Climber climber, Drive drive) {
       return Commands.sequence(
           elevator.setPosition(() -> ReefState.STOW),
           Commands.waitSeconds(0.02),

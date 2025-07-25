@@ -1,11 +1,11 @@
-package frc.robot.subsystems.v2_Redundancy.superstructure.funnel;
+package frc.robot.subsystems.shared.funnel;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V2_RedundancyFunnelIO {
+public interface FunnelIO {
   @AutoLog
-  public static class V2_RedundancyFunnelIOInputs {
+  public static class FunnelIOInputs {
     public Rotation2d clapDaddyPosition = new Rotation2d();
     public Rotation2d clapDaddyAbsolutePosition = new Rotation2d();
     public double clapDaddyVelocityRadiansPerSecond = 0.0;
@@ -32,7 +32,7 @@ public interface V2_RedundancyFunnelIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(V2_RedundancyFunnelIOInputs inputs) {}
+  public default void updateInputs(FunnelIOInputs inputs) {}
 
   /**
    * Sets the voltage for the clap daddy.

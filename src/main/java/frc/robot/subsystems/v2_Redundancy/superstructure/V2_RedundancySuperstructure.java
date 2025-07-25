@@ -7,9 +7,9 @@ import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
 import frc.robot.RobotStateLL.RobotMode;
 import frc.robot.subsystems.shared.elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.funnel.FunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureEdges.EdgeCommand;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.util.NTPrefixes;
@@ -37,7 +37,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   private final Graph<V2_RedundancySuperstructureStates, EdgeCommand> graph;
   private final ElevatorFSM elevator;
-  private final V2_RedundancyFunnelFSM funnel;
+  private final FunnelFSM funnel;
   private final V2_RedundancyManipulator manipulator;
   private final V2_RedundancyIntake intake;
 
@@ -70,7 +70,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
 
   public V2_RedundancySuperstructure(
       ElevatorFSM elevator,
-      V2_RedundancyFunnelFSM funnel,
+      FunnelFSM funnel,
       V2_RedundancyManipulator manipulator,
       V2_RedundancyIntake intake) {
     this.elevator = elevator;
