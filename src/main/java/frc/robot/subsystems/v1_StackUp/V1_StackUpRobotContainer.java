@@ -29,7 +29,8 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.elevator.ElevatorCSB;
+import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
@@ -78,7 +79,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
-          elevator = new ElevatorCSB(new ElevatorIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX()).getCSB();
           funnel = new FunnelCSB(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
@@ -93,7 +94,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new ElevatorCSB(new ElevatorIOSim());
+          elevator = new Elevator(new ElevatorIOSim()).getCSB();
           funnel = new FunnelCSB(new FunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
@@ -116,7 +117,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (elevator == null) {
-      elevator = new ElevatorCSB(new ElevatorIO() {});
+      elevator = new Elevator(new ElevatorIO() {}).getCSB();
     }
     if (funnel == null) {
       funnel = new FunnelCSB(new FunnelIO() {});

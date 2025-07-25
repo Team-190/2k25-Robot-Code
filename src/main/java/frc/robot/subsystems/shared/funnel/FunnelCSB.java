@@ -16,10 +16,12 @@ public class FunnelCSB extends Funnel {
   }
 
   @Override
-  public void periodic() {    ExternalLoggedTracer.reset();
+  public void periodic() {
+    ExternalLoggedTracer.reset();
 
     super.periodic();
-    ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");}
+    ExternalLoggedTracer.record("Funnel Periodic", "Funnel/Periodic");
+  }
 
   /**
    * Sets the goal state of the clapDaddy.

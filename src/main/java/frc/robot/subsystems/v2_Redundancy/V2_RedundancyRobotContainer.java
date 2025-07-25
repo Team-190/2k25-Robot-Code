@@ -27,8 +27,9 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
-import frc.robot.subsystems.shared.elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
@@ -87,7 +88,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
-          elevator = new ElevatorFSM(new ElevatorIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           funnel = new FunnelFSM(new FunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
@@ -104,7 +105,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new ElevatorFSM(new ElevatorIOSim());
+          elevator = new Elevator(new ElevatorIOSim()).getFSM();
           funnel = new FunnelFSM(new FunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
@@ -131,7 +132,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       funnel = new FunnelFSM(new FunnelIO() {});
     }
     if (elevator == null) {
-      elevator = new ElevatorFSM(new ElevatorIO() {});
+      elevator = new Elevator(new ElevatorIO() {}).getFSM();
     }
     if (manipulator == null) {
       manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
