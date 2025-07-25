@@ -44,7 +44,7 @@ A key feature of our project is the support for multiple robot versions within a
 
 ## 4. Superstructure State Machine (V2_Redundancy)
 
-The `V2_Redundancy` robot utilizes a finite state machine (FSM) to manage the complex interactions between its scoring and intake mechanisms, preventing collisions and ensuring safe, repeatable movements.
+The `V2_Redundancy` robot utilizes a finite state machine (FSM) to manage the complex interactions between its scoring and intake mechanisms, preventing collisions and ensuring safe, repeatable movements. This was inspired by [FRC 6328](https://github.com/Mechanical-Advantage/RobotCode2025Public)
 
 ![Superstructure Diagram](https://i.postimg.cc/MGX6T6Gg/temp-Image3x-Kc5t.avif)
 
