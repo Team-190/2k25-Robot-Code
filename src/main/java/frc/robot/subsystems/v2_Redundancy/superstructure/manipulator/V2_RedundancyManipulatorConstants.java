@@ -95,7 +95,7 @@ public class V2_RedundancyManipulatorConstants {
     SCORE_ALGAE(-6),
     REMOVE_ALGAE(-12),
     L1_SCORE(3.5 * 1.56);
-    
+
     private final double voltage;
 
     public double getVoltage() {

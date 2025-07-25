@@ -316,7 +316,8 @@ public class CompositeCommands {
           funnel.setClapDaddyGoal(FunnelState.CLIMB),
           Commands.parallel(
               climber.releaseClimber(),
-              Commands.waitSeconds(ClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
+              Commands.waitSeconds(
+                  ClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
           Commands.waitUntil(climber::climberReady),
           Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
     }
@@ -623,7 +624,8 @@ public class CompositeCommands {
           superstructure.runGoal(V2_RedundancySuperstructureStates.CLIMB),
           Commands.parallel(
               climber.releaseClimber(),
-              Commands.waitSeconds(ClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
+              Commands.waitSeconds(
+                  ClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
           Commands.waitUntil(climber::climberReady),
           Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
     }

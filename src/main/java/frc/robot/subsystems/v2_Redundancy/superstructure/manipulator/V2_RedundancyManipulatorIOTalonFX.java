@@ -86,7 +86,9 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
             .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
             .get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.CRUISING_VELOCITY_ROTATIONS_PER_SECOND().get();
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
+            .get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 

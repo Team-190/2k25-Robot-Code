@@ -142,7 +142,8 @@ public class V2_RedundancySuperstructureEdges {
     // Special case: If going to INTERMEDIATE_WAIT_FOR_ARM
     if (to == V2_RedundancySuperstructureStates.INTERMEDIATE_WAIT_FOR_ARM) {
 
-      return Commands.deadline(pose.setManipulatorState(manipulator), pose.setElevatorHeight(elevator));
+      return Commands.deadline(
+          pose.setManipulatorState(manipulator), pose.setElevatorHeight(elevator));
     }
 
     // Special case: If transitioning to INTERMEDIATE_WAIT_FOR_ELEVATOR

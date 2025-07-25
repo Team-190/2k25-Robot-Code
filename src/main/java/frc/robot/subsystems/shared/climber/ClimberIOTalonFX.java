@@ -37,9 +37,11 @@ public class ClimberIOTalonFX implements ClimberIO {
     talonFX = new TalonFX(ClimberConstants.MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
     config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CURRENT_LIMITS.SUPPLY_CURRENT_LIMIT();
+    config.CurrentLimits.SupplyCurrentLimit =
+        ClimberConstants.CURRENT_LIMITS.SUPPLY_CURRENT_LIMIT();
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CURRENT_LIMITS.STATOR_CURRENT_LIMIT();
+    config.CurrentLimits.StatorCurrentLimit =
+        ClimberConstants.CURRENT_LIMITS.STATOR_CURRENT_LIMIT();
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));

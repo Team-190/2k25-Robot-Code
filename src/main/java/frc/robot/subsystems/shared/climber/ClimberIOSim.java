@@ -7,14 +7,16 @@ import frc.robot.Constants;
 
 public class ClimberIOSim implements ClimberIO {
   private final DCMotorSim sim;
-  
+
   private double appliedVolts;
 
   public ClimberIOSim() {
     sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ClimberConstants.MOTOR_PARAMETERS.MOTOR_CONFIG(), 0.004, ClimberConstants.MOTOR_PARAMETERS.GEAR_RATIO()),
+                ClimberConstants.MOTOR_PARAMETERS.MOTOR_CONFIG(),
+                0.004,
+                ClimberConstants.MOTOR_PARAMETERS.GEAR_RATIO()),
             ClimberConstants.MOTOR_PARAMETERS.MOTOR_CONFIG());
 
     appliedVolts = 0.0;
@@ -30,7 +32,8 @@ public class ClimberIOSim implements ClimberIO {
     inputs.positionRadians = sim.getAngularPositionRad();
     inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps() / ClimberConstants.MOTOR_PARAMETERS.GEARBOX_EFFICIENCY();
+    inputs.supplyCurrentAmps =
+        sim.getCurrentDrawAmps() / ClimberConstants.MOTOR_PARAMETERS.GEARBOX_EFFICIENCY();
     inputs.torqueCurrentAmps = sim.getCurrentDrawAmps();
   }
 

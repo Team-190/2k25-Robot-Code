@@ -51,7 +51,8 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
             0.0,
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kD().get(),
             new Constraints(
-                V2_RedundancyManipulatorConstants.CONSTRAINTS.CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
+                V2_RedundancyManipulatorConstants.CONSTRAINTS
+                    .CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
                     .get(),
                 V2_RedundancyManipulatorConstants.CONSTRAINTS
                     .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()

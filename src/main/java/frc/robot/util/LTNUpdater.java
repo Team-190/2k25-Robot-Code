@@ -183,8 +183,10 @@ public class LTNUpdater {
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV(),
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA(),
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED());
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED(),
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED());
   }
 
   public static final void updateIntake(V2_RedundancyIntake intake) {

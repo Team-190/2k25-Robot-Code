@@ -187,9 +187,6 @@ public class V2_RedundancyManipulator {
     } else {
       y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
     }
-    return MathUtil.clamp(
-        1.25 * y,
-        0.10,
-        ManipulatorRollerState.ALGAE_INTAKE.getVoltage() / 1.5);
+    return MathUtil.clamp(1.25 * y, 0.10, ManipulatorRollerState.ALGAE_INTAKE.getVoltage() / 1.5);
   }
 }

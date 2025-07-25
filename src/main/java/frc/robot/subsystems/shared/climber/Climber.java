@@ -15,10 +15,12 @@ public class Climber extends SubsystemBase {
 
   @AutoLogOutput(key = "Climber/trustRedundantSwitchOne")
   private boolean trustRedundantSwitchOne;
+
   private Timer redundantSwitchesTimer;
 
   @AutoLogOutput(key = "Climber/trustRedundantSwitchTwo")
   private boolean trustRedundantSwitchTwo;
+
   private Timer redundantTrustTimer;
 
   @AutoLogOutput(key = "Climber/override")
@@ -37,13 +39,13 @@ public class Climber extends SubsystemBase {
     inputs = new ClimberIOInputsAutoLogged();
 
     isClimbed = false;
-    
+
     redundantSwitchesTimer = new Timer();
     trustRedundantSwitchOne = true;
 
     redundantTrustTimer = new Timer();
     trustRedundantSwitchTwo = true;
-    
+
     override = false;
   }
 
@@ -83,7 +85,8 @@ public class Climber extends SubsystemBase {
       redundantTrustTimer.start();
       trustRedundantSwitchOne = false;
       trustRedundantSwitchTwo = false;
-      if (redundantTrustTimer.hasElapsed(ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS())) {
+      if (redundantTrustTimer.hasElapsed(
+          ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_TRUSTING_TIMEOUT_SECONDS())) {
         if (inputs.redundantSwitchOne) {
           trustRedundantSwitchOne = true;
         } else if (inputs.redundantSwitchOne) {
@@ -105,7 +108,8 @@ public class Climber extends SubsystemBase {
     if (trustRedundantSwitchOne && trustRedundantSwitchTwo) {
       return inputs.redundantSwitchOne
           && inputs.redundantSwitchTwo
-          && redundantSwitchesTimer.hasElapsed(ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_DELAY_SECONDS());
+          && redundantSwitchesTimer.hasElapsed(
+              ClimberConstants.CLIMBER_TIMING_CONFIG.REDUNDANCY_DELAY_SECONDS());
     } else if (trustRedundantSwitchOne) {
       return inputs.redundantSwitchOne;
     } else if (trustRedundantSwitchTwo) {
