@@ -102,13 +102,49 @@ public class V2_RedundancyIntake {
     return Commands.sequence(
         superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
         Commands.runOnce(() -> isClosedLoop = false),
-        characterizationRoutine.quasistatic(Direction.kForward).until(this::atGoal),
-        Commands.waitSeconds(4),
-        characterizationRoutine.quasistatic(Direction.kReverse).until(this::atGoal),
-        Commands.waitSeconds(4),
-        characterizationRoutine.dynamic(Direction.kForward).until(this::atGoal),
-        Commands.waitSeconds(4),
-        characterizationRoutine.dynamic(Direction.kReverse).until(this::atGoal));
+        characterizationRoutine
+            .quasistatic(Direction.kForward)
+            .until(
+                () ->
+                    Math.abs(
+                            inputs.extensionPositionMeters
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension())
+                        <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
+                            .GOAL_TOLERANCE()
+                            .get()),
+        Commands.waitSeconds(0.25),
+        characterizationRoutine
+            .quasistatic(Direction.kReverse)
+            .until(
+                () ->
+                    Math.abs(
+                            inputs.extensionPositionMeters
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension())
+                        <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
+                            .GOAL_TOLERANCE()
+                            .get()),
+        Commands.waitSeconds(0.25),
+        characterizationRoutine
+            .dynamic(Direction.kForward)
+            .until(
+                () ->
+                    Math.abs(
+                            inputs.extensionPositionMeters
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.maxExtension())
+                        <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
+                            .GOAL_TOLERANCE()
+                            .get()),
+        Commands.waitSeconds(0.25),
+        characterizationRoutine
+            .dynamic(Direction.kReverse)
+            .until(
+                () ->
+                    Math.abs(
+                            inputs.extensionPositionMeters
+                                - V2_RedundancyIntakeConstants.EXTENSION_PARAMS.minExtension())
+                        <= V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS
+                            .GOAL_TOLERANCE()
+                            .get()));
   }
 
   public boolean hasCoral() {

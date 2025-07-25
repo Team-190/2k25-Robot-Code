@@ -364,9 +364,7 @@ public class V2_RedundancySuperstructure extends SubsystemBase {
    */
   public Command override(Runnable action) {
     return Commands.sequence(
-            runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
-            Commands.run(action),
-            Commands.idle(this))
+            runGoal(V2_RedundancySuperstructureStates.OVERRIDE), Commands.run(action))
         .finallyDo(() -> setGoal(currentState));
   }
 

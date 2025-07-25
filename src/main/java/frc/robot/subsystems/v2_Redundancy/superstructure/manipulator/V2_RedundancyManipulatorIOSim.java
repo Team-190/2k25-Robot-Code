@@ -21,6 +21,8 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
   private final ProfiledPIDController feedback;
   private ArmFeedforward feedforward;
 
+  private boolean armClosedLoop;
+
   public V2_RedundancyManipulatorIOSim() {
     armSim =
         new SingleJointedArmSim(
@@ -60,14 +62,17 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kS().get(),
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kV().get(),
             V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kA().get());
+
+    armClosedLoop = true;
   }
 
   @Override
   public void updateInputs(V2_RedundancyManipulatorIOInputs inputs) {
-    armAppliedVolts =
-        feedback.calculate(armSim.getAngleRads())
-            + feedforward.calculate(
-                feedback.getSetpoint().position, feedback.getSetpoint().velocity);
+    if (armClosedLoop)
+      armAppliedVolts =
+          feedback.calculate(armSim.getAngleRads())
+              + feedforward.calculate(
+                  feedback.getSetpoint().position, feedback.getSetpoint().velocity);
 
     armAppliedVolts = MathUtil.clamp(armAppliedVolts, -12.0, 12.0);
     rollerAppliedVolts = MathUtil.clamp(rollerAppliedVolts, -12.0, 12.0);
@@ -95,12 +100,19 @@ public class V2_RedundancyManipulatorIOSim implements V2_RedundancyManipulatorIO
 
   @Override
   public void setArmPositionGoal(Rotation2d position) {
+    armClosedLoop = true;
     feedback.setGoal(position.getRadians());
   }
 
   @Override
   public void setRollerVoltage(double rollerAppliedVolts) {
     this.rollerAppliedVolts = rollerAppliedVolts;
+  }
+
+  @Override
+  public void setArmVoltage(double armAppliedVolts) {
+    armClosedLoop = false;
+    this.armAppliedVolts = armAppliedVolts;
   }
 
   @Override

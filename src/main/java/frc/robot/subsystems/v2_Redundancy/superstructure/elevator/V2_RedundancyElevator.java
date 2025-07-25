@@ -168,7 +168,7 @@ public class V2_RedundancyElevator {
    *
    * @return A command to run the SysId routine.
    */
-  public Command runSysID(V2_RedundancySuperstructure superstructure) {
+  public Command sysIdRoutine(V2_RedundancySuperstructure superstructure) {
     SysIdRoutine characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(

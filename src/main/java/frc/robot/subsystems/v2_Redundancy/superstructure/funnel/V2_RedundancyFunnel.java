@@ -129,11 +129,11 @@ public class V2_RedundancyFunnel {
         superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(4),
+        Commands.waitSeconds(0.25),
         characterizationRoutine.dynamic(Direction.kReverse));
   }
 

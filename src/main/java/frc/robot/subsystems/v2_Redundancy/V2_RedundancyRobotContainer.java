@@ -338,17 +338,19 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   private void configureAutos() {
     AutonomousCommands.loadAutoTrajectories(drive);
 
-    autoChooser.addCmd("None", Commands::none);
     autoChooser.addCmd(
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-
-    // elevator.runSysID(superstructure)
-    // funnel.sysIdRoutine(superstructure)
-    // intake.sysIdRoutine(superstructure)
-    // manipulator.sysIdRoutine(superstructure)
-
+    autoChooser.addCmd("Elevator Characterization", () -> elevator.sysIdRoutine(superstructure));
+    autoChooser.addCmd("Funnel Characterization", () -> funnel.sysIdRoutine(superstructure));
+    autoChooser.addCmd("Intake Characterization", () -> intake.sysIdRoutine(superstructure));
+    autoChooser.addCmd(
+        "Manipulator Characterization",
+        () ->
+            Commands.sequence(
+                superstructure.runGoal(V2_RedundancySuperstructureStates.L3),
+                manipulator.sysIdRoutine(superstructure)));
     autoChooser.addRoutine(
         "4 Piece Left",
         () ->
