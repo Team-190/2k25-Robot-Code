@@ -1,10 +1,10 @@
-package frc.robot.subsystems.v1_StackUp.superstructure.elevator;
+package frc.robot.subsystems.shared.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface V1_StackUpElevatorIO {
+public interface ElevatorIO {
   @AutoLog
-  public static class V1_StackUpElevatorIOInputs {
+  public static class ElevatorIOInputs {
     public double positionMeters = 0.0;
     public double velocityMetersPerSecond = 0.0;
     public double[] appliedVolts = {0.0, 0.0, 0.0, 0.0};
@@ -21,7 +21,7 @@ public interface V1_StackUpElevatorIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(V1_StackUpElevatorIOInputs inputs) {}
+  public default void updateInputs(ElevatorIOInputs inputs) {}
 
   /**
    * Sets the voltage for the elevator.

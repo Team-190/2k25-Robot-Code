@@ -1,7 +1,7 @@
 package frc.robot.subsystems.v2_Redundancy.superstructure;
 
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelRollerState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -44,7 +44,7 @@ public class V2_RedundancySuperstructureAction {
    *
    * @param funnel The funnel subsystem to control
    */
-  public void runFunnel(V2_RedundancyFunnel funnel) {
+  public void runFunnel(V2_RedundancyFunnelFSM funnel) {
     funnel.setRollerGoal(funnelRollerState);
   }
 
@@ -66,7 +66,7 @@ public class V2_RedundancySuperstructureAction {
    */
   public void get(
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnel funnel,
+      V2_RedundancyFunnelFSM funnel,
       V2_RedundancyIntake intake) {
     runManipulator(manipulator);
     runFunnel(funnel);

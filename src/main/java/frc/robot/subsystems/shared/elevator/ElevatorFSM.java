@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.superstructure.elevator;
+package frc.robot.subsystems.shared.elevator;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotStateLL;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -22,18 +22,18 @@ import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyElevator {
-  private final V2_RedundancyElevatorIO io;
-  private final V2_RedundancyElevatorIOInputsAutoLogged inputs;
+public class ElevatorFSM {
+  private final ElevatorIO io;
+  private final ElevatorIOInputsAutoLogged inputs;
 
-  @Getter private V2_RedundancyElevatorPositions position;
+  @Getter private ElevatorPositions position;
   private boolean isClosedLoop;
 
-  public V2_RedundancyElevator(V2_RedundancyElevatorIO io) {
+  public ElevatorFSM(ElevatorIO io) {
     this.io = io;
-    inputs = new V2_RedundancyElevatorIOInputsAutoLogged();
+    inputs = new ElevatorIOInputsAutoLogged();
 
-    position = V2_RedundancyElevatorPositions.STOW;
+    position = ElevatorPositions.STOW;
     isClosedLoop = true;
   }
 
@@ -77,40 +77,40 @@ public class V2_RedundancyElevator {
     isClosedLoop = true;
     switch (newPosition.get()) {
       case STOW:
-        this.position = V2_RedundancyElevatorPositions.STOW;
+        this.position = ElevatorPositions.STOW;
         break;
       case CORAL_INTAKE:
-        this.position = V2_RedundancyElevatorPositions.CORAL_INTAKE;
+        this.position = ElevatorPositions.CORAL_INTAKE;
         break;
       case ALGAE_FLOOR_INTAKE:
-        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE;
+        this.position = ElevatorPositions.ALGAE_INTAKE;
         break;
       case ALGAE_MID:
-        this.position = V2_RedundancyElevatorPositions.ALGAE_MID;
+        this.position = ElevatorPositions.ALGAE_MID;
         break;
       case ALGAE_INTAKE_TOP:
-        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
+        this.position = ElevatorPositions.ALGAE_INTAKE_TOP;
         break;
       case ALGAE_INTAKE_BOTTOM:
-        this.position = V2_RedundancyElevatorPositions.ALGAE_INTAKE_BOT;
+        this.position = ElevatorPositions.ALGAE_INTAKE_BOT;
         break;
       case L1:
-        this.position = V2_RedundancyElevatorPositions.L1;
+        this.position = ElevatorPositions.L1;
         break;
       case L2:
-        this.position = V2_RedundancyElevatorPositions.L2;
+        this.position = ElevatorPositions.L2;
         break;
       case L3:
-        this.position = V2_RedundancyElevatorPositions.L3;
+        this.position = ElevatorPositions.L3;
         break;
       case L4:
-        this.position = V2_RedundancyElevatorPositions.L4;
+        this.position = ElevatorPositions.L4;
         break;
       case L4_PLUS:
-        this.position = V2_RedundancyElevatorPositions.L4_PLUS;
+        this.position = ElevatorPositions.L4_PLUS;
         break;
       case ALGAE_SCORE:
-        this.position = V2_RedundancyElevatorPositions.ALGAE_SCORE;
+        this.position = ElevatorPositions.ALGAE_SCORE;
       default:
         break;
     }
@@ -118,34 +118,34 @@ public class V2_RedundancyElevator {
     io.setPositionGoal(this.position.getPosition());
   }
 
-  public V2_RedundancyElevatorPositions getPosition(ReefState newPosition) {
+  public ElevatorPositions getPosition(ReefState newPosition) {
     switch (newPosition) {
       case STOW:
-        return V2_RedundancyElevatorPositions.STOW;
+        return ElevatorPositions.STOW;
       case CORAL_INTAKE:
-        return V2_RedundancyElevatorPositions.CORAL_INTAKE;
+        return ElevatorPositions.CORAL_INTAKE;
       case ALGAE_FLOOR_INTAKE:
-        return V2_RedundancyElevatorPositions.ALGAE_INTAKE;
+        return ElevatorPositions.ALGAE_INTAKE;
       case ALGAE_MID:
-        return V2_RedundancyElevatorPositions.ALGAE_MID;
+        return ElevatorPositions.ALGAE_MID;
       case ALGAE_INTAKE_TOP:
-        return V2_RedundancyElevatorPositions.ALGAE_INTAKE_TOP;
+        return ElevatorPositions.ALGAE_INTAKE_TOP;
       case ALGAE_INTAKE_BOTTOM:
-        return V2_RedundancyElevatorPositions.ALGAE_INTAKE_BOT;
+        return ElevatorPositions.ALGAE_INTAKE_BOT;
       case L1:
-        return V2_RedundancyElevatorPositions.L1;
+        return ElevatorPositions.L1;
       case L2:
-        return V2_RedundancyElevatorPositions.L2;
+        return ElevatorPositions.L2;
       case L3:
-        return V2_RedundancyElevatorPositions.L3;
+        return ElevatorPositions.L3;
       case L4:
-        return V2_RedundancyElevatorPositions.L4;
+        return ElevatorPositions.L4;
       case L4_PLUS:
-        return V2_RedundancyElevatorPositions.L4_PLUS;
+        return ElevatorPositions.L4_PLUS;
       case ALGAE_SCORE:
-        return V2_RedundancyElevatorPositions.ALGAE_SCORE;
+        return ElevatorPositions.ALGAE_SCORE;
       default:
-        return V2_RedundancyElevatorPositions.STOW;
+        return ElevatorPositions.STOW;
     }
   }
 
@@ -155,12 +155,10 @@ public class V2_RedundancyElevator {
    * @return A command that resets the elevator position.
    */
   public Command resetPosition() {
-    return Commands.runOnce(() -> this.position = V2_RedundancyElevatorPositions.STOW)
+    return Commands.runOnce(() -> this.position = ElevatorPositions.STOW)
         .andThen(
             Commands.runOnce(
-                () ->
-                    io.setPosition(
-                        V2_RedundancyElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
+                () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
   }
 
   /**
@@ -184,32 +182,16 @@ public class V2_RedundancyElevator {
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine
             .quasistatic(Direction.kForward)
-            .until(
-                () ->
-                    atGoal(
-                        V2_RedundancyElevatorPositions.L4.getPosition()
-                            - Units.inchesToMeters(12.0))),
+            .until(() -> atGoal(ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .quasistatic(Direction.kReverse)
-            .until(
-                () ->
-                    atGoal(
-                        V2_RedundancyElevatorPositions.STOW.getPosition()
-                            + Units.inchesToMeters(12.0))),
+            .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kForward)
-            .until(
-                () ->
-                    atGoal(
-                        V2_RedundancyElevatorPositions.L4.getPosition()
-                            - Units.inchesToMeters(12.0))),
+            .until(() -> atGoal(ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kReverse)
-            .until(
-                () ->
-                    atGoal(
-                        V2_RedundancyElevatorPositions.STOW.getPosition()
-                            + Units.inchesToMeters(12.0))),
+            .until(() -> atGoal(ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
         Commands.runOnce(() -> setPosition(() -> ReefState.STOW)));
   }
 
@@ -229,8 +211,8 @@ public class V2_RedundancyElevator {
    */
   public double getFFCharacterizationVelocity() {
     return inputs.velocityMetersPerSecond
-        * V2_RedundancyElevatorConstants.ELEVATOR_GEAR_RATIO
-        / (2 * Math.PI * V2_RedundancyElevatorConstants.DRUM_RADIUS);
+        * ElevatorConstants.ELEVATOR_GEAR_RATIO
+        / (2 * Math.PI * ElevatorConstants.DRUM_RADIUS);
   }
 
   /**
@@ -266,7 +248,7 @@ public class V2_RedundancyElevator {
    */
   private boolean atGoal(double position) {
     return Math.abs(position - inputs.positionMeters)
-        <= V2_RedundancyElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   /**
@@ -277,7 +259,7 @@ public class V2_RedundancyElevator {
   @AutoLogOutput(key = "Elevator/At Goal")
   public boolean atGoal() {
     return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
-        <= V2_RedundancyElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
   public Command waitUntilAtGoal() {

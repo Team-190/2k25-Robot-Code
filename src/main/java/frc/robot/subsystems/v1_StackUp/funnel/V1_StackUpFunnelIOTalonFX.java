@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
+package frc.robot.subsystems.v1_StackUp.funnel;
 
 import static frc.robot.util.PhoenixUtil.*;
 

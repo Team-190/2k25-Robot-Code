@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.superstructure.manipulator;
+package frc.robot.subsystems.v1_StackUp.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;

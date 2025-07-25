@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.superstructure.funnel;
+package frc.robot.subsystems.v1_StackUp.funnel;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Rotation2d;

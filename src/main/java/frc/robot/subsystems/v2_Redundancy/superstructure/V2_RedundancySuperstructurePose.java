@@ -3,9 +3,9 @@ package frc.robot.subsystems.v2_Redundancy.superstructure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.shared.elevator.ElevatorFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelConstants.FunnelState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants.IntakeExtensionState;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
@@ -47,7 +47,7 @@ public class V2_RedundancySuperstructurePose {
    * @param elevator The elevator subsystem to control.
    * @return A Command that sets the elevator height and waits until it reaches the goal.
    */
-  public Command setElevatorHeight(V2_RedundancyElevator elevator) {
+  public Command setElevatorHeight(ElevatorFSM elevator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
         elevator.waitUntilAtGoal());
@@ -83,7 +83,7 @@ public class V2_RedundancySuperstructurePose {
    * @param funnel The funnel subsystem to control.
    * @return A Command that sets the funnel state.
    */
-  public Command setFunnelState(V2_RedundancyFunnel funnel) {
+  public Command setFunnelState(V2_RedundancyFunnelFSM funnel) {
     return Commands.runOnce(() -> funnel.setClapDaddyGoal(funnelState));
   }
 
@@ -98,9 +98,9 @@ public class V2_RedundancySuperstructurePose {
    * @return A Command that sets all subsystems to their respective states in parallel.
    */
   public Command asCommand(
-      V2_RedundancyElevator elevator,
+      ElevatorFSM elevator,
       V2_RedundancyManipulator manipulator,
-      V2_RedundancyFunnel funnel,
+      V2_RedundancyFunnelFSM funnel,
       V2_RedundancyIntake intake) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),

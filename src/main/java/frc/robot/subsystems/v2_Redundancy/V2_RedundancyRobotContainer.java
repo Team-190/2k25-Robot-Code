@@ -27,17 +27,17 @@ import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
+import frc.robot.subsystems.shared.elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.elevator.ElevatorIO;
+import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
+import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.visionlimelight.Vision;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevator;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorConstants.V2_RedundancyElevatorPositions;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIO;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOSim;
-import frc.robot.subsystems.v2_Redundancy.superstructure.elevator.V2_RedundancyElevatorIOTalonFX;
-import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnel;
+import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelFSM;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIO;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.funnel.V2_RedundancyFunnelIOTalonFX;
@@ -59,8 +59,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
   // Subsystems
   private Drive drive;
   private Vision vision;
-  private V2_RedundancyElevator elevator;
-  private V2_RedundancyFunnel funnel;
+  private ElevatorFSM elevator;
+  private V2_RedundancyFunnelFSM funnel;
   private Climber climber;
   private V2_RedundancyManipulator manipulator;
   private V2_RedundancyIntake intake;
@@ -87,8 +87,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
-          elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIOTalonFX());
-          funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIOTalonFX());
+          elevator = new ElevatorFSM(new ElevatorIOTalonFX());
+          funnel = new V2_RedundancyFunnelFSM(new V2_RedundancyFunnelIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOTalonFX());
@@ -104,8 +104,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           vision = new Vision();
-          elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIOSim());
-          funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIOSim());
+          elevator = new ElevatorFSM(new ElevatorIOSim());
+          funnel = new V2_RedundancyFunnelFSM(new V2_RedundancyFunnelIOSim());
           climber = new Climber(new ClimberIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
@@ -128,10 +128,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       vision = new Vision();
     }
     if (funnel == null) {
-      funnel = new V2_RedundancyFunnel(new V2_RedundancyFunnelIO() {});
+      funnel = new V2_RedundancyFunnelFSM(new V2_RedundancyFunnelIO() {});
     }
     if (elevator == null) {
-      elevator = new V2_RedundancyElevator(new V2_RedundancyElevatorIO() {});
+      elevator = new ElevatorFSM(new ElevatorIO() {});
     }
     if (manipulator == null) {
       manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
@@ -156,13 +156,13 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
     Trigger elevatorStow =
         new Trigger(
             () ->
-                elevator.getPosition().equals(V2_RedundancyElevatorPositions.CORAL_INTAKE)
-                    || elevator.getPosition().equals(V2_RedundancyElevatorPositions.STOW));
+                elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
+                    || elevator.getPosition().equals(ElevatorPositions.STOW));
     Trigger elevatorNotStow =
         new Trigger(
             () ->
-                !elevator.getPosition().equals(V2_RedundancyElevatorPositions.CORAL_INTAKE)
-                    && !elevator.getPosition().equals(V2_RedundancyElevatorPositions.STOW));
+                !elevator.getPosition().equals(ElevatorPositions.CORAL_INTAKE)
+                    && !elevator.getPosition().equals(ElevatorPositions.STOW));
     // Trigger halfScoreTrigger =
     //     new Trigger(() -> operator.getLeftY() < -DriveConstants.OPERATOR_DEADBAND);
     // Trigger unHalfScoreTrigger =

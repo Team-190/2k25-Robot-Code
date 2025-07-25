@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v1_StackUp.superstructure.elevator;
+package frc.robot.subsystems.shared.elevator;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V1_StackUpElevatorConstants {
+public class ElevatorConstants {
   public static final int ELEVATOR_CAN_ID;
   public static final double ELEVATOR_GEAR_RATIO;
   public static final double DRUM_RADIUS;
@@ -195,15 +195,21 @@ public class V1_StackUpElevatorConstants {
       int NUM_MOTORS) {}
 
   @RequiredArgsConstructor
-  public static enum V1_StackUpElevatorPositions {
+  public static enum ElevatorPositions {
     STOW(0.0),
     CORAL_INTAKE(0.0),
+    ALGAE_INTAKE(0.2161583093038944 + Units.inchesToMeters(1)),
+    ALGAE_MID(0.7073684509805078),
+    ALGAE_INTAKE_TOP(1.17 - Units.inchesToMeters(8)),
+    ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(8)),
     ASS_TOP(1.2),
     ASS_BOT(0.82),
     L1(0.11295250319916351),
     L2(0.37296301250898894),
     L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
-    L4(1.3864590139769697 + Units.inchesToMeters(0.5));
+    L4(1.3864590139769697 + Units.inchesToMeters(0.5)),
+    L4_PLUS(1.3864590139769697 + Units.inchesToMeters(2.0)),
+    ALGAE_SCORE(1.3864590139769697 + Units.inchesToMeters(0.5));
 
     private final double position;
 

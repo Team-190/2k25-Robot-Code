@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V2_RedundancyFunnel {
+public class V2_RedundancyFunnelFSM {
   private final V2_RedundancyFunnelIO io;
   private final V2_RedundancyFunnelIOInputsAutoLogged inputs;
 
@@ -38,7 +38,7 @@ public class V2_RedundancyFunnel {
 
   private boolean isClosedLoop;
 
-  public V2_RedundancyFunnel(V2_RedundancyFunnelIO io) {
+  public V2_RedundancyFunnelFSM(V2_RedundancyFunnelIO io) {
     this.io = io;
     inputs = new V2_RedundancyFunnelIOInputsAutoLogged();
 
