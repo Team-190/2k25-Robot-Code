@@ -1,19 +1,21 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SlotConfigs;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmParameters;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ManipulatorCurrentLimits;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
 public class V3_EpsilonManipulatorConstants {
-  public static final int ARM_CAN_ID = 31;
   public static final ArmParameters ARM_PARAMETERS;
-  public static final Gains WITHOUT_ALGAE_GAINS;
-  public static final Gains WITH_ALGAE_GAINS;
+  public static final Gains EMPTY_GAINS;
+  public static final Gains CORAL_GAINS;
+  public static final Gains ALGAE_GAINS;
   public static final Constraints CONSTRAINTS;
 
   public static final int ROLLER_CAN_ID;
@@ -23,13 +25,15 @@ public class V3_EpsilonManipulatorConstants {
 
   public static final ManipulatorCurrentLimits CURRENT_LIMITS;
 
-  public static final int MANIPULATOR_CAN_ID = 42;
-  public static final double SUPPLY_CURRENT_LIMIT = 56;
-  public static final double MANIPULATOR_CURRENT_THRESHOLD = 23;
-  public static final Rotation2d MANIPULATOR_TOGGLE_ARM_ROTATION;
-  public static final Voltages VOLTAGES;
+  public static final int PIVOT_CAN_ID = 42;
+  public static final Rotation2d PIVOT_TOGGLE_ARM_ROTATION;
 
-   static {
+  public static final int CAN_RANGE_ID = 41;
+
+  public static final double ALGAE_CAN_RANGE_THRESHOLD = 0.5;
+  public static final double CORAL_CAN_RANGE_THRESHOLD = 0.5;
+
+  static {
     ARM_PARAMETERS =
         new ArmParameters(
             DCMotor.getKrakenX60Foc(1),
@@ -38,7 +42,15 @@ public class V3_EpsilonManipulatorConstants {
             1,
             90.0,
             0.5);
-    WITHOUT_ALGAE_GAINS =
+    EMPTY_GAINS =
+        new Gains(
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
+    CORAL_GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 125),
             new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
@@ -46,7 +58,7 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0.66177),
             new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
             new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
-    WITH_ALGAE_GAINS =
+    ALGAE_GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 125),
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
@@ -75,15 +87,9 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
     CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
-  }
 
-  public static final record Voltages(
-      LoggedTunableNumber INTAKE_VOLTS,
-      LoggedTunableNumber L4_VOLTS,
-      LoggedTunableNumber SCORE_VOLTS,
-      LoggedTunableNumber REMOVE_ALGAE,
-      LoggedTunableNumber HALF_VOLTS,
-      LoggedTunableNumber L1_VOLTS) {}
+    PIVOT_TOGGLE_ARM_ROTATION = new Rotation2d();
+  }
 
   public static record Gains(
       LoggedTunableNumber kP,
@@ -91,12 +97,18 @@ public class V3_EpsilonManipulatorConstants {
       LoggedTunableNumber kS,
       LoggedTunableNumber kG,
       LoggedTunableNumber kV,
-      LoggedTunableNumber kA) {}
-  
-  public static record Constraints(
-      LoggedTunableNumber maxAcceleration,
-      LoggedTunableNumber cruisingVelocity,
-      LoggedTunableNumber goalTolerance) {}
+      LoggedTunableNumber kA) {
+        public SlotConfigs toTalonFXSlotConfigs() {
+          return new SlotConfigs()
+              .withKP(kP.get())
+              .withKD(kD.get())
+              .withKS(kS.get())
+              .withKG(kG.get())
+              .withKV(kV.get())
+              .withKA(kA.get())
+              .withGravityType(GravityTypeValue.Arm_Cosine);
+        }
+      }
 
   public static final record ManipulatorCurrentLimits(
       double MANIPULATOR_SUPPLY_CURRENT_LIMIT,
@@ -120,7 +132,7 @@ public class V3_EpsilonManipulatorConstants {
       LoggedTunableNumber L1_VOLTS) {}
 
   @RequiredArgsConstructor
-  public static enum ArmState {
+  public static enum PivotState {
     STOW_UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
