@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V2_REDUNDANCY;
+  public static final RobotType ROBOT = RobotType.V2_REDUNDANCY_SIM;
 
   public static Mode getMode() {
     switch (ROBOT) {
@@ -35,6 +35,8 @@ public final class Constants {
   public static enum RobotType {
     V0_FUNKY,
     V0_FUNKY_SIM,
+    V0_GOMPEIVISION_TEST,
+    V0_GOMPEIVISION_TEST_SIM,
     V0_WHIPLASH,
     V0_WHIPLASH_SIM,
     V1_STACKUP,

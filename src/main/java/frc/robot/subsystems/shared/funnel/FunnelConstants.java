@@ -20,10 +20,10 @@ public class FunnelConstants {
   public static final InvertedValue CLAP_DADDY_INVERTED;
   public static final InvertedValue ROLLER_INVERTED;
 
-  public static final FunnelCurrentLimits CURRENT_LIMITS;
+  public static final CurrentLimits CURRENT_LIMITS;
   public static final Thresholds ANGLE_THRESHOLDS;
-  public static final FunnelParams CLAP_DADDY_PARAMS;
-  public static final FunnelParams ROLLER_PARAMS;
+  public static final MotorParameters CLAP_DADDY_PARAMS;
+  public static final MotorParameters ROLLER_PARAMS;
 
   public static final Gains CLAP_DADDY_MOTOR_GAINS;
   public static final Constraints CLAP_DADDY_MOTOR_CONSTRAINTS;
@@ -43,10 +43,10 @@ public class FunnelConstants {
         CLAP_DADDY_INVERTED = InvertedValue.Clockwise_Positive;
         ROLLER_INVERTED = InvertedValue.CounterClockwise_Positive;
 
-        CURRENT_LIMITS = new FunnelCurrentLimits(40.0, 40.0, 40.0, 40.0);
+        CURRENT_LIMITS = new CurrentLimits(40.0, 40.0, 40.0, 40.0);
         ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(90.0), 0.0);
-        CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
-        ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        CLAP_DADDY_PARAMS = new MotorParameters(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new MotorParameters(DCMotor.getKrakenX60(1), 0.0042);
 
         switch (Constants.getMode()) {
           case REAL:
@@ -95,10 +95,10 @@ public class FunnelConstants {
         CLAP_DADDY_INVERTED = InvertedValue.CounterClockwise_Positive;
         ROLLER_INVERTED = InvertedValue.Clockwise_Positive;
 
-        CURRENT_LIMITS = new FunnelCurrentLimits(20.0, 20.0, 40.0, 40.0);
+        CURRENT_LIMITS = new CurrentLimits(20.0, 20.0, 40.0, 40.0);
         ANGLE_THRESHOLDS = new Thresholds(Units.degreesToRadians(95.0), 0.0);
-        CLAP_DADDY_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
-        ROLLER_PARAMS = new FunnelParams(DCMotor.getKrakenX60(1), 0.0042);
+        CLAP_DADDY_PARAMS = new MotorParameters(DCMotor.getKrakenX60(1), 0.0042);
+        ROLLER_PARAMS = new MotorParameters(DCMotor.getKrakenX60(1), 0.0042);
 
         switch (Constants.getMode()) {
           case REAL:
@@ -136,7 +136,7 @@ public class FunnelConstants {
     }
   }
 
-  public static final record FunnelCurrentLimits(
+  public static final record CurrentLimits(
       double CLAP_DADDY_SUPPLY_CURRENT_LIMIT,
       double ROLLER_SUPPLY_CURRENT_LIMIT,
       double CLAP_DADDY_STATOR_CURRENT_LIMIT,
@@ -156,11 +156,10 @@ public class FunnelConstants {
       LoggedTunableNumber MAX_VELOCITY,
       LoggedTunableNumber GOAL_TOLERANCE) {}
 
-  public static final record FunnelParams(DCMotor motor, double momentOfInertia) {}
+  public static final record MotorParameters(DCMotor MOTOR, double MOMENT_OF_INERTIA) {}
 
   @RequiredArgsConstructor
   public enum FunnelState {
-    STOW(Rotation2d.fromDegrees(65.0)),
     OPENED(Rotation2d.fromDegrees(60.0)),
     CLOSED(Rotation2d.fromDegrees(93.0)),
     CLIMB(Rotation2d.fromDegrees(0.0));
@@ -169,6 +168,19 @@ public class FunnelConstants {
 
     public Rotation2d getAngle() {
       return angle;
+    }
+  }
+
+  @RequiredArgsConstructor
+  public enum FunnelRollerState {
+    STOP(0.0),
+    INTAKE(12.0),
+    OUTTAKE(-12.0);
+
+    private final double voltage;
+
+    public double getVoltage() {
+      return voltage;
     }
   }
 }

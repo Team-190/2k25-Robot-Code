@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v2_Redundancy.manipulator;
+package frc.robot.subsystems.v2_Redundancy.superstructure.manipulator;
 
 import static frc.robot.util.PhoenixUtil.*;
 
@@ -18,7 +18,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 
@@ -59,9 +58,9 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
     armConfig.Feedback.SensorToMechanismRatio =
         V2_RedundancyManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.CurrentLimits.withSupplyCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT());
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ARM_SUPPLY_CURRENT_LIMIT());
     armConfig.CurrentLimits.withStatorCurrentLimit(
-        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT());
+        V2_RedundancyManipulatorConstants.CURRENT_LIMITS.ARM_STATOR_CURRENT_LIMIT());
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     armConfig.Slot0.kP = V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get();
@@ -84,10 +83,12 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
     armConfig.MotionMagic.MotionMagicAcceleration =
         V2_RedundancyManipulatorConstants.CONSTRAINTS
-            .maxAccelerationRotationsPerSecondSquared()
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
             .get();
     armConfig.MotionMagic.MotionMagicCruiseVelocity =
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get();
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
+            .get();
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -124,10 +125,10 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
         new DynamicMotionMagicVoltage(
             0,
             V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .cruisingVelocityRotationsPerSecond()
+                .CRUISING_VELOCITY_ROTATIONS_PER_SECOND()
                 .get(),
             V2_RedundancyManipulatorConstants.CONSTRAINTS
-                .maxAccelerationRotationsPerSecondSquared()
+                .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
                 .get(),
             0);
     voltageRequest = new VoltageOut(0);
@@ -176,7 +177,7 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
   }
 
   @Override
-  public void updateInputs(ManipulatorIOInputs inputs) {
+  public void updateInputs(V2_RedundancyManipulatorIOInputs inputs) {
     InternalLoggedTracer.reset();
     inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
     inputs.armVelocityRadiansPerSecond =
@@ -263,11 +264,13 @@ public class V2_RedundancyManipulatorIOTalonFX implements V2_RedundancyManipulat
 
   @Override
   public void zeroArmPosition() {
-    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MIN_EXTENSION_ROTATIONS());
+    armTalonFX.setPosition(
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRotations());
   }
 
   @Override
   public void armMax() {
-    armTalonFX.setPosition(V2_RedundancyIntakeConstants.ANGLE_THRESHOLDS.MAX_EXTENSION_ROTATIONS());
+    armTalonFX.setPosition(
+        V2_RedundancyManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRotations());
   }
 }

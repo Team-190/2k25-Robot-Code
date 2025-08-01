@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefHeight;
 import frc.robot.FieldConstants.Reef.ReefPose;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.AutonomousCommands;
@@ -30,17 +30,19 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.v1_StackUp.leds.V1_StackUp_LEDs;
+import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
+import frc.robot.subsystems.shared.visionlimelight.Vision;
+import frc.robot.subsystems.v1_StackUp.leds.V1_StackUpLEDs;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
@@ -50,26 +52,26 @@ import org.littletonrobotics.junction.Logger;
 
 public class V1_StackUpRobotContainer implements RobotContainer {
   // Subsystems
-  private Drive drive;
-  private Vision vision;
-  private Elevator elevator;
-  private Funnel funnel;
   private Climber climber;
+  private Drive drive;
+  private ElevatorCSB elevator;
+  private FunnelCSB funnel;
+  private V1_StackUpLEDs leds;
   private V1_StackUpManipulator manipulator;
-  private V1_StackUp_LEDs leds;
+  private Vision vision;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
 
   // Auto chooser
-
   private final AutoChooser autoChooser = new AutoChooser();
 
   public V1_StackUpRobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V1_STACKUP:
+          climber = new Climber(new ClimberIOTalonFX());
           drive =
               new Drive(
                   new GyroIOPigeon2(),
@@ -77,14 +79,14 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
-          elevator = new Elevator(new ElevatorIOTalonFX());
-          funnel = new Funnel(new FunnelIOTalonFX());
-          climber = new Climber(new ClimberIOTalonFX());
+          elevator = new Elevator(new ElevatorIOTalonFX()).getCSB();
+          funnel = new Funnel(new FunnelIOTalonFX()).getCSB();
+          leds = new V1_StackUpLEDs();
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
-          leds = new V1_StackUp_LEDs();
+          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
           break;
         case V1_STACKUP_SIM:
+          climber = new Climber(new ClimberIOSim());
           drive =
               new Drive(
                   new GyroIO() {},
@@ -92,17 +94,19 @@ public class V1_StackUpRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.FRONT_RIGHT),
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          vision = new Vision();
-          elevator = new Elevator(new ElevatorIOSim());
-          funnel = new Funnel(new FunnelIOSim());
-          climber = new Climber(new ClimberIOSim());
+          elevator = new Elevator(new ElevatorIOSim()).getCSB();
+          funnel = new Funnel(new FunnelIOSim()).getCSB();
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
+          vision = new Vision();
           break;
         default:
           break;
       }
     }
 
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
+    }
     if (drive == null) {
       drive =
           new Drive(
@@ -112,23 +116,20 @@ public class V1_StackUpRobotContainer implements RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {});
     }
-    if (vision == null) {
-      vision = new Vision();
-    }
     if (elevator == null) {
-      elevator = new Elevator(new ElevatorIO() {});
+      elevator = new Elevator(new ElevatorIO() {}).getCSB();
     }
     if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {});
+      funnel = new Funnel(new FunnelIO() {}).getCSB();
     }
-    if (climber == null) {
-      climber = new Climber(new ClimberIO() {});
+    if (leds == null) {
+      leds = new V1_StackUpLEDs();
     }
     if (manipulator == null) {
       manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
     }
-    if (leds == null) {
-      leds = new V1_StackUp_LEDs();
+    if (vision == null) {
+      vision = new Vision();
     }
 
     configureButtonBindings();
@@ -164,27 +165,27 @@ public class V1_StackUpRobotContainer implements RobotContainer {
             () -> false));
 
     // Driver face buttons
-    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    driver.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    driver.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    driver.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     driver
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     driver
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     driver
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     driver
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Driver triggers
     driver
@@ -219,27 +220,27 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     unHalfScoreTrigger.whileTrue((manipulator.unHalfScoreCoral()));
 
     // Operator face buttons
-    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L4));
-    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L3));
-    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L2));
-    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefHeight.L1));
+    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     operator
         .y()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L4, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L4, elevator));
     operator
         .x()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L3, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L3, elevator));
     operator
         .b()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L2, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L2, elevator));
     operator
         .a()
         .and(elevatorNotStow)
-        .onTrue(SharedCommands.setDynamicReefHeight(ReefHeight.L1, elevator));
+        .onTrue(V1_StackUpCompositeCommands.setDynamicReefHeight(ReefState.L1, elevator));
 
     // Operator triggers
     operator
@@ -251,7 +252,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(SharedCommands.climb(elevator, funnel, climber, drive));
+    operator.povUp().onTrue(V1_StackUpCompositeCommands.climb(elevator, funnel, climber, drive));
     operator.povDown().whileTrue(climber.winchClimber());
 
     operator

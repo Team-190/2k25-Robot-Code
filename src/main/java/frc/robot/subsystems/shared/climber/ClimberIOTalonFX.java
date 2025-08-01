@@ -19,9 +19,6 @@ import frc.robot.util.PhoenixUtil;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX talonFX;
-  private final DigitalInput redundantSwitchOne;
-  private final DigitalInput redundantSwitchTwo;
-
   private final TalonFXConfiguration config;
 
   private final StatusSignal<Angle> positionRotations;
@@ -31,28 +28,35 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final StatusSignal<Current> torqueCurrentAmps;
   private final StatusSignal<Temperature> temperatureCelsius;
 
+  private final DigitalInput redundantSwitchOne;
+  private final DigitalInput redundantSwitchTwo;
+
   private final VoltageOut voltageRequest;
 
   public ClimberIOTalonFX() {
     talonFX = new TalonFX(ClimberConstants.MOTOR_ID, TunerConstantsV1_StackUp.kCANBus);
-    redundantSwitchOne = new DigitalInput(1);
-    redundantSwitchTwo = new DigitalInput(2);
-
     config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_SUPPLY_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLimit =
+        ClimberConstants.CURRENT_LIMITS.SUPPLY_CURRENT_LIMIT();
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimit =
+        ClimberConstants.CURRENT_LIMITS.STATOR_CURRENT_LIMIT();
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     PhoenixUtil.tryUntilOk(5, () -> talonFX.getConfigurator().apply(config, 0.25));
 
+    // Initialize status signals in standardized order
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
     appliedVolts = talonFX.getMotorVoltage();
     supplyCurrentAmps = talonFX.getSupplyCurrent();
     torqueCurrentAmps = talonFX.getTorqueCurrent();
     temperatureCelsius = talonFX.getDeviceTemp();
+
+    // Initialize sensor inputs
+    redundantSwitchOne = new DigitalInput(1);
+    redundantSwitchTwo = new DigitalInput(2);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50,
@@ -79,6 +83,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     InternalLoggedTracer.reset();
+
+    // Update in standardized order
     inputs.positionRadians = Units.rotationsToRadians(positionRotations.getValueAsDouble());
     inputs.velocityRadiansPerSecond =
         Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
@@ -87,8 +93,10 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.torqueCurrentAmps = torqueCurrentAmps.getValueAsDouble();
     inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
 
+    // Update sensor inputs
     inputs.redundantSwitchOne = redundantSwitchOne.get();
     inputs.redundantSwitchTwo = redundantSwitchTwo.get();
+
     InternalLoggedTracer.record("Refresh Update Inputs", "Climber/TalonFX");
   }
 

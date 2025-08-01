@@ -14,8 +14,10 @@ public class ClimberIOSim implements ClimberIO {
     sim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
-                ClimberConstants.MOTOR_CONFIG, 0.004, ClimberConstants.GEAR_RATIO),
-            ClimberConstants.MOTOR_CONFIG);
+                ClimberConstants.MOTOR_PARAMETERS.MOTOR_CONFIG(),
+                0.004,
+                ClimberConstants.MOTOR_PARAMETERS.GEAR_RATIO()),
+            ClimberConstants.MOTOR_PARAMETERS.MOTOR_CONFIG());
 
     appliedVolts = 0.0;
   }
@@ -26,10 +28,12 @@ public class ClimberIOSim implements ClimberIO {
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.LOOP_PERIOD_SECONDS);
 
+    // Update in standardized order
     inputs.positionRadians = sim.getAngularPositionRad();
     inputs.velocityRadiansPerSecond = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.supplyCurrentAmps = sim.getCurrentDrawAmps() / ClimberConstants.GEARBOX_EFFICIENCY;
+    inputs.supplyCurrentAmps =
+        sim.getCurrentDrawAmps() / ClimberConstants.MOTOR_PARAMETERS.GEARBOX_EFFICIENCY();
     inputs.torqueCurrentAmps = sim.getCurrentDrawAmps();
   }
 

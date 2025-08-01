@@ -3,14 +3,16 @@ package frc.robot.util;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.elevator.Elevator;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants;
-import frc.robot.subsystems.shared.funnel.Funnel;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
+import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelConstants;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntake;
-import frc.robot.subsystems.v2_Redundancy.intake.V2_RedundancyIntakeConstants;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 
 public class LTNUpdater {
   public static final void updateDrive(Drive drive) {
@@ -48,7 +50,7 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
-  public static final void updateElevator(Elevator elevator) {
+  public static final void updateElevator(ElevatorCSB elevator) {
     LoggedTunableNumber.ifChanged(
         elevator.hashCode(),
         () -> {
@@ -73,7 +75,55 @@ public class LTNUpdater {
         ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
   }
 
-  public static final void updateFunnel(Funnel funnel) {
+  public static final void updateElevator(ElevatorFSM elevator) {
+    LoggedTunableNumber.ifChanged(
+        elevator.hashCode(),
+        () -> {
+          elevator.setGains(
+              ElevatorConstants.GAINS.kP().get(),
+              ElevatorConstants.GAINS.kD().get(),
+              ElevatorConstants.GAINS.kS().get(),
+              ElevatorConstants.GAINS.kV().get(),
+              ElevatorConstants.GAINS.kA().get(),
+              ElevatorConstants.GAINS.kG().get());
+          elevator.setConstraints(
+              ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared().get(),
+              ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get());
+        },
+        ElevatorConstants.GAINS.kP(),
+        ElevatorConstants.GAINS.kD(),
+        ElevatorConstants.GAINS.kS(),
+        ElevatorConstants.GAINS.kV(),
+        ElevatorConstants.GAINS.kA(),
+        ElevatorConstants.GAINS.kG(),
+        ElevatorConstants.CONSTRAINTS.maxAccelerationMetersPerSecondSquared(),
+        ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
+  }
+
+  public static final void updateFunnel(FunnelCSB funnel) {
+    LoggedTunableNumber.ifChanged(
+        funnel.hashCode(),
+        () -> {
+          funnel.updateGains(
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA().get());
+          funnel.updateConstraints(
+              FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION().get(),
+              FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY().get());
+        },
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kD(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kS(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kV(),
+        FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kA(),
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
+        FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
+  }
+
+  public static final void updateFunnel(FunnelFSM funnel) {
     LoggedTunableNumber.ifChanged(
         funnel.hashCode(),
         () -> {
@@ -115,10 +165,10 @@ public class LTNUpdater {
               V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG().get());
           manipulator.updateArmConstraints(
               V2_RedundancyManipulatorConstants.CONSTRAINTS
-                  .maxAccelerationRotationsPerSecondSquared()
+                  .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
                   .get(),
               V2_RedundancyManipulatorConstants.CONSTRAINTS
-                  .cruisingVelocityRotationsPerSecond()
+                  .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()
                   .get());
         },
         V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP(),
@@ -133,8 +183,10 @@ public class LTNUpdater {
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kV(),
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kA(),
         V2_RedundancyManipulatorConstants.WITH_ALGAE_GAINS.kG(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
-        V2_RedundancyManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond());
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED(),
+        V2_RedundancyManipulatorConstants.CONSTRAINTS
+            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED());
   }
 
   public static final void updateIntake(V2_RedundancyIntake intake) {

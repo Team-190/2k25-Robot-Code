@@ -64,7 +64,7 @@ public class V1_StackUpManipulatorIOTalonFX implements V1_StackUpManipulatorIO {
   }
 
   @Override
-  public void updateInputs(ManipulatorIOInputs inputs) {
+  public void updateInputs(V1_StackUpManipulatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         positionRotations,
         velocityRotationsPerSecond,
