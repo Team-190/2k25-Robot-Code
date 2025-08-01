@@ -60,6 +60,9 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kG().get(),
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kV().get(),
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kA().get());
+    armFeedbackController.enableContinuousInput(
+        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(),
+        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRadians());
 
     armAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
@@ -70,8 +73,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
   public void updateInputs(ManipulatorIOInputs inputs) {
     if (isClosedLoop) {
       armAppliedVolts =
-          armFeedbackController.calculate(
-                  armMotorSim.getAngleRads())
+          armFeedbackController.calculate(armMotorSim.getAngleRads())
               + armFeedforwardController.calculate(
                   armMotorSim.getAngleRads(), armMotorSim.getVelocityRadPerSec());
     }
@@ -93,8 +95,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
     inputs.armPositionGoal = Rotation2d.fromRadians(armFeedbackController.getGoal().position);
     inputs.armPositionSetpoint =
         Rotation2d.fromRadians(armFeedbackController.getSetpoint().position);
-    inputs.armPositionError =
-        Rotation2d.fromRadians(armFeedbackController.getPositionError());
+    inputs.armPositionError = Rotation2d.fromRadians(armFeedbackController.getPositionError());
 
     inputs.rollerPosition = new Rotation2d(rollerMotorSim.getAngularPositionRad());
     inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
@@ -126,9 +127,9 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
   }
 
   public void updateArmConstraints(
-      double cruisingVelocityRotationsPerSecond,
-      double maxAccelerationRotationsPerSecondSquared) {
+      double cruisingVelocityRotationsPerSecond, double maxAccelerationRotationsPerSecondSquared) {
     armFeedbackController.setConstraints(
-        new Constraints(cruisingVelocityRotationsPerSecond, maxAccelerationRotationsPerSecondSquared));
+        new Constraints(
+            cruisingVelocityRotationsPerSecond, maxAccelerationRotationsPerSecondSquared));
   }
 }

@@ -159,9 +159,7 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   @Override
   public void setPivotGoal(Rotation2d rotation) {
     pivotTalonFX.setControl(
-        pivotMotionMagicRequest
-            .withPosition(rotation.getRotations())
-            .withEnableFOC(true));
+        pivotMotionMagicRequest.withPosition(rotation.getRotations()).withEnableFOC(true));
   }
 
   @Override

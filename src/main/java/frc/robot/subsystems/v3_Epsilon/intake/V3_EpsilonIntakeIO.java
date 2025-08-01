@@ -53,7 +53,6 @@ public interface V3_EpsilonIntakeIO {
    */
   public default void setPivotGoal(Rotation2d rotatoion) {}
 
-
   /**
    * Sets the gains for the intake
    *

@@ -68,9 +68,11 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     if (isClosedLoop) {
-      pivotAppliedVoltage = armFeedbackController.calculate(pivotMotorSim.getAngleRads())+
-          armFeedforwardController.calculate(pivotMotorSim.getAngleRads(), pivotMotorSim.getVelocityRadPerSec());
-    } 
+      pivotAppliedVoltage =
+          armFeedbackController.calculate(pivotMotorSim.getAngleRads())
+              + armFeedforwardController.calculate(
+                  pivotMotorSim.getAngleRads(), pivotMotorSim.getVelocityRadPerSec());
+    }
 
     pivotAppliedVoltage = MathUtil.clamp(pivotAppliedVoltage, -12.0, 12.0);
     rollerAppliedVoltage = MathUtil.clamp(rollerAppliedVoltage, -12.0, 12.0);
@@ -114,13 +116,7 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void updateIntakeGains(
-      double kP,
-      double kD,
-      double kS,
-      double kV,
-      double kA,
-      double kG) {
+  public void updateIntakeGains(double kP, double kD, double kS, double kV, double kA, double kG) {
     armFeedbackController.setPID(kP, 0.0, kD);
     armFeedforwardController.setKa(kA);
     armFeedforwardController.setKs(kS);
@@ -130,8 +126,8 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
 
   @Override
   public void updateIntakeConstraints(
-      double maxVelocityRadiansPerSecond,
-      double maxAccelerationRadiansPerSecondSquared) {
-    armFeedbackController.setConstraints(new Constraints(maxVelocityRadiansPerSecond, maxAccelerationRadiansPerSecondSquared));
-}
+      double maxVelocityRadiansPerSecond, double maxAccelerationRadiansPerSecondSquared) {
+    armFeedbackController.setConstraints(
+        new Constraints(maxVelocityRadiansPerSecond, maxAccelerationRadiansPerSecondSquared));
+  }
 }

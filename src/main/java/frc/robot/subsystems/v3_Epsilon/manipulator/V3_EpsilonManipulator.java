@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.PivotState;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,7 +19,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
 
   private final SysIdRoutine algaeCharacterizationRoutine;
 
-  private ArmState state;
+  private PivotState state;
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -35,7 +35,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
                 Seconds.of(5),
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setPivotVoltage(volts.in(Volts)), null, this));
-    state = ArmState.STOW_DOWN;
+    state = PivotState.STOW_DOWN;
   }
 
   @Override
@@ -86,7 +86,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
         algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
-  public Command setPivotGoal(ArmState goal) {
+  public Command setPivotGoal(PivotState goal) {
     return this.runOnce(
         () -> {
           isClosedLoop = true;
@@ -125,7 +125,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean pivotAtGoal() {
     return inputs.armPosition.getRadians() - state.getAngle().getRadians()
-        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
 
   public Command waitUntilPivotAtGoal() {
@@ -140,10 +140,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
     } else {
       y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
     }
-    return MathUtil.clamp(
-        1.25 * y,
-        0.10,
-        V2_RedundancyManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().get() / 1.5);
+    return MathUtil.clamp(1.25 * y, 0.10, V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
   }
 
   public void setSlot() {

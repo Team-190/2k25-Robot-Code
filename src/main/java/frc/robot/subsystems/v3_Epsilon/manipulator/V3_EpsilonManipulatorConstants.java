@@ -1,13 +1,10 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.v2_Redundancy.manipulator.V2_RedundancyManipulatorConstants.ArmParameters;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -98,17 +95,17 @@ public class V3_EpsilonManipulatorConstants {
       LoggedTunableNumber kG,
       LoggedTunableNumber kV,
       LoggedTunableNumber kA) {
-        public SlotConfigs toTalonFXSlotConfigs() {
-          return new SlotConfigs()
-              .withKP(kP.get())
-              .withKD(kD.get())
-              .withKS(kS.get())
-              .withKG(kG.get())
-              .withKV(kV.get())
-              .withKA(kA.get())
-              .withGravityType(GravityTypeValue.Arm_Cosine);
-        }
-      }
+    public SlotConfigs toTalonFXSlotConfigs() {
+      return new SlotConfigs()
+          .withKP(kP.get())
+          .withKD(kD.get())
+          .withKS(kS.get())
+          .withKG(kG.get())
+          .withKV(kV.get())
+          .withKA(kA.get())
+          .withGravityType(GravityTypeValue.Arm_Cosine);
+    }
+  }
 
   public static final record ManipulatorCurrentLimits(
       double MANIPULATOR_SUPPLY_CURRENT_LIMIT,
@@ -130,6 +127,14 @@ public class V3_EpsilonManipulatorConstants {
       LoggedTunableNumber REMOVE_ALGAE,
       LoggedTunableNumber HALF_VOLTS,
       LoggedTunableNumber L1_VOLTS) {}
+
+  public static record ArmParameters(
+      DCMotor MOTOR_CONFIG,
+      Rotation2d MIN_ANGLE,
+      Rotation2d MAX_ANGLE,
+      int NUM_MOTORS,
+      double GEAR_RATIO,
+      double LENGTH_METERS) {}
 
   @RequiredArgsConstructor
   public static enum PivotState {
