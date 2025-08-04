@@ -140,7 +140,10 @@ public class V3_EpsilonManipulator extends SubsystemBase {
     } else {
       y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
     }
-    return MathUtil.clamp(1.25 * y, 0.10, V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
+    return MathUtil.clamp(
+        1.25 * y,
+        0.10,
+        V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
   }
 
   public void setSlot() {

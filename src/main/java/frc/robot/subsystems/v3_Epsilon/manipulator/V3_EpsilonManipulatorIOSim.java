@@ -18,6 +18,10 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
   private final ProfiledPIDController armFeedbackController;
   private final ArmFeedforward armFeedforwardController;
 
+  private double[] slot0;
+  private double[] slot1;
+  private double[] slot2;
+
   private double armAppliedVolts;
   private double rollerAppliedVolts;
 
@@ -42,6 +46,33 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
             DCMotor.getKrakenX60Foc(1));
 
+    slot0 =
+        new double[] {
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kP().get(),
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kD().get(),
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kS().get(),
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kV().get(),
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kA().get(),
+          V3_EpsilonManipulatorConstants.EMPTY_GAINS.kG().get()
+        };
+    slot1 =
+        new double[] {
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kP().get(),
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kD().get(),
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kS().get(),
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kV().get(),
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kA().get(),
+          V3_EpsilonManipulatorConstants.CORAL_GAINS.kG().get()
+        };
+    slot2 =
+        new double[] {
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kP().get(),
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kD().get(),
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kS().get(),
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kV().get(),
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kA().get(),
+          V3_EpsilonManipulatorConstants.ALGAE_GAINS.kG().get()
+        };
     armFeedbackController =
         new ProfiledPIDController(
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kP().get(),
@@ -119,11 +150,52 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
 
   public void updateSlot0ArmGains(
       double kP, double kD, double kS, double kV, double kA, double kG) {
-    armFeedbackController.setPID(kP, 0.0, kD);
-    armFeedforwardController.setKa(kA);
-    armFeedforwardController.setKs(kS);
-    armFeedforwardController.setKv(kV);
-    armFeedforwardController.setKg(kG);
+    slot0[0] = kP;
+    slot0[1] = kD;
+    slot0[2] = kS;
+    slot0[3] = kV;
+    slot0[4] = kA;
+    slot0[5] = kG;
+  }
+
+  public void updateSlot1ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    slot1[0] = kP;
+    slot1[1] = kD;
+    slot1[2] = kS;
+    slot1[3] = kV;
+    slot1[4] = kA;
+    slot1[5] = kG;
+  }
+
+  public void updateSlot2ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    slot2[0] = kP;
+    slot2[1] = kD;
+    slot2[2] = kS;
+    slot2[3] = kV;
+    slot2[4] = kA;
+    slot2[5] = kG;
+  }
+
+  public void setSlot(int slot) {
+    if (slot >= 0 && slot <= 2) {
+      double[] gains;
+      if (slot == 0) {
+        gains = slot0;
+      } else if (slot == 1) {
+        gains = slot1;
+      } else {
+        gains = slot2;
+      }
+      armFeedbackController.setPID(gains[0], 0.0, gains[1]);
+      armFeedforwardController.setKa(gains[4]);
+      armFeedforwardController.setKs(gains[2]);
+      armFeedforwardController.setKv(gains[3]);
+      armFeedforwardController.setKg(gains[5]);
+    } else {
+      throw new IllegalArgumentException("Slot must be between 0 and 2");
+    }
   }
 
   public void updateArmConstraints(

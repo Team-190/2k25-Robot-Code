@@ -9,12 +9,12 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -33,6 +33,9 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
   private final StatusSignal<Current> pivotTorqueCurrentAmps;
   private final StatusSignal<Temperature> pivotTemperatureCelsius;
 
+  private final StatusSignal<Double> pivotPositionSetpoint;
+  private final StatusSignal<Double> pivotPositionError;
+
   private final VoltageOut pivotVoltageRequest;
   private final MotionMagicVoltage pivotMotionMagicRequest;
 
@@ -48,7 +51,6 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
   private final StatusSignal<Temperature> rollerTemperatureCelsius;
 
   private final VoltageOut rollerVoltageRequest;
-  private final NeutralOut rollerNeutralRequest;
 
   private final TalonFXConfiguration rollerConfig;
 
@@ -104,6 +106,9 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
     pivotTemperatureCelsius = pivotTalonFX.getDeviceTemp();
 
+    pivotPositionSetpoint = pivotTalonFX.getClosedLoopReference();
+    pivotPositionError = pivotTalonFX.getClosedLoopError();
+
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
@@ -130,7 +135,6 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         new MotionMagicVoltage(V3_EpsilonIntakeConstants.PIVOT_PARAMS.MIN_ANGLE().getMeasure());
 
     rollerVoltageRequest = new VoltageOut(0);
-    rollerNeutralRequest = new NeutralOut();
 
     PhoenixUtil.registerSignals(
         false,
@@ -146,5 +150,43 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
+  }
+
+  @Override
+  public void updateInputs(IntakeIOInputs inputs) {
+    inputs.pivotPosition = new Rotation2d(pivotPositionRotations.getValue());
+    inputs.pivotVelocityRadiansPerSecond =
+        pivotVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.pivotAppliedVolts = pivotAppliedVoltage.getValueAsDouble();
+    inputs.pivotSupplyCurrentAmps = pivotSupplyCurrentAmps.getValueAsDouble();
+    inputs.pivotTorqueCurrentAmps = pivotTorqueCurrentAmps.getValueAsDouble();
+    inputs.pivotTemperatureCelsius = pivotTemperatureCelsius.getValueAsDouble();
+
+    inputs.pivotPositionGoal = new Rotation2d(pivotMotionMagicRequest.getPositionMeasure());
+    inputs.pivotPositionSetpoint =
+        Rotation2d.fromRotations(pivotPositionSetpoint.getValueAsDouble());
+    inputs.pivotPositionError = Rotation2d.fromRotations(pivotPositionError.getValueAsDouble());
+
+    inputs.rollerPosition = new Rotation2d(rollerPositionRotations.getValue());
+    inputs.rollerVelocityRadiansPerSecond =
+        rollerVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
+    inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
+    inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
+    inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
+    inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+  }
+
+  public void setPivotVoltage(double volts) {
+    pivotTalonFX.setControl(pivotVoltageRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  public void setRollerVoltage(double volts) {
+    rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  public void setPivotMotionMagic(Rotation2d position) {
+    pivotTalonFX.setControl(
+        pivotMotionMagicRequest.withPosition(position.getMeasure()).withEnableFOC(true));
   }
 }
