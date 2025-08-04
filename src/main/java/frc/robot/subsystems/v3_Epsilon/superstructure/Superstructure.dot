@@ -1,0 +1,136 @@
+digraph Superstructure {
+  /*
+   * Graphviz DOT file for the superstructure state machine.
+   * States are represented as nodes, and transitions are represented as edges.
+  */
+
+  // Node definitions
+  start [color = red]
+
+  stow_down [color = green]
+
+  ground_intake [color = green]
+
+  L1_score [color = green]
+  L2_score [color = green]
+  L3_score [color = green]
+  L4_score [color = green]
+  
+  stow_up [color = cyan]
+  
+  L2_algae_prep [color = blue]
+  L3_algae_prep [color = blue]
+  
+  L2_algae_intake [color = blue]
+  L3_algae_intake [color = blue]
+
+  barge_prep [color = blue]
+  barge_score [color = blue]
+  
+  processor_prep [color = blue]
+  processor_score [color = blue]
+
+  # Prep states
+  L1_prep [color = green]
+  L2_prep [color = green]
+  L3_prep [color = green]
+  L4_prep [color = green]
+
+  # Transition States
+  L2_transition [color = green]
+  L3_transition [color = green]
+  L4_transition [color = green]
+  # Transition states are inherently wait_for_elevator states but for different levels
+
+  intermediate_wait_for_elevator [color = green]
+  
+  stow_down -> stow_up [color = green]
+  handoff -> stow_up [color = green]
+  
+  stow_up -> L2_transition [color = green]
+  stow_up -> L3_transition [color = green]
+  stow_up -> L4_transition [color = green]
+  
+  # Coral Edges
+  handoff -> L1_prep [color = green]
+  handoff -> L2_transition [color = green]
+  handoff -> L3_transition [color = green]
+  handoff -> L4_transition [color = green]
+  
+  handoff -> L2_prep [color = green]
+  handoff -> L3_prep [color = green]
+  handoff -> L4_prep [color = green]
+
+  stow_down -> intermediate_wait_for_elevator [color = green]
+  intermediate_wait_for_elevator -> handoff [color = green]
+  ground_intake -> L1_prep [color = green]
+  stow_down -> ground_intake [color = green]
+
+  L1_prep -> ground_intake [color = green]
+
+  L1_prep -> L1_score [color = green]
+  L2_prep -> L2_score [color = green]
+  L3_prep -> L3_score [color = green]
+  L4_prep -> L4_score [color = green]
+
+  L2_prep -> intermediate_wait_for_elevator [color = green]
+  L3_prep -> intermediate_wait_for_elevator [color = green]
+  L4_prep -> intermediate_wait_for_elevator [color = green]
+  
+  L1_score -> ground_intake [color = green]
+  L1_prep -> handoff [color = green]
+  L1_score -> handoff [color = green]
+    
+  L2_score -> intermediate_wait_for_elevator [color = green]
+  L3_score -> intermediate_wait_for_elevator [color = green]
+  L4_score -> intermediate_wait_for_elevator [color = green]
+
+  L2_prep -> L3_transition [color = green]
+  L2_prep -> L4_transition [color = green]
+  L3_prep -> L2_transition [color = green]
+  L3_prep -> L4_transition [color = green]
+  L4_prep -> L3_transition [color = green]
+  L4_prep -> L2_transition [color = green]
+
+  L2_transition -> L2_prep [color = green]
+  L3_transition -> L3_prep [color = green]
+  L4_transition -> L4_prep [color = green]
+  
+  # Algae Edges
+  stow_up -> L2_algae_prep [color = blue]
+  stow_up -> L3_algae_prep [color = blue]
+  stow_up -> barge_prep [color = blue]
+  stow_up -> processor_prep [color = blue]
+  
+  stow_down -> L2_algae_prep [color = blue]
+  stow_down -> L3_algae_prep [color = blue]
+  
+  L2_algae_prep -> barge_prep [color = blue]
+  L3_algae_prep -> barge_prep [color = blue]
+  
+  L2_algae_prep -> processor_prep [color = blue]
+  L3_algae_prep -> processor_prep [color = blue]
+  
+  L2_algae_prep -> stow_up [color = blue]
+  L3_algae_prep -> stow_up [color = blue]
+  
+  L2_algae_prep -> L2_algae_intake [color = blue]
+  L3_algae_prep -> L3_algae_intake [color = blue]
+  
+  L2_algae_intake -> stow_up [color = blue]
+  L3_algae_intake -> stow_up [color = blue]
+  
+  barge_prep -> barge_score [color = blue]
+  processor_prep -> processor_score [color = blue]
+  
+  processor_score -> stow_up [color = blue]
+  processor_score -> stow_down [color = blue]
+  processor_score -> handoff [color = blue]
+  
+  barge_score -> stow_up [color = blue]
+  barge_score -> stow_down [color = blue]
+  barge_score -> handoff [color = blue]
+  
+  L2_algae_prep -> L3_algae_prep [color = blue]
+  L3_algae_prep -> L2_algae_prep [color = blue]
+}
