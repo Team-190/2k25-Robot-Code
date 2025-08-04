@@ -1,6 +1,8 @@
 package frc.robot.subsystems.v1_StackUp;
 
 import choreo.auto.AutoChooser;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,8 +42,8 @@ import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.visionlimelight.Vision;
+import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v1_StackUp.leds.V1_StackUpLEDs;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
@@ -83,7 +85,10 @@ public class V1_StackUpRobotContainer implements RobotContainer {
           funnel = new Funnel(new FunnelIOTalonFX()).getCSB();
           leds = new V1_StackUpLEDs();
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOTalonFX());
-          vision = new Vision(RobotCameras.V1_STACKUP_CAMS);
+          vision =
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  RobotCameras.V1_STACKUP_CAMS);
           break;
         case V1_STACKUP_SIM:
           climber = new Climber(new ClimberIOSim());
@@ -97,7 +102,8 @@ public class V1_StackUpRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOSim()).getCSB();
           funnel = new Funnel(new FunnelIOSim()).getCSB();
           manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIOSim());
-          vision = new Vision();
+          vision =
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         default:
           break;
@@ -129,7 +135,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
       manipulator = new V1_StackUpManipulator(new V1_StackUpManipulatorIO() {});
     }
     if (vision == null) {
-      vision = new Vision();
+      vision = new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
     }
 
     configureButtonBindings();
@@ -318,7 +324,6 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),
-        drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
         vision.getCameras());
 

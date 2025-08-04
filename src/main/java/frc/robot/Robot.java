@@ -19,6 +19,7 @@ import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
+import frc.robot.subsystems.v3_Epsilon.V3_EpsilonRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
@@ -152,6 +153,7 @@ public class Robot extends LoggedRobot {
           case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
           case V1_STACKUP, V1_STACKUP_SIM -> new V1_StackUpRobotContainer();
           case V2_REDUNDANCY, V2_REDUNDANCY_SIM -> new V2_RedundancyRobotContainer();
+          case V3_EPSILON, V3_EPSILON_SIM -> new V3_EpsilonRobotContainer();
           default -> new RobotContainer() {};
         };
 

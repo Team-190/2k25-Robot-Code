@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shared.visionlimelight;
+package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -11,15 +11,16 @@ public interface CameraIO {
   public static class CameraIOInputs {
     public double currentHeartbeat = -1;
     public boolean isConnected = false;
-    public Rotation2d xOffset = new Rotation2d();
-    public Rotation2d yOffset = new Rotation2d();
-    public boolean targetAquired = false;
-    public int totalTargets = 0;
-    public double averageDistance = 0.0;
-    public double frameTimestamp = 0.0;
-    public Pose2d primaryPose = new Pose2d();
-    public Pose2d secondaryPose = new Pose2d();
-    public double tagIDOfInterest = -1;
+    public Rotation2d[] xOffset = {};
+    public Rotation2d[] yOffset = {};
+    public boolean[] targetAquired = {};
+    public int[] totalTargets = {};
+    public double[] averageDistance = {};
+    public double[] frameTimestamp = {};
+    public Pose2d[] primaryPose = {};
+    public Pose2d[] secondaryPose = {};
+    public double[] tagIDOfInterest = {};
+    public boolean[] useVisionRotation = {};
   }
 
   public default void updateInputs(CameraIOInputs inputs) {}
@@ -89,6 +90,10 @@ public interface CameraIO {
   }
 
   public default double getPrimaryXYStandardDeviationCoefficient() {
+    return 0.0;
+  }
+
+  public default double getThetaStandardDeviationCoefficient() {
     return 0.0;
   }
 
