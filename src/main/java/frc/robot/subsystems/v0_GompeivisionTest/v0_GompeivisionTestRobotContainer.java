@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon;
+package frc.robot.subsystems.v0_GompeivisionTest;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -10,16 +10,16 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 
-public class V3_EpsilonRobotContainer implements RobotContainer {
+public class v0_GompeivisionTestRobotContainer implements RobotContainer {
   // Subsystems
   private Vision vision;
 
-  public V3_EpsilonRobotContainer() {
+  public v0_GompeivisionTestRobotContainer() {
 
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case V3_EPSILON:
-        case V3_EPSILON_SIM:
+        case V0_GOMPEIVISION_TEST:
+        case V0_GOMPEIVISION_TEST_SIM:
           vision =
               new Vision(
                   () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
@@ -44,9 +44,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private void configureButtonBindings() {}
 
   private void configureAutos() {}
-
-  @Override
-  public void robotPeriodic() {}
 
   @Override
   public Command getAutonomousCommand() {

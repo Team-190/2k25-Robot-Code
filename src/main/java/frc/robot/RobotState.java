@@ -53,14 +53,14 @@ public class RobotState {
       case V0_WHIPLASH:
       case V0_WHIPLASH_SIM:
         break;
+      case V0_GOMPEIVISION_TEST:
+      case V0_GOMPEIVISION_TEST_SIM:
+        break;
       case V1_STACKUP:
       case V1_STACKUP_SIM:
         break;
       case V2_REDUNDANCY:
       case V2_REDUNDANCY_SIM:
-        break;
-      case V3_EPSILON:
-      case V3_EPSILON_SIM:
         break;
     }
 

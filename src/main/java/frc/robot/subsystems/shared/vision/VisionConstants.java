@@ -180,10 +180,60 @@ public class VisionConstants {
                     new Rotation3d(0, 0, Units.degreesToRadians(-225))))
             .build();
 
-    private static final GompeiVisionConfig V3_EPSILON_TEST =
+    private static final GompeiVisionConfig BACK_TOP_LEFT =
         GompeiVisionConfig.builder()
-            .key("SPCA2630 PC Camera: PC Camera usb-0000:00:14.0-2")
-            .hardwareID("SPCA2630 PC Camera: PC Camera usb-0000:00:14.0-2")
+            .key("camera_backtopleft")
+            .hardwareID("camera_backtopleft")
+            .cameraType(CameraType.THRIFTYCAM)
+            .exposure(50.0)
+            .gain(0.0)
+            .horizontalFOV(ThriftyCamConstants.HORIZONTAL_FOV)
+            .width(ThriftyCamConstants.WIDTH)
+            .height(ThriftyCamConstants.HEIGHT)
+            .cameraMatrix(
+                new Matrix<N3, N3>(
+                    MatBuilder.fill(
+                        N3.instance, N3.instance, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)))
+            .distortionCoefficients(
+                new Matrix<N5, N1>(
+                    MatBuilder.fill(N5.instance, N1.instance, 0.0, 0.0, 0.0, 0.0, 0.0)))
+            .verticalFOV(ThriftyCamConstants.VERTICAL_FOV)
+            .singletagXYStdev(ThriftyCamConstants.SINGLETAG_XY_STANDARD_DEVIATION_COEFFICIENT)
+            .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
+            .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
+            .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
+            .robotToCameraTransform(new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0)))
+            .build();
+
+    private static final GompeiVisionConfig BACK_BOTTOM_LEFT =
+        GompeiVisionConfig.builder()
+            .key("camera_backbottomleft")
+            .hardwareID("camera_backbottomleft")
+            .cameraType(CameraType.THRIFTYCAM)
+            .exposure(50.0)
+            .gain(0.0)
+            .horizontalFOV(ThriftyCamConstants.HORIZONTAL_FOV)
+            .width(ThriftyCamConstants.WIDTH)
+            .height(ThriftyCamConstants.HEIGHT)
+            .cameraMatrix(
+                new Matrix<N3, N3>(
+                    MatBuilder.fill(
+                        N3.instance, N3.instance, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)))
+            .distortionCoefficients(
+                new Matrix<N5, N1>(
+                    MatBuilder.fill(N5.instance, N1.instance, 0.0, 0.0, 0.0, 0.0, 0.0)))
+            .verticalFOV(ThriftyCamConstants.VERTICAL_FOV)
+            .singletagXYStdev(ThriftyCamConstants.SINGLETAG_XY_STANDARD_DEVIATION_COEFFICIENT)
+            .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
+            .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
+            .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
+            .robotToCameraTransform(new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0)))
+            .build();
+
+    private static final GompeiVisionConfig FRONT_RIGHT =
+        GompeiVisionConfig.builder()
+            .key("camera_frontright")
+            .hardwareID("camera_frontright")
             .cameraType(CameraType.THRIFTYCAM)
             .exposure(50.0)
             .gain(0.0)
@@ -221,7 +271,9 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
     public static final Camera[] V3_EPSILON_CAMS = {
-      new Camera(new CameraIOGompeiVision(V3_EPSILON_TEST))
+      new Camera(new CameraIOGompeiVision(BACK_TOP_LEFT)),
+      new Camera(new CameraIOGompeiVision(FRONT_RIGHT)),
+      new Camera(new CameraIOGompeiVision(BACK_BOTTOM_LEFT))
     };
   }
 
