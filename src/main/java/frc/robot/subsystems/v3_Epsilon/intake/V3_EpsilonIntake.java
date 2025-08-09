@@ -60,6 +60,10 @@ public class V3_EpsilonIntake extends SubsystemBase {
         < V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.GOAL_TOLERANCE().getRadians();
   }
 
+  public void waitUntilIntakeAtGoal() {
+    Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
+  }
+
   public void setGoal(IntakeState goal) {
     isClosedLoop = true;
     this.goal = goal;

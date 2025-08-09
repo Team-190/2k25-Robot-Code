@@ -155,4 +155,8 @@ public class V3_EpsilonManipulator extends SubsystemBase {
       io.setSlot(0);
     }
   }
+
+  public void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {
+    io.setManipulatorState(state);
+  }
 }

@@ -1,7 +1,8 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface V3_EpsilonManipulatorIO {
 
@@ -45,6 +46,8 @@ public interface V3_EpsilonManipulatorIO {
   public default void setRollerVoltage(double volts) {}
 
   public default void setPivotGoal(Rotation2d rotation) {}
+
+  public default void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {}
 
   /**
    * Sets the gains for the arm.
