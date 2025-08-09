@@ -78,6 +78,10 @@ public class V3_EpsilonIntake extends SubsystemBase {
     io.setPivotVoltage(volts);
   }
 
+  public Command waitUntilPivotAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
+  }
+
   public Command sysIdRoutine() {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),

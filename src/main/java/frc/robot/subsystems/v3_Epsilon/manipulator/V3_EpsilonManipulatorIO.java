@@ -1,8 +1,7 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface V3_EpsilonManipulatorIO {
 
