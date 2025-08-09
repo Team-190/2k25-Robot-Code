@@ -69,4 +69,17 @@ public class V3_EpsilonIntakeConstants {
       double MASS_KG,
       Rotation2d MIN_ANGLE,
       Rotation2d MAX_ANGLE) {}
+
+  // Will add more states later
+  @RequiredArgsConstructor
+  public static enum IntakeRollerStates {
+    STOP(0.0),
+    CORAL_INTAKE(6.0);
+
+    private final double voltage;
+
+    public double getVoltage() {
+        return voltage;
+    }
+  }
 }

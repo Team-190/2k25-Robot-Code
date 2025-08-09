@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
+import java.util.Set;
+
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
@@ -10,8 +12,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.PivotState;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 
 public class V3_EpsilonManipulator extends SubsystemBase {
   private final V3_EpsilonManipulatorIO io;
@@ -158,5 +164,17 @@ public class V3_EpsilonManipulator extends SubsystemBase {
 
   public void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {
     io.setManipulatorState(state);
+  }
+
+  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerStates rollerGoal) {
+    if (hasAlgae() && Set.of(
+      V3_EpsilonManipulatorConstants.ManipulatorRollerStates.ALGAE_INTAKE,
+      V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
+      V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP).contains(rollerGoal)) {
+      
+      io.setRollerVoltage(holdVoltage());
+  } else { 
+      io.setRollerVoltage(rollerGoal.getVoltage());
+    }
   }
 }
