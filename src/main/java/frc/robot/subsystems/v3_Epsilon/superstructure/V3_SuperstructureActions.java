@@ -1,16 +1,16 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
-import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import lombok.Getter;
 
 public class V3_SuperstructureActions {
-  
-  @Getter private final V3_EpsilonManipulatorConstants.ManipulatorRollerStates manipulatorRollerState;
+
+  @Getter
+  private final V3_EpsilonManipulatorConstants.ManipulatorRollerStates manipulatorRollerState;
+
   @Getter private final V3_EpsilonIntakeConstants.IntakeRollerStates intakeRollerStates;
 
   public V3_SuperstructureActions(String key, SubsystemActions subsystemActions) {
@@ -31,17 +31,15 @@ public class V3_SuperstructureActions {
     runIntake(intake);
     runManipulator(manipulator);
   }
-  
-  public record SubsystemActions (
+
+  public record SubsystemActions(
       V3_EpsilonManipulatorConstants.ManipulatorRollerStates manipulatorRollerState,
-      V3_EpsilonIntakeConstants.IntakeRollerStates intakeRollerStates
-  ) {
+      V3_EpsilonIntakeConstants.IntakeRollerStates intakeRollerStates) {
 
     public static SubsystemActions empty() {
       return new SubsystemActions(
           V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP
-      );
+          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP);
     }
   }
 }

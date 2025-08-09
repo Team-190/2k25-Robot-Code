@@ -2,8 +2,6 @@ package frc.robot.subsystems.v3_Epsilon.intake;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Set;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeState;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
+import java.util.Set;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -113,12 +112,14 @@ public class V3_EpsilonIntake extends SubsystemBase {
   }
 
   public void setRollerGoal(V3_EpsilonIntakeConstants.IntakeRollerStates rollerGoal) {
-    if (hasCoral() && Set.of(
-      V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
-      V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP).contains(rollerGoal)) {
-      
+    if (hasCoral()
+        && Set.of(
+                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP)
+            .contains(rollerGoal)) {
+
       io.setRollerVoltage(holdVoltage());
-  } else { 
+    } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
   }

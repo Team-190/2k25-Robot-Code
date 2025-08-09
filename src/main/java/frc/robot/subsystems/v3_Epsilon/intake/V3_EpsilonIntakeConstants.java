@@ -79,7 +79,7 @@ public class V3_EpsilonIntakeConstants {
     private final double voltage;
 
     public double getVoltage() {
-        return voltage;
+      return voltage;
     }
   }
 }

@@ -2,12 +2,9 @@ package frc.robot.subsystems.v3_Epsilon.manipulator;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorConstants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -156,20 +153,21 @@ public class V3_EpsilonManipulatorConstants {
       return angle;
     }
   }
-  
+
   // Will add more states later
-  @RequiredArgsConstructor
   public static enum ManipulatorRollerStates {
     STOP(0.0),
-    CORAL_INTAKE(6.0), 
-    ALGAE_INTAKE(12.0)
+    CORAL_INTAKE(6.0),
+    ALGAE_INTAKE(12.0);
 
     private final double voltage;
+
+    ManipulatorRollerStates(double voltage) {
+      this.voltage = voltage;
+    }
 
     public double getVoltage() {
       return voltage;
     }
   }
-
-  
 }
