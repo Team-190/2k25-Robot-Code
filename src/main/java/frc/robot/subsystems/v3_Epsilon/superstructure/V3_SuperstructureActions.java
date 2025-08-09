@@ -6,15 +6,7 @@ import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstant
 import lombok.Getter;
 
 public class V3_SuperstructureActions{
-    
-    @Getter private final ReefState elevatorHeight;
-    @Getter private final V3_EpsilonManipulatorConstants.PivotState armState;
-    @Getter private final V3_EpsilonIntakeConstants.IntakeState intakeState;
 
-    
-    
-    
-    
     public record SubsystemActions(
         ReefState elevatorHeight,
         V3_EpsilonManipulatorConstants.PivotState manipulatorArmState,
