@@ -14,7 +14,28 @@ public enum V3_SuperstructureStates {
     FieldConstants.Reef.ReefState.STOW, 
     V3_EpsilonManipulatorConstants.PivotState.STOW_UP, 
     V3_EpsilonIntakeConstants.IntakeState.STOW
-  ), SubsystemActions.empty());
+  ), SubsystemActions.empty()),
+
+  // Coral States - Setpoints
+  L1(
+      "L1", 
+      new SubsystemPoses(
+      FieldConstants.Reef.ReefState.L1, 
+      V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE, 
+      V3_EpsilonIntakeConstants.IntakeState.L1
+      ),
+      SubsystemActions.empty()
+    ),
+
+  L2(
+    "L2", new SubsystemPoses(
+    FieldConstants.Reef.ReefState.L2, 
+    V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE, 
+    V3_EpsilonIntakeConstants.IntakeState.L1
+    ),
+    SubsystemActions.empty()
+  );
+
 
   private final String name;
   private final SubsystemPoses pose;
