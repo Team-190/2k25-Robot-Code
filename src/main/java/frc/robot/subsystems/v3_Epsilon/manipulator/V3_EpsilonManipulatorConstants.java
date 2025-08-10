@@ -158,7 +158,12 @@ public class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorRollerStates {
     STOP(0.0),
     CORAL_INTAKE(6.0),
-    ALGAE_INTAKE(12.0);
+    ALGAE_INTAKE(12.0),
+    L4_SCORE(4.6 * 1.56),
+    SCORE_CORAL(4.8 * 1.56),
+    SCORE_ALGAE(-6),
+    REMOVE_ALGAE(-12),
+    L1_SCORE(3.5 * 1.56);
 
     private final double voltage;
 
