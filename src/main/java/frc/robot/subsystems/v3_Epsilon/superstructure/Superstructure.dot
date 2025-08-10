@@ -40,10 +40,11 @@ digraph Superstructure {
   L2_transition [color = green]
   L3_transition [color = green]
   L4_transition [color = green]
+  
   # Transition states are inherently wait_for_elevator states but for different levels
-
   intermediate_wait_for_elevator [color = green]
   
+  # Basic Handoff Edges
   stow_down -> stow_up [color = green]
   handoff -> stow_up [color = green]
   
