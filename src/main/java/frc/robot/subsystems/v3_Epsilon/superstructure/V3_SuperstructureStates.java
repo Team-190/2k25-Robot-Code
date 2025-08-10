@@ -32,7 +32,7 @@ public enum V3_SuperstructureStates {
       new SubsystemPoses(
           FieldConstants.Reef.ReefState.L2,
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.L1),
+          V3_EpsilonIntakeConstants.IntakeState.STOW),
       SubsystemActions.empty()),
 
   L3_PREP(
@@ -40,7 +40,7 @@ public enum V3_SuperstructureStates {
       new SubsystemPoses(
           FieldConstants.Reef.ReefState.L3,
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.L1),
+          V3_EpsilonIntakeConstants.IntakeState.STOW),
       SubsystemActions.empty()),
   
   L4_PREP(
@@ -48,7 +48,7 @@ public enum V3_SuperstructureStates {
       new SubsystemPoses(
           FieldConstants.Reef.ReefState.L4,
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.L1),
+          V3_EpsilonIntakeConstants.IntakeState.STOW),
       SubsystemActions.empty()),
 
   // Coral Score States
