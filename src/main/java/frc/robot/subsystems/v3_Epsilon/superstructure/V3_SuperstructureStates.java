@@ -59,15 +59,15 @@ public enum V3_SuperstructureStates {
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
           V3_EpsilonIntakeConstants.IntakeState.L1),
       new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
+          V3_EpsilonIntakeConstants.IntakeRollerStates.SCORE_CORAL)),
 
   L2_SCORE(
     "L2_SCORE",
     new SubsystemPoses(
         FieldConstants.Reef.ReefState.L2,
         V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-        V3_EpsilonIntakeConstants.IntakeState.L1),
+        V3_EpsilonIntakeConstants.IntakeState.STOW),
     new SubsystemActions(
         V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
         V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
@@ -77,7 +77,7 @@ public enum V3_SuperstructureStates {
     new SubsystemPoses(
         FieldConstants.Reef.ReefState.L3,
         V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-        V3_EpsilonIntakeConstants.IntakeState.L1),
+        V3_EpsilonIntakeConstants.IntakeState.STOW),
     new SubsystemActions(
         V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
         V3_EpsilonIntakeConstants.IntakeRollerStates.STOP));

@@ -74,7 +74,8 @@ public class V3_EpsilonIntakeConstants {
   public static enum IntakeRollerStates {
     STOP(0.0),
     CORAL_INTAKE(6.0),
-    ALGAE_INTAKE(12.0);
+    ALGAE_INTAKE(12.0),
+    SCORE_CORAL(6.0);
 
     private final double voltage;
 
