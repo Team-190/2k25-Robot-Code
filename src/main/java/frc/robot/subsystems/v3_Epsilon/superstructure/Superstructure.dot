@@ -95,6 +95,10 @@ digraph Superstructure {
   L2_transition -> L2_prep [color = green]
   L3_transition -> L3_prep [color = green]
   L4_transition -> L4_prep [color = green]
+
+  L2_prep -> L2_transition [color = green]
+  L3_prep -> L3_transition [color = green]
+  L4_prep -> L4_transition [color = green]
   
   # Algae Edges
   stow_up -> L2_algae_prep [color = blue]
