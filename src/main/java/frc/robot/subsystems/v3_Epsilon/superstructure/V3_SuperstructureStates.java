@@ -151,7 +151,7 @@ public enum V3_SuperstructureStates {
   BARGE_SCORE(
     "BARGE_SCORE",
     new SubsystemPoses(
-        FieldConstants.Reef.ReefState.ASS_TOP, // Assuming ASS_TOP is the max height the elevator can reach. Check later
+        FieldConstants.Reef.ReefState.ALGAE_SCORE, // Assuming ASS_TOP is the max height the elevator can reach. Check later
         V3_EpsilonManipulatorConstants.PivotState.REEF_INTAKE,
         V3_EpsilonIntakeConstants.IntakeState.STOW),
     new SubsystemActions(
@@ -162,14 +162,43 @@ public enum V3_SuperstructureStates {
    PROCESSOR_SCORE(
         "PROCESSOR_SCORE",
         new SubsystemPoses(
-            FieldConstants.Reef.ReefState.ASS_BOT,
+            FieldConstants.Reef.ReefState.ALGAE_SCORE,
             V3_EpsilonManipulatorConstants.PivotState.PROCESSOR,
             V3_EpsilonIntakeConstants.IntakeState.STOW
         ),
         new SubsystemActions(
             V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
             V3_EpsilonIntakeConstants.IntakeRollerStates.STOP
-        ));
+        )),
+
+   // Transition States
+   L2_TRANSITION(
+    "L2_TRANSITION",
+    new SubsystemPoses(
+        FieldConstants.Reef.ReefState.L2,
+        V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
+        V3_EpsilonIntakeConstants.IntakeState.STOW
+    ), SubsystemActions.empty()),
+
+    L3_TRANSITION(
+        "L3_TRANSITION",
+        new SubsystemPoses(
+            FieldConstants.Reef.ReefState.L3,
+            V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
+            V3_EpsilonIntakeConstants.IntakeState.STOW
+        ),
+        SubsystemActions.empty()
+    ),
+
+    L4_TRANSITION(
+        "L4_TRANSITION",
+        new SubsystemPoses(
+            FieldConstants.Reef.ReefState.L4,
+            V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
+            V3_EpsilonIntakeConstants.IntakeState.STOW
+        ),
+        SubsystemActions.empty()
+    );
 
   private final String name;
   private final SubsystemPoses pose;
