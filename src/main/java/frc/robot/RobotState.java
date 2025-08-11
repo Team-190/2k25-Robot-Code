@@ -4,6 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -20,6 +21,8 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -44,6 +47,8 @@ public class RobotState {
   @Getter @Setter private static boolean isIntakingAlgae;
   @Getter @Setter private static boolean isAutoAligning;
   @Getter @Setter private static boolean autoClapOverride;
+
+  private static final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 
   static {
     switch (Constants.ROBOT) {
@@ -94,6 +99,8 @@ public class RobotState {
         new ReefAlignData(
             -1, new Pose2d(), new Pose2d(), 0.0, 0.0, false, false, ReefState.ALGAE_INTAKE_BOTTOM);
     headingData = new HeadingData(robotHeading, NetworkTablesJNI.now(), 0.0);
+
+    poseBuffer = TimeInterpolatableBuffer.createBuffer(2.0);
   }
 
   public RobotState() {}
@@ -111,9 +118,14 @@ public class RobotState {
     InternalLoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
-    fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
-    reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
+    double timestamp = Timer.getTimestamp();
+    fieldLocalizer.updateWithTime(timestamp, robotHeading, modulePositions);
+    reefLocalizer.updateWithTime(timestamp, robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
+
+    // Add pose to buffer at timestamp
+    poseBuffer.addSample(timestamp, odometry.getPoseMeters());
+
     InternalLoggedTracer.record("Update Localizers", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
@@ -218,11 +230,39 @@ public class RobotState {
   }
 
   public static void addFieldLocalizerVisionMeasurement(VisionObservation observation) {
+    try {
+      if (poseBuffer.getInternalBuffer().lastKey() - 2.0 > observation.timestamp()) {
+        return;
+      }
+    } catch (NoSuchElementException ex) {
+      return;
+    }
+    // Get odometry based pose at timestamp
+    var sample = poseBuffer.getSample(observation.timestamp());
+    if (sample.isEmpty()) {
+      // exit if not there
+      return;
+    }
+
     fieldLocalizer.addVisionMeasurement(
         observation.pose(), observation.timestamp(), observation.stddevs());
   }
 
   public static void addReefLocalizerVisionMeasurement(VisionObservation observation) {
+    try {
+      if (poseBuffer.getInternalBuffer().lastKey() - 2.0 > observation.timestamp()) {
+        return;
+      }
+    } catch (NoSuchElementException ex) {
+      return;
+    }
+    // Get odometry based pose at timestamp
+    var sample = poseBuffer.getSample(observation.timestamp());
+    if (sample.isEmpty()) {
+      // exit if not there
+      return;
+    }
+
     reefLocalizer.addVisionMeasurement(
         observation.pose(), observation.timestamp(), observation.stddevs());
   }
@@ -305,6 +345,7 @@ public class RobotState {
     fieldLocalizer.resetPosition(robotHeading, modulePositions, pose);
     reefLocalizer.resetPosition(robotHeading, modulePositions, pose);
     odometry.resetPosition(robotHeading, modulePositions, pose);
+    poseBuffer.clear();
   }
 
   public static void setReefPost(ReefPose post) {
@@ -324,6 +365,10 @@ public class RobotState {
   public static void setReefHeight(ReefState height) {
     ReefPose post = OIData.currentReefPost();
     OIData = new OperatorInputData(post, height);
+  }
+
+  public static Optional<Pose2d> getBufferedPose(double timestamp) {
+    return poseBuffer.getSample(timestamp);
   }
 
   public static final record ReefAlignData(

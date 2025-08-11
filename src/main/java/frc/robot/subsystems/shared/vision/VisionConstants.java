@@ -1,5 +1,7 @@
 package frc.robot.subsystems.shared.vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -18,6 +20,7 @@ import lombok.Builder;
 public class VisionConstants {
   public static final double AMBIGUITY_THRESHOLD = 0.4;
   public static final double FIELD_BORDER_MARGIN = 0.5;
+  public static final double TARGET_LOG_TIME_SECS = 0.1;
 
   public static class RobotCameras {
 
@@ -321,11 +324,26 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
     public static final Camera[] V3_EPSILON_CAMS = {
-      new Camera(new CameraIOGompeiVision(BACK_TOP_LEFT)),
-      new Camera(new CameraIOGompeiVision(BACK_BOTTOM_LEFT)),
-      new Camera(new CameraIOGompeiVision(BACK_RIGHT)),
-      new Camera(new CameraIOGompeiVision(FRONT_RIGHT)),
-      new Camera(new CameraIOGompeiVision(FRONT_LEFT))
+      new Camera(
+          new CameraIOGompeiVision(
+              BACK_TOP_LEFT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              BACK_BOTTOM_LEFT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              BACK_RIGHT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              FRONT_RIGHT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              FRONT_LEFT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
     };
   }
 

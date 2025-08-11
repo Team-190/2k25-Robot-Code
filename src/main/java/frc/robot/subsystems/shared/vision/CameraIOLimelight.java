@@ -1,7 +1,5 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
@@ -41,18 +39,24 @@ public class CameraIOLimelight implements CameraIO {
             RobotState.getHeadingData().robotHeading().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
           },
           RobotState.getHeadingData().latestRobotHeadingTimestamp());
-      inputs.xOffset = new Rotation2d[] {Rotation2d.fromDegrees(LimelightHelpers.getTX(name))};
-      inputs.yOffset = new Rotation2d[] {Rotation2d.fromDegrees(LimelightHelpers.getTY(name))};
-      inputs.targetAquired = new boolean[] {LimelightHelpers.getTV(name)};
-      inputs.totalTargets = new int[] {LimelightHelpers.getTargetCount(name)};
-      inputs.averageDistance =
-          new double[] {LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist};
-      inputs.primaryPose =
-          new Pose2d[] {LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose};
-      inputs.secondaryPose = new Pose2d[] {LimelightHelpers.getBotPoseEstimate_wpiBlue(name).pose};
-      inputs.frameTimestamp =
-          new double[] {LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds};
-      inputs.tagIDOfInterest = new double[] {LimelightHelpers.getFiducialID(name)};
+
+      inputs.processedFrames =
+          new ProcessedFrame[] {
+            new ProcessedFrame(
+                LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds,
+                LimelightHelpers.getTargetCount(name),
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist,
+                new ProcessedPreciseLocalPositioningData(
+                    new int[] {(int) LimelightHelpers.getFiducialID(name)},
+                    new double[][] {{}},
+                    new double[][] {{}},
+                    new double[] {
+                      LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist
+                    }),
+                new ProcessedImpreciseGlobalPositioningData(
+                    LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose,
+                    LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).tagCount > 1))
+          };
     }
     InternalLoggedTracer.record("Update Inputs", "Vision/Cameras/" + name + "/Limelight");
   }
