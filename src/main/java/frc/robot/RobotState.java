@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
@@ -21,7 +22,6 @@ import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.GeometryUtil;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
-import frc.robot.util.SwerveDrivePoseEstimator;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -135,9 +135,9 @@ public class RobotState {
     int closestReefTag = getMinDistanceReefTag();
     InternalLoggedTracer.record("Get Minimum Distance To Reef Tag", "RobotState/Periodic");
 
-    if (RobotMode.disabled()) {
-      resetRobotPose(getRobotPoseField());
-    }
+    // if (RobotMode.disabled()) {
+    //   resetRobotPose(getRobotPoseField());
+    // }
 
     InternalLoggedTracer.reset();
     Pose2d autoAlignCoralSetpoint =
