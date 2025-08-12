@@ -240,7 +240,8 @@ public class CameraIOGompeiVision implements CameraIO {
       // Update inputs
       inputs.currentHeartbeat = Timer.getFPGATimestamp();
       inputs.isConnected = true;
-      processedFrames.add(
+
+      ProcessedFrame frame =
           new ProcessedFrame(
               timestamp,
               totalTargets,
@@ -250,7 +251,9 @@ public class CameraIOGompeiVision implements CameraIO {
               tys,
               distances,
               robotPose,
-              totalTargets > 1));
+              totalTargets > 1);
+
+      processedFrames.add(frame);
 
       Logger.recordOutput(
           "AprilTagVision/Inst" + config.key() + "/LatencySecs", Timer.getTimestamp() - timestamp);

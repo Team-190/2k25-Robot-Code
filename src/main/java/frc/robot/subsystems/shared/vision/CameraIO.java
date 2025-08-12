@@ -65,5 +65,30 @@ public interface CameraIO {
       double[][] preciseTy,
       double[] preciseDistance,
       Pose2d imprecisePose,
-      boolean impreciseIsMultiTag) {}
+      boolean impreciseIsMultiTag) {
+
+    @Override
+    public String toString() {
+      return "ProcessedFrame{"
+          + "timestamp="
+          + timestamp
+          + ", totalTargets="
+          + totalTargets
+          + ", averageDistance="
+          + averageDistance
+          + ", preciseTagIds="
+          + java.util.Arrays.toString(preciseTagIds)
+          + ", preciseTx="
+          + java.util.Arrays.deepToString(preciseTx)
+          + ", preciseTy="
+          + java.util.Arrays.deepToString(preciseTy)
+          + ", preciseDistance="
+          + java.util.Arrays.toString(preciseDistance)
+          + ", imprecisePose="
+          + imprecisePose
+          + ", impreciseIsMultiTag="
+          + impreciseIsMultiTag
+          + '}';
+    }
+  }
 }

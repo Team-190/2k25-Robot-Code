@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.VisionObservation;
 import frc.robot.subsystems.shared.vision.CameraIO.ProcessedFrame;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
 
 public class Camera {
@@ -29,7 +29,7 @@ public class Camera {
   private final CameraIO io;
   private final String name;
 
-  @Getter @Setter int[] validIds;
+  @Getter int[] validIds;
   private final Map<Integer, Pose2d> tagPoses2d = new HashMap<>();
 
   public Camera(CameraIO io) {
@@ -37,7 +37,7 @@ public class Camera {
     this.io = io;
     this.name = io.getName();
 
-    validIds = new int[] {};
+    validIds = FieldConstants.validTags;
   }
 
   public void periodic() {
@@ -155,15 +155,16 @@ public class Camera {
       }
     }
 
-    Logger.recordOutput("AprilTagVision/total", poseObservations.size());
-
     // Add observations to robot state
     poseObservations.stream()
         .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
         .forEach(RobotState::addFieldLocalizerVisionMeasurement);
-    txTyObservations.stream()
+    poseObservations.stream()
         .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
         .forEach(RobotState::addReefLocalizerVisionMeasurement);
+    // txTyObservations.stream()
+    //     .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
+    //     .forEach(RobotState::addReefLocalizerVisionMeasurement);
   }
 
   public void setValidTags(int... validIds) {

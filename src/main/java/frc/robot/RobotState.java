@@ -230,7 +230,6 @@ public class RobotState {
 
   public static void addFieldLocalizerVisionMeasurement(VisionObservation observation) {
     if (!GeometryUtil.isZero(observation.pose())) {
-      // System.out.println("Adding field localizer vision measurement: " + observation.pose());
       fieldLocalizer.addVisionMeasurement(
           observation.pose(), observation.timestamp(), observation.stddevs());
     }
