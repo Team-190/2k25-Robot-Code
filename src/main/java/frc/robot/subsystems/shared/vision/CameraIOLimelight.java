@@ -46,16 +46,14 @@ public class CameraIOLimelight implements CameraIO {
                 LimelightHelpers.getBotPoseEstimate_wpiBlue(name).timestampSeconds,
                 LimelightHelpers.getTargetCount(name),
                 LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist,
-                new ProcessedPreciseLocalPositioningData(
-                    new int[] {(int) LimelightHelpers.getFiducialID(name)},
-                    new double[][] {{}},
-                    new double[][] {{}},
-                    new double[] {
-                      LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist
-                    }),
-                new ProcessedImpreciseGlobalPositioningData(
-                    LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose,
-                    LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).tagCount > 1))
+                new int[] {(int) LimelightHelpers.getFiducialID(name)},
+                new double[][] {{}},
+                new double[][] {{}},
+                new double[] {
+                  LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).avgTagDist
+                },
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose,
+                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).tagCount > 1)
           };
     }
     InternalLoggedTracer.record("Update Inputs", "Vision/Cameras/" + name + "/Limelight");

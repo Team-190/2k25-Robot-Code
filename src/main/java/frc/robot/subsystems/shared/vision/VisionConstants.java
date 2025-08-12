@@ -196,10 +196,27 @@ public class VisionConstants {
             .cameraMatrix(
                 new Matrix<N3, N3>(
                     MatBuilder.fill(
-                        N3.instance, N3.instance, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)))
+                        N3.instance,
+                        N3.instance,
+                        1624.2147990980468,
+                        0.0,
+                        678.5977326688123,
+                        0.0,
+                        1623.8010651757406,
+                        581.2937963816543,
+                        0.0,
+                        0.0,
+                        1.0)))
             .distortionCoefficients(
                 new Matrix<N5, N1>(
-                    MatBuilder.fill(N5.instance, N1.instance, 0.0, 0.0, 0.0, 0.0, 0.0)))
+                    MatBuilder.fill(
+                        N5.instance,
+                        N1.instance,
+                        0.0962739678996323,
+                        -0.17425866758812222,
+                        -0.0010256591695401809,
+                        0.00203018525003567,
+                        0.1499388749754604)))
             .verticalFOV(ThriftyCamConstants.VERTICAL_FOV)
             .singletagXYStdev(ThriftyCamConstants.SINGLETAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
@@ -271,10 +288,27 @@ public class VisionConstants {
             .cameraMatrix(
                 new Matrix<N3, N3>(
                     MatBuilder.fill(
-                        N3.instance, N3.instance, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)))
+                        N3.instance,
+                        N3.instance,
+                        1624.2147990980468,
+                        0.0,
+                        678.5977326688123,
+                        0.0,
+                        1623.8010651757406,
+                        581.2937963816543,
+                        0.0,
+                        0.0,
+                        1.0)))
             .distortionCoefficients(
                 new Matrix<N5, N1>(
-                    MatBuilder.fill(N5.instance, N1.instance, 0.0, 0.0, 0.0, 0.0, 0.0)))
+                    MatBuilder.fill(
+                        N5.instance,
+                        N1.instance,
+                        0.0962739678996323,
+                        -0.17425866758812222,
+                        -0.0010256591695401809,
+                        0.00203018525003567,
+                        0.1499388749754604)))
             .verticalFOV(ThriftyCamConstants.VERTICAL_FOV)
             .singletagXYStdev(ThriftyCamConstants.SINGLETAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
@@ -340,10 +374,10 @@ public class VisionConstants {
           new CameraIOGompeiVision(
               FRONT_RIGHT,
               () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-      new Camera(
-          new CameraIOGompeiVision(
-              FRONT_LEFT,
-              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
+      //   new Camera(
+      //       new CameraIOGompeiVision(
+      //           FRONT_LEFT,
+      //           () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
     };
   }
 

@@ -60,11 +60,10 @@ public interface CameraIO {
       double timestamp,
       int totalTargets,
       double averageDistance,
-      ProcessedPreciseLocalPositioningData preciseData,
-      ProcessedImpreciseGlobalPositioningData impreciseData) {}
-
-  public record ProcessedPreciseLocalPositioningData(
-      int[] tagIds, double[][] tx, double[][] ty, double[] distance) {}
-
-  public record ProcessedImpreciseGlobalPositioningData(Pose2d pose, boolean isMultiTag) {}
+      int[] preciseTagIds,
+      double[][] preciseTx,
+      double[][] preciseTy,
+      double[] preciseDistance,
+      Pose2d imprecisePose,
+      boolean impreciseIsMultiTag) {}
 }

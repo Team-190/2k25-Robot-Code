@@ -98,12 +98,12 @@ public class CameraIOGompeiVision implements CameraIO {
     var aprilTagQueue = observationSubscriber.readQueue();
     var timestamps = new double[aprilTagQueue.length];
     var frames = new double[aprilTagQueue.length][];
+
     for (int i = 0; i < aprilTagQueue.length; i++) {
       timestamps[i] = aprilTagQueue[i].timestamp / 1000000.0;
       frames[i] = aprilTagQueue[i].value;
     }
 
-    List<Pose2d> allRobotPoses = new ArrayList<>();
     List<ProcessedFrame> processedFrames = new ArrayList<>();
 
     for (int frameIndex = 0; frameIndex < aprilTagQueue.length; frameIndex++) {
@@ -195,45 +195,46 @@ public class CameraIOGompeiVision implements CameraIO {
         Optional<Pose3d> tagPose = aprilTagLayoutSupplier.get().getTagPose((int) values[i]);
         tagPose.ifPresent(tagPoses::add);
       }
-      if (tagPoses.isEmpty()) continue;
 
-      // Calculate average distance to tag
-      double totalDistance = 0.0;
-      for (Pose3d tagPose : tagPoses) {
-        totalDistance += tagPose.getTranslation().getDistance(cameraPose.getTranslation());
-      }
-      averageDistance = totalDistance / tagPoses.size();
-      totalTargets = tagPoses.size();
-
-      // Add TxTy observations
       int[] tagIds = new int[tagPoses.size()];
       double[][] txs = new double[tagPoses.size()][];
       double[][] tys = new double[tagPoses.size()][];
       double[] distances = new double[tagPoses.size()];
 
-      int tagEstimationDataEndIndex =
-          switch ((int) values[0]) {
-            default -> 0;
-            case 1 -> 8;
-            case 2 -> 16;
-          };
-
-      int indexCounter = 0;
-      for (int index = tagEstimationDataEndIndex + 1; index < values.length; index += 10) {
-        double[] tx = new double[4];
-        double[] ty = new double[4];
-        for (int i = 0; i < 4; i++) {
-          tx[i] = values[index + 1 + (2 * i)];
-          ty[i] = values[index + 1 + (2 * i) + 1];
+      if (!tagPoses.isEmpty()) {
+        // Calculate average distance to tag
+        double totalDistance = 0.0;
+        for (Pose3d tagPose : tagPoses) {
+          totalDistance += tagPose.getTranslation().getDistance(cameraPose.getTranslation());
         }
-        int tagId = (int) values[index];
-        double distance = values[index + 9];
+        averageDistance = totalDistance / tagPoses.size();
+        totalTargets = tagPoses.size();
 
-        tagIds[indexCounter] = tagId;
-        txs[indexCounter] = tx;
-        tys[indexCounter] = ty;
-        distances[indexCounter] = distance;
-        indexCounter++;
+        // Add TxTy observations
+        int tagEstimationDataEndIndex =
+            switch ((int) values[0]) {
+              default -> 0;
+              case 1 -> 8;
+              case 2 -> 16;
+            };
+
+        int indexCounter = 0;
+        for (int index = tagEstimationDataEndIndex + 1; index < values.length; index += 10) {
+          double[] tx = new double[4];
+          double[] ty = new double[4];
+          for (int i = 0; i < 4; i++) {
+            tx[i] = values[index + 1 + (2 * i)];
+            ty[i] = values[index + 1 + (2 * i) + 1];
+          }
+          int tagId = (int) values[index];
+          double distance = values[index + 9];
+
+          tagIds[indexCounter] = tagId;
+          txs[indexCounter] = tx;
+          tys[indexCounter] = ty;
+          distances[indexCounter] = distance;
+          indexCounter++;
+        }
       }
 
       // Update inputs
@@ -244,9 +245,12 @@ public class CameraIOGompeiVision implements CameraIO {
               timestamp,
               totalTargets,
               averageDistance,
-              new ProcessedPreciseLocalPositioningData(tagIds, txs, tys, distances),
-              new ProcessedImpreciseGlobalPositioningData(robotPose, totalTargets > 1)));
-      allRobotPoses.add(robotPose);
+              tagIds,
+              txs,
+              tys,
+              distances,
+              robotPose,
+              totalTargets > 1));
 
       Logger.recordOutput(
           "AprilTagVision/Inst" + config.key() + "/LatencySecs", Timer.getTimestamp() - timestamp);
@@ -258,7 +262,7 @@ public class CameraIOGompeiVision implements CameraIO {
     inputs.processedFrames = processedFrames.toArray(new ProcessedFrame[processedFrames.size()]);
 
     // If no frames from instances, clear robot pose
-    if (timestamps.length == 0) {
+    if (aprilTagQueue.length == 0) {
       Logger.recordOutput("AprilTagVision/Inst" + config.key() + "/RobotPose", Pose2d.kZero);
     }
 
@@ -266,9 +270,6 @@ public class CameraIOGompeiVision implements CameraIO {
     if (Timer.getTimestamp() - lastFrameTime > VisionConstants.TARGET_LOG_TIME_SECS) {
       Logger.recordOutput("AprilTagVision/Inst" + config.key() + "/TagPoses", new Pose3d[] {});
     }
-
-    // Log robot poses
-    Logger.recordOutput("AprilTagVision/RobotPoses", allRobotPoses.toArray(Pose2d[]::new));
 
     // Log tag poses
     List<Pose3d> allTagPoses = new ArrayList<>();

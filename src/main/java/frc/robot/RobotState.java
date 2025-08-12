@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
@@ -19,9 +18,10 @@ import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.GeometryUtil;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.NTPrefixes;
-import java.util.NoSuchElementException;
+import frc.robot.util.SwerveDrivePoseEstimator;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -118,13 +118,12 @@ public class RobotState {
     InternalLoggedTracer.record("Reset Instance Variables", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
-    double timestamp = Timer.getTimestamp();
-    fieldLocalizer.updateWithTime(timestamp, robotHeading, modulePositions);
-    reefLocalizer.updateWithTime(timestamp, robotHeading, modulePositions);
+    fieldLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
+    reefLocalizer.updateWithTime(Timer.getTimestamp(), robotHeading, modulePositions);
     odometry.update(robotHeading, modulePositions);
 
     // Add pose to buffer at timestamp
-    poseBuffer.addSample(timestamp, odometry.getPoseMeters());
+    poseBuffer.addSample(Timer.getTimestamp(), odometry.getPoseMeters());
 
     InternalLoggedTracer.record("Update Localizers", "RobotState/Periodic");
 
@@ -230,41 +229,18 @@ public class RobotState {
   }
 
   public static void addFieldLocalizerVisionMeasurement(VisionObservation observation) {
-    try {
-      if (poseBuffer.getInternalBuffer().lastKey() - 2.0 > observation.timestamp()) {
-        return;
-      }
-    } catch (NoSuchElementException ex) {
-      return;
+    if (!GeometryUtil.isZero(observation.pose())) {
+      // System.out.println("Adding field localizer vision measurement: " + observation.pose());
+      fieldLocalizer.addVisionMeasurement(
+          observation.pose(), observation.timestamp(), observation.stddevs());
     }
-    // Get odometry based pose at timestamp
-    var sample = poseBuffer.getSample(observation.timestamp());
-    if (sample.isEmpty()) {
-      // exit if not there
-      return;
-    }
-
-    fieldLocalizer.addVisionMeasurement(
-        observation.pose(), observation.timestamp(), observation.stddevs());
   }
 
   public static void addReefLocalizerVisionMeasurement(VisionObservation observation) {
-    try {
-      if (poseBuffer.getInternalBuffer().lastKey() - 2.0 > observation.timestamp()) {
-        return;
-      }
-    } catch (NoSuchElementException ex) {
-      return;
+    if (!GeometryUtil.isZero(observation.pose())) {
+      reefLocalizer.addVisionMeasurement(
+          observation.pose(), observation.timestamp(), observation.stddevs());
     }
-    // Get odometry based pose at timestamp
-    var sample = poseBuffer.getSample(observation.timestamp());
-    if (sample.isEmpty()) {
-      // exit if not there
-      return;
-    }
-
-    reefLocalizer.addVisionMeasurement(
-        observation.pose(), observation.timestamp(), observation.stddevs());
   }
 
   public static Pose2d getRobotPoseField() {

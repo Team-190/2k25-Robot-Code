@@ -38,11 +38,13 @@ public class Camera {
     this.name = io.getName();
 
     validIds = new int[] {};
-    for (var tag : io.getFieldLayoutSupplier().get().getTags())
-      tagPoses2d.put(tag.ID, tag.pose.toPose2d());
   }
 
   public void periodic() {
+    if (tagPoses2d.isEmpty() && io.getFieldLayoutSupplier().get() != null) {
+      for (var tag : io.getFieldLayoutSupplier().get().getTags())
+        tagPoses2d.put(tag.ID, tag.pose.toPose2d());
+    }
     InternalLoggedTracer.reset();
     io.updateInputs(inputs);
     InternalLoggedTracer.record("Update Inputs", "Vision/Cameras/" + name + "Periodic");
@@ -59,7 +61,7 @@ public class Camera {
       double xyStdevCoeff;
       double thetaStdev;
 
-      if (frame.impreciseData().isMultiTag()) {
+      if (frame.impreciseIsMultiTag()) {
         xyStdevCoeff = io.getPrimaryXYStandardDeviationCoefficient();
         thetaStdev =
             io.getThetaStandardDeviationCoefficient()
@@ -78,17 +80,17 @@ public class Camera {
 
       poseObservations.add(
           new VisionObservation(
-              frame.impreciseData().pose(),
+              frame.imprecisePose(),
               frame.timestamp(),
               VecBuilder.fill(xyStdDev, xyStdDev, thetaStdev)));
 
       // ONLY DO THIS IF WE ARE RUNNING GOMPEIVISION
       if (io instanceof CameraIOGompeiVision) {
-        for (int i = 0; i < frame.preciseData().tagIds().length; i++) {
+        for (int i = 0; i < frame.preciseTagIds().length; i++) {
           final int tagIdIndex = i;
           // Check if tag is valid
           if (java.util.Arrays.stream(validIds)
-              .noneMatch(id -> id == frame.preciseData().tagIds()[tagIdIndex])) {
+              .noneMatch(id -> id == frame.preciseTagIds()[tagIdIndex])) {
             continue;
           }
           // Get rotation at timestamp
@@ -106,8 +108,8 @@ public class Camera {
           double tx = 0.0;
           double ty = 0.0;
           for (int j = 0; j < 4; j++) {
-            tx += frame.preciseData().tx()[i][j];
-            ty += frame.preciseData().ty()[i][j];
+            tx += frame.preciseTx()[i][j];
+            ty += frame.preciseTy()[i][j];
           }
           tx /= 4.0;
           ty /= 4.0;
@@ -122,15 +124,14 @@ public class Camera {
               new Pose3d(Translation3d.kZero, new Rotation3d(0, ty, -tx))
                   .transformBy(
                       new Transform3d(
-                          new Translation3d(frame.preciseData().distance()[i], 0, 0),
-                          Rotation3d.kZero))
+                          new Translation3d(frame.preciseDistance()[i], 0, 0), Rotation3d.kZero))
                   .getTranslation()
                   .rotateBy(new Rotation3d(0, cameraPose.getRotation().getY(), 0))
                   .toTranslation2d();
           Rotation2d camToTagRotation =
               robotRotation.plus(
                   cameraPose.toPose2d().getRotation().plus(camToTagTranslation.getAngle()));
-          var tagPose2d = tagPoses2d.get(frame.preciseData().tagIds()[i]);
+          var tagPose2d = tagPoses2d.get(frame.preciseTagIds()[i]);
           if (tagPose2d == null) return;
           Translation2d fieldToCameraTranslation =
               new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
@@ -154,11 +155,15 @@ public class Camera {
       }
     }
 
+    Logger.recordOutput("AprilTagVision/total", poseObservations.size());
+
     // Add observations to robot state
     poseObservations.stream()
         .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
         .forEach(RobotState::addFieldLocalizerVisionMeasurement);
-    txTyObservations.stream().forEach(RobotState::addReefLocalizerVisionMeasurement);
+    txTyObservations.stream()
+        .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
+        .forEach(RobotState::addReefLocalizerVisionMeasurement);
   }
 
   public void setValidTags(int... validIds) {
