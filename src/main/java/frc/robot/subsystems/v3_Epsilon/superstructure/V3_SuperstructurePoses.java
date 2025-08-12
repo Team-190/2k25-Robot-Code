@@ -14,14 +14,14 @@ public class V3_SuperstructurePoses {
   private String key;
 
   @Getter private final ReefState elevatorHeight;
-  @Getter private final V3_EpsilonManipulatorConstants.PivotState armState;
+  @Getter private final V3_EpsilonManipulatorConstants.PivotState pivotState;
   @Getter private final V3_EpsilonIntakeConstants.IntakeState intakeState;
 
   public V3_SuperstructurePoses(String key, SubsystemPoses poses) {
     this.key = key;
 
     this.elevatorHeight = poses.elevatorHeight();
-    this.armState = poses.manipulatorArmState();
+    this.pivotState = poses.manipulatorArmState();
     this.intakeState = poses.intakeState();
   }
 
@@ -57,7 +57,7 @@ public class V3_SuperstructurePoses {
    */
   public Command setManipulatorState(V3_EpsilonManipulator manipulator) {
     return Commands.parallel(
-        Commands.runOnce(() -> manipulator.setManipulatorState(armState)),
+        Commands.runOnce(() -> manipulator.setManipulatorState(pivotState)),
         manipulator.waitUntilPivotAtGoal());
   }
 

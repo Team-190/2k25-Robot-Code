@@ -146,7 +146,8 @@ public class V3_EpsilonManipulatorConstants {
     FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5 - 5)),
     STOW_LINE(Rotation2d.fromDegrees(-75)),
     TRANSITION(Rotation2d.fromDegrees(-32)), // Placeholder value. Make sure to test
-    STOW_DOWN(Rotation2d.fromDegrees(-77));
+    STOW_DOWN(Rotation2d.fromDegrees(-77)),
+    HANDOFF(new Rotation2d());
 
     private final Rotation2d angle;
 

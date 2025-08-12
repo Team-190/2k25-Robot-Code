@@ -51,7 +51,7 @@ digraph Superstructure {
   stow_up -> L2_transition [color = green]
   stow_up -> L3_transition [color = green]
   stow_up -> L4_transition [color = green]
-  
+   
   # Coral Edges
   handoff -> L1_prep [color = green]
   handoff -> L2_transition [color = green]
