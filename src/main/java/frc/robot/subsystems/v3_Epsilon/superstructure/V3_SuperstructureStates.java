@@ -5,7 +5,8 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureActions.SubsystemActions;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructurePoses.SubsystemPoses; // Ensure this is the correct package path
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructurePoses.SubsystemPoses;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructurePoses; // Ensure this is the correct package path
 
 public enum V3_SuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
@@ -131,7 +132,7 @@ public enum V3_SuperstructureStates {
             V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
             V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
 
-  // Miscelaneous States (Barge + Processor)
+  // Miscelaneous States (Barge + Processor Prep and Score States)
   BARGE_PREP(
         "BARGE_PREP",
         new SubsystemPoses(
@@ -151,11 +152,11 @@ public enum V3_SuperstructureStates {
   BARGE_SCORE(
     "BARGE_SCORE",
     new SubsystemPoses(
-        FieldConstants.Reef.ReefState.ALGAE_SCORE, // Assuming ASS_TOP is the max height the elevator can reach. Check later
+        FieldConstants.Reef.ReefState.ALGAE_SCORE, 
         V3_EpsilonManipulatorConstants.PivotState.REEF_INTAKE,
         V3_EpsilonIntakeConstants.IntakeState.STOW),
     new SubsystemActions(
-        V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE, // Assuming you score in the barge by stowing intake and moving manipulator to desired position and then scoring
+        V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE, // Assuming you score in the barge by stowing intake and moving manipulator to desired position
         V3_EpsilonIntakeConstants.IntakeRollerStates.STOP
     )),
 
@@ -180,7 +181,7 @@ public enum V3_SuperstructureStates {
         V3_EpsilonIntakeConstants.IntakeState.STOW
     ), SubsystemActions.empty()),
 
-    L3_TRANSITION(
+   L3_TRANSITION(
         "L3_TRANSITION",
         new SubsystemPoses(
             FieldConstants.Reef.ReefState.L3,
@@ -190,7 +191,7 @@ public enum V3_SuperstructureStates {
         SubsystemActions.empty()
     ),
 
-    L4_TRANSITION(
+   L4_TRANSITION(
         "L4_TRANSITION",
         new SubsystemPoses(
             FieldConstants.Reef.ReefState.L4,
@@ -200,13 +201,53 @@ public enum V3_SuperstructureStates {
         SubsystemActions.empty()
     );
 
+  // Readable name for state
   private final String name;
-  private final SubsystemPoses pose;
-  private final SubsystemActions action;
 
+  // Target positions for all subsystems in this state
+  private final SubsystemPoses subsystemPoses;
+
+  // Actions to perform for all subsystems in this state
+  private final SubsystemActions subsystemActions;
+
+    /**
+     * Constructor for V3_SuperstructureStates.
+     *
+     * @param name The name of the state.
+     * @param pose The subsystem poses for this state.
+     * @param action The subsystem actions for this state.
+     */
   V3_SuperstructureStates(String name, SubsystemPoses pose, SubsystemActions action) {
     this.name = name;
-    this.pose = pose;
-    this.action = action;
+    this.subsystemPoses = pose;
+    this.subsystemActions = action;
+  }
+
+  /**
+   * Constructor for V3_SuperstructureStates with empty actions.
+   *
+   * @param name The name of the state.
+   * @param pose The subsystem poses for this state.
+   */
+  public V3_SuperstructurePoses getPose() {
+    return new V3_SuperstructurePoses(name, subsystemPoses);
+  }
+
+    /**
+     * Returns the actions associated with this superstructure state.
+     *
+     * @return The actions for this state.
+     */
+  public V3_SuperstructureActions getActions() {
+    return new V3_SuperstructureActions(name, subsystemActions);
+  }
+
+    /**
+     * Returns the name of the superstructure state.
+     *
+     * @return The name of the state.
+     */
+  public String getName() {
+    return name;
   }
 }
