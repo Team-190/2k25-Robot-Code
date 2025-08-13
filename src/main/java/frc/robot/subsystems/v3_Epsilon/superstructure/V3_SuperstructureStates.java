@@ -44,7 +44,15 @@ public enum V3_SuperstructureStates {
             V3_EpsilonIntakeConstants.IntakeRollerStates.CORAL_INTAKE
         )
     ),
-
+    INTERMIDIATE_WAIT_FOR_ELEVATOR(
+        "INTERMIDIATE_WAIT_FOR_ELEVATOR",
+        new SubsystemPoses(
+            ReefState.STOW,
+            V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
+            V3_EpsilonIntakeConstants.IntakeState.STOW
+        ),
+        SubsystemActions.empty()
+    ),
   // Coral Prep States
   L1_PREP(
       "L1",
@@ -221,7 +229,20 @@ public enum V3_SuperstructureStates {
           ReefState.L4,
           V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
           V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty());
+      SubsystemActions.empty()),
+
+    CLIMB(
+          "CLIMB",
+          new SubsystemPoses(
+              ReefState.STOW,
+              V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
+              V3_EpsilonIntakeConstants.IntakeState.STOW),
+          SubsystemActions.empty()),
+      
+      OVERRIDE(
+          "OVERRIDE",
+          new SubsystemPoses(),
+          SubsystemActions.empty());
 
   // Readable name for state
   private final String name;
@@ -260,7 +281,7 @@ public enum V3_SuperstructureStates {
    *
    * @return The actions for this state.
    */
-  public V3_SuperstructureActions getActions() {
+  public V3_SuperstructureActions getAction() {
     return new V3_SuperstructureActions(name, subsystemActions);
   }
 
