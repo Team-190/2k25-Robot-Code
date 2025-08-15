@@ -44,15 +44,7 @@ public enum V3_SuperstructureStates {
             V3_EpsilonIntakeConstants.IntakeRollerStates.CORAL_INTAKE
         )
     ),
-    INTERMIDIATE_WAIT_FOR_ELEVATOR(
-        "INTERMIDIATE_WAIT_FOR_ELEVATOR",
-        new SubsystemPoses(
-            ReefState.STOW,
-            V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-            V3_EpsilonIntakeConstants.IntakeState.STOW
-        ),
-        SubsystemActions.empty()
-    ),
+
   // Coral Prep States
   L1_PREP(
       "L1",
