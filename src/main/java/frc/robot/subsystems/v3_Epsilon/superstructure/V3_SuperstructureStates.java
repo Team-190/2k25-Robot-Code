@@ -197,6 +197,16 @@ public enum V3_SuperstructureStates {
       new SubsystemActions(
           V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
           V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+    
+  INTERMIDIATE_WAIT_FOR_ELEVATOR(
+            "INTERMIDIATE_WAIT_FOR_ELEVATOR",
+            new SubsystemPoses(
+                ReefState.STOW,
+                V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
+                V3_EpsilonIntakeConstants.IntakeState.STOW
+            ),
+            SubsystemActions.empty()
+        ),
 
   // Transition States
   L2_TRANSITION(
