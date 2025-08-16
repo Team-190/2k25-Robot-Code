@@ -25,8 +25,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * The V3_Superstructure class manages the coordinated movement and state transitions of
- * the robot's major subsystems including elevator, funnel, manipulator, and intake.
+ * The V3_Superstructure class manages the coordinated movement and state transitions of the robot's
+ * major subsystems including elevator, funnel, manipulator, and intake.
  */
 public class V3_Superstructure extends SubsystemBase {
 
@@ -71,9 +71,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @param manipulator The manipulator subsystem.
    */
   public V3_Superstructure(
-      ElevatorFSM elevator,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator) {
+      ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
     this.elevator = elevator;
     this.intake = intake;
     this.manipulator = manipulator;
@@ -201,8 +199,7 @@ public class V3_Superstructure extends SubsystemBase {
    */
   private Optional<V3_SuperstructureStates> bfs(
       V3_SuperstructureStates start, V3_SuperstructureStates goal) {
-    Map<V3_SuperstructureStates, V3_SuperstructureStates> parents =
-        new HashMap<>();
+    Map<V3_SuperstructureStates, V3_SuperstructureStates> parents = new HashMap<>();
     Queue<V3_SuperstructureStates> queue = new LinkedList<>();
     queue.add(start);
     parents.put(start, null);
@@ -294,8 +291,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @return Command that runs the override and resumes the old goal
    */
   public Command override(Runnable action) {
-    return Commands.sequence(
-            runGoal(V3_SuperstructureStates.OVERRIDE), Commands.run(action))
+    return Commands.sequence(runGoal(V3_SuperstructureStates.OVERRIDE), Commands.run(action))
         .finallyDo(() -> setGoal(currentState));
   }
 
@@ -321,8 +317,7 @@ public class V3_Superstructure extends SubsystemBase {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
-  public Command runGoalUntil(
-      Supplier<V3_SuperstructureStates> goal, BooleanSupplier condition) {
+  public Command runGoalUntil(Supplier<V3_SuperstructureStates> goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
@@ -344,9 +339,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @return Full command sequence
    */
   public Command runActionWithTimeout(
-      V3_SuperstructureStates pose,
-      V3_SuperstructureStates action,
-      double timeout) {
+      V3_SuperstructureStates pose, V3_SuperstructureStates action, double timeout) {
     return Commands.sequence(
             runGoal(action), // Run the action
             Commands.waitUntil(() -> atGoal()),
@@ -354,7 +347,6 @@ public class V3_Superstructure extends SubsystemBase {
             runGoal(pose))
         .finallyDo(() -> setGoal(pose)); // Return to original pose
   }
-
 
   /**
    * Checks if the elevator is at its goal position.

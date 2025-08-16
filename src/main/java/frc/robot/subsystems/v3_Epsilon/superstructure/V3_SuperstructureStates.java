@@ -22,28 +22,23 @@ public enum V3_SuperstructureStates {
           V3_EpsilonIntakeConstants.IntakeState.STOW),
       SubsystemActions.empty()),
 
-   HANDOFF(
-        "HANDOFF",
-        new SubsystemPoses(
-            ReefState.STOW,
-            V3_EpsilonManipulatorConstants.PivotState.HANDOFF,
-            V3_EpsilonIntakeConstants.IntakeState.HANDOFF
-        ),
-        SubsystemActions.empty()
-   ),
+  HANDOFF(
+      "HANDOFF",
+      new SubsystemPoses(
+          ReefState.STOW,
+          V3_EpsilonManipulatorConstants.PivotState.HANDOFF,
+          V3_EpsilonIntakeConstants.IntakeState.HANDOFF),
+      SubsystemActions.empty()),
 
-    GROUND_INTAKE(
-        "GROUND_INTAKE",
-        new SubsystemPoses(
-            ReefState.STOW,
-            V3_EpsilonManipulatorConstants.PivotState.FLOOR_INTAKE,
-            V3_EpsilonIntakeConstants.IntakeState.INTAKE_CORAL
-        ),
-        new SubsystemActions(
-            V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
-            V3_EpsilonIntakeConstants.IntakeRollerStates.CORAL_INTAKE
-        )
-    ),
+  GROUND_INTAKE(
+      "GROUND_INTAKE",
+      new SubsystemPoses(
+          ReefState.STOW,
+          V3_EpsilonManipulatorConstants.PivotState.FLOOR_INTAKE,
+          V3_EpsilonIntakeConstants.IntakeState.INTAKE_CORAL),
+      new SubsystemActions(
+          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
+          V3_EpsilonIntakeConstants.IntakeRollerStates.CORAL_INTAKE)),
 
   // Coral Prep States
   L1_PREP(
@@ -197,16 +192,14 @@ public enum V3_SuperstructureStates {
       new SubsystemActions(
           V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
           V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
-    
+
   INTERMIDIATE_WAIT_FOR_ELEVATOR(
-            "INTERMIDIATE_WAIT_FOR_ELEVATOR",
-            new SubsystemPoses(
-                ReefState.STOW,
-                V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-                V3_EpsilonIntakeConstants.IntakeState.STOW
-            ),
-            SubsystemActions.empty()
-        ),
+      "INTERMIDIATE_WAIT_FOR_ELEVATOR",
+      new SubsystemPoses(
+          ReefState.STOW,
+          V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
+          V3_EpsilonIntakeConstants.IntakeState.STOW),
+      SubsystemActions.empty()),
 
   // Transition States
   L2_TRANSITION(
@@ -233,18 +226,15 @@ public enum V3_SuperstructureStates {
           V3_EpsilonIntakeConstants.IntakeState.STOW),
       SubsystemActions.empty()),
 
-    CLIMB(
-          "CLIMB",
-          new SubsystemPoses(
-              ReefState.STOW,
-              V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-              V3_EpsilonIntakeConstants.IntakeState.STOW),
-          SubsystemActions.empty()),
-      
-      OVERRIDE(
-          "OVERRIDE",
-          new SubsystemPoses(),
-          SubsystemActions.empty());
+  CLIMB(
+      "CLIMB",
+      new SubsystemPoses(
+          ReefState.STOW,
+          V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
+          V3_EpsilonIntakeConstants.IntakeState.STOW),
+      SubsystemActions.empty()),
+
+  OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty());
 
   // Readable name for state
   private final String name;
