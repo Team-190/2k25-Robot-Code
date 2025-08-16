@@ -120,6 +120,37 @@ public class V3_SuperstructureEdges {
     // L1_SCORE -> GROUND_INTAKE
     CoralEdges.add(new Edge(V3_SuperstructureStates.L1_PREP, V3_SuperstructureStates.GROUND_INTAKE, "Coral Transition L1"));
 
+    // Algae Edges
+
+    // STOW_DOWN --> L2_ALGAE_PREP
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.STOW_DOWN, V3_SuperstructureStates.L2_ALGAE_PREP, "Algae Prep L2 from STOW DOWN"));
+
+    // Prep --> intake states
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L2_ALGAE_PREP, V3_SuperstructureStates.L2_ALGAE_INTAKE, "Algae Intake L2"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L3_ALGAE_PREP, V3_SuperstructureStates.L3_ALGAE_INTAKE, "Algae Intake L3"));
+
+    // Prep <-> Prep States
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L2_ALGAE_PREP, V3_SuperstructureStates.L3_ALGAE_PREP, "Algae Prep L2 to L3"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L3_ALGAE_PREP, V3_SuperstructureStates.L2_ALGAE_PREP, "Algae Prep L3 to L2"));
+
+    // BARGE_PREP Edges
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L2_ALGAE_PREP, V3_SuperstructureStates.BARGE_PREP, "Algae Prep Barge to L2"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L3_ALGAE_PREP, V3_SuperstructureStates.BARGE_PREP, "Algae Prep Barge to L3"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.STOW_UP, V3_SuperstructureStates.BARGE_PREP, "Algae Prep L2 to Barge"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.BARGE_PREP, V3_SuperstructureStates.BARGE_SCORE, "Algae Prep L2 to Barge"));
+
+    // PROCESSOR Edges
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_PREP, V3_SuperstructureStates.PROCESSOR_SCORE, "Algae Processor L2"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L2_ALGAE_PREP, V3_SuperstructureStates.PROCESSOR_PREP, "Algae Processor L2 Prep"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.L3_ALGAE_PREP, V3_SuperstructureStates.PROCESSOR_PREP, "Algae Processor L3 Prep"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_SCORE, V3_SuperstructureStates.STOW_DOWN, "Algae Processor Barge Prep"));
+
+    // Unconstrained Edges
+    
+    // BARGE_SCORE -> STOW_DOWN
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.BARGE_SCORE, V3_SuperstructureStates.STOW_DOWN, "BARGE_SCORE to Stow Down"));
+
+    
   }
 }
     

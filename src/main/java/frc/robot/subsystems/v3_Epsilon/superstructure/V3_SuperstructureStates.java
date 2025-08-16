@@ -138,8 +138,8 @@ public enum V3_SuperstructureStates {
       SubsystemActions.empty()),
 
   // Algae Scoring States
-  L2_ALGAE_SCORE(
-      "L2_ALGAE_SCORE",
+  L2_ALGAE_INTAKE(
+      "L2_ALGAE_INTAKE",
       new SubsystemPoses(
           ReefState.L2,
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
@@ -148,8 +148,8 @@ public enum V3_SuperstructureStates {
           V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
           V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
 
-  L3_ALGAE_SCORE(
-      "L3_ALGAE_SCORE",
+  L3_ALGAE_INTAKE(
+      "L3_ALGAE_INTAKE",
       new SubsystemPoses(
           ReefState.L3,
           V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
