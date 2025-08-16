@@ -143,12 +143,12 @@ public class V3_SuperstructureEdges {
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_PREP, V3_SuperstructureStates.PROCESSOR_SCORE, "Algae Processor L2"));
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.L2_ALGAE_PREP, V3_SuperstructureStates.PROCESSOR_PREP, "Algae Processor L2 Prep"));
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.L3_ALGAE_PREP, V3_SuperstructureStates.PROCESSOR_PREP, "Algae Processor L3 Prep"));
-    AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_SCORE, V3_SuperstructureStates.STOW_DOWN, "Algae Processor Barge Prep"));
 
     // Unconstrained Edges
     
     // BARGE_SCORE -> STOW_DOWN
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.BARGE_SCORE, V3_SuperstructureStates.STOW_DOWN, "BARGE_SCORE to Stow Down"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_SCORE, V3_SuperstructureStates.STOW_DOWN, "Algae Processor Barge Prep"));
 
     
   }
