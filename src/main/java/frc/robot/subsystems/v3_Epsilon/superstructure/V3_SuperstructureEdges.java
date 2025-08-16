@@ -148,6 +148,7 @@ public class V3_SuperstructureEdges {
     
     // BARGE_SCORE -> STOW_DOWN
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.BARGE_SCORE, V3_SuperstructureStates.STOW_DOWN, "BARGE_SCORE to Stow Down"));
+    AlgaeEdges.add(new Edge(V3_SuperstructureStates.BARGE_SCORE, V3_SuperstructureStates.STOW_UP, "BARGE_SCORE to Stow Up"));
     AlgaeEdges.add(new Edge(V3_SuperstructureStates.PROCESSOR_SCORE, V3_SuperstructureStates.STOW_DOWN, "Algae Processor Barge Prep"));
 
     
