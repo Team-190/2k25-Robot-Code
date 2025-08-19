@@ -122,6 +122,8 @@ digraph Superstructure {
   L3_algae_prep -> stow_up [color = blue]
   
   L2_algae_prep -> L2_algae_intake [color = blue]
+  L2_algae_intake -> L2_algae_prep [color = blue]
+  L3_algae_intake -> L3_algae_prep [color = blue]
   L3_algae_prep -> L3_algae_intake [color = blue]
   
   L2_algae_intake -> stow_up [color = blue]
