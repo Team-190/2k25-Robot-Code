@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -37,8 +39,12 @@ public class CameraIOGompeiVision implements CameraIO {
 
   private final DoubleArraySubscriber observationSubscriber;
   // private final IntegerSubscriber fpsAprilTagSubscriber;
+  private final BooleanSubscriber cameraConnectedSubscriber;
 
-  private final Map<Integer, Double> lastTagDetectionTimes = new HashMap<>();
+  private final Map<Integer, Double> lastTagDetectionTimes;
+
+  @Getter List<Pose3d> allTagPoses;
+  @Getter Pose2d robotPose;
 
   public CameraIOGompeiVision(
       GompeiVisionConfig config, Supplier<AprilTagFieldLayout> aprilTagLayoutSupplier) {
@@ -88,10 +94,19 @@ public class CameraIOGompeiVision implements CameraIO {
                 PubSubOption.pollStorage(5),
                 PubSubOption.periodic(0.01));
     // this.fpsAprilTagSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
+    this.cameraConnectedSubscriber = outputTable.getBooleanTopic("connected").subscribe(false);
+
+    lastTagDetectionTimes = new HashMap<>();
+
+    allTagPoses = new ArrayList<>();
+    robotPose = Pose2d.kZero;
   }
 
   @Override
   public void updateInputs(CameraIOInputs inputs) {
+    allTagPoses.clear();
+    robotPose = Pose2d.kZero;
+
     double lastFrameTime = 0;
 
     // Get AprilTag data
@@ -256,26 +271,23 @@ public class CameraIOGompeiVision implements CameraIO {
       processedFrames.add(frame);
 
       Logger.recordOutput(
-          "AprilTagVision/Inst" + config.key() + "/LatencySecs", Timer.getTimestamp() - timestamp);
-      Logger.recordOutput("AprilTagVision/Inst" + config.key() + "/RobotPose", robotPose);
-      Logger.recordOutput(
-          "AprilTagVision/Inst" + config.key() + "/TagPoses", tagPoses.toArray(Pose3d[]::new));
+          "Vision/Cameras/" + config.key() + "/LatencySecs", Timer.getTimestamp() - timestamp);
+      Logger.recordOutput("Vision/Cameras/" + config.key() + "/RobotPose", robotPose);
     }
 
     inputs.processedFrames = processedFrames.toArray(new ProcessedFrame[processedFrames.size()]);
 
     // If no frames from instances, clear robot pose
     if (aprilTagQueue.length == 0) {
-      Logger.recordOutput("AprilTagVision/Inst" + config.key() + "/RobotPose", Pose2d.kZero);
+      Logger.recordOutput("Vision/Cameras/" + config.key() + "/RobotPose", Pose2d.kZero);
     }
 
     // If no recent frames from instance, clear tag poses
     if (Timer.getTimestamp() - lastFrameTime > VisionConstants.TARGET_LOG_TIME_SECS) {
-      Logger.recordOutput("AprilTagVision/Inst" + config.key() + "/TagPoses", new Pose3d[] {});
+      Logger.recordOutput("Vision/Cameras/" + config.key() + "/TagPoses", new Pose3d[] {});
     }
 
     // Log tag poses
-    List<Pose3d> allTagPoses = new ArrayList<>();
     for (Map.Entry<Integer, Double> detectionEntry : lastTagDetectionTimes.entrySet()) {
       if (Timer.getTimestamp() - detectionEntry.getValue() < VisionConstants.TARGET_LOG_TIME_SECS) {
         aprilTagLayoutSupplier
@@ -284,7 +296,27 @@ public class CameraIOGompeiVision implements CameraIO {
             .ifPresent(allTagPoses::add);
       }
     }
-    Logger.recordOutput("AprilTagVision/TagPoses", allTagPoses.toArray(Pose3d[]::new));
+
+    ConnectionInfo connectionInfo = null;
+
+    for (ConnectionInfo ci : NetworkTableInstance.getDefault().getConnections()) {
+      if (ci.remote_id.contains("GompeiVision") && ci.remote_id.contains(deviceID)) {
+        connectionInfo = ci;
+        break; // found our target, no need to keep searching
+      }
+    }
+
+    if (connectionInfo != null) {
+      Logger.recordOutput(
+          "Vision/Cameras/" + config.key() + "/TagPoses", allTagPoses.toArray(Pose3d[]::new));
+
+      Logger.recordOutput("Vision/Cameras/" + config.key() + "/NT Connected", true);
+    } else {
+      Logger.recordOutput("Vision/Cameras/" + config.key() + "/NT Connected", false);
+    }
+
+    Logger.recordOutput(
+        "Vision/Cameras/" + config.key() + "/Camera Connected", cameraConnectedSubscriber.get());
   }
 
   @Override

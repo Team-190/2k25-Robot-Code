@@ -374,10 +374,10 @@ public class VisionConstants {
           new CameraIOGompeiVision(
               FRONT_RIGHT,
               () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-      //   new Camera(
-      //       new CameraIOGompeiVision(
-      //           FRONT_LEFT,
-      //           () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
+      new Camera(
+          new CameraIOGompeiVision(
+              FRONT_LEFT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
     };
   }
 

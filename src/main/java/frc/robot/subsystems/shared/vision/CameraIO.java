@@ -2,9 +2,11 @@ package frc.robot.subsystems.shared.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.subsystems.shared.vision.VisionConstants.GompeiVisionConfig;
 import frc.robot.subsystems.shared.vision.VisionConstants.LimelightConfig;
+import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -54,6 +56,14 @@ public interface CameraIO {
 
   public default Supplier<AprilTagFieldLayout> getFieldLayoutSupplier() {
     return () -> null;
+  }
+
+  public default List<Pose3d> getTagPoses() {
+    return List.of();
+  }
+
+  public default Pose2d getRobotPose() {
+    return new Pose2d();
   }
 
   public record ProcessedFrame(

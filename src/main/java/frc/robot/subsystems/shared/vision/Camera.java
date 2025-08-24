@@ -32,12 +32,16 @@ public class Camera {
   @Getter int[] validIds;
   private final Map<Integer, Pose2d> tagPoses2d = new HashMap<>();
 
+  @Getter Pose2d robotPose;
+
   public Camera(CameraIO io) {
     inputs = new CameraIOInputsAutoLogged();
     this.io = io;
     this.name = io.getName();
 
     validIds = FieldConstants.validTags;
+
+    robotPose = Pose2d.kZero;
   }
 
   public void periodic() {
@@ -137,7 +141,7 @@ public class Camera {
               new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
                   .transformBy(GeometryUtil.toTransform2d(camToTagTranslation.getNorm(), 0.0))
                   .getTranslation();
-          Pose2d robotPose =
+          robotPose =
               new Pose2d(
                       fieldToCameraTranslation,
                       robotRotation.plus(cameraPose.toPose2d().getRotation()))
