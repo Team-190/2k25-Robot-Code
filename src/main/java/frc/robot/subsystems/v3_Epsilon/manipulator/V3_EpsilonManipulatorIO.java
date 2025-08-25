@@ -1,7 +1,8 @@
 package frc.robot.subsystems.v3_Epsilon.manipulator;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface V3_EpsilonManipulatorIO {
 
@@ -29,7 +30,7 @@ public interface V3_EpsilonManipulatorIO {
   }
 
   /**
-   * Updates the inputs for the manipulator subsystem.
+   * Updates the inputs for the manipulator subsystem      .
    *
    * @param inputs The inputs to update.
    */
