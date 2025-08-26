@@ -114,7 +114,7 @@ public class FunnelIOTalonFX implements FunnelIO {
             clapDaddyTalonFX.setPosition(
                 clapDaddyCANcoder.getPosition().getValueAsDouble()
                     / FunnelConstants.CLAP_DADDY_CANCODER_GEAR_RATIO,
-                0.25));
+                5));
 
     clapDaddyPositionRotations = clapDaddyTalonFX.getPosition();
     cancoderPositionRotations = clapDaddyCANcoder.getPosition();
