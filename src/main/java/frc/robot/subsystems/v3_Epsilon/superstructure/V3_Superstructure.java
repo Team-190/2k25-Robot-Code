@@ -8,8 +8,8 @@ import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureEdges.EdgeCommand;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureEdges.GamePieceEdge;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -238,8 +238,8 @@ public class V3_Superstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_SuperstructureStates goal) { // Change later
-    return edge.getEdgeType() == GamePieceEdge.NONE
-        || RobotState.isHasAlgae() == (edge.getEdgeType() == GamePieceEdge.ALGAE);
+    return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
+        || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */
