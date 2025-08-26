@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.v0_Funky.V0_FunkyRobotContainer;
+import frc.robot.subsystems.v0_GompeivisionTest.v0_GompeivisionTestRobotContainer;
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
@@ -150,6 +151,8 @@ public class Robot extends LoggedRobot {
         switch (Constants.ROBOT) {
           case V0_WHIPLASH, V0_WHIPLASH_SIM -> new V0_WhiplashRobotContainer();
           case V0_FUNKY, V0_FUNKY_SIM -> new V0_FunkyRobotContainer();
+          case V0_GOMPEIVISION_TEST,
+              V0_GOMPEIVISION_TEST_SIM -> new v0_GompeivisionTestRobotContainer();
           case V1_STACKUP, V1_STACKUP_SIM -> new V1_StackUpRobotContainer();
           case V2_REDUNDANCY, V2_REDUNDANCY_SIM -> new V2_RedundancyRobotContainer();
           default -> new RobotContainer() {};

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shared.visionlimelight;
+package frc.robot.subsystems.shared.vision;
 
 public enum CameraDuty {
   FIELD_LOCALIZATION,

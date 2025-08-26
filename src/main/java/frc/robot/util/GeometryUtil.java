@@ -51,6 +51,15 @@ public class GeometryUtil {
     return pose.getX() == 0.0 && pose.getY() == 0.0 && pose.getRotation().getDegrees() == 0.0;
   }
 
+  public static final boolean isZero(Pose2d[] pose) {
+    for (Pose2d p : pose) {
+      if (!isZero(p)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public static final boolean isZero(Translation2d translation) {
     return translation.getX() == 0.0 && translation.getY() == 0.0;
   }

@@ -14,7 +14,7 @@ import frc.robot.commands.CompositeCommands.V2_RedundancyCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorCSB;
 import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
-import frc.robot.subsystems.shared.visionlimelight.Camera;
+import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
