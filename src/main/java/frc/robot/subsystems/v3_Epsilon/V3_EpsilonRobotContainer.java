@@ -38,12 +38,15 @@ import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.visionlimelight.Vision;
+// import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
+import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonIntakeIOTalonFX;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_Superstructure.java;
+import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOTalonFX;
+// import frc.robot.subsystems.v3_Epsilon.superstructure.V3_Superstructure.java;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_Superstructure;
+
+
 
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
@@ -76,16 +79,16 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           climber = new Climber(new ClimberIOTalonFX());
           drive =
               new Drive(
-        //           new GyroIOPigeon2(),
-        //           new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
-        //           new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
-        //           new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
-        //           new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-        //   elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
+          elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
         //   leds = new V3_EpsilonLEDs();
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
-          superstructure = new V3_EpsilonSuperstructure(elevator, funnel, intake, manipulator);
+          superstructure = new V3_Superstructure(elevator, funnel, intake, manipulator);
         //   vision = new Vision(RobotCameras.V3_Epsilon_CAMS);
           break;
         case V3_EPSILON_SIM:
