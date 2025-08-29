@@ -6,7 +6,7 @@ import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
 import lombok.Getter;
 
-public class V3_SuperstructureActions {
+public class V3_EpsilonSuperstructureActions {
 
   @Getter
   private final V3_EpsilonManipulatorConstants.ManipulatorRollerStates manipulatorRollerState;
@@ -14,13 +14,13 @@ public class V3_SuperstructureActions {
   @Getter private final V3_EpsilonIntakeConstants.IntakeRollerStates intakeRollerStates;
 
   /**
-   * Creates a new instance of V3_SuperstructureActions with the specified key and subsystem
+   * Creates a new instance of V3_EpsilonSuperstructureActions with the specified key and subsystem
    * actions.
    *
    * @param key
    * @param subsystemActions
    */
-  public V3_SuperstructureActions(String key, SubsystemActions subsystemActions) {
+  public V3_EpsilonSuperstructureActions(String key, SubsystemActions subsystemActions) {
     this.manipulatorRollerState = V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP;
     this.intakeRollerStates = V3_EpsilonIntakeConstants.IntakeRollerStates.STOP;
   }

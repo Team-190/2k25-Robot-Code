@@ -42,9 +42,14 @@ import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorIO;
+import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOTalonFX;
-// import frc.robot.subsystems.v3_Epsilon.superstructure.V3_Superstructure.java;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_Superstructure;
+import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIO;
+import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOSim;
+// import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure.java;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 
 
 
@@ -62,11 +67,14 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonIntake intake;
 //   private V3_EpsilonLEDs leds;
   private V3_EpsilonManipulator manipulator;
-  private V3_Superstructure superstructure;
+  private V3_EpsilonSuperstructure superstructure;
+  private V3_EpsilonManipulatorIO manipulatorIO;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
+
+  manipulatorIO = new V3_EpsilonManipulatorIO();
 
   // Auto chooser
   private final ChoreoChooser autoChooser = new ChoreoChooser();
@@ -87,8 +95,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
         //   leds = new V3_EpsilonLEDs();
-          manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
-          superstructure = new V3_Superstructure(elevator, funnel, intake, manipulator);
+          manipulator = new V3_EpsilonManipulator(manipulatorIO);
+          superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator); // Doesn't include states
         //   vision = new Vision(RobotCameras.V3_Epsilon_CAMS);
           break;
         case V3_EPSILON_SIM:
@@ -104,7 +112,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           funnel = new Funnel(new FunnelIOSim()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOSim());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
-          vision = new Vision();
+        //   vision = new Vision();
           break;
         default:
           break;
@@ -132,15 +140,15 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     if (intake == null) {
       intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
     }
-    if (leds == null) {
-      leds = new V3_EpsilonLEDs();
+    // if (leds == null) {
+    //   leds = new V3_EpsilonLEDs();
     }
     if (manipulator == null) {
       manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
     }
-    if (vision == null) {
-      vision = new Vision();
-    }
+    // if (vision == null) {
+    //   vision = new Vision();
+    // }
     superstructure = new V3_EpsilonSuperstructure(elevator, funnel, intake, manipulator);
 
     configureButtonBindings();
@@ -206,11 +214,11 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .leftTrigger(0.5)
         .whileTrue(V3_EpsilonCompositeCommands.intakeCoralDriverSequence(superstructure, intake))
         .onFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
-    driver
-        .rightTrigger(0.5)
-        .whileTrue(
-            V3_EpsilonCompositeCommands.autoScoreCoralSequence(
-                drive, elevator, superstructure, RobotCameras.V3_Epsilon_CAMS));
+    // driver
+    //     .rightTrigger(0.5)
+    //     .whileTrue(
+    //         V3_EpsilonCompositeCommands.autoScoreCoralSequence(
+    //             drive, elevator, superstructure, RobotCameras.V3_Epsilon_CAMS));
 
     // Driver bumpers
     driver
@@ -234,26 +242,26 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             V3_EpsilonCompositeCommands.scoreCoralSequence(
                 elevator, superstructure, () -> RobotState.getReefAlignData().atCoralSetpoint()));
 
-    driver
-        .back()
-        .whileTrue(
-            V3_EpsilonCompositeCommands.intakeAlgaeFromReefSequence(
-                drive,
-                superstructure,
-                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
-                RobotCameras.V3_Epsilon_CAMS));
+    // driver
+    //     .back()
+    //     .whileTrue(
+    //         V3_EpsilonCompositeCommands.intakeAlgaeFromReefSequence(
+    //             drive,
+    //             superstructure,
+    //             () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+    //             RobotCameras.V3_Epsilon_CAMS));
 
-    driver
-        .start()
-        .whileTrue(
-            V3_EpsilonCompositeCommands.dropAlgae(
-                drive,
-                elevator,
-                manipulator,
-                intake,
-                superstructure,
-                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
-                RobotCameras.V3_Epsilon_CAMS));
+    // driver
+    //     .start()
+    //     .whileTrue(
+    //         V3_EpsilonCompositeCommands.dropAlgae(
+    //             drive,
+    //             elevator,
+    //             manipulator,
+    //             intake,
+    //             superstructure,
+    //             () -> RobotState.getReefAlignData().algaeIntakeHeight(),
+    //             RobotCameras.V3_Epsilon_CAMS));
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
@@ -418,7 +426,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         intake.getExtension(),
         manipulator.getArmAngle(),
         elevator.getPositionMeters(),
-        vision.getCameras());
+        // vision.getCameras());
 
     LTNUpdater.updateDrive(drive);
     LTNUpdater.updateElevator(elevator);

@@ -4,14 +4,14 @@ package frc.robot.subsystems.v3_Epsilon.superstructure;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureActions.SubsystemActions;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructurePoses.SubsystemPoses;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureActions.SubsystemActions;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructurePoses.SubsystemPoses;
 // Ensure this is the
 
 // correct package
 // path
 
-public enum V3_SuperstructureStates {
+public enum V3_EpsilonSuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
   STOW_DOWN("STOW_DOWN", new SubsystemPoses(), SubsystemActions.empty()),
   STOW_UP(
@@ -246,26 +246,26 @@ public enum V3_SuperstructureStates {
   private final SubsystemActions subsystemActions;
 
   /**
-   * Constructor for V3_SuperstructureStates.
+   * Constructor for V3_EpsilonSuperstructureStates.
    *
    * @param name The name of the state.
    * @param pose The subsystem poses for this state.
    * @param action The subsystem actions for this state.
    */
-  V3_SuperstructureStates(String name, SubsystemPoses pose, SubsystemActions action) {
+  V3_EpsilonSuperstructureStates(String name, SubsystemPoses pose, SubsystemActions action) {
     this.name = name;
     this.subsystemPoses = pose;
     this.subsystemActions = action;
   }
 
   /**
-   * Constructor for V3_SuperstructureStates with empty actions.
+   * Constructor for V3_EpsilonSuperstructureStates with empty actions.
    *
    * @param name The name of the state.
    * @param pose The subsystem poses for this state.
    */
-  public V3_SuperstructurePoses getPose() {
-    return new V3_SuperstructurePoses(name, subsystemPoses);
+  public V3_EpsilonSuperstructurePoses getPose() {
+    return new V3_EpsilonSuperstructurePoses(name, subsystemPoses);
   }
 
   /**
@@ -273,8 +273,8 @@ public enum V3_SuperstructureStates {
    *
    * @return The actions for this state.
    */
-  public V3_SuperstructureActions getAction() {
-    return new V3_SuperstructureActions(name, subsystemActions);
+  public V3_EpsilonSuperstructureActions getAction() {
+    return new V3_EpsilonSuperstructureActions(name, subsystemActions);
   }
 
   /**

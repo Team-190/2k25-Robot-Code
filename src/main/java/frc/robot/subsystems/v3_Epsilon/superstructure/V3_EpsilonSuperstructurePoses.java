@@ -10,14 +10,14 @@ import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
 import lombok.Getter;
 
-public class V3_SuperstructurePoses {
+public class V3_EpsilonSuperstructurePoses {
   private String key;
 
   @Getter private final ReefState elevatorHeight;
   @Getter private final V3_EpsilonManipulatorConstants.PivotState pivotState;
   @Getter private final V3_EpsilonIntakeConstants.IntakeState intakeState;
 
-  public V3_SuperstructurePoses(String key, SubsystemPoses poses) {
+  public V3_EpsilonSuperstructurePoses(String key, SubsystemPoses poses) {
     this.key = key;
 
     this.elevatorHeight = poses.elevatorHeight();

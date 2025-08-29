@@ -8,8 +8,8 @@ import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureEdges.AlgaeEdge;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_SuperstructureEdges.EdgeCommand;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.AlgaeEdge;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,12 +25,12 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * The V3_Superstructure class manages the coordinated movement and state transitions of the robot's
+ * The V3_EpsilonSuperstructure class manages the coordinated movement and state transitions of the robot's
  * major subsystems including elevator, funnel, manipulator, and intake.
  */
-public class V3_Superstructure extends SubsystemBase {
+public class V3_EpsilonSuperstructure extends SubsystemBase {
 
-  private final Graph<V3_SuperstructureStates, EdgeCommand> graph;
+  private final Graph<V3_EpsilonSuperstructureStates, EdgeCommand> graph;
   private final ElevatorFSM elevator;
   private final V3_EpsilonIntake intake;
   private final V3_EpsilonManipulator manipulator;
@@ -39,53 +39,53 @@ public class V3_Superstructure extends SubsystemBase {
    * The previous, current, and next states of the superstructure. These are used to track the state
    * transitions and manage the command scheduling.
    */
-  @Getter private V3_SuperstructureStates previousState;
+  @Getter private V3_EpsilonSuperstructureStates previousState;
 
   /**
    * The current state of the superstructure, which is updated periodically based on the command
    * scheduling and state transitions.
    */
-  @Getter private V3_SuperstructureStates currentState;
+  @Getter private V3_EpsilonSuperstructureStates currentState;
 
   /**
    * The next state that the superstructure is transitioning to. This is determined by the command
    * scheduling and the current target state.
    */
-  @Getter private V3_SuperstructureStates nextState;
+  @Getter private V3_EpsilonSuperstructureStates nextState;
 
   /**
    * The target state that the superstructure is trying to achieve. This is set by the robot and
    * determines the next action to be taken.
    */
-  @Getter private V3_SuperstructureStates targetState;
+  @Getter private V3_EpsilonSuperstructureStates targetState;
 
   /** The command that is currently being executed to transition between states. */
   private EdgeCommand edgeCommand;
 
   /**
-   * Constructs a V3_Superstructure.
+   * Constructs a V3_EpsilonSuperstructure.
    *
    * @param elevator The elevator subsystem.
    * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
    * @param manipulator The manipulator subsystem.
    */
-  public V3_Superstructure(
+  public V3_EpsilonSuperstructure(
       ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
     this.elevator = elevator;
     this.intake = intake;
     this.manipulator = manipulator;
 
     previousState = null;
-    currentState = V3_SuperstructureStates.START;
+    currentState = V3_EpsilonSuperstructureStates.START;
     nextState = null;
 
-    targetState = V3_SuperstructureStates.START;
+    targetState = V3_EpsilonSuperstructureStates.START;
 
     // Initialize the graph
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
 
-    for (V3_SuperstructureStates vertex : V3_SuperstructureStates.values()) {
+    for (V3_EpsilonSuperstructureStates vertex : V3_EpsilonSuperstructureStates.values()) {
       graph.addVertex(vertex);
     }
   }
@@ -147,7 +147,7 @@ public class V3_Superstructure extends SubsystemBase {
    *
    * @param goal New target state to achieve
    */
-  private void setGoal(V3_SuperstructureStates goal) {
+  private void setGoal(V3_EpsilonSuperstructureStates goal) {
     // Don't do anything if goal is the same
     if (this.targetState == goal) return;
     else {
@@ -197,20 +197,20 @@ public class V3_Superstructure extends SubsystemBase {
    * @param goal Target state
    * @return Optional containing the next state in the path, empty if no path exists
    */
-  private Optional<V3_SuperstructureStates> bfs(
-      V3_SuperstructureStates start, V3_SuperstructureStates goal) {
-    Map<V3_SuperstructureStates, V3_SuperstructureStates> parents = new HashMap<>();
-    Queue<V3_SuperstructureStates> queue = new LinkedList<>();
+  private Optional<V3_EpsilonSuperstructureStates> bfs(
+      V3_EpsilonSuperstructureStates start, V3_EpsilonSuperstructureStates goal) {
+    Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> parents = new HashMap<>();
+    Queue<V3_EpsilonSuperstructureStates> queue = new LinkedList<>();
     queue.add(start);
     parents.put(start, null);
     while (!queue.isEmpty()) {
-      V3_SuperstructureStates current = queue.poll();
+      V3_EpsilonSuperstructureStates current = queue.poll();
       if (current == goal) break;
       for (EdgeCommand edge :
           graph.outgoingEdgesOf(current).stream()
               .filter(edge -> isEdgeAllowed(edge, goal))
               .toList()) {
-        V3_SuperstructureStates neighbor = graph.getEdgeTarget(edge);
+        V3_EpsilonSuperstructureStates neighbor = graph.getEdgeTarget(edge);
         if (!parents.containsKey(neighbor)) {
           parents.put(neighbor, current);
           queue.add(neighbor);
@@ -220,9 +220,9 @@ public class V3_Superstructure extends SubsystemBase {
 
     if (!parents.containsKey(goal)) return Optional.empty();
 
-    V3_SuperstructureStates nextState = goal;
+    V3_EpsilonSuperstructureStates nextState = goal;
     while (!nextState.equals(start)) {
-      V3_SuperstructureStates parent = parents.get(nextState);
+      V3_EpsilonSuperstructureStates parent = parents.get(nextState);
       if (parent == null) return Optional.empty();
       else if (parent.equals(start)) return Optional.of(nextState);
       nextState = parent;
@@ -237,16 +237,16 @@ public class V3_Superstructure extends SubsystemBase {
    * @param goal The target state
    * @return true if the transition is allowed
    */
-  private boolean isEdgeAllowed(EdgeCommand edge, V3_SuperstructureStates goal) { // Change later
+  private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) { // Change later
     return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
         || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */
   public void setAutoStart() {
-    currentState = V3_SuperstructureStates.START;
+    currentState = V3_EpsilonSuperstructureStates.START;
     nextState = null;
-    targetState = V3_SuperstructureStates.STOW_DOWN;
+    targetState = V3_EpsilonSuperstructureStates.STOW_DOWN;
     if (edgeCommand != null) {
       edgeCommand.getCommand().cancel();
     }
@@ -259,7 +259,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @param goal The desired superstructure state
    * @return Command to run the goal
    */
-  public Command runGoal(V3_SuperstructureStates goal) {
+  public Command runGoal(V3_EpsilonSuperstructureStates goal) {
     return runOnce(() -> setGoal(goal));
   }
 
@@ -269,7 +269,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @param goal Supplier providing the desired superstructure state
    * @return Command to run the goal
    */
-  public Command runGoal(Supplier<V3_SuperstructureStates> goal) {
+  public Command runGoal(Supplier<V3_EpsilonSuperstructureStates> goal) {
     return runOnce(() -> setGoal(goal.get()));
   }
 
@@ -291,7 +291,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @return Command that runs the override and resumes the old goal
    */
   public Command override(Runnable action) {
-    return Commands.sequence(runGoal(V3_SuperstructureStates.OVERRIDE), Commands.run(action))
+    return Commands.sequence(runGoal(V3_EpsilonSuperstructureStates.OVERRIDE), Commands.run(action))
         .finallyDo(() -> setGoal(currentState));
   }
 
@@ -313,11 +313,11 @@ public class V3_Superstructure extends SubsystemBase {
    * @param condition The condition to wait for after running the goal
    * @return Combined command for running and waiting
    */
-  public Command runGoalUntil(V3_SuperstructureStates goal, BooleanSupplier condition) {
+  public Command runGoalUntil(V3_EpsilonSuperstructureStates goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
-  public Command runGoalUntil(Supplier<V3_SuperstructureStates> goal, BooleanSupplier condition) {
+  public Command runGoalUntil(Supplier<V3_EpsilonSuperstructureStates> goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
@@ -339,7 +339,7 @@ public class V3_Superstructure extends SubsystemBase {
    * @return Full command sequence
    */
   public Command runActionWithTimeout(
-      V3_SuperstructureStates pose, V3_SuperstructureStates action, double timeout) {
+      V3_EpsilonSuperstructureStates pose, V3_EpsilonSuperstructureStates action, double timeout) {
     return Commands.sequence(
             runGoal(action), // Run the action
             Commands.waitUntil(() -> atGoal()),
