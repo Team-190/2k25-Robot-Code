@@ -14,6 +14,7 @@ public final class Constants {
       case V0_GOMPEIVISION_TEST:
       case V1_STACKUP:
       case V2_REDUNDANCY:
+      case V3_EPSILON:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case V0_FUNKY_SIM:
@@ -21,6 +22,7 @@ public final class Constants {
       case V0_GOMPEIVISION_TEST_SIM:
       case V1_STACKUP_SIM:
       case V2_REDUNDANCY_SIM:
+      case V3_EPSILON_SIM:
         return Mode.SIM;
 
       default:
@@ -45,6 +47,11 @@ public final class Constants {
     V1_STACKUP_SIM,
     V2_REDUNDANCY,
     V2_REDUNDANCY_SIM,
+<<<<<<< HEAD
+=======
+    V3_EPSILON_SIM,
+    V3_EPSILON,
+>>>>>>> 4b7ea16 (Co-authored-by: Noah Proctor <proctornt@users.noreply.github.com>)
   }
 
   public static void main(String... args) {

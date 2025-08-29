@@ -59,6 +59,10 @@ digraph Superstructure {
   handoff -> L2_transition [color = green]
   handoff -> L3_transition [color = green]
   handoff -> L4_transition [color = green]
+
+  L2_transition -> handoff [color = green]
+  L3_transition -> handoff [color = green]
+  L4_transition -> hadnoff [color = green]
   
   handoff -> L2_prep [color = green]
   handoff -> L3_prep [color = green]
