@@ -17,10 +17,9 @@
     0,
     0
   ],
-  "cameras": [
-  ],
+  "cameras": [],
   "components": [
-  {
+    {
       "zeroedRotations": [
         {
           "axis": "x",
@@ -85,8 +84,7 @@
       "zeroedPosition": [
         0.15381615,
         0,
--0.270855
-
+        -0.270855
       ]
     }
   ]

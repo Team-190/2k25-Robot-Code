@@ -59,9 +59,7 @@ public class V3_EpsilonMechanism3d {
       new Pose3d(0.1875, 0, 0.1363, new Rotation3d(0.0, intakeAngle.getRadians(), 0.0)),
       ELEVATOR_STAGE_1_POSE,
       ELEVATOR_CARRIAGE_POSE,
-      new Pose3d(-0.15381615,
-      0,
-0.270855, new Rotation3d())
+      new Pose3d(-0.15381615, 0, 0.270855, new Rotation3d())
           .transformBy(
               new Transform3d(
                   0,
