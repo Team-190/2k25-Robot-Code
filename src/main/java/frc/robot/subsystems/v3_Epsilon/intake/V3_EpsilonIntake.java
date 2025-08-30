@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeState;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+
 import java.util.Set;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -85,7 +87,7 @@ public class V3_EpsilonIntake extends SubsystemBase {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
   }
 
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         Commands.runOnce(() -> characterizationRoutine.quasistatic(Direction.kForward)),

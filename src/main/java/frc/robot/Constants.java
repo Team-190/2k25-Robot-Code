@@ -47,11 +47,8 @@ public final class Constants {
     V1_STACKUP_SIM,
     V2_REDUNDANCY,
     V2_REDUNDANCY_SIM,
-<<<<<<< HEAD
-=======
     V3_EPSILON_SIM,
     V3_EPSILON,
->>>>>>> 4b7ea16 (Co-authored-by: Noah Proctor <proctornt@users.noreply.github.com>)
   }
 
   public static void main(String... args) {

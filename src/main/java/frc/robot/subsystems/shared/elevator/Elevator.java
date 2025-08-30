@@ -17,6 +17,8 @@ import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO.ElevatorIOInputs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -320,6 +322,13 @@ public class Elevator {
 
       return Commands.sequence(
           superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
+          Elevator.this.sysIdRoutine(superstructure));
+    }
+
+    public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
+
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.OVERRIDE),
           Elevator.this.sysIdRoutine(superstructure));
     }
 

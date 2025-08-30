@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.PivotState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import java.util.Set;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -75,7 +76,7 @@ public class V3_EpsilonManipulator extends SubsystemBase {
         () -> io.setPivotVoltage(0));
   }
 
-  public Command sysIdRoutine() {
+  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         algaeCharacterizationRoutine.quasistatic(Direction.kForward),

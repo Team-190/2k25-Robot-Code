@@ -1,6 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon;
 
-import edu.wpi.first.networktables.NetworkTablesJNI;
+// import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,8 +17,8 @@ import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.climber.Climber;
-import frc.robot.subsystems.shared.climber.ClimberIO;
-import frc.robot.subsystems.shared.climber.ClimberIOSim;
+// import frc.robot.subsystems.shared.climber.ClimberIO;
+// import frc.robot.subsystems.shared.climber.ClimberIOSim;
 import frc.robot.subsystems.shared.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -36,8 +36,8 @@ import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.funnel.Funnel;
 import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
-import frc.robot.subsystems.shared.funnel.FunnelIOSim;
-import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
+// import frc.robot.subsystems.shared.funnel.FunnelIOSim;
+// import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
 // import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
@@ -48,7 +48,6 @@ import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
-// import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure.java;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
@@ -443,7 +442,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 //             funnel.getAngle(),
 //             manipulator.getArmAngle(),
 //             intake.getExtension()));
-  }
 
 
   @Override
