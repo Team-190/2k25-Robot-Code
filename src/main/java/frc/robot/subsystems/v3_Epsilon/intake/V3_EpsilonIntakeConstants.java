@@ -75,7 +75,8 @@ public class V3_EpsilonIntakeConstants {
     STOP(0.0),
     CORAL_INTAKE(6.0),
     ALGAE_INTAKE(12.0),
-    SCORE_CORAL(6.0);
+    SCORE_CORAL(6.0),
+    OUTTAKE(10.0);
 
     private final double voltage;
 

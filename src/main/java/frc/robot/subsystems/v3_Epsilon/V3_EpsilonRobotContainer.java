@@ -47,9 +47,11 @@ import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOSim;
+import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
 // import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure.java;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
 
 
 
@@ -67,14 +69,11 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonIntake intake;
 //   private V3_EpsilonLEDs leds;
   private V3_EpsilonManipulator manipulator;
-  private V3_EpsilonSuperstructure superstructure;
-  private V3_EpsilonManipulatorIO manipulatorIO;
+  private V3_EpsilonSuperstructure superstructure;;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
-
-  manipulatorIO = new V3_EpsilonManipulatorIO();
 
   // Auto chooser
   private final ChoreoChooser autoChooser = new ChoreoChooser();
@@ -95,7 +94,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
         //   leds = new V3_EpsilonLEDs();
-          manipulator = new V3_EpsilonManipulator(manipulatorIO);
+          manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator); // Doesn't include states
         //   vision = new Vision(RobotCameras.V3_Epsilon_CAMS);
           break;
@@ -109,19 +108,19 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           elevator = new Elevator(new ElevatorIOSim()).getFSM();
-          funnel = new Funnel(new FunnelIOSim()).getFSM();
+        //   funnel = new Funnel(new FunnelIOSim()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOSim());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
         //   vision = new Vision();
           break;
         default:
           break;
-      }
     }
 
-    if (climber == null) {
-      climber = new Climber(new ClimberIO() {});
-    }
+    // if (climber == null) {
+    //   climber = new Climber(new ClimberIO() {});
+    // }
+
     if (drive == null) {
       drive =
           new Drive(
@@ -142,14 +141,14 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     }
     // if (leds == null) {
     //   leds = new V3_EpsilonLEDs();
-    }
+    // }
     if (manipulator == null) {
       manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
     }
     // if (vision == null) {
     //   vision = new Vision();
     // }
-    superstructure = new V3_EpsilonSuperstructure(elevator, funnel, intake, manipulator);
+    superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
 
     configureButtonBindings();
     configureAutos();
@@ -184,7 +183,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             () -> -driver.getRightX(),
             () -> false,
             operator.back(),
-            driver.povRight()));
+            driver.povRight().onTrue(Commands.runOnce(() -> {}))));
 
     // Driver face buttons
     driver.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
@@ -227,8 +226,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .onFalse(
             Commands.deadline(
                     V3_EpsilonCompositeCommands.postFloorIntakeSequence(superstructure),
-                    Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.OUTTAKE)))
-                .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerState.STOP))));
+                    Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerStates.OUTTAKE)))
+                .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerStates.STOP))));
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -296,7 +295,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .rightTrigger(0.5)
         .whileTrue(
             superstructure.override(
-                () -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_CORAL), 0.4));
+                () -> manipulator.setRollerGoal(ManipulatorRollerStates.SCORE_CORAL), 0.4));
 
     // Operator bumpers
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
@@ -306,145 +305,150 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
-        .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR))
+        .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR_PREP))
         .onFalse(
             superstructure
-                .runActionWithTimeout(V3_EpsilonSuperstructureStates.SCORE_PROCESSOR, 1)
+                .runActionWithTimeout(V3_EpsilonSuperstructureStates.PROCESSOR_PREP, 
+                V3_EpsilonSuperstructureStates.PROCESSOR_SCORE, 1)
                 .finallyDo(() -> RobotState.setHasAlgae(false)));
 
     operator
         .povRight()
         .whileTrue(
             superstructure
-                .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE))
+                .override(() -> manipulator.setRollerGoal(ManipulatorRollerStates.SCORE_ALGAE))
                 .finallyDo(() -> RobotState.setHasAlgae(false)));
-    operator.start().whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE));
+    operator.start().whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_PREP));
 
     operator
         .back()
-        .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE))
+        .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_PREP))
         .onFalse(
             superstructure
-                .runActionWithTimeout(V3_EpsilonSuperstructureStates.SCORE_BARGE, 0.1)
+                .runActionWithTimeout(V3_EpsilonSuperstructureStates.BARGE_PREP,
+                V3_EpsilonSuperstructureStates.BARGE_SCORE, 0.1)
                 .finallyDo(() -> RobotState.setHasAlgae(false)));
 
     // Misc
     operatorFunnelOverride
         .whileTrue(
             Commands.either(
-                superstructure.runGoal(V3_EpsilonSuperstructureStates.FUNNEL_CLOSE_WITH_STOW_UP),
+                superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP),
                 superstructure.runGoal(
-                    V3_EpsilonSuperstructureStates.FUNNEL_CLOSE_WITH_STOW_DOWN),
+                    V3_EpsilonSuperstructureStates.STOW_DOWN),
                 () -> RobotState.isHasAlgae()))
         .onFalse(superstructure.runPreviousState());
   }
 
   private void configureAutos() {
-    AutonomousCommands.loadAutoTrajectories(drive);
+    // AutonomousCommands.loadAutoTrajectories(drive);
 
-    autoChooser.addCmd(
-        "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addCmd(
-        "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addCmd("Elevator Characterization", () -> elevator.sysIdRoutine(superstructure));
-    autoChooser.addCmd("Funnel Characterization", () -> funnel.sysIdRoutine(superstructure));
-    autoChooser.addCmd("Intake Characterization", () -> intake.sysIdRoutine(superstructure));
-    autoChooser.addCmd(
-        "Manipulator Characterization",
-        () ->
-            Commands.sequence(
-                superstructure.runGoal(V3_EpsilonSuperstructureStates.L3),
-                manipulator.sysIdRoutine(superstructure)));
-    autoChooser.addRoutine(
-        "4 Piece Left",
-        () ->
-            AutonomousCommands.autoALeft(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "4 Piece Right",
-        () ->
-            AutonomousCommands.autoARight(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+    // autoChooser.addCmd(
+    //     "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addCmd(
+    //     "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addCmd("Elevator Characterization", () -> elevator.sysIdRoutine(superstructure));
+    // // autoChooser.addCmd("Funnel Characterization", () -> funnel.sysIdRoutine(superstructure));
+    // autoChooser.addCmd("Intake Characterization", () -> intake.sysIdRoutine(superstructure));
+//     autoChooser.addCmd(
+//         "Manipulator Characterization",
+//         () ->
+//             Commands.sequence(
+//                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L3),
+//                 manipulator.sysIdRoutine(superstructure)));
+//     autoChooser.addRoutine(
+//         "4 Piece Left",
+//         () ->
+//             AutonomousCommands.autoALeft(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "4 Piece Right",
+//         () ->
+//             AutonomousCommands.autoARight(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
 
-    autoChooser.addRoutine(
-        "4 Piece Left Nashoba",
-        () ->
-            AutonomousCommands.autoALeftNashoba(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "4 Piece Left Nashoba",
+//         () ->
+//             AutonomousCommands.autoALeftNashoba(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
 
-    autoChooser.addRoutine(
-        "4 Piece Left D.A.V.E.",
-        () ->
-            AutonomousCommands.autoALeftDAVE(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "4 Piece Left D.A.V.E.",
+//         () ->
+//             AutonomousCommands.autoALeftDAVE(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
 
-    autoChooser.addRoutine(
-        "3 Piece Left",
-        () ->
-            AutonomousCommands.autoCLeft(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "3 Piece Left Push",
-        () ->
-            AutonomousCommands.autoCLeftPush(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "3 Piece Right",
-        () ->
-            AutonomousCommands.autoCRight(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "3 Piece Right Push",
-        () ->
-            AutonomousCommands.autoCRightPush(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "2 Piece Left",
-        () ->
-            AutonomousCommands.autoBLeft(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "2 Piece Right",
-        () ->
-            AutonomousCommands.autoBRight(
-                drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    autoChooser.addRoutine(
-        "1 Piece Center",
-        () ->
-            AutonomousCommands.autoDCenter(drive, superstructure, RobotCameras.V3_Epsilon_CAMS));
-    SmartDashboard.putData("Autonomous Modes", autoChooser);
-  }
+//     autoChooser.addRoutine(
+//         "3 Piece Left",
+//         () ->
+//             AutonomousCommands.autoCLeft(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "3 Piece Left Push",
+//         () ->
+//             AutonomousCommands.autoCLeftPush(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "3 Piece Right",
+//         () ->
+//             AutonomousCommands.autoCRight(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "3 Piece Right Push",
+//         () ->
+//             AutonomousCommands.autoCRightPush(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "2 Piece Left",
+//         () ->
+//             AutonomousCommands.autoBLeft(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "2 Piece Right",
+//         () ->
+//             AutonomousCommands.autoBRight(
+//                 drive, intake, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     autoChooser.addRoutine(
+//         "1 Piece Center",
+//         () ->
+//             AutonomousCommands.autoDCenter(drive, superstructure, RobotCameras.V3_Epsilon_CAMS));
+//     SmartDashboard.putData("Autonomous Modes", autoChooser);
+//   }
 
-  @Override
-  public void robotPeriodic() {
-    RobotState.periodic(
-        drive.getRawGyroRotation(),
-        NetworkTablesJNI.now(),
-        drive.getYawVelocity(),
-        drive.getFieldRelativeVelocity(),
-        drive.getModulePositions(),
-        intake.getExtension(),
-        manipulator.getArmAngle(),
-        elevator.getPositionMeters(),
-        // vision.getCameras());
+//   @Override
+//   public void robotPeriodic() {
+//     RobotState.periodic(
+//         drive.getRawGyroRotation(),
+//         NetworkTablesJNI.now(),
+//         drive.getYawVelocity(),
+//         drive.getFieldRelativeVelocity(),
+//         drive.getModulePositions(),
+//         manipulator.getArmAngle(),
+//         elevator.getPositionMeters());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
-    LTNUpdater.updateFunnel(funnel);
-    LTNUpdater.updateAlgaeArm(manipulator);
-    LTNUpdater.updateIntake(intake);
+//     LTNUpdater.updateDrive(drive);
+//     LTNUpdater.updateElevator(elevator);
+//     LTNUpdater.updateFunnel(funnel);
+//     LTNUpdater.updateAlgaeArm(manipulator);
+//     LTNUpdater.updateIntake(intake);
 
-    Logger.recordOutput(
-        "Component Poses",
-        V3_EpsilonMechanism3d.getPoses(
-            elevator.getPositionMeters(),
-            funnel.getAngle(),
-            manipulator.getArmAngle(),
-            intake.getExtension()));
-  }
+//     Logger.recordOutput(
+//         "Component Poses",
+//         V3_EpsilonMechanism3d.getPoses(
+//             elevator.getPositionMeters(),
+//             funnel.getAngle(),
+//             manipulator.getArmAngle(),
+//             intake.getExtension()));
+//   }
+
 
   @Override
   public Command getAutonomousCommand() {
     return autoChooser.selectedCommand();
   }
+  
+  }
+}
+
 }

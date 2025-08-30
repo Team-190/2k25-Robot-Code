@@ -251,6 +251,38 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
       edgeCommand.getCommand().cancel();
     }
   }
+
+  private V3_EpsilonSuperstructureStates getElevatorPosition() {
+    switch (RobotState.getOIData().currentReefHeight()) {
+      case STOW_DOWN, CORAL_INTAKE -> {
+        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+      }
+      case L1 -> {
+        return V3_EpsilonSuperstructureStates.L1_PREP;
+      }
+      case L2 -> {
+        return V3_EpsilonSuperstructureStates.L2_PREP;
+      }
+      case L3 -> {
+        return V3_EpsilonSuperstructureStates.L3_PREP;
+      }
+      case L4 -> {
+        return V3_EpsilonSuperstructureStates.L4_PREP;
+      }
+      case ALGAE_INTAKE_BOTTOM -> {
+        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+      }
+      case ALGAE_INTAKE_TOP -> {
+        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+      }
+      case ALGAE_SCORE -> {
+        return V3_EpsilonSuperstructureStates.BARGE_PREP;
+      }
+      default -> {
+        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+      }
+    }
+  }
   // --- Control Commands ---
 
   /**
@@ -355,5 +387,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   public boolean elevatorAtGoal() {
     return elevator.atGoal();
+  }
+
+  public Command setPosition() {
+    return runGoal(getElevatorPosition()).withTimeout(0.02);
   }
 }

@@ -69,7 +69,9 @@ public class FieldConstants {
       L3,
       L4,
       L4_PLUS,
-      ALGAE_SCORE
+      ALGAE_SCORE,
+      STOW_UP,
+      STOW_DOWN
     }
 
     public static record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae, Pose2d center) {

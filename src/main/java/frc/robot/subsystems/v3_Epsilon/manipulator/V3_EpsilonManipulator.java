@@ -174,4 +174,6 @@ public class V3_EpsilonManipulator extends SubsystemBase {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
   }
+
+  public void getArmAngle() {}
 }
