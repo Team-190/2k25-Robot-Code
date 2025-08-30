@@ -1,11 +1,11 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface V3_EpsilonIntakeIO {
   @AutoLog
-  public static class IntakeIOInputs {
+  public static class V3_EpsilonIntakeIOInputs {
     public Rotation2d pivotPosition = new Rotation2d();
     public double pivotVelocityRadiansPerSecond = 0.0;
     public double pivotAppliedVolts = 0.0;
@@ -30,7 +30,7 @@ public interface V3_EpsilonIntakeIO {
    *
    * @param inputs The inputs to update.
    */
-  public default void updateInputs(IntakeIOInputs inputs) {}
+  public default void updateInputs(V3_EpsilonIntakeIOInputs inputs) {}
 
   /**
    * Sets the voltage for the intake.
@@ -51,7 +51,7 @@ public interface V3_EpsilonIntakeIO {
    *
    * @param meters The position goal to set in meters.
    */
-  public default void setPivotGoal(Rotation2d rotatoion) {}
+  public default void setPivotGoal(Rotation2d rotation) {}
 
   /**
    * Sets the gains for the intake

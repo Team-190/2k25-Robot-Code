@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static frc.robot.util.PhoenixUtil.*;
@@ -20,24 +20,23 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-// import frc.robot.subsystems.v1_StackUp.manipulator.V3_EpsilonManipulatorConstants;
 
 public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
 
-  private final TalonFX pivotTalonFX;
-  private final StatusSignal<Angle> pivotPositionRotations;
-  private final StatusSignal<AngularVelocity> pivotVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> pivotAppliedVoltage;
-  private final StatusSignal<Current> pivotSupplyCurrentAmps;
-  private final StatusSignal<Current> pivotTorqueCurrentAmps;
-  private final StatusSignal<Temperature> pivotTemperatureCelsius;
-  private final StatusSignal<Double> pivotPositionSetpointRotations;
-  private final StatusSignal<Double> pivotPositionErrorRotations;
+  private final TalonFX armTalonFX;
+  private final StatusSignal<Angle> armPositionRotations;
+  private final StatusSignal<AngularVelocity> armVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> armAppliedVoltage;
+  private final StatusSignal<Current> armSupplyCurrentAmps;
+  private final StatusSignal<Current> armTorqueCurrentAmps;
+  private final StatusSignal<Temperature> armTemperatureCelsius;
+  private final StatusSignal<Double> armPositionSetpointRotations;
+  private final StatusSignal<Double> armPositionErrorRotations;
 
-  private final VoltageOut pivotVoltageRequest;
-  private final MotionMagicVoltage pivotMotionMagicRequest;
+  private final VoltageOut armVoltageRequest;
+  private final MotionMagicVoltage armMotionMagicRequest;
 
-  private final TalonFXConfiguration pivotConfig;
+  private final TalonFXConfiguration armConfig;
 
   private final TalonFX rollerTalonFX;
   private final StatusSignal<Angle> rollerPositionRotations;
@@ -51,36 +50,36 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   private final TalonFXConfiguration rollerConfig;
 
   public V3_EpsilonManipulatorIOTalonFX() {
-    pivotTalonFX = new TalonFX(V3_EpsilonManipulatorConstants.PIVOT_CAN_ID);
+    armTalonFX = new TalonFX(V3_EpsilonManipulatorConstants.ARM_CAN_ID);
     rollerTalonFX = new TalonFX(V3_EpsilonManipulatorConstants.ROLLER_CAN_ID);
 
-    pivotConfig = new TalonFXConfiguration();
+    armConfig = new TalonFXConfiguration();
 
-    pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    pivotConfig.CurrentLimits.SupplyCurrentLimit =
+    armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    armConfig.CurrentLimits.SupplyCurrentLimit =
         V3_EpsilonManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT();
-    pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    pivotConfig.Feedback.SensorToMechanismRatio =
+    armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    armConfig.Feedback.SensorToMechanismRatio =
         V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
-    pivotConfig.Slot0 =
+    armConfig.Slot0 =
         Slot0Configs.from(V3_EpsilonManipulatorConstants.EMPTY_GAINS.toTalonFXSlotConfigs());
-    pivotConfig.Slot1 =
+    armConfig.Slot1 =
         Slot1Configs.from(V3_EpsilonManipulatorConstants.CORAL_GAINS.toTalonFXSlotConfigs());
-    pivotConfig.Slot2 =
+    armConfig.Slot2 =
         Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
-    pivotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
-    pivotPositionRotations = pivotTalonFX.getPosition();
-    pivotVelocityRotationsPerSecond = pivotTalonFX.getVelocity();
-    pivotAppliedVoltage = pivotTalonFX.getMotorVoltage();
-    pivotSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
-    pivotTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
-    pivotTemperatureCelsius = pivotTalonFX.getDeviceTemp();
+    armPositionRotations = armTalonFX.getPosition();
+    armVelocityRotationsPerSecond = armTalonFX.getVelocity();
+    armAppliedVoltage = armTalonFX.getMotorVoltage();
+    armSupplyCurrentAmps = armTalonFX.getSupplyCurrent();
+    armTorqueCurrentAmps = armTalonFX.getTorqueCurrent();
+    armTemperatureCelsius = armTalonFX.getDeviceTemp();
 
-    pivotPositionSetpointRotations = pivotTalonFX.getClosedLoopReference();
-    pivotPositionErrorRotations = pivotTalonFX.getClosedLoopError();
+    armPositionSetpointRotations = armTalonFX.getClosedLoopReference();
+    armPositionErrorRotations = armTalonFX.getClosedLoopError();
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -98,17 +97,17 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
 
     rollerVoltageRequest = new VoltageOut(0);
-    pivotVoltageRequest = new VoltageOut(0);
-    pivotMotionMagicRequest = new MotionMagicVoltage(0);
+    armVoltageRequest = new VoltageOut(0);
+    armMotionMagicRequest = new MotionMagicVoltage(0);
 
     registerSignals(
         false,
-        pivotPositionRotations,
-        pivotVelocityRotationsPerSecond,
-        pivotAppliedVoltage,
-        pivotSupplyCurrentAmps,
-        pivotTorqueCurrentAmps,
-        pivotTemperatureCelsius,
+        armPositionRotations,
+        armVelocityRotationsPerSecond,
+        armAppliedVoltage,
+        armSupplyCurrentAmps,
+        armTorqueCurrentAmps,
+        armTemperatureCelsius,
         rollerPositionRotations,
         rollerVelocityRotationsPerSecond,
         rollerAppliedVoltage,
@@ -116,20 +115,20 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
 
-    pivotTalonFX.optimizeBusUtilization();
+    armTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
 
-    inputs.armPosition = new Rotation2d(pivotPositionRotations.getValue());
+    inputs.armPosition = new Rotation2d(armPositionRotations.getValue());
     inputs.armVelocityRadiansPerSecond =
-        pivotVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
-    inputs.armAppliedVolts = pivotAppliedVoltage.getValueAsDouble();
-    inputs.armSupplyCurrentAmps = pivotSupplyCurrentAmps.getValueAsDouble();
-    inputs.armTorqueCurrentAmps = pivotTorqueCurrentAmps.getValueAsDouble();
-    inputs.armTemperatureCelsius = pivotTemperatureCelsius.getValueAsDouble();
+        armVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.armAppliedVolts = armAppliedVoltage.getValueAsDouble();
+    inputs.armSupplyCurrentAmps = armSupplyCurrentAmps.getValueAsDouble();
+    inputs.armTorqueCurrentAmps = armTorqueCurrentAmps.getValueAsDouble();
+    inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
 
     inputs.rollerPosition = new Rotation2d(rollerPositionRotations.getValue());
     inputs.rollerVelocityRadiansPerSecond =
@@ -139,16 +138,16 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
 
-    inputs.armPositionGoal = new Rotation2d(pivotMotionMagicRequest.getPositionMeasure());
+    inputs.armPositionGoal = new Rotation2d(armMotionMagicRequest.getPositionMeasure());
     inputs.armPositionSetpoint =
-        Rotation2d.fromRotations(pivotPositionSetpointRotations.getValueAsDouble());
+        Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
     inputs.armPositionError =
-        Rotation2d.fromRotations(pivotPositionErrorRotations.getValueAsDouble());
+        Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
   }
 
   @Override
-  public void setPivotVoltage(double volts) {
-    pivotTalonFX.setControl(pivotVoltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setArmVoltage(double volts) {
+    armTalonFX.setControl(armVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   @Override
@@ -157,15 +156,15 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   }
 
   @Override
-  public void setPivotGoal(Rotation2d rotation) {
-    pivotTalonFX.setControl(
-        pivotMotionMagicRequest.withPosition(rotation.getRotations()).withEnableFOC(true));
+  public void setArmGoal(Rotation2d rotation) {
+    armTalonFX.setControl(
+        armMotionMagicRequest.withPosition(rotation.getRotations()).withEnableFOC(true));
   }
 
   @Override
   public void setSlot(int slot) {
     if (slot >= 0 && slot <= 2) {
-      pivotTalonFX.setControl(pivotMotionMagicRequest.withSlot(slot));
+      armTalonFX.setControl(armMotionMagicRequest.withSlot(slot));
     } else {
       throw new IllegalArgumentException("Invalid slot: " + slot);
     }

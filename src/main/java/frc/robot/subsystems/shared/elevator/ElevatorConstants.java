@@ -28,9 +28,11 @@ public class ElevatorConstants {
     REEF_STATE_ELEVATOR_POSITION_MAP =
         Map.ofEntries(
             Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.HIGH_STOW, ElevatorPositions.HIGH_STOW),
             Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
             Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
             Map.entry(ReefState.ALGAE_MID, ElevatorPositions.ALGAE_MID),
+            Map.entry(ReefState.HANDOFF, ElevatorPositions.HANDOFF),
             Map.entry(ReefState.ALGAE_INTAKE_TOP, ElevatorPositions.ALGAE_INTAKE_TOP),
             Map.entry(ReefState.ALGAE_INTAKE_BOTTOM, ElevatorPositions.ALGAE_INTAKE_BOT),
             Map.entry(ReefState.L1, ElevatorPositions.L1),
@@ -216,9 +218,11 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(0.0),
+    HIGH_STOW(0.5),
     CORAL_INTAKE(0.0),
     ALGAE_INTAKE(0.2161583093038944 + Units.inchesToMeters(1)),
     ALGAE_MID(0.7073684509805078),
+    HANDOFF(0.7073684509805078),
     ALGAE_INTAKE_TOP(1.17 - Units.inchesToMeters(8)),
     ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(8)),
     ASS_TOP(1.2),

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -35,7 +35,7 @@ public class V3_EpsilonIntakeConstants {
   }
 
   @RequiredArgsConstructor
-  public enum IntakeState {
+  public enum IntakePivotState {
     STOW(new Rotation2d()),
     INTAKE_CORAL(new Rotation2d()),
     HANDOFF(new Rotation2d(Units.degreesToRadians(90))),
@@ -71,7 +71,7 @@ public class V3_EpsilonIntakeConstants {
       Rotation2d MAX_ANGLE) {}
 
   // Will add more states later
-  public static enum IntakeRollerStates {
+  public static enum IntakeRollerState {
     STOP(0.0),
     CORAL_INTAKE(6.0),
     ALGAE_INTAKE(12.0),
@@ -79,7 +79,7 @@ public class V3_EpsilonIntakeConstants {
 
     private final double voltage;
 
-    IntakeRollerStates(double voltage) {
+    IntakeRollerState(double voltage) {
       this.voltage = voltage;
     }
 

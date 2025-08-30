@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -66,7 +66,7 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V3_EpsilonIntakeIOInputs inputs) {
     if (isClosedLoop) {
       pivotAppliedVoltage =
           armFeedbackController.calculate(pivotMotorSim.getAngleRads())

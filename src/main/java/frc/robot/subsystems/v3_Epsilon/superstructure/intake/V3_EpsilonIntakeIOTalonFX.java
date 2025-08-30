@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
@@ -153,7 +153,7 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V3_EpsilonIntakeIOInputs inputs) {
     inputs.pivotPosition = new Rotation2d(pivotPositionRotations.getValue());
     inputs.pivotVelocityRadiansPerSecond =
         pivotVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);

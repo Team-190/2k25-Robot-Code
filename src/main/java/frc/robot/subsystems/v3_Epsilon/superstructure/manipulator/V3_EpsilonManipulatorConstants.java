@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -22,8 +22,8 @@ public class V3_EpsilonManipulatorConstants {
 
   public static final ManipulatorCurrentLimits CURRENT_LIMITS;
 
-  public static final int PIVOT_CAN_ID = 42;
-  public static final Rotation2d PIVOT_TOGGLE_ARM_ROTATION;
+  public static final int ARM_CAN_ID = 42;
+  public static final Rotation2d TOGGLE_ARM_ROTATION;
 
   public static final int CAN_RANGE_ID = 41;
 
@@ -85,7 +85,7 @@ public class V3_EpsilonManipulatorConstants {
 
     CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
 
-    PIVOT_TOGGLE_ARM_ROTATION = new Rotation2d();
+    TOGGLE_ARM_ROTATION = new Rotation2d();
   }
 
   public static record Gains(
@@ -137,9 +137,10 @@ public class V3_EpsilonManipulatorConstants {
       double LENGTH_METERS) {}
 
   @RequiredArgsConstructor
-  public static enum PivotState {
+  public static enum ManipulatorArmState {
     STOW_UP(Rotation2d.fromDegrees(75)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
+    SCORE(Rotation2d.fromDegrees(35.0)), // Placeholder value. Make sure to test
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
@@ -157,7 +158,7 @@ public class V3_EpsilonManipulatorConstants {
   }
 
   // Will add more states later
-  public static enum ManipulatorRollerStates {
+  public static enum ManipulatorRollerState {
     STOP(0.0),
     CORAL_INTAKE(6.0),
     ALGAE_INTAKE(12.0),
@@ -169,7 +170,7 @@ public class V3_EpsilonManipulatorConstants {
 
     private final double voltage;
 
-    ManipulatorRollerStates(double voltage) {
+    ManipulatorRollerState(double voltage) {
       this.voltage = voltage;
     }
 

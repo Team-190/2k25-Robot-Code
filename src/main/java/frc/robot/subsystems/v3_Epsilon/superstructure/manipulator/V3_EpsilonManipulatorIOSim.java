@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -134,7 +134,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
     inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
   }
 
-  public void setPivotVoltage(double volts) {
+  public void setArmVoltage(double volts) {
     isClosedLoop = false;
     armAppliedVolts = volts;
   }
@@ -143,7 +143,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
     rollerAppliedVolts = volts;
   }
 
-  public void setPivotGoal(Rotation2d rotation) {
+  public void setArmGoal(Rotation2d rotation) {
     isClosedLoop = true;
     armFeedbackController.setGoal(rotation.getRadians());
   }

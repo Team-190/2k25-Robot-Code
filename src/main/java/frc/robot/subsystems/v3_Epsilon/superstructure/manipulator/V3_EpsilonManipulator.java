@@ -1,26 +1,22 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
-
-import static edu.wpi.first.units.Units.*;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.PivotState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import java.util.Set;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class V3_EpsilonManipulator extends SubsystemBase {
+public class V3_EpsilonManipulator {
   private final V3_EpsilonManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  private final SysIdRoutine algaeCharacterizationRoutine;
+  // private final SysIdRoutine algaeCharacterizationRoutine;
 
-  private PivotState state;
+  private ManipulatorArmState state;
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -28,25 +24,25 @@ public class V3_EpsilonManipulator extends SubsystemBase {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    algaeCharacterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(5),
-                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setPivotVoltage(volts.in(Volts)), null, this));
-    state = PivotState.STOW_DOWN;
+    // algaeCharacterizationRoutine =
+    //     new SysIdRoutine(
+    //         new SysIdRoutine.Config(
+    //             Volts.of(0.2).per(Second),
+    //             Volts.of(3.5),
+    //             Seconds.of(5),
+    //             (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+    //         new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null,
+    // this));
+    state = ManipulatorArmState.STOW_DOWN;
   }
 
-  @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
       setSlot();
-      io.setPivotGoal(state.getAngle());
+      io.setArmGoal(state.getAngle());
     }
 
     if (hasAlgae()) {
@@ -66,29 +62,29 @@ public class V3_EpsilonManipulator extends SubsystemBase {
         && inputs.canRangeDistanceMeters > 0;
   }
 
-  public Command runPivot(double volts) {
-    return this.runEnd(
+  public Command runArm(double volts) {
+    return Commands.runEnd(
         () -> {
           isClosedLoop = false;
-          io.setPivotVoltage(volts);
+          io.setArmVoltage(volts);
         },
-        () -> io.setPivotVoltage(0));
+        () -> io.setArmVoltage(0));
   }
 
   public Command sysIdRoutine() {
-    return Commands.sequence(
-        Commands.runOnce(() -> isClosedLoop = false),
-        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
+    return Commands.sequence();
+    // Commands.runOnce(() -> isClosedLoop = false),
+    // algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+    // Commands.waitSeconds(.25),
+    // algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+    // Commands.waitSeconds(.25),
+    // algaeCharacterizationRoutine.dynamic(Direction.kForward),
+    // Commands.waitSeconds(.25),
+    // algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
-  public Command setPivotGoal(PivotState goal) {
-    return this.runOnce(
+  public Command setArmGoal(ManipulatorArmState goal) {
+    return Commands.runOnce(
         () -> {
           isClosedLoop = true;
           state = goal;
@@ -124,13 +120,13 @@ public class V3_EpsilonManipulator extends SubsystemBase {
   }
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
-  public boolean pivotAtGoal() {
+  public boolean armAtGoal() {
     return inputs.armPosition.getRadians() - state.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
 
-  public Command waitUntilPivotAtGoal() {
-    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::pivotAtGoal));
+  public Command waitUntilArmAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::armAtGoal));
   }
 
   private double holdVoltage() {
@@ -157,21 +153,25 @@ public class V3_EpsilonManipulator extends SubsystemBase {
     }
   }
 
-  public void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {
+  public void setManipulatorState(V3_EpsilonManipulatorConstants.ManipulatorArmState state) {
     io.setManipulatorState(state);
   }
 
-  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerStates rollerGoal) {
+  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
     if (hasAlgae()
         && Set.of(
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.ALGAE_INTAKE,
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP)
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.STOP)
             .contains(rollerGoal)) {
 
       io.setRollerVoltage(holdVoltage());
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
+  }
+
+  public Rotation2d getArmAngle() {
+    return inputs.armPosition;
   }
 }
