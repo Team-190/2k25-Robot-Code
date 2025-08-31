@@ -25,8 +25,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * The V3_EpsilonSuperstructure class manages the coordinated movement and state transitions of the robot's
- * major subsystems including elevator, funnel, manipulator, and intake.
+ * The V3_EpsilonSuperstructure class manages the coordinated movement and state transitions of the
+ * robot's major subsystems including elevator, funnel, manipulator, and intake.
  */
 public class V3_EpsilonSuperstructure extends SubsystemBase {
 
@@ -237,7 +237,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @param goal The target state
    * @return true if the transition is allowed
    */
-  private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) { // Change later
+  private boolean isEdgeAllowed(
+      EdgeCommand edge, V3_EpsilonSuperstructureStates goal) { // Change later
     return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
         || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
   }
@@ -349,7 +350,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 
-  public Command runGoalUntil(Supplier<V3_EpsilonSuperstructureStates> goal, BooleanSupplier condition) {
+  public Command runGoalUntil(
+      Supplier<V3_EpsilonSuperstructureStates> goal, BooleanSupplier condition) {
     return Commands.sequence(runGoal(goal), Commands.waitUntil(condition));
   }
 

@@ -45,7 +45,7 @@ public class V3_EpsilonSuperstructurePoses {
    */
   public Command setIntakeState(V3_EpsilonIntake intake) {
     return Commands.parallel(
-        Commands.runOnce(() -> intake.setGoal(intakeState)), intake.waitUntilPivotAtGoal());
+        Commands.runOnce(() -> intake.setPivotGoal(intakeState)), intake.waitUntilPivotAtGoal());
   }
 
   /**

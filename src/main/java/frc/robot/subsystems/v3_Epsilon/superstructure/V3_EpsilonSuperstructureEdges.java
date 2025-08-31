@@ -18,7 +18,8 @@ public class V3_EpsilonSuperstructureEdges {
   public static final ArrayList<Edge> UnconstrainedEdges = new ArrayList<>();
   public static final ArrayList<Edge> NoneEdges = new ArrayList<>();
 
-  public record Edge(V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to, String action) {
+  public record Edge(
+      V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to, String action) {
     public Edge(V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to) {
       this(from, to, "");
     }
@@ -129,16 +130,24 @@ public class V3_EpsilonSuperstructureEdges {
     // Prep to score states
     CoralEdges.add(
         new Edge(
-            V3_EpsilonSuperstructureStates.L1_PREP, V3_EpsilonSuperstructureStates.L1_SCORE, "Coral Score L1"));
+            V3_EpsilonSuperstructureStates.L1_PREP,
+            V3_EpsilonSuperstructureStates.L1_SCORE,
+            "Coral Score L1"));
     CoralEdges.add(
         new Edge(
-            V3_EpsilonSuperstructureStates.L2_PREP, V3_EpsilonSuperstructureStates.L2_SCORE, "Coral Score L2"));
+            V3_EpsilonSuperstructureStates.L2_PREP,
+            V3_EpsilonSuperstructureStates.L2_SCORE,
+            "Coral Score L2"));
     CoralEdges.add(
         new Edge(
-            V3_EpsilonSuperstructureStates.L3_PREP, V3_EpsilonSuperstructureStates.L3_SCORE, "Coral Score L3"));
+            V3_EpsilonSuperstructureStates.L3_PREP,
+            V3_EpsilonSuperstructureStates.L3_SCORE,
+            "Coral Score L3"));
     CoralEdges.add(
         new Edge(
-            V3_EpsilonSuperstructureStates.L4_PREP, V3_EpsilonSuperstructureStates.L4_SCORE, "Coral Score L4"));
+            V3_EpsilonSuperstructureStates.L4_PREP,
+            V3_EpsilonSuperstructureStates.L4_SCORE,
+            "Coral Score L4"));
 
     // L1_SCORE -> GROUND_INTAKE
     CoralEdges.add(

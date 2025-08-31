@@ -22,10 +22,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -693,8 +693,7 @@ public class CompositeCommands {
      * @param superstructure The superstructure subsystem.
      * @return A command to score coral at L1.
      */
-    public static final Command scoreL1Coral(
-        Drive drive, V3_EpsilonSuperstructure superstructure) {
+    public static final Command scoreL1Coral(Drive drive, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           superstructure.runGoal(V3_EpsilonSuperstructureStates.L1_PREP),
           Commands.parallel(
@@ -919,8 +918,7 @@ public class CompositeCommands {
      * @param superstructure The superstructure subsystem.
      * @return A command that posts the floor intake sequence.
      */
-    public static final Command postFloorIntakeSequence(
-        V3_EpsilonSuperstructure superstructure) {
+    public static final Command postFloorIntakeSequence(V3_EpsilonSuperstructure superstructure) {
       return Commands.either(
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
@@ -960,6 +958,5 @@ public class CompositeCommands {
           Commands.waitUntil(climber::climberReady),
           Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
     }
-
   }
 }
