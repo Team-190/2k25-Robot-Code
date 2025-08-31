@@ -667,7 +667,7 @@ public class CompositeCommands {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.INTAKE_STATION, () -> intake.hasCoral()),
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
     }
 
@@ -682,7 +682,7 @@ public class CompositeCommands {
         V3_EpsilonSuperstructure superstructure, V3_EpsilonIntake intake) {
       return Commands.sequence(
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.INTAKE_STATION, () -> intake.hasCoral()),
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
     }
 
@@ -696,7 +696,7 @@ public class CompositeCommands {
     public static final Command scoreL1Coral(
         Drive drive, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.L1),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.L1_PREP),
           Commands.parallel(
               superstructure.runReefScoreGoal(() -> ReefState.L1),
               Commands.sequence(

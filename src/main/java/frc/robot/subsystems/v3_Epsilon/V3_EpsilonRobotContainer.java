@@ -64,7 +64,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private Climber climber;
   private Drive drive;
   private ElevatorFSM elevator;
-  private FunnelFSM funnel;
   private Vision vision;
   private V3_EpsilonIntake intake;
 //   private V3_EpsilonLEDs leds;
@@ -115,7 +114,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           break;
     default:
       break;
-    }
     
     if (drive == null) {
       drive =
@@ -131,13 +129,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
               },
               new ModuleIO() {
               });
-    }
     if (elevator == null) {
       elevator = new Elevator(new ElevatorIO() {}).getFSM();
     }
-    if (funnel == null) {
-      funnel = new Funnel(new FunnelIO() {}).getFSM();
-    }
+    
     if (intake == null) {
       intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
     }
@@ -153,6 +148,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
 
     configureButtonBindings();
+    }
+}
     }
   }
 
@@ -340,7 +337,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     //                 V3_EpsilonSuperstructureStates.STOW_DOWN),
     //             () -> RobotState.isHasAlgae()))
     //     .onFalse(superstructure.runPreviousState());
-}
+    }
+
 
   private void configureAutos() {
     AutonomousCommands.loadAutoTrajectories(drive);
@@ -442,10 +440,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 //             funnel.getAngle(),
 //             manipulator.getArmAngle(),
 //             intake.getExtension()));
+//   }
 
 
   @Override
   public Command getAutonomousCommand() {
     return autoChooser.selectedCommand();
   }
-}
