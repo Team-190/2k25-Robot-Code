@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static frc.robot.util.PhoenixUtil.*;

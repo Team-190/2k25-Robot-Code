@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -6,9 +6,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeState;
+import frc.robot.subsystems.v3_Epsilon.intake.IntakeIOInputsAutoLogged;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeState;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;

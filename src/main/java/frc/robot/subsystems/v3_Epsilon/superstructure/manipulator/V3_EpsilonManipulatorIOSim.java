@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;

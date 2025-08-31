@@ -1,9 +1,9 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
 import lombok.Getter;
 
 public class V3_EpsilonSuperstructureActions {

@@ -2,11 +2,11 @@ package frc.robot.subsystems.v3_Epsilon.superstructure;
 
 // Adjust the package path as needed
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureActions.SubsystemActions;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructurePoses.SubsystemPoses;
 // Ensure this is the
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
 
 // correct package
 // path

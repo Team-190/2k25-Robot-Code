@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.manipulator;
+package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -9,9 +9,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.PivotState;
+import frc.robot.subsystems.v3_Epsilon.manipulator.ManipulatorIOInputsAutoLogged;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.PivotState;
 import lombok.Getter;
 
 import java.util.Set;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.v3_Epsilon.intake;
+package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;

@@ -38,17 +38,17 @@ import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 // import frc.robot.subsystems.shared.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntake;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIO;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOSim;
-import frc.robot.subsystems.v3_Epsilon.intake.V3_EpsilonIntakeIOTalonFX;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorIO;
-import frc.robot.subsystems.v3_Epsilon.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
