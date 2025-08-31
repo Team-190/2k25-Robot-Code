@@ -41,10 +41,10 @@ public class V3_EpsilonManipulatorConstants {
             0.5);
     EMPTY_GAINS =
         new Gains(
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
     CORAL_GAINS =
@@ -65,8 +65,8 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 2.0),
-            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5.0),
+            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
             new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1.5)));
 
     ROLLER_CAN_ID = 30;
@@ -138,7 +138,7 @@ public class V3_EpsilonManipulatorConstants {
 
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
-    STOW_UP(Rotation2d.fromDegrees(75)),
+    STOW_UP(Rotation2d.fromDegrees(0.0)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(35.0)), // Placeholder value. Make sure to test
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
@@ -146,9 +146,9 @@ public class V3_EpsilonManipulatorConstants {
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5 - 5)),
     STOW_LINE(Rotation2d.fromDegrees(-75)),
-    TRANSITION(Rotation2d.fromDegrees(-32)), // Placeholder value. Make sure to test
-    STOW_DOWN(Rotation2d.fromDegrees(-77)),
-    HANDOFF(new Rotation2d());
+    TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
+    STOW_DOWN(Rotation2d.fromDegrees(0)),
+    HANDOFF(Rotation2d.kPi);
 
     private final Rotation2d angle;
 

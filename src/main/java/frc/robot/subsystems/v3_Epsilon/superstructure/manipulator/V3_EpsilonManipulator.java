@@ -14,8 +14,6 @@ public class V3_EpsilonManipulator {
   private final V3_EpsilonManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  // private final SysIdRoutine algaeCharacterizationRoutine;
-
   private ManipulatorArmState state;
   private boolean isClosedLoop;
 
@@ -24,16 +22,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    // algaeCharacterizationRoutine =
-    //     new SysIdRoutine(
-    //         new SysIdRoutine.Config(
-    //             Volts.of(0.2).per(Second),
-    //             Volts.of(3.5),
-    //             Seconds.of(5),
-    //             (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
-    //         new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null,
-    // this));
-    state = ManipulatorArmState.STOW_DOWN;
+    state = ManipulatorArmState.STOW_UP;
   }
 
   public void periodic() {
@@ -41,7 +30,6 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      setSlot();
       io.setArmGoal(state.getAngle());
     }
 
@@ -69,18 +57,6 @@ public class V3_EpsilonManipulator {
           io.setArmVoltage(volts);
         },
         () -> io.setArmVoltage(0));
-  }
-
-  public Command sysIdRoutine() {
-    return Commands.sequence();
-    // Commands.runOnce(() -> isClosedLoop = false),
-    // algaeCharacterizationRoutine.quasistatic(Direction.kForward),
-    // Commands.waitSeconds(.25),
-    // algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
-    // Commands.waitSeconds(.25),
-    // algaeCharacterizationRoutine.dynamic(Direction.kForward),
-    // Commands.waitSeconds(.25),
-    // algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
 
   public Command setArmGoal(ManipulatorArmState goal) {

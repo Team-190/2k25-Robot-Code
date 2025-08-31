@@ -12,7 +12,6 @@ import org.littletonrobotics.junction.Logger;
 public class V3_EpsilonIntake {
   private final V3_EpsilonIntakeIO io;
   private final V3_EpsilonIntakeIOInputsAutoLogged inputs;
-  // private final SysIdRoutine characterizationRoutine;
 
   @Getter
   @AutoLogOutput(key = "Intake/Pivot Goal")
@@ -27,16 +26,6 @@ public class V3_EpsilonIntake {
   public V3_EpsilonIntake(V3_EpsilonIntakeIO io) {
     this.io = io;
     inputs = new V3_EpsilonIntakeIOInputsAutoLogged();
-
-    // characterizationRoutine =
-    //     new SysIdRoutine(
-    //         new SysIdRoutine.Config(
-    //             Volts.of(0.2).per(Second),
-    //             Volts.of(3.5),
-    //             Seconds.of(8),
-    //             (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
-    //         new SysIdRoutine.Mechanism((volts) -> io.setPivotVoltage(volts.in(Volts)), null,
-    // this));
 
     pivotGoal = IntakePivotState.STOW;
     rollerGoal = IntakeRollerState.STOP;
@@ -80,18 +69,6 @@ public class V3_EpsilonIntake {
 
   public Command waitUntilPivotAtGoal() {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
-  }
-
-  public Command sysIdRoutine() {
-    return Commands.sequence();
-    // Commands.runOnce(() -> isClosedLoop = false),
-    // Commands.runOnce(() -> characterizationRoutine.quasistatic(Direction.kForward)),
-    // Commands.waitSeconds(0.25),
-    // Commands.runOnce(() -> characterizationRoutine.quasistatic(Direction.kReverse)),
-    // Commands.waitSeconds(0.25),
-    // Commands.runOnce(() -> characterizationRoutine.dynamic(Direction.kForward)),
-    // Commands.waitSeconds(0.25),
-    // Commands.runOnce(() -> characterizationRoutine.dynamic(Direction.kReverse)));
   }
 
   public void setRollerGoal(IntakeRollerState rollerGoal) {

@@ -8,6 +8,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.util.NTPrefixes;
@@ -241,7 +242,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
-    return true;
+    return edge.getGamePieceEdge() == GamePieceEdge.NONE
+        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() == GamePieceEdge.ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */

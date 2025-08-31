@@ -222,7 +222,7 @@ public class ElevatorConstants {
     CORAL_INTAKE(0.0),
     ALGAE_INTAKE(0.2161583093038944 + Units.inchesToMeters(1)),
     ALGAE_MID(0.7073684509805078),
-    HANDOFF(0.7073684509805078),
+    HANDOFF(1),
     ALGAE_INTAKE_TOP(1.17 - Units.inchesToMeters(8)),
     ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(8)),
     ASS_TOP(1.2),

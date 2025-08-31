@@ -23,7 +23,7 @@ public class V3_EpsilonIntakeConstants {
           3.0,
           DCMotor.getKrakenX60Foc(1),
           0.0042,
-          Rotation2d.fromDegrees(-90.0),
+          Rotation2d.fromDegrees(0.0),
           Rotation2d.fromDegrees(90.0));
   public static final IntakeParems ROLLER_PARAMS =
       new IntakeParems(

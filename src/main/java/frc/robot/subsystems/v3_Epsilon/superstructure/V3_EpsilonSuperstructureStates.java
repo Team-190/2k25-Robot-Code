@@ -22,7 +22,7 @@ public enum V3_EpsilonSuperstructureStates {
 
   HANDOFF(
       "HANDOFF",
-      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
 
   GROUND_INTAKE(
@@ -132,7 +132,7 @@ public enum V3_EpsilonSuperstructureStates {
 
   INTERMIDIATE_WAIT_FOR_ELEVATOR(
       "INTERMIDIATE_WAIT_FOR_ELEVATOR",
-      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.STOW_UP, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.STOW_UP, IntakePivotState.STOW),
       SubsystemActions.empty()),
 
   // Transition States

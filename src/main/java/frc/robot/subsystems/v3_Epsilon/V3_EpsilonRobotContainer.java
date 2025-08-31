@@ -120,11 +120,11 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     Logger.recordOutput(
         "Component Poses",
         V3_EpsilonMechanism3d.getPoses(
-            elevator.getPositionMeters(), manipulator.getArmAngle(), intake.getPivotAngle()));
+            elevator.getPositionMeters(), intake.getPivotAngle(), manipulator.getArmAngle()));
   }
 
   @Override
   public Command getAutonomousCommand() {
-    return superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE);
+    return superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE);
   }
 }

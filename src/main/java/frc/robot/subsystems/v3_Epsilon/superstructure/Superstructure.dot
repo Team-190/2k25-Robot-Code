@@ -47,6 +47,7 @@ digraph Superstructure {
   intermediate_wait_for_elevator [color = green]
   
   # Basic Handoff Edges
+  start -> stow_down [color = red]
   stow_down -> stow_up [color = green]
   handoff -> stow_up [color = green]
   
@@ -62,7 +63,7 @@ digraph Superstructure {
 
   L2_transition -> handoff [color = green]
   L3_transition -> handoff [color = green]
-  L4_transition -> hadnoff [color = green]
+  L4_transition -> handoff [color = green]
   
   handoff -> L2_prep [color = green]
   handoff -> L3_prep [color = green]

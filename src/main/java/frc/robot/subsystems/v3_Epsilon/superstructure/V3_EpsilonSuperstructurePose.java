@@ -66,8 +66,7 @@ public class V3_EpsilonSuperstructurePose {
    * @return A Command that sets the arm state and waits until it reaches the goal.
    */
   public Command setManipulatorState(V3_EpsilonManipulator manipulator) {
-    return Commands.parallel(
-        Commands.runOnce(() -> manipulator.setArmGoal(armState)), manipulator.waitUntilArmAtGoal());
+    return Commands.parallel(manipulator.setArmGoal(armState), manipulator.waitUntilArmAtGoal());
   }
 
   /**
@@ -84,7 +83,7 @@ public class V3_EpsilonSuperstructurePose {
       ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
-        Commands.runOnce(() -> manipulator.setArmGoal(armState)),
+        manipulator.setArmGoal(armState),
         Commands.runOnce(() -> intake.setPivotGoal(intakeState)));
   }
 
