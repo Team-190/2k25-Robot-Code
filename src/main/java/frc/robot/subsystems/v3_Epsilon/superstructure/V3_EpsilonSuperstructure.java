@@ -3,6 +3,7 @@ package frc.robot.subsystems.v3_Epsilon.superstructure;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
@@ -16,7 +17,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
 import org.jgrapht.Graph;
@@ -356,6 +359,66 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   }
 
   /**
+   * Converts a ReefState (field-level enum) into a corresponding elevator goal and runs it.
+   *
+   * @param goal Supplier of ReefState
+   * @return Command to move to the elevator position for the reef level
+   */
+  public Command runReefGoal(Supplier<ReefState> goal) {
+    return runGoal(
+        () -> {
+          // Translate ReefState to superstructure state
+          switch (goal.get()) {
+            case L1:
+              return V3_EpsilonSuperstructureStates.L1_PREP;
+            case L2:
+              return V3_EpsilonSuperstructureStates.L2_PREP;
+            case L3:
+              return V3_EpsilonSuperstructureStates.L3_PREP;
+            case L4:
+              return V3_EpsilonSuperstructureStates.L4_PREP;
+            default:
+              return V3_EpsilonSuperstructureStates.STOW_DOWN;
+          }
+        });
+  }
+
+  /**
+   * Moves to a scoring position, executes the score action for a fixed time, then returns to pose.
+   *
+   * @param goal Supplier of the ReefState (target height/level)
+   * @return Command to run the score cycle (pose → action → timeout → pose)
+   */
+  public Command runReefScoreGoal(Supplier<ReefState> goal) {
+    // Run appropriate action sequence depending on reef level
+    return runActionWithTimeout(
+        () ->
+            switch (goal.get()) {
+              case L1 -> V3_EpsilonSuperstructureStates.L1_PREP;
+              case L2 -> V3_EpsilonSuperstructureStates.L2_PREP;
+              case L3 -> V3_EpsilonSuperstructureStates.L3_PREP;
+              case L4 -> V3_EpsilonSuperstructureStates.L4_PREP;
+              default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
+            },
+        () ->
+            switch (goal.get()) {
+              case L1 -> V3_EpsilonSuperstructureStates.L1_PREP;
+              case L2 -> V3_EpsilonSuperstructureStates.L2_PREP;
+              case L3 -> V3_EpsilonSuperstructureStates.L3_PREP;
+              case L4 -> V3_EpsilonSuperstructureStates.L4_PREP;
+              default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
+            },
+        () ->
+            switch (goal.get()) {
+              case L1 -> 0.8;
+              case L2 -> 0.15;
+              case L3 -> 0.15;
+              case L4 -> 0.4;
+              default -> 0;
+            });
+  }
+
+  /**
    * Returns a short command to run the previous state, useful for temporary state restoration.
    *
    * @return Command to go back to the previous state
@@ -380,6 +443,17 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
             Commands.waitSeconds(timeout),
             runGoal(pose))
         .finallyDo(() -> setGoal(pose)); // Return to original pose
+  }
+
+  public Command runActionWithTimeout(
+      Supplier<V3_EpsilonSuperstructureStates> pose,
+      Supplier<V3_EpsilonSuperstructureStates> action,
+      DoubleSupplier timeout) {
+    return Commands.sequence(
+            runGoal(action), // Run the action
+            Commands.waitUntil(() -> atGoal()),
+            Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
+        .finallyDo(() -> setGoal(pose.get())); // Return to original pose
   }
 
   /**

@@ -44,11 +44,10 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
@@ -212,12 +211,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     // Driver bumpers
     driver
         .leftBumper()
-        .whileTrue(V3_EpsilonCompositeCommands.floorIntakeSequence(superstructure))
-        .onFalse(
-            Commands.deadline(
-                    V3_EpsilonCompositeCommands.postFloorIntakeSequence(superstructure),
-                    Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerStates.OUTTAKE)))
-                .andThen(Commands.runOnce(() -> intake.setRollerGoal(IntakeRollerStates.STOP))));
+        .whileTrue(Commands.none()); // TODO: Algae ground intake (V3 intake is different)
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.toggleReefPost()));
 
     // Driver POV
@@ -243,14 +237,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     driver
         .start()
         .whileTrue(
-            V3_EpsilonCompositeCommands.dropAlgae(
-                drive,
-                elevator,
-                manipulator,
-                intake,
-                superstructure,
-                () -> RobotState.getReefAlignData().algaeIntakeHeight(),
-                RobotCameras.V3_EPSILON_CAMS)); // Remove the extra dot here
+            Commands
+                .none()); // TODO: add drop algae (V3 drop is going to be significatly different)
 
     // Operator face buttons
     operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));

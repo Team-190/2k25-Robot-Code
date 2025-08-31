@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.v3_Epsilon.intake.IntakeIOInputsAutoLogged;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeState;
@@ -21,6 +20,7 @@ public class V3_EpsilonIntake {
   @Getter
   @AutoLogOutput(key = "Intake/Pivot Goal")
   private IntakeState pivotGoal;
+
   @Getter
   @AutoLogOutput(key = "Intake/Roller Goal")
   private IntakeRollerStates rollerGoal = IntakeRollerStates.STOP;
@@ -53,8 +53,8 @@ public class V3_EpsilonIntake {
 
   @AutoLogOutput(key = "Intake/At Goal")
   public boolean atGoal() {
-    return Math.abs(inputs.pivotPosition.getRadians()
-        - pivotGoal.getAngle().getRadians()) < V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.GOAL_TOLERANCE().getRadians();
+    return Math.abs(inputs.pivotPosition.getRadians() - pivotGoal.getAngle().getRadians())
+        < V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.GOAL_TOLERANCE().getRadians();
   }
 
   public void waitUntilIntakeAtGoal() {
@@ -76,13 +76,15 @@ public class V3_EpsilonIntake {
   }
 
   public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
-    SysIdRoutine characterizationRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Volts.of(0.2).per(Second),
-            Volts.of(3.5),
-            Seconds.of(8),
-            (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
-        new SysIdRoutine.Mechanism((volts) -> io.setPivotVoltage(volts.in(Volts)), null, superstructure));
+    SysIdRoutine characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(8),
+                (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setPivotVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         Commands.runOnce(() -> characterizationRoutine.quasistatic(Direction.kForward)),

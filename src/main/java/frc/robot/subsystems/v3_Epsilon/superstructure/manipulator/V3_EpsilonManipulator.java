@@ -9,13 +9,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.manipulator.ManipulatorIOInputsAutoLogged;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.PivotState;
-import lombok.Getter;
-
 import java.util.Set;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,9 +24,11 @@ public class V3_EpsilonManipulator {
   @Getter
   @AutoLogOutput(key = "Manipulator/Pivot State")
   private PivotState pivotGoal;
+
   @Getter
   @AutoLogOutput(key = "Manipulator/Roller State")
   private ManipulatorRollerStates rollerGoal;
+
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -49,15 +49,13 @@ public class V3_EpsilonManipulator {
       io.setPivotGoal(pivotGoal.getAngle());
     }
 
-    if (hasAlgae() && Set.of(
-        ManipulatorRollerStates.CORAL_INTAKE,
-        ManipulatorRollerStates.STOP)
-        .contains(rollerGoal)) {
+    if (hasAlgae()
+        && Set.of(ManipulatorRollerStates.CORAL_INTAKE, ManipulatorRollerStates.STOP)
+            .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
-
   }
 
   @AutoLogOutput(key = "Manipulator/Has Coral")
@@ -82,13 +80,15 @@ public class V3_EpsilonManipulator {
   }
 
   public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
-    SysIdRoutine algaeCharacterizationRoutine = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Volts.of(0.2).per(Second),
-            Volts.of(3.5),
-            Seconds.of(5),
-            (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
-        new SysIdRoutine.Mechanism((volts) -> io.setPivotVoltage(volts.in(Volts)), null, superstructure));
+    SysIdRoutine algaeCharacterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Second),
+                Volts.of(3.5),
+                Seconds.of(5),
+                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setPivotVoltage(volts.in(Volts)), null, superstructure));
 
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
@@ -139,9 +139,8 @@ public class V3_EpsilonManipulator {
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean pivotAtGoal() {
-    return inputs.armPosition.getRadians()
-        - pivotGoal.getAngle().getRadians() <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS()
-            .get();
+    return inputs.armPosition.getRadians() - pivotGoal.getAngle().getRadians()
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
 
   public Command waitUntilPivotAtGoal() {
@@ -179,9 +178,9 @@ public class V3_EpsilonManipulator {
   public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerStates rollerGoal) {
     if (hasAlgae()
         && Set.of(
-            V3_EpsilonManipulatorConstants.ManipulatorRollerStates.ALGAE_INTAKE,
-            V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
-            V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP)
+                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.ALGAE_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP)
             .contains(rollerGoal)) {
 
       io.setRollerVoltage(holdVoltage());
