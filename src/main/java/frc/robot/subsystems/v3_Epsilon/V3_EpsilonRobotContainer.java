@@ -123,29 +123,27 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
               new ModuleIO() {},
               new ModuleIO() {},
               new ModuleIO() {});
-      if (elevator == null) {
-        elevator = new Elevator(new ElevatorIO() {}).getFSM();
-      }
-
-      if (intake == null) {
-        intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
-      }
-      // if (leds == null) {
-      //   leds = new V3_EpsilonLEDs();
-      // }
-      if (manipulator == null) {
-        manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
-      }
-      if (climber == null) {
-        climber = new Climber(new ClimberIO() {});
-      }
-      // if (vision == null) {
-      //   vision = new Vision();
-      // }
-      superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
-
-      configureButtonBindings();
     }
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {}).getFSM();
+    }
+
+    if (intake == null) {
+      intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
+    }
+    // if (leds == null) {
+    //   leds = new V3_EpsilonLEDs();
+    // }
+    if (manipulator == null) {
+      manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+    }
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
+    }
+    // if (vision == null) {
+    //   vision = new Vision();
+    // }
+    superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
   }
 
   public void configureButtonBindings() {

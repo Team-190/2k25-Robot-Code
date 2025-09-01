@@ -58,7 +58,7 @@ public class V3_EpsilonSuperstructureEdges {
 
     // TODO: Implement the actual command logic
 
-    return Commands.none();
+    return to.getPose().asCommand(elevator, manipulator, intake);
   }
 
   public static void createEdges() {
