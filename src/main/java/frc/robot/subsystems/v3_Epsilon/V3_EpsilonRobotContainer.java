@@ -108,39 +108,43 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         default:
           break;
       }
-      if (drive == null) {
-        drive =
-            new Drive(
-                new GyroIO() {
-                  // Provide concrete implementation for GyroIO methods here
-                },
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-      }
-      if (elevator == null) {
-        elevator = new Elevator(new ElevatorIO() {}).getFSM();
-      }
-
-      if (intake == null) {
-        intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
-      }
-      // if (leds == null) {
-      // leds = new V3_EpsilonLEDs();
-      // }
-      if (manipulator == null) {
-        manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
-      }
-      // if (vision == null) {
-      // vision = new Vision();
-      // }
-      superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
-
-      configureButtonBindings();
-      configureAutos();
     }
-  }
+
+    if (drive == null) {
+      drive =
+          new Drive(
+              new GyroIO() {
+                // Provide concrete implementation for GyroIO methods here
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              });
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {}).getFSM();
+    }
+    
+    if (intake == null) {
+      intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
+    }
+    // if (leds == null) {
+    //   leds = new V3_EpsilonLEDs();
+    // }
+    if (manipulator == null) {
+      manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+    }
+    // if (vision == null) {
+    //   vision = new Vision();
+    // }
+    superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+
+    configureButtonBindings();
+    }
+}
 
   public void configureButtonBindings() {
     // Generic triggers
@@ -428,3 +432,4 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     return autoChooser.selectedCommand();
   }
 }
+
