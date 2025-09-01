@@ -850,49 +850,50 @@ public class CompositeCommands {
      * @param cameras The vision cameras.
      * @return A command to drop algae from the reef.
      */
-    public static final Command dropAlgae(
-        Drive drive,
-        ElevatorFSM elevator,
-        V3_EpsilonManipulator manipulator,
-        V3_EpsilonIntake intake,
-        V3_EpsilonSuperstructure superstructure,
-        Supplier<ReefState> level,
-        Camera... cameras) {
-      return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.sequence(
-              superstructure
-                  .runGoal(
-                      () -> {
-                        switch (level.get()) {
-                          case ALGAE_INTAKE_TOP:
-                            return V3_EpsilonSuperstructureStates.INTAKE_REEF_L3;
-                          case ALGAE_INTAKE_BOTTOM:
-                            return V3_EpsilonSuperstructureStates.INTAKE_REEF_L2;
-                          default:
-                            return V3_EpsilonSuperstructureStates.STOW_DOWN;
-                        }
-                      })
-                  .until(() -> RobotState.isHasAlgae()),
-              Commands.waitSeconds(2.0),
-              Commands.runEnd(
-                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
-                  .withTimeout(0.5)),
-          superstructure.runGoal(
-              () -> {
-                switch (level.get()) {
-                  case ALGAE_INTAKE_TOP:
-                    return V3_EpsilonSuperstructureStates.DROP_REEF_L3;
-                  case ALGAE_INTAKE_BOTTOM:
-                    return V3_EpsilonSuperstructureStates.DROP_REEF_L2;
-                  default:
-                    return V3_EpsilonSuperstructureStates.STOW_DOWN;
-                }
-              }),
-          Commands.waitSeconds(1.0),
-          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
-    }
+    // public static final Command dropAlgae(
+    //     Drive drive,
+    //     ElevatorFSM elevator,
+    //     V3_EpsilonManipulator manipulator,
+    //     V3_EpsilonIntake intake,
+    //     V3_EpsilonSuperstructure superstructure,
+    //     Supplier<ReefState> level,
+    //     Camera... cameras) {
+    //   return Commands.sequence(
+    //       DriveCommands.autoAlignReefAlgae(drive, cameras),
+    //       Commands.sequence(
+    //           superstructure
+    //               .runGoal(
+    //                   () -> {
+    //                     switch (level.get()) {
+    //                       case ALGAE_INTAKE_TOP:
+    //                         return V3_EpsilonSuperstructureStates.INTAKE_REEF_L3;
+    //                       case ALGAE_INTAKE_BOTTOM:
+    //                         return V3_EpsilonSuperstructureStates.INTAKE_REEF_L2;
+    //                       default:
+    //                         return V3_EpsilonSuperstructureStates.STOW_DOWN;
+    //                     }
+    //                   })
+    //               .until(() -> RobotState.isHasAlgae()),
+    //           Commands.waitSeconds(2.0),
+    //           Commands.runEnd(
+    //                   () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () ->
+    // drive.stop())
+    //               .withTimeout(0.5)),
+    //       superstructure.runGoal(
+    //           () -> {
+    //             switch (level.get()) {
+    //               case ALGAE_INTAKE_TOP:
+    //                 return V3_EpsilonSuperstructureStates.DROP_REEF_L3;
+    //               case ALGAE_INTAKE_BOTTOM:
+    //                 return V3_EpsilonSuperstructureStates.DROP_REEF_L2;
+    //               default:
+    //                 return V3_EpsilonSuperstructureStates.STOW_DOWN;
+    //             }
+    //           }),
+    //       Commands.waitSeconds(1.0),
+    //       Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+    //       superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    // }
 
     /**
      * Creates a command sequence for the floor intake of algae.

@@ -213,71 +213,70 @@ public class ElevatorConstants {
       double MAX_HEIGHT_METERS,
       int NUM_MOTORS) {}
 
-  public static record PositionConstants(
-    double V1,
-    double V2,
-    double V3) {}
-    
+  public static record PositionConstants(double V1, double V2, double V3) {}
+
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
-    STOW(new PositionConstants(0.0, 
-                               0.0, 
-                               0.0)),
-    CORAL_INTAKE(new PositionConstants(0.0, 
-                                       0.0, 
-                                       Units.inchesToMeters(34.75))),
-    ALGAE_INTAKE(new PositionConstants(0.2161583093038944 + Units.inchesToMeters(1),
-                                       0.2161583093038944 + Units.inchesToMeters(1), 
-                                       0.2161583093038944 + Units.inchesToMeters(1))),
-    ALGAE_MID(new PositionConstants(0.7073684509805078, 
-                                    0.7073684509805078, 
-                                    0.0)), // DOES NOT EXIST FOR V3
-    ALGAE_INTAKE_TOP(new PositionConstants(1.17 - Units.inchesToMeters(8), 
-                                           1.17 - Units.inchesToMeters(8), 
-                                           Units.inchesToMeters(40))),
-    ALGAE_INTAKE_BOT(new PositionConstants(0.79 - Units.inchesToMeters(8),
-                                           0.79 - Units.inchesToMeters(8), 
-                                           Units.inchesToMeters(25))),
-    ASS_TOP(new PositionConstants(1.2, 
-                                  0.0, 
-                                  0.0)),
-    ASS_BOT(new PositionConstants(0.82,
-                                  0.0, 
-                                  0.0)),
-    L1(new PositionConstants(0.11295250319916351,
-                             0.11295250319916351,
-                             Units.inchesToMeters(34.75))),
-    L2(new PositionConstants(0.37296301250898894,
-                             0.37296301250898894, 
-                             Units.inchesToMeters(12.5))),
-    L3(new PositionConstants(0.7606347556550676 + Units.inchesToMeters(1.0), 
-                             0.7606347556550676 + Units.inchesToMeters(1.0), 
-                             Units.inchesToMeters(12.5 + 15.87))),
-    L4(new PositionConstants(1.3864590139769697 + Units.inchesToMeters(0.5), 
-                             1.3864590139769697 + Units.inchesToMeters(0.5), 
-                             Units.inchesToMeters(57))),
-    L4_PLUS(new PositionConstants(0.0, 
-                                  1.3864590139769697 + Units.inchesToMeters(2.0), 
-                                  0.0)), // DOES NOT EXIST FOR V3 AND V1
-    ALGAE_SCORE(new PositionConstants(1.3864590139769697 + Units.inchesToMeters(0.5), 
-                                      1.3864590139769697 + Units.inchesToMeters(0.5), 
-                                      Units.inchesToMeters(61)));
+    STOW(new PositionConstants(0.0, 0.0, 0.0)),
+    CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.75))),
+    ALGAE_INTAKE(
+        new PositionConstants(
+            0.2161583093038944 + Units.inchesToMeters(1),
+            0.2161583093038944 + Units.inchesToMeters(1),
+            0.2161583093038944 + Units.inchesToMeters(1))),
+    ALGAE_MID(
+        new PositionConstants(
+            0.7073684509805078, 0.7073684509805078, 0.0)), // DOES NOT EXIST FOR V3
+    ALGAE_INTAKE_TOP(
+        new PositionConstants(
+            1.17 - Units.inchesToMeters(8),
+            1.17 - Units.inchesToMeters(8),
+            Units.inchesToMeters(40))),
+    ALGAE_INTAKE_BOT(
+        new PositionConstants(
+            0.79 - Units.inchesToMeters(8),
+            0.79 - Units.inchesToMeters(8),
+            Units.inchesToMeters(25))),
+    ASS_TOP(new PositionConstants(1.2, 0.0, 0.0)),
+    ASS_BOT(new PositionConstants(0.82, 0.0, 0.0)),
+    L1(
+        new PositionConstants(
+            0.11295250319916351, 0.11295250319916351, Units.inchesToMeters(34.75))),
+    L2(new PositionConstants(0.37296301250898894, 0.37296301250898894, Units.inchesToMeters(12.5))),
+    L3(
+        new PositionConstants(
+            0.7606347556550676 + Units.inchesToMeters(1.0),
+            0.7606347556550676 + Units.inchesToMeters(1.0),
+            Units.inchesToMeters(12.5 + 15.87))),
+    L4(
+        new PositionConstants(
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            Units.inchesToMeters(57))),
+    L4_PLUS(
+        new PositionConstants(
+            0.0,
+            1.3864590139769697 + Units.inchesToMeters(2.0),
+            0.0)), // DOES NOT EXIST FOR V3 AND V1
+    ALGAE_SCORE(
+        new PositionConstants(
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            Units.inchesToMeters(61)));
 
     private final PositionConstants position;
 
     public double getPosition() {
-        switch(Constants.ROBOT) {
-            case V1_STACKUP, V1_STACKUP_SIM:
-                return position.V1();
-            case V2_REDUNDANCY, V2_REDUNDANCY_SIM:
-                return position.V2();
-            case V3_EPSILON, V3_EPSILON_SIM:
-                return position.V3();
-            default:
-                return position.V1();
-        }
-      
+      switch (Constants.ROBOT) {
+        case V1_STACKUP, V1_STACKUP_SIM:
+          return position.V1();
+        case V2_REDUNDANCY, V2_REDUNDANCY_SIM:
+          return position.V2();
+        case V3_EPSILON, V3_EPSILON_SIM:
+          return position.V3();
+        default:
+          return position.V1();
+      }
     }
   }
-  
 }
