@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import java.util.Set;
-import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -16,6 +16,7 @@ public class V3_EpsilonManipulator {
   private final ManipulatorIOInputsAutoLogged inputs;
 
   private ManipulatorArmState armState;
+  private ManipulatorRollerState rollerGoal;
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -24,6 +25,7 @@ public class V3_EpsilonManipulator {
 
     isClosedLoop = true;
     armState = ManipulatorArmState.VERTICAL_UP;
+    rollerGoal = ManipulatorRollerState.STOP;
   }
 
   public void periodic() {
@@ -35,7 +37,7 @@ public class V3_EpsilonManipulator {
     }
 
     if (hasAlgae()
-        && Set.of(ManipulatorRollerStates.CORAL_INTAKE, ManipulatorRollerStates.STOP)
+        && Set.of(ManipulatorRollerState.CORAL_INTAKE, ManipulatorRollerState.STOP)
             .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());
     } else {

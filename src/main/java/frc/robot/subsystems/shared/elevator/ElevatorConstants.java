@@ -28,9 +28,11 @@ public class ElevatorConstants {
     REEF_STATE_ELEVATOR_POSITION_MAP =
         Map.ofEntries(
             Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.HIGH_STOW, ElevatorPositions.HIGH_STOW),
             Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
             Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
             Map.entry(ReefState.ALGAE_MID, ElevatorPositions.ALGAE_MID),
+            Map.entry(ReefState.HANDOFF, ElevatorPositions.HANDOFF),
             Map.entry(ReefState.ALGAE_INTAKE_TOP, ElevatorPositions.ALGAE_INTAKE_TOP),
             Map.entry(ReefState.ALGAE_INTAKE_BOTTOM, ElevatorPositions.ALGAE_INTAKE_BOT),
             Map.entry(ReefState.L1, ElevatorPositions.L1),
@@ -262,7 +264,11 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(61)));
+            Units.inchesToMeters(61))),
+
+    HIGH_STOW(new PositionConstants(0, 0, 0.5)),
+    HANDOFF(new PositionConstants(0, 0, 1)),
+    ;
 
     private final PositionConstants position;
 
