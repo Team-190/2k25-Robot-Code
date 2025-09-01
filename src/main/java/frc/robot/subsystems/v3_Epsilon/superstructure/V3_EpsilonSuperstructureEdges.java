@@ -23,7 +23,7 @@ import org.jgrapht.nio.dot.DOTImporter;
 
 public class V3_EpsilonSuperstructureEdges {
   public static final ArrayList<Edge> UNCONSTRAINED = new ArrayList<>();
-  public static final ArrayList<Edge> ALGAE_EDGES = new ArrayList<>();
+  public static final ArrayList<Edge> NO_ALGAE_EDGES = new ArrayList<>();
 
   public record Edge(V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to) {
     public Edge(V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to) {
@@ -39,7 +39,7 @@ public class V3_EpsilonSuperstructureEdges {
 
   public enum GamePieceEdge {
     UNCONSTRAINED,
-    ALGAE
+    NO_ALGAE
   }
 
   public static void loadEdgesFromDot(
@@ -88,7 +88,7 @@ public class V3_EpsilonSuperstructureEdges {
 
     // Clear old edge lists
     UNCONSTRAINED.clear();
-    ALGAE_EDGES.clear();
+    NO_ALGAE_EDGES.clear();
 
     // Iterate over edges to assign commands and categorize
     for (EdgeCommand e : graph.edgeSet()) {
@@ -132,8 +132,8 @@ public class V3_EpsilonSuperstructureEdges {
 
       // Add to proper list
       Edge edge = new Edge(from, to);
-      if (type == V3_EpsilonSuperstructureEdges.GamePieceEdge.ALGAE) {
-        ALGAE_EDGES.add(edge);
+      if (type == V3_EpsilonSuperstructureEdges.GamePieceEdge.NO_ALGAE) {
+        NO_ALGAE_EDGES.add(edge);
       } else {
         UNCONSTRAINED.add(edge);
       }
@@ -176,28 +176,41 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonManipulator manipulator,
       boolean requiresElevator,
       boolean requiresArm) {
-    V3_EpsilonSuperstructurePose pose = to.getPose();
 
-    if (requiresElevator && requiresArm) {
-      throw new IllegalArgumentException(
-          "Edge cannot require both elevator and arm to finish first");
-    } else if (requiresElevator) {
-      // Elevator must finish before other mechanisms move
-      return Commands.sequence(
-          pose.setElevatorHeight(elevator),
-          Commands.waitUntil(elevator::atGoal),
-          pose.asCommand(elevator, intake, manipulator));
+    V3_EpsilonSuperstructurePose pose = to.getPose();
+    Command moveCommand; // This will hold the command that STARTS the movement.
+
+    if (requiresElevator) {
+      // Elevator moves and waits, THEN other mechanisms move.
+      moveCommand =
+          Commands.sequence(
+              pose.setElevatorHeight(elevator),
+              Commands.waitUntil(elevator::atGoal),
+              pose.asCommand(
+                  elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
+              );
+
     } else if (requiresArm) {
-      // Arm/intake must clear before elevator moves
-      return Commands.sequence(
-          pose.setManipulatorState(manipulator),
-          Commands.waitUntil(
-              () ->
-                  manipulator.getArmAngle().getDegrees()
-                      < ManipulatorArmState.SAFE_ANGLE.getAngle().getDegrees()),
-          pose.asCommand(elevator, intake, manipulator));
+      // Arm moves to a safe position and waits, THEN other mechanisms move.
+      moveCommand =
+          Commands.sequence(
+              pose.setManipulatorState(manipulator),
+              Commands.waitUntil(
+                  () ->
+                      manipulator.getArmAngle().getDegrees()
+                          < ManipulatorArmState.SAFE_ANGLE.getAngle().getDegrees()),
+              pose.asCommand(
+                  elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
+              );
+    } else {
+      // Default case: All mechanisms move in parallel.
+      moveCommand = pose.asCommand(elevator, intake, manipulator);
     }
-    return pose.asCommand(elevator, intake, manipulator);
+
+    // THE CRITICAL FIX:
+    // No matter how we start the move, we append a final wait condition.
+    // This ensures the command doesn't end until the robot is physically at the target pose.
+    return Commands.sequence(moveCommand, waitForPoseCommand(to, elevator, intake, manipulator));
   }
 
   /**
@@ -258,6 +271,44 @@ public class V3_EpsilonSuperstructureEdges {
     // NOTE: The two lines below are likely redundant. The loadEdgesFromDot method already
     // adds all edges to the graph. You may want to remove these calls.
     addEdges(graph, UNCONSTRAINED, GamePieceEdge.UNCONSTRAINED, elevator, manipulator, intake);
-    addEdges(graph, ALGAE_EDGES, GamePieceEdge.ALGAE, elevator, manipulator, intake);
+    addEdges(graph, NO_ALGAE_EDGES, GamePieceEdge.NO_ALGAE, elevator, manipulator, intake);
+  }
+
+  // In V3_EpsilonSuperstructureEdges.java
+
+  private static Command waitForPoseCommand(
+      V3_EpsilonSuperstructureStates state,
+      ElevatorFSM elevator,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator) {
+    V3_EpsilonSuperstructurePose pose = state.getPose();
+
+    // Add this command to log the check's status
+    Command logCheck =
+        Commands.runOnce(
+            () -> {
+              boolean elevatorOk = elevator.atGoal(pose.getElevatorHeight());
+              boolean intakeOk = intake.pivotAtGoal(pose.getIntakeState());
+              boolean armOk = manipulator.armAtGoal(pose.getArmState());
+              System.out.println(
+                  "Checking pose for: "
+                      + state.toString()
+                      + " -> Elevator OK: "
+                      + elevatorOk
+                      + ", Intake OK: "
+                      + intakeOk
+                      + ", Arm OK: "
+                      + armOk);
+            });
+
+    Command wait =
+        Commands.waitUntil(
+            () ->
+                elevator.atGoal(pose.getElevatorHeight())
+                    && intake.pivotAtGoal(pose.getIntakeState())
+                    && manipulator.armAtGoal(pose.getArmState()));
+
+    // Run the log once right before starting the wait
+    return Commands.sequence(logCheck, wait);
   }
 }

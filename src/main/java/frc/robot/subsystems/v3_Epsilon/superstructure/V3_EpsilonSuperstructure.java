@@ -243,7 +243,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
     return edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
-        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() == GamePieceEdge.ALGAE);
+        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */
