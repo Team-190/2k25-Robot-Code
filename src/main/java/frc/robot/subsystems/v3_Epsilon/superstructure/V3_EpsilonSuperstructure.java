@@ -242,7 +242,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
-    return edge.getGamePieceEdge() == GamePieceEdge.NONE
+    return edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
         || RobotState.isHasAlgae() == (edge.getGamePieceEdge() == GamePieceEdge.ALGAE);
   }
 
@@ -267,25 +267,25 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         return V3_EpsilonSuperstructureStates.STOW_DOWN;
       }
       case L1 -> {
-        return V3_EpsilonSuperstructureStates.L1_PREP;
+        return V3_EpsilonSuperstructureStates.L1;
       }
       case L2 -> {
-        return V3_EpsilonSuperstructureStates.L2_PREP;
+        return V3_EpsilonSuperstructureStates.L2;
       }
       case L3 -> {
-        return V3_EpsilonSuperstructureStates.L3_PREP;
+        return V3_EpsilonSuperstructureStates.L3;
       }
       case L4 -> {
-        return V3_EpsilonSuperstructureStates.L4_PREP;
+        return V3_EpsilonSuperstructureStates.L4;
       }
       case ALGAE_INTAKE_BOTTOM -> {
-        return V3_EpsilonSuperstructureStates.L2_ALGAE_PREP;
+        return V3_EpsilonSuperstructureStates.L2_ALGAE;
       }
       case ALGAE_INTAKE_TOP -> {
-        return V3_EpsilonSuperstructureStates.L3_ALGAE_PREP;
+        return V3_EpsilonSuperstructureStates.L3_ALGAE;
       }
       case ALGAE_SCORE -> {
-        return V3_EpsilonSuperstructureStates.BARGE_PREP;
+        return V3_EpsilonSuperstructureStates.BARGE;
       }
       default -> {
         return V3_EpsilonSuperstructureStates.START;
@@ -322,7 +322,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
   public boolean atGoal() {
-    return currentState == targetState;
+    return currentState == targetState
+        && elevator.atGoal(targetState.getPose().getElevatorHeight())
+        && intake.pivotAtGoal(targetState.getPose().getIntakeState())
+        && manipulator.armAtGoal(targetState.getPose().getArmState());
   }
 
   /**
@@ -385,13 +388,13 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
           // Translate ReefState to superstructure state
           switch (goal.get()) {
             case L1:
-              return V3_EpsilonSuperstructureStates.L1_PREP;
+              return V3_EpsilonSuperstructureStates.L1;
             case L2:
-              return V3_EpsilonSuperstructureStates.L2_PREP;
+              return V3_EpsilonSuperstructureStates.L2;
             case L3:
-              return V3_EpsilonSuperstructureStates.L3_PREP;
+              return V3_EpsilonSuperstructureStates.L3;
             case L4:
-              return V3_EpsilonSuperstructureStates.L4_PREP;
+              return V3_EpsilonSuperstructureStates.L4;
             default:
               return V3_EpsilonSuperstructureStates.STOW_DOWN;
           }
@@ -409,10 +412,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return runActionWithTimeout(
         () ->
             switch (goal.get()) {
-              case L1 -> V3_EpsilonSuperstructureStates.L1_PREP;
-              case L2 -> V3_EpsilonSuperstructureStates.L2_PREP;
-              case L3 -> V3_EpsilonSuperstructureStates.L3_PREP;
-              case L4 -> V3_EpsilonSuperstructureStates.L4_PREP;
+              case L1 -> V3_EpsilonSuperstructureStates.L1;
+              case L2 -> V3_EpsilonSuperstructureStates.L2;
+              case L3 -> V3_EpsilonSuperstructureStates.L3;
+              case L4 -> V3_EpsilonSuperstructureStates.L4;
               default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
             },
         () ->
@@ -476,16 +479,14 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> actionPoseMap =
         new HashMap<>() {
           {
-            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1_PREP);
-            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2_PREP);
-            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3_PREP);
-            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4_PREP);
-            put(
-                V3_EpsilonSuperstructureStates.BARGE_SCORE,
-                V3_EpsilonSuperstructureStates.BARGE_PREP);
+            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1);
+            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2);
+            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3);
+            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4);
+            put(V3_EpsilonSuperstructureStates.BARGE_SCORE, V3_EpsilonSuperstructureStates.BARGE);
             put(
                 V3_EpsilonSuperstructureStates.PROCESSOR_SCORE,
-                V3_EpsilonSuperstructureStates.PROCESSOR_PREP);
+                V3_EpsilonSuperstructureStates.PROCESSOR);
           }
         };
 
@@ -515,16 +516,14 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> actionPoseMap =
         new HashMap<>() {
           {
-            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1_PREP);
-            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2_PREP);
-            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3_PREP);
-            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4_PREP);
-            put(
-                V3_EpsilonSuperstructureStates.BARGE_SCORE,
-                V3_EpsilonSuperstructureStates.BARGE_PREP);
+            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1);
+            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2);
+            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3);
+            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4);
+            put(V3_EpsilonSuperstructureStates.BARGE_SCORE, V3_EpsilonSuperstructureStates.BARGE);
             put(
                 V3_EpsilonSuperstructureStates.PROCESSOR_SCORE,
-                V3_EpsilonSuperstructureStates.PROCESSOR_PREP);
+                V3_EpsilonSuperstructureStates.PROCESSOR);
           }
         };
 

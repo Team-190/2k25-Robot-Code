@@ -48,8 +48,13 @@ public class V3_EpsilonIntake {
   }
 
   @AutoLogOutput(key = "Intake/At Goal")
-  public boolean atGoal() {
+  public boolean pivotAtGoal() {
     return Math.abs(inputs.pivotPosition.getRadians() - pivotGoal.getAngle().getRadians())
+        < V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.GOAL_TOLERANCE().getRadians();
+  }
+
+  public boolean pivotAtGoal(IntakePivotState goal) {
+    return Math.abs(inputs.pivotPosition.getRadians() - goal.getAngle().getRadians())
         < V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.GOAL_TOLERANCE().getRadians();
   }
 
@@ -68,7 +73,7 @@ public class V3_EpsilonIntake {
   }
 
   public Command waitUntilPivotAtGoal() {
-    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::atGoal));
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::pivotAtGoal));
   }
 
   public void setRollerGoal(IntakeRollerState rollerGoal) {

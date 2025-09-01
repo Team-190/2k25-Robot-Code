@@ -43,9 +43,7 @@ public class V3_EpsilonSuperstructurePose {
    * @return A Command that sets the elevator height and waits until it reaches the goal.
    */
   public Command setElevatorHeight(ElevatorFSM elevator) {
-    return Commands.parallel(
-        Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
-        elevator.waitUntilAtGoal());
+    return Commands.parallel(Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)));
   }
 
   /**
@@ -55,8 +53,7 @@ public class V3_EpsilonSuperstructurePose {
    * @return A Command that sets the intake extension state and waits until it reaches the goal.
    */
   public Command setIntakeState(V3_EpsilonIntake intake) {
-    return Commands.parallel(
-        Commands.runOnce(() -> intake.setPivotGoal(intakeState)), intake.waitUntilPivotAtGoal());
+    return Commands.parallel(Commands.runOnce(() -> intake.setPivotGoal(intakeState)));
   }
 
   /**
@@ -66,7 +63,7 @@ public class V3_EpsilonSuperstructurePose {
    * @return A Command that sets the arm state and waits until it reaches the goal.
    */
   public Command setManipulatorState(V3_EpsilonManipulator manipulator) {
-    return Commands.parallel(manipulator.setArmGoal(armState), manipulator.waitUntilArmAtGoal());
+    return Commands.parallel(manipulator.setArmGoal(armState));
   }
 
   /**
@@ -85,6 +82,14 @@ public class V3_EpsilonSuperstructurePose {
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
         manipulator.setArmGoal(armState),
         Commands.runOnce(() -> intake.setPivotGoal(intakeState)));
+  }
+
+  public Command wait(
+      ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
+    return Commands.parallel(
+        elevator.waitUntilAtGoal(),
+        manipulator.waitUntilArmAtGoal(),
+        intake.waitUntilPivotAtGoal());
   }
 
   /**
@@ -109,7 +114,7 @@ public class V3_EpsilonSuperstructurePose {
      * Creates a SubsystemPoses instance with default states (STOW for elevator, arm, and intake).
      */
     public SubsystemPoses() {
-      this(ReefState.STOW, ManipulatorArmState.STOW_DOWN, IntakePivotState.STOW);
+      this(ReefState.STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW);
     }
   }
 }

@@ -138,17 +138,17 @@ public class V3_EpsilonManipulatorConstants {
 
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
-    STOW_UP(Rotation2d.fromDegrees(0.0)),
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
-    SCORE(Rotation2d.fromDegrees(35.0)), // Placeholder value. Make sure to test
+    SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
     PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
     REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5 - 5)),
     STOW_LINE(Rotation2d.fromDegrees(-75)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
-    STOW_DOWN(Rotation2d.fromDegrees(0)),
-    HANDOFF(Rotation2d.kPi);
+    VERTICAL_UP(Rotation2d.fromDegrees(0)),
+    HANDOFF(Rotation2d.kPi),
+    SAFE_ANGLE(Rotation2d.fromDegrees(150));
 
     private final Rotation2d angle;
 

@@ -135,6 +135,17 @@ public class Elevator {
   }
 
   /**
+   * Checks if the elevator is at the goal position.
+   *
+   * @return True if the elevator is at the goal position, false otherwise.
+   */
+  @AutoLogOutput(key = "Elevator/At Goal")
+  private boolean atGoal(ElevatorPositions position) {
+    return Math.abs(position.getPosition() - inputs.positionMeters)
+        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+  }
+
+  /**
    * Waits until the elevator is at the goal position.
    *
    * @return A command that waits until the elevator is at the goal position.
@@ -341,6 +352,10 @@ public class Elevator {
 
     public boolean atGoal() {
       return Elevator.this.atGoal();
+    }
+
+    public boolean atGoal(ReefState position) {
+      return Elevator.this.atGoal(Elevator.this.getPosition(position));
     }
 
     public Command waitUntilAtGoal() {

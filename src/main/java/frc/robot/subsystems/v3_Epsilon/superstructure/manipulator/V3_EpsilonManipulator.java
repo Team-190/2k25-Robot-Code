@@ -14,7 +14,7 @@ public class V3_EpsilonManipulator {
   private final V3_EpsilonManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  private ManipulatorArmState state;
+  private ManipulatorArmState armState;
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -22,7 +22,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    state = ManipulatorArmState.STOW_UP;
+    armState = ManipulatorArmState.VERTICAL_UP;
   }
 
   public void periodic() {
@@ -30,7 +30,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      io.setArmGoal(state.getAngle());
+      io.setArmGoal(armState.getAngle());
     }
 
     if (hasAlgae()) {
@@ -63,7 +63,7 @@ public class V3_EpsilonManipulator {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          state = goal;
+          armState = goal;
         });
   }
 
@@ -97,6 +97,11 @@ public class V3_EpsilonManipulator {
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean armAtGoal() {
+    return inputs.armPosition.getRadians() - armState.getAngle().getRadians()
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
+  }
+
+  public boolean armAtGoal(ManipulatorArmState state) {
     return inputs.armPosition.getRadians() - state.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
