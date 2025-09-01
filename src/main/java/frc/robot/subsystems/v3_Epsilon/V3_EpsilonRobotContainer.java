@@ -1,6 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon;
 
-// import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,6 +17,8 @@ import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.climber.Climber;
+import frc.robot.subsystems.shared.climber.ClimberIO;
+import frc.robot.subsystems.shared.climber.ClimberIOSim;
 // import frc.robot.subsystems.shared.climber.ClimberIO;
 // import frc.robot.subsystems.shared.climber.ClimberIOSim;
 import frc.robot.subsystems.shared.climber.ClimberIOTalonFX;
@@ -49,6 +51,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
+import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
   // Subsystems
@@ -91,7 +94,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           // vision = new Vision(RobotCameras.V3_Epsilon_CAMS);
           break;
         case V3_EPSILON_SIM:
-          // climber = new Climber(new ClimberIOSim());
+          climber = new Climber(new ClimberIOSim());
           drive =
               new Drive(
                   new GyroIO() {},
@@ -132,6 +135,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
       // }
       if (manipulator == null) {
         manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+      }
+      if (climber == null) {
+        climber = new Climber(new ClimberIO() {});
       }
       // if (vision == null) {
       //   vision = new Vision();
@@ -397,34 +403,33 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
-  // @Override
-  // public void robotPeriodic() {
-  // RobotState.periodic(
-  // drive.getRawGyroRotation(),
-  // NetworkTablesJNI.now(),
-  // drive.getYawVelocity(),
-  // drive.getFieldRelativeVelocity(),
-  // drive.getModulePositions(),
-  // manipulator.getArmAngle(),
-  // elevator.getPositionMeters());
+  @Override
+  public void robotPeriodic() {
+    RobotState.periodic(
+        drive.getRawGyroRotation(),
+        NetworkTablesJNI.now(),
+        drive.getYawVelocity(),
+        drive.getModulePositions(),
+        null);
 
-  // LTNUpdater.updateDrive(drive);
-  // LTNUpdater.updateElevator(elevator);
-  // LTNUpdater.updateFunnel(funnel);
-  // LTNUpdater.updateAlgaeArm(manipulator);
-  // LTNUpdater.updateIntake(intake);
+    //   LTNUpdater.updateDrive(drive);
+    //   LTNUpdater.updateElevator(elevator);
+    //   LTNUpdater.updateFunnel(funnel);
+    //   LTNUpdater.updateAlgaeArm(manipulator);
+    //   LTNUpdater.updateIntake(intake);
 
-  // Logger.recordOutput(
-  // "Component Poses",
-  // V3_EpsilonMechanism3d.getPoses(
-  // elevator.getPositionMeters(),
-  // funnel.getAngle(),
-  // manipulator.getArmAngle(),
-  // intake.getExtension()));
-  // }
+    Logger.recordOutput(
+        "Component Poses",
+        V3_EpsilonMechanism3d.getPoses(
+            elevator.getPositionMeters(), intake.getPivotAngle(), manipulator.getArmAngle()));
+  }
 
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return superstructure
+        .runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE)
+        .andThen(
+            Commands.waitSeconds(1),
+            superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE));
   }
 }
