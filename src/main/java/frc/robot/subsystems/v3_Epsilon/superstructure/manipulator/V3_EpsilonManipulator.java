@@ -1,17 +1,11 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerStates;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.PivotState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import java.util.Set;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -21,14 +15,7 @@ public class V3_EpsilonManipulator {
   private final V3_EpsilonManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  @Getter
-  @AutoLogOutput(key = "Manipulator/Pivot State")
-  private PivotState pivotGoal;
-
-  @Getter
-  @AutoLogOutput(key = "Manipulator/Roller State")
-  private ManipulatorRollerStates rollerGoal;
-
+  private ManipulatorArmState armState;
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -36,8 +23,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    pivotGoal = PivotState.STOW_DOWN;
-    rollerGoal = ManipulatorRollerStates.STOP;
+    armState = ManipulatorArmState.VERTICAL_UP;
   }
 
   public void periodic() {
@@ -45,8 +31,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      setSlot();
-      io.setPivotGoal(pivotGoal.getAngle());
+      io.setArmGoal(armState.getAngle());
     }
 
     if (hasAlgae()
@@ -70,42 +55,20 @@ public class V3_EpsilonManipulator {
         && inputs.canRangeDistanceMeters > 0;
   }
 
-  public Command runPivot(double volts) {
+  public Command runArm(double volts) {
     return Commands.runEnd(
         () -> {
           isClosedLoop = false;
-          io.setPivotVoltage(volts);
+          io.setArmVoltage(volts);
         },
-        () -> io.setPivotVoltage(0));
+        () -> io.setArmVoltage(0));
   }
 
-  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
-    SysIdRoutine algaeCharacterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Second),
-                Volts.of(3.5),
-                Seconds.of(5),
-                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) -> io.setPivotVoltage(volts.in(Volts)), null, superstructure));
-
-    return Commands.sequence(
-        Commands.runOnce(() -> isClosedLoop = false),
-        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(.25),
-        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
-  }
-
-  public Command setPivotGoal(PivotState goal) {
+  public Command setArmGoal(ManipulatorArmState goal) {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          pivotGoal = goal;
+          armState = goal;
         });
   }
 
@@ -138,13 +101,18 @@ public class V3_EpsilonManipulator {
   }
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
-  public boolean pivotAtGoal() {
-    return inputs.armPosition.getRadians() - pivotGoal.getAngle().getRadians()
+  public boolean armAtGoal() {
+    return inputs.armPosition.getRadians() - armState.getAngle().getRadians()
         <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
   }
 
-  public Command waitUntilPivotAtGoal() {
-    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::pivotAtGoal));
+  public boolean armAtGoal(ManipulatorArmState state) {
+    return inputs.armPosition.getRadians() - state.getAngle().getRadians()
+        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
+  }
+
+  public Command waitUntilArmAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::armAtGoal));
   }
 
   private double holdVoltage() {
@@ -171,16 +139,16 @@ public class V3_EpsilonManipulator {
     }
   }
 
-  public void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {
+  public void setManipulatorState(V3_EpsilonManipulatorConstants.ManipulatorArmState state) {
     io.setManipulatorState(state);
   }
 
-  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerStates rollerGoal) {
+  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
     if (hasAlgae()
         && Set.of(
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.ALGAE_INTAKE,
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.CORAL_INTAKE,
-                V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP)
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,
+                V3_EpsilonManipulatorConstants.ManipulatorRollerState.STOP)
             .contains(rollerGoal)) {
 
       io.setRollerVoltage(holdVoltage());

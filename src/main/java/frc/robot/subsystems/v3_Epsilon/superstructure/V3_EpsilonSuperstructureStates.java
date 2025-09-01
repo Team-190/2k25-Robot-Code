@@ -1,12 +1,12 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
-// Adjust the package path as needed
 import frc.robot.FieldConstants.Reef.ReefState;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureActions.SubsystemActions;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructurePoses.SubsystemPoses;
-// Ensure this is the
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureAction.SubsystemActions;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructurePose.SubsystemPoses;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 
 // correct package
 // path
@@ -17,224 +17,111 @@ public enum V3_EpsilonSuperstructureStates {
   STOW_UP(
       "STOW_UP",
       new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
+          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
       SubsystemActions.empty()),
+  OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
 
-  HANDOFF(
-      "HANDOFF",
+  GROUND_ACQUISITION(
+      "GROUND_ACQUISITION",
       new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.HANDOFF,
-          V3_EpsilonIntakeConstants.IntakeState.HANDOFF),
+          ReefState.STOW, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
       SubsystemActions.empty()),
-
   GROUND_INTAKE(
       "GROUND_INTAKE",
       new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.FLOOR_INTAKE,
-          V3_EpsilonIntakeConstants.IntakeState.INTAKE_CORAL),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.CORAL_INTAKE)),
+          ReefState.STOW, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
+      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CORAL_INTAKE)),
 
-  // Coral Prep States
-  L1_PREP(
+  L1(
       "L1",
-      new SubsystemPoses(
-          ReefState.L1,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.L1),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
       SubsystemActions.empty()),
-
-  L2_PREP(
-      "L2",
-      new SubsystemPoses(
-          ReefState.L2,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  L3_PREP(
-      "L3",
-      new SubsystemPoses(
-          ReefState.L3,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  L4_PREP(
-      "L4",
-      new SubsystemPoses(
-          ReefState.L4,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  // Coral Score States
   L1_SCORE(
       "L1_SCORE",
-      new SubsystemPoses(
-          ReefState.L1,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.L1),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.STOP,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.SCORE_CORAL)),
+      new SubsystemPoses(ReefState.L1, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
+      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.SCORE_CORAL)),
 
+  L2(
+      "L2",
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      SubsystemActions.empty()),
   L2_SCORE(
       "L2_SCORE",
-      new SubsystemPoses(
-          ReefState.L2,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
+  L3(
+      "L3",
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      SubsystemActions.empty()),
   L3_SCORE(
       "L3_SCORE",
-      new SubsystemPoses(
-          ReefState.L3,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
+  L4(
+      "L4",
+      new SubsystemPoses(ReefState.L4, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      SubsystemActions.empty()),
   L4_SCORE(
       "L4_SCORE",
-      new SubsystemPoses(
-          ReefState.L4,
-          V3_EpsilonManipulatorConstants.PivotState
-              .PRE_SCORE, // Determine whether PRE_SCORE is accurate for all scoring states
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_CORAL,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+      new SubsystemPoses(ReefState.L4, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.L4_SCORE, IntakeRollerState.STOP)),
 
-  // Algae Prep States
-  L2_ALGAE_PREP(
-      "L2_ALGAE_PREP",
-      new SubsystemPoses(
-          ReefState.L2,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
+  HANDOFF(
+      "HANDOFF",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.STOW),
+      SubsystemActions.empty()),
+  INTERMEDIATE_WAIT_FOR_ELEVATOR(
+      "INTERMEDIATE_WAIT_FOR_ELEVATOR",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
+      SubsystemActions.empty()),
+  INTERMEDIATE_WAIT_FOR_ARM(
+      "INTERMEDIATE_WAIT_FOR_ARM",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.SAFE_ANGLE, IntakePivotState.STOW),
       SubsystemActions.empty()),
 
-  L3_ALGAE_PREP(
-      "L3_ALGAE_PREP",
+  L2_ALGAE(
+      "L2_ALGAE",
       new SubsystemPoses(
-          ReefState.L3,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
+          ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
       SubsystemActions.empty()),
-
-  // Algae Scoring States
   L2_ALGAE_INTAKE(
       "L2_ALGAE_INTAKE",
       new SubsystemPoses(
-          ReefState.L2,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+          ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
 
+  L3_ALGAE(
+      "L3_ALGAE",
+      new SubsystemPoses(
+          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+      SubsystemActions.empty()),
   L3_ALGAE_INTAKE(
       "L3_ALGAE_INTAKE",
       new SubsystemPoses(
-          ReefState.L3,
-          V3_EpsilonManipulatorConstants.PivotState.PRE_SCORE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
 
-  // Miscelaneous States (Barge + Processor Prep and Score States)
-  BARGE_PREP(
-      "BARGE_PREP",
-      new SubsystemPoses(
-          ReefState.ALGAE_SCORE,
-          V3_EpsilonManipulatorConstants.PivotState
-              .REEF_INTAKE, // Assuming REEF_INTAKE and BARGE_PREP have same rotation values
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
+  PROCESSOR(
+      "PROCESSOR",
+      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
       SubsystemActions.empty()),
-
-  PROCESSOR_PREP(
-      "PROCESSOR_PREP",
-      new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.PROCESSOR,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  BARGE_SCORE(
-      "BARGE_SCORE",
-      new SubsystemPoses(
-          ReefState.ALGAE_SCORE,
-          V3_EpsilonManipulatorConstants.PivotState.REEF_INTAKE,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates
-              .SCORE_ALGAE, // Assuming you score in the barge by stowing intake and moving
-          // manipulator to desired position
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
-
   PROCESSOR_SCORE(
       "PROCESSOR_SCORE",
-      new SubsystemPoses(
-          ReefState.ALGAE_SCORE,
-          V3_EpsilonManipulatorConstants.PivotState.PROCESSOR,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      new SubsystemActions(
-          V3_EpsilonManipulatorConstants.ManipulatorRollerStates.SCORE_ALGAE,
-          V3_EpsilonIntakeConstants.IntakeRollerStates.STOP)),
+      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
 
-  INTERMEDIATE_WAIT_FOR_ELEVATOR(
-      "INTERMEDIATE_WAIT_FOR_ELEVATOR",
+  BARGE(
+      "BARGE",
       new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
       SubsystemActions.empty()),
-
-  // Transition States
-  L2_TRANSITION(
-      "L2_TRANSITION",
-      new SubsystemPoses(
-          ReefState.L2,
-          V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  L3_TRANSITION(
-      "L3_TRANSITION",
-      new SubsystemPoses(
-          ReefState.L3,
-          V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  L4_TRANSITION(
-      "L4_TRANSITION",
-      new SubsystemPoses(
-          ReefState.L4,
-          V3_EpsilonManipulatorConstants.PivotState.TRANSITION,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  CLIMB(
-      "CLIMB",
-      new SubsystemPoses(
-          ReefState.STOW,
-          V3_EpsilonManipulatorConstants.PivotState.STOW_UP,
-          V3_EpsilonIntakeConstants.IntakeState.STOW),
-      SubsystemActions.empty()),
-
-  OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty());
+  BARGE_SCORE(
+      "BARGE_SCORE",
+      new SubsystemPoses(ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
+  ;
 
   // Readable name for state
   private final String name;
@@ -246,7 +133,7 @@ public enum V3_EpsilonSuperstructureStates {
   private final SubsystemActions subsystemActions;
 
   /**
-   * Constructor for V3_EpsilonSuperstructureStates.
+   * Constructor for V3_SuperstructureStates.
    *
    * @param name The name of the state.
    * @param pose The subsystem poses for this state.
@@ -259,13 +146,13 @@ public enum V3_EpsilonSuperstructureStates {
   }
 
   /**
-   * Constructor for V3_EpsilonSuperstructureStates with empty actions.
+   * Constructor for V3_SuperstructureStates with empty actions.
    *
    * @param name The name of the state.
    * @param pose The subsystem poses for this state.
    */
-  public V3_EpsilonSuperstructurePoses getPose() {
-    return new V3_EpsilonSuperstructurePoses(name, subsystemPoses);
+  public V3_EpsilonSuperstructurePose getPose() {
+    return new V3_EpsilonSuperstructurePose(name, subsystemPoses);
   }
 
   /**
@@ -273,8 +160,8 @@ public enum V3_EpsilonSuperstructureStates {
    *
    * @return The actions for this state.
    */
-  public V3_EpsilonSuperstructureActions getAction() {
-    return new V3_EpsilonSuperstructureActions(name, subsystemActions);
+  public V3_EpsilonSuperstructureAction getAction() {
+    return new V3_EpsilonSuperstructureAction(name, subsystemActions);
   }
 
   /**

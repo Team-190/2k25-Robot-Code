@@ -40,13 +40,14 @@ public interface V3_EpsilonManipulatorIO {
    *
    * @param volts The voltage to set.
    */
-  public default void setPivotVoltage(double volts) {}
+  public default void setArmVoltage(double volts) {}
 
   public default void setRollerVoltage(double volts) {}
 
-  public default void setPivotGoal(Rotation2d rotation) {}
+  public default void setArmGoal(Rotation2d rotation) {}
 
-  public default void setManipulatorState(V3_EpsilonManipulatorConstants.PivotState state) {}
+  public default void setManipulatorState(
+      V3_EpsilonManipulatorConstants.ManipulatorArmState state) {}
 
   /**
    * Sets the gains for the arm.

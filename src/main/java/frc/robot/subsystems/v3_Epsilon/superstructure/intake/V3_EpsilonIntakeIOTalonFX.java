@@ -153,7 +153,7 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V3_EpsilonIntakeIOInputs inputs) {
     inputs.pivotPosition = new Rotation2d(pivotPositionRotations.getValue());
     inputs.pivotVelocityRadiansPerSecond =
         pivotVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);

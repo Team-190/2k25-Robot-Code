@@ -23,7 +23,7 @@ public class V3_EpsilonIntakeConstants {
           3.0,
           DCMotor.getKrakenX60Foc(1),
           0.0042,
-          Rotation2d.fromDegrees(-90.0),
+          Rotation2d.fromDegrees(0.0),
           Rotation2d.fromDegrees(90.0));
   public static final IntakeParems ROLLER_PARAMS =
       new IntakeParems(
@@ -35,7 +35,7 @@ public class V3_EpsilonIntakeConstants {
   }
 
   @RequiredArgsConstructor
-  public enum IntakeState {
+  public enum IntakePivotState {
     STOW(new Rotation2d()),
     INTAKE_CORAL(new Rotation2d()),
     HANDOFF(new Rotation2d(Units.degreesToRadians(90))),
@@ -71,7 +71,7 @@ public class V3_EpsilonIntakeConstants {
       Rotation2d MAX_ANGLE) {}
 
   // Will add more states later
-  public static enum IntakeRollerStates {
+  public static enum IntakeRollerState {
     STOP(0.0),
     CORAL_INTAKE(6.0),
     ALGAE_INTAKE(12.0),
@@ -80,7 +80,7 @@ public class V3_EpsilonIntakeConstants {
 
     private final double voltage;
 
-    IntakeRollerStates(double voltage) {
+    IntakeRollerState(double voltage) {
       this.voltage = voltage;
     }
 

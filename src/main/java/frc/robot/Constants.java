@@ -47,8 +47,8 @@ public final class Constants {
     V1_STACKUP_SIM,
     V2_REDUNDANCY,
     V2_REDUNDANCY_SIM,
+    V3_EPSILON_SIM,
     V3_EPSILON,
-    V3_EPSILON_SIM
   }
 
   public static void main(String... args) {

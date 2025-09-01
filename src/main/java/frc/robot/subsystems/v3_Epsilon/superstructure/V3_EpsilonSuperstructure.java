@@ -7,8 +7,8 @@ import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.AlgaeEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.util.NTPrefixes;
@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -29,10 +30,9 @@ import org.littletonrobotics.junction.Logger;
 
 /**
  * The V3_EpsilonSuperstructure class manages the coordinated movement and state transitions of the
- * robot's major subsystems including elevator, funnel, manipulator, and intake.
+ * robot's major subsystems including elevator, manipulator, and intake.
  */
 public class V3_EpsilonSuperstructure extends SubsystemBase {
-
   private final Graph<V3_EpsilonSuperstructureStates, EdgeCommand> graph;
   private final ElevatorFSM elevator;
   private final V3_EpsilonIntake intake;
@@ -66,10 +66,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   private EdgeCommand edgeCommand;
 
   /**
-   * Constructs a V3_EpsilonSuperstructure.
+   * Constructs a V2_RedundancySuperstructure.
    *
    * @param elevator The elevator subsystem.
-   * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
    * @param manipulator The manipulator subsystem.
    */
@@ -91,6 +90,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     for (V3_EpsilonSuperstructureStates vertex : V3_EpsilonSuperstructureStates.values()) {
       graph.addVertex(vertex);
     }
+
+    // Add edges between states
+    V3_EpsilonSuperstructureEdges.addEdges(graph, elevator, intake, manipulator);
   }
 
   /**
@@ -99,7 +101,6 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-
     if (RobotMode.disabled()) {
       nextState = null;
     } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
@@ -240,10 +241,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @param goal The target state
    * @return true if the transition is allowed
    */
-  private boolean isEdgeAllowed(
-      EdgeCommand edge, V3_EpsilonSuperstructureStates goal) { // Change later
-    return edge.getAlgaeEdgeType() == AlgaeEdge.NONE
-        || RobotState.isHasAlgae() == (edge.getAlgaeEdgeType() == AlgaeEdge.ALGAE);
+  private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
+    return edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
+        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
   }
 
   /** Resets the superstructure to initial auto state. */
@@ -256,37 +256,43 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     }
   }
 
+  /**
+   * Maps current OI reef height to corresponding elevator position state.
+   *
+   * @return Appropriate superstructure state for current reef height
+   */
   private V3_EpsilonSuperstructureStates getElevatorPosition() {
     switch (RobotState.getOIData().currentReefHeight()) {
-      case STOW_DOWN, CORAL_INTAKE -> {
+      case STOW, CORAL_INTAKE -> {
         return V3_EpsilonSuperstructureStates.STOW_DOWN;
       }
       case L1 -> {
-        return V3_EpsilonSuperstructureStates.L1_PREP;
+        return V3_EpsilonSuperstructureStates.L1;
       }
       case L2 -> {
-        return V3_EpsilonSuperstructureStates.L2_PREP;
+        return V3_EpsilonSuperstructureStates.L2;
       }
       case L3 -> {
-        return V3_EpsilonSuperstructureStates.L3_PREP;
+        return V3_EpsilonSuperstructureStates.L3;
       }
       case L4 -> {
-        return V3_EpsilonSuperstructureStates.L4_PREP;
+        return V3_EpsilonSuperstructureStates.L4;
       }
       case ALGAE_INTAKE_BOTTOM -> {
-        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+        return V3_EpsilonSuperstructureStates.L2_ALGAE;
       }
       case ALGAE_INTAKE_TOP -> {
-        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+        return V3_EpsilonSuperstructureStates.L3_ALGAE;
       }
       case ALGAE_SCORE -> {
-        return V3_EpsilonSuperstructureStates.BARGE_PREP;
+        return V3_EpsilonSuperstructureStates.BARGE;
       }
       default -> {
-        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+        return V3_EpsilonSuperstructureStates.START;
       }
     }
   }
+
   // --- Control Commands ---
 
   /**
@@ -316,7 +322,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "At Goal")
   public boolean atGoal() {
-    return currentState == targetState;
+    return currentState == targetState
+        && elevator.atGoal(targetState.getPose().getElevatorHeight())
+        && intake.pivotAtGoal(targetState.getPose().getIntakeState())
+        && manipulator.armAtGoal(targetState.getPose().getArmState());
   }
 
   /**
@@ -359,6 +368,15 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   }
 
   /**
+   * Returns a short command to run the previous state, useful for temporary state restoration.
+   *
+   * @return Command to go back to the previous state
+   */
+  public Command runPreviousState() {
+    return runGoal(() -> previousState);
+  }
+
+  /**
    * Converts a ReefState (field-level enum) into a corresponding elevator goal and runs it.
    *
    * @param goal Supplier of ReefState
@@ -370,13 +388,13 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
           // Translate ReefState to superstructure state
           switch (goal.get()) {
             case L1:
-              return V3_EpsilonSuperstructureStates.L1_PREP;
+              return V3_EpsilonSuperstructureStates.L1;
             case L2:
-              return V3_EpsilonSuperstructureStates.L2_PREP;
+              return V3_EpsilonSuperstructureStates.L2;
             case L3:
-              return V3_EpsilonSuperstructureStates.L3_PREP;
+              return V3_EpsilonSuperstructureStates.L3;
             case L4:
-              return V3_EpsilonSuperstructureStates.L4_PREP;
+              return V3_EpsilonSuperstructureStates.L4;
             default:
               return V3_EpsilonSuperstructureStates.STOW_DOWN;
           }
@@ -394,18 +412,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return runActionWithTimeout(
         () ->
             switch (goal.get()) {
-              case L1 -> V3_EpsilonSuperstructureStates.L1_PREP;
-              case L2 -> V3_EpsilonSuperstructureStates.L2_PREP;
-              case L3 -> V3_EpsilonSuperstructureStates.L3_PREP;
-              case L4 -> V3_EpsilonSuperstructureStates.L4_PREP;
-              default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
-            },
-        () ->
-            switch (goal.get()) {
-              case L1 -> V3_EpsilonSuperstructureStates.L1_PREP;
-              case L2 -> V3_EpsilonSuperstructureStates.L2_PREP;
-              case L3 -> V3_EpsilonSuperstructureStates.L3_PREP;
-              case L4 -> V3_EpsilonSuperstructureStates.L4_PREP;
+              case L1 -> V3_EpsilonSuperstructureStates.L1;
+              case L2 -> V3_EpsilonSuperstructureStates.L2;
+              case L3 -> V3_EpsilonSuperstructureStates.L3;
+              case L4 -> V3_EpsilonSuperstructureStates.L4;
               default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
             },
         () ->
@@ -419,12 +429,22 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   }
 
   /**
-   * Returns a short command to run the previous state, useful for temporary state restoration.
+   * Runs an action by going to a pose, performing the action, waiting, and returning.
    *
-   * @return Command to go back to the previous state
+   * @param pose The pose to return to after action
+   * @param action The action to perform
+   * @param timeout How long to wait during the action phase (in seconds)
+   * @return Full command sequence
    */
-  public Command runPreviousState() {
-    return runGoal(() -> previousState);
+  public Command runActionWithTimeout(
+      Supplier<V3_EpsilonSuperstructureStates> pose,
+      Supplier<V3_EpsilonSuperstructureStates> action,
+      DoubleSupplier timeout) {
+    return Commands.sequence(
+            runGoal(action), // Run the action
+            Commands.waitUntil(() -> atGoal()),
+            Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
+        .finallyDo(() -> setGoal(pose.get())); // Return to original pose
   }
 
   /**
@@ -445,15 +465,88 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         .finallyDo(() -> setGoal(pose)); // Return to original pose
   }
 
+  /**
+   * Smart overload that runs an action using a cached pose–action mapping, determining the pose
+   * from the action.
+   *
+   * @param action The scoring or action state
+   * @param timeout Timeout for the action duration
+   * @return Command sequence to perform and recover from the action
+   */
   public Command runActionWithTimeout(
-      Supplier<V3_EpsilonSuperstructureStates> pose,
-      Supplier<V3_EpsilonSuperstructureStates> action,
-      DoubleSupplier timeout) {
-    return Commands.sequence(
-            runGoal(action), // Run the action
-            Commands.waitUntil(() -> atGoal()),
-            Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
-        .finallyDo(() -> setGoal(pose.get())); // Return to original pose
+      Supplier<V3_EpsilonSuperstructureStates> action, DoubleSupplier timeout) {
+    // Maps each action state to its corresponding pose state
+    Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> actionPoseMap =
+        new HashMap<>() {
+          {
+            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1);
+            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2);
+            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3);
+            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4);
+            put(V3_EpsilonSuperstructureStates.BARGE_SCORE, V3_EpsilonSuperstructureStates.BARGE);
+            put(
+                V3_EpsilonSuperstructureStates.PROCESSOR_SCORE,
+                V3_EpsilonSuperstructureStates.PROCESSOR);
+          }
+        };
+
+    // Reverse the map so we can look up the pose from action if needed
+    Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> poseActionMap =
+        actionPoseMap.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    // Try to look up pose from action (either direction works)
+    if (actionPoseMap.containsKey(action.get())) {
+      return runActionWithTimeout(() -> actionPoseMap.get(action.get()), action, timeout);
+    } else if (actionPoseMap.containsValue(action.get())) {
+      return runActionWithTimeout(action, () -> poseActionMap.get(action.get()), timeout);
+    } else return Commands.none(); // If action is not recognized, do nothing
+  }
+
+  /**
+   * Smart overload that runs an action using a cached pose–action mapping, determining the pose
+   * from the action.
+   *
+   * @param action The scoring or action state
+   * @param timeout Timeout for the action duration
+   * @return Command sequence to perform and recover from the action
+   */
+  public Command runActionWithTimeout(V3_EpsilonSuperstructureStates action, double timeout) {
+    // Maps each action state to its corresponding pose state
+    Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> actionPoseMap =
+        new HashMap<>() {
+          {
+            put(V3_EpsilonSuperstructureStates.L1_SCORE, V3_EpsilonSuperstructureStates.L1);
+            put(V3_EpsilonSuperstructureStates.L2_SCORE, V3_EpsilonSuperstructureStates.L2);
+            put(V3_EpsilonSuperstructureStates.L3_SCORE, V3_EpsilonSuperstructureStates.L3);
+            put(V3_EpsilonSuperstructureStates.L4_SCORE, V3_EpsilonSuperstructureStates.L4);
+            put(V3_EpsilonSuperstructureStates.BARGE_SCORE, V3_EpsilonSuperstructureStates.BARGE);
+            put(
+                V3_EpsilonSuperstructureStates.PROCESSOR_SCORE,
+                V3_EpsilonSuperstructureStates.PROCESSOR);
+          }
+        };
+
+    // Reverse the map so we can look up the pose from action if needed
+    Map<V3_EpsilonSuperstructureStates, V3_EpsilonSuperstructureStates> poseActionMap =
+        actionPoseMap.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    // Try to look up pose from action (either direction works)
+    if (actionPoseMap.containsKey(action)) {
+      return runActionWithTimeout(actionPoseMap.get(action), action, timeout);
+    } else if (actionPoseMap.containsValue(action)) {
+      return runActionWithTimeout(action, poseActionMap.get(action), timeout);
+    } else return Commands.none(); // If action is not recognized, do nothing
+  }
+
+  /**
+   * Updates the superstructure to match the current OI-defined reef height.
+   *
+   * @return Command to move to elevator position state
+   */
+  public Command setPosition() {
+    return runGoal(() -> getElevatorPosition()).withTimeout(0.02);
   }
 
   /**
@@ -463,9 +556,5 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   public boolean elevatorAtGoal() {
     return elevator.atGoal();
-  }
-
-  public Command setPosition() {
-    return runGoal(getElevatorPosition()).withTimeout(0.02);
   }
 }

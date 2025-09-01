@@ -37,10 +37,10 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
             V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
             V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO(),
             V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(),
-            V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(),
-            V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRadians(),
+            Double.NEGATIVE_INFINITY,
+            Double.POSITIVE_INFINITY,
             true,
-            V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians());
+            0.0);
     rollerMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
@@ -92,8 +92,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kV().get(),
             V3_EpsilonManipulatorConstants.EMPTY_GAINS.kA().get());
     armFeedbackController.enableContinuousInput(
-        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MIN_ANGLE().getRadians(),
-        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MAX_ANGLE().getRadians());
+        -Math.PI, Math.PI); // Wrap around at -180 and 180 degrees
 
     armAppliedVolts = 0.0;
     rollerAppliedVolts = 0.0;
@@ -134,7 +133,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
     inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
   }
 
-  public void setPivotVoltage(double volts) {
+  public void setArmVoltage(double volts) {
     isClosedLoop = false;
     armAppliedVolts = volts;
   }
@@ -143,7 +142,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
     rollerAppliedVolts = volts;
   }
 
-  public void setPivotGoal(Rotation2d rotation) {
+  public void setArmGoal(Rotation2d rotation) {
     isClosedLoop = true;
     armFeedbackController.setGoal(rotation.getRadians());
   }

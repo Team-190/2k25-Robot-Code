@@ -31,7 +31,7 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
                 V3_EpsilonIntakeConstants.PIVOT_PARAMS.PIVOT_GEAR_RATIO()),
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.MOTOR(),
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.PIVOT_GEAR_RATIO(),
-            0.1,
+            1,
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.MIN_ANGLE().getRadians(),
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.MAX_ANGLE().getRadians(),
             true,
@@ -66,7 +66,7 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(V3_EpsilonIntakeIOInputs inputs) {
     if (isClosedLoop) {
       pivotAppliedVoltage =
           armFeedbackController.calculate(pivotMotorSim.getAngleRads())

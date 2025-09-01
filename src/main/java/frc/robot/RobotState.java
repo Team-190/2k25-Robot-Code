@@ -67,6 +67,9 @@ public class RobotState {
       case V2_REDUNDANCY:
       case V2_REDUNDANCY_SIM:
         break;
+      case V3_EPSILON:
+      case V3_EPSILON_SIM:
+        break;
     }
 
     OIData = new OperatorInputData(ReefPose.LEFT, ReefState.STOW);
