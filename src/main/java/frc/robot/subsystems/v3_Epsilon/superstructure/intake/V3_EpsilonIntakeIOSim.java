@@ -27,7 +27,7 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
                 V3_EpsilonIntakeConstants.PIVOT_PARAMS.MOTOR(),
-                V3_EpsilonIntakeConstants.PIVOT_PARAMS.PIVOT_GEAR_RATIO(),
+                V3_EpsilonIntakeConstants.PIVOT_PARAMS.MASS_KG(),
                 V3_EpsilonIntakeConstants.PIVOT_PARAMS.PIVOT_GEAR_RATIO()),
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.MOTOR(),
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.PIVOT_GEAR_RATIO(),

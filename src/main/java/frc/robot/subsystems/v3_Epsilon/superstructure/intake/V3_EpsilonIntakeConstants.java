@@ -2,7 +2,6 @@ package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +13,9 @@ public class V3_EpsilonIntakeConstants {
   public static final IntakeCurrentLimits CURRENT_LIMITS =
       new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
 
-  public static final Gains PIVOT_GAINS = new Gains(100.0, 0.0, 0.5, 0.0, 0.0, 0.0);
+  public static final Gains PIVOT_GAINS = new Gains(1.0, 0.01, 0.0, 0.0, 0.0, 0.0);
   public static final Constraints PIVOT_CONSTRAINTS =
-      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(0.01));
+      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(3.0));
 
   public static final IntakeParems PIVOT_PARAMS =
       new IntakeParems(
@@ -24,10 +23,10 @@ public class V3_EpsilonIntakeConstants {
           DCMotor.getKrakenX60Foc(1),
           0.0042,
           Rotation2d.fromDegrees(0.0),
-          Rotation2d.fromDegrees(90.0));
+          Rotation2d.fromDegrees(124.6));
   public static final IntakeParems ROLLER_PARAMS =
       new IntakeParems(
-          1, DCMotor.getKrakenX60Foc(1), 0, new Rotation2d(), Rotation2d.fromDegrees(90.0));
+          1, DCMotor.getKrakenX60Foc(1), 0, new Rotation2d(), Rotation2d.fromDegrees(0));
 
   static {
     PIVOT_CAN_ID = 60;
@@ -36,10 +35,10 @@ public class V3_EpsilonIntakeConstants {
 
   @RequiredArgsConstructor
   public enum IntakePivotState {
-    STOW(new Rotation2d()),
-    INTAKE_CORAL(new Rotation2d()),
-    HANDOFF(new Rotation2d(Units.degreesToRadians(90))),
-    L1(new Rotation2d()),
+    STOW(Rotation2d.fromDegrees(0)),
+    INTAKE_CORAL(Rotation2d.fromDegrees(123.6)),
+    HANDOFF(Rotation2d.fromDegrees(0)),
+    L1(Rotation2d.fromDegrees(-82 + 123.6)),
     INTAKE_ALGAE(new Rotation2d());
 
     @Getter private final Rotation2d angle;

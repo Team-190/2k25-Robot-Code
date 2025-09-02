@@ -2,7 +2,6 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
@@ -20,7 +19,6 @@ import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
@@ -126,17 +124,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
-        Commands.waitSeconds(3),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
-        Commands.waitSeconds(3),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.L4),
-        Commands.waitSeconds(3),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.L2),
-        Commands.waitSeconds(3),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.L3_SCORE),
-        Commands.waitSeconds(3),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.L1));
+    return superstructure.allTransition();
   }
 }

@@ -287,9 +287,9 @@ public class V3_EpsilonSuperstructureEdges {
     Command logCheck =
         Commands.runOnce(
             () -> {
-              boolean elevatorOk = elevator.atGoal(pose.getElevatorHeight());
-              boolean intakeOk = intake.pivotAtGoal(pose.getIntakeState());
-              boolean armOk = manipulator.armAtGoal(pose.getArmState());
+              boolean elevatorOk = elevator.atGoal();
+              boolean intakeOk = intake.pivotAtGoal();
+              boolean armOk = manipulator.armAtGoal();
               System.out.println(
                   "Checking pose for: "
                       + state.toString()
@@ -302,13 +302,12 @@ public class V3_EpsilonSuperstructureEdges {
             });
 
     Command wait =
-        Commands.waitUntil(
-            () ->
-                elevator.atGoal(pose.getElevatorHeight())
-                    && intake.pivotAtGoal(pose.getIntakeState())
-                    && manipulator.armAtGoal(pose.getArmState()));
+        Commands.sequence(
+            Commands.waitSeconds(0.02),
+            Commands.waitUntil(
+                () -> elevator.atGoal() && intake.pivotAtGoal() && manipulator.armAtGoal()));
 
     // Run the log once right before starting the wait
-    return Commands.sequence(logCheck, wait);
+    return Commands.sequence(wait, logCheck);
   }
 }

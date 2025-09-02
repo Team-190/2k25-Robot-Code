@@ -24,12 +24,12 @@ public enum V3_EpsilonSuperstructureStates {
   GROUND_ACQUISITION(
       "GROUND_ACQUISITION",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
+          ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
       SubsystemActions.empty()),
   GROUND_INTAKE(
       "GROUND_INTAKE",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
+          ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
       new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CORAL_INTAKE)),
 
   L1(

@@ -328,6 +328,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         && manipulator.armAtGoal(targetState.getPose().getArmState());
   }
 
+  public Command waitUntilAtGoal() {
+    return Commands.sequence(Commands.waitSeconds(.02), Commands.waitUntil(() -> atGoal()));
+  }
+
   /**
    * Runs a temporary override action, returning to a previous goal after.
    *
@@ -442,7 +446,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
       DoubleSupplier timeout) {
     return Commands.sequence(
             runGoal(action), // Run the action
-            Commands.waitUntil(() -> atGoal()),
+            waitUntilAtGoal(),
             Commands.defer(() -> Commands.waitSeconds(timeout.getAsDouble()), Set.of()))
         .finallyDo(() -> setGoal(pose.get())); // Return to original pose
   }
@@ -459,7 +463,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
       V3_EpsilonSuperstructureStates pose, V3_EpsilonSuperstructureStates action, double timeout) {
     return Commands.sequence(
             runGoal(action), // Run the action
-            Commands.waitUntil(() -> atGoal()),
+            waitUntilAtGoal(),
             Commands.waitSeconds(timeout),
             runGoal(pose))
         .finallyDo(() -> setGoal(pose)); // Return to original pose
@@ -556,5 +560,25 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   public boolean elevatorAtGoal() {
     return elevator.atGoal();
+  }
+
+  public Command allTransition() {
+    Command all = runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN);
+    for (var source : V3_EpsilonSuperstructureStates.values()) {
+      for (var sink : V3_EpsilonSuperstructureStates.values()) {
+        if (source == sink) continue;
+        var edge = graph.getEdge(source, sink);
+        if (edge != null) {
+
+          if (source != V3_EpsilonSuperstructureStates.START
+              && sink != V3_EpsilonSuperstructureStates.START
+              && source != V3_EpsilonSuperstructureStates.OVERRIDE) {
+            all = all.andThen(runGoal(sink), waitUntilAtGoal());
+            all = all.andThen(runGoal(source), waitUntilAtGoal());
+          }
+        }
+      }
+    }
+    return all;
   }
 }

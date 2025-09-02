@@ -67,7 +67,7 @@ public class V3_EpsilonManipulatorConstants {
         new Constraints(
             new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
             new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
-            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1.5)));
+            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
 
     ROLLER_CAN_ID = 30;
     ROLLER_CURRENT_THRESHOLD = 60.0;

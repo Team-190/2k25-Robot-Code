@@ -4,10 +4,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import java.util.Set;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,8 +15,14 @@ public class V3_EpsilonManipulator {
   private final V3_EpsilonManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs;
 
-  private ManipulatorArmState armState;
+  @AutoLogOutput(key = "Manipulator/Arm Goal")
+  @Getter
+  private ManipulatorArmState armGoal;
+
+  @AutoLogOutput(key = "Manipulator/Roller Goal")
+  @Getter
   private ManipulatorRollerState rollerGoal;
+
   private boolean isClosedLoop;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
@@ -24,7 +30,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    armState = ManipulatorArmState.VERTICAL_UP;
+    armGoal = ManipulatorArmState.VERTICAL_UP;
     rollerGoal = ManipulatorRollerState.STOP;
   }
 
@@ -33,7 +39,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      io.setArmGoal(armState.getAngle());
+      io.setArmGoal(armGoal.getAngle());
     }
 
     if (hasAlgae()
@@ -70,7 +76,7 @@ public class V3_EpsilonManipulator {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          armState = goal;
+          armGoal = goal;
         });
   }
 
@@ -104,13 +110,14 @@ public class V3_EpsilonManipulator {
 
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean armAtGoal() {
-    return inputs.armPosition.getRadians() - armState.getAngle().getRadians()
-        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
+    return armAtGoal(armGoal);
   }
 
   public boolean armAtGoal(ManipulatorArmState state) {
-    return inputs.armPosition.getRadians() - state.getAngle().getRadians()
-        <= V2_RedundancyManipulatorConstants.CONSTRAINTS.GOAL_TOLERANCE_RADIANS().get();
+    return Math.hypot(
+            inputs.armPosition.getCos() - state.getAngle().getCos(),
+            inputs.armPosition.getSin() - state.getAngle().getSin())
+        <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
   public Command waitUntilArmAtGoal() {

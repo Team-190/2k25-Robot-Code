@@ -123,6 +123,7 @@ public class Robot extends LoggedRobot {
 
       case SIM:
         // Running a physics simulator, log to NT
+        setUseTiming(false);
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
