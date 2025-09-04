@@ -573,8 +573,16 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
           if (source != V3_EpsilonSuperstructureStates.START
               && sink != V3_EpsilonSuperstructureStates.START
               && source != V3_EpsilonSuperstructureStates.OVERRIDE) {
-            all = all.andThen(runGoal(sink), waitUntilAtGoal());
-            all = all.andThen(runGoal(source), waitUntilAtGoal());
+            all =
+                all.andThen(
+                    runGoal(sink),
+                    runOnce(() -> System.out.println("Initial Pose:" + sink)),
+                    Commands.waitSeconds(2));
+            all =
+                all.andThen(
+                    runGoal(source),
+                    runOnce(() -> System.out.println("Final Pose:" + source)),
+                    Commands.waitSeconds(2));
           }
         }
       }
