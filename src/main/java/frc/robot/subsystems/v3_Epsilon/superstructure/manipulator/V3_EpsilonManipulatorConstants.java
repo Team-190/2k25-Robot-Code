@@ -148,7 +148,8 @@ public class V3_EpsilonManipulatorConstants {
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
-    SAFE_ANGLE(Rotation2d.fromDegrees(150));
+    SAFE_ANGLE(Rotation2d.fromDegrees(150)),
+    EMERGENCY_EJECT_ANGLE(Rotation2d.fromDegrees(90));
 
     private final Rotation2d angle;
 
