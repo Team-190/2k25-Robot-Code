@@ -149,17 +149,17 @@ public class V3_EpsilonManipulator {
     io.setManipulatorState(state);
   }
 
-  public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
+  public void setRollerGoal(ManipulatorRollerState l4Score) {
     if (hasAlgae()
         && Set.of(
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.STOP)
-            .contains(rollerGoal)) {
+            .contains(l4Score)) {
 
       io.setRollerVoltage(holdVoltage());
     } else {
-      io.setRollerVoltage(rollerGoal.getVoltage());
+      io.setRollerVoltage(l4Score.getVoltage());
     }
   }
 

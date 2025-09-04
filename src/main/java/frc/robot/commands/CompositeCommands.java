@@ -22,11 +22,12 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -655,13 +656,30 @@ public class CompositeCommands {
   }
 
   public static final class V3_EpsilonCompositeCommands {
+
+    public static final Command intakeCoralDriverSequence(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
+          Commands.waitSeconds(0.2),
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()));
+      // superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE),
+      // Commands.waitSeconds(0.2),
+      // superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+    }
+
     public static final Command emergencyEject(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           superstructure.override(
               () -> {
-                manipulator.setArmGoal(ManipulatorArmState.EMERGENCY_EJECT_ANGLE);
-                manipulator.setRollerGoal(ManipulatorRollerState.L4_SCORE);
+                manipulator.setArmGoal(frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState.EMERGENCY_EJECT_ANGLE);
+                manipulator.setRollerGoal(frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState.L4_SCORE);
               }));
     }
 

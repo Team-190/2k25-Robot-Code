@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class V3_EpsilonIntake {
   private final V3_EpsilonIntakeIO io;
   private final V3_EpsilonIntakeIOInputsAutoLogged inputs;
+  private final double INTAKE_CORAL_THRESHOLD = 1.0;
 
   @Getter
   @AutoLogOutput(key = "Intake/Pivot Goal")
@@ -42,9 +43,14 @@ public class V3_EpsilonIntake {
     }
   }
 
+  // Double check if this is right
   @AutoLogOutput(key = "Intake/Has Coral")
   public boolean hasCoral() {
-    return false; // Udpate later
+    if (Math.abs(inputs.rollerTorqueCurrentAmps) > INTAKE_CORAL_THRESHOLD) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @AutoLogOutput(key = "Intake/At Goal")
