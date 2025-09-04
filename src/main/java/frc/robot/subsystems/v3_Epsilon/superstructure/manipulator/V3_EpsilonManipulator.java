@@ -72,12 +72,9 @@ public class V3_EpsilonManipulator {
         () -> io.setArmVoltage(0));
   }
 
-  public Command setArmGoal(ManipulatorArmState goal) {
-    return Commands.runOnce(
-        () -> {
-          isClosedLoop = true;
-          armGoal = goal;
-        });
+  public void setArmGoal(ManipulatorArmState goal) {
+    isClosedLoop = true;
+    armGoal = goal;
   }
 
   public void updateArmGains(

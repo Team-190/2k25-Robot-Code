@@ -101,6 +101,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE))
+      currentState.getAction().get(intake, manipulator);
     if (RobotMode.disabled()) {
       nextState = null;
     } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
