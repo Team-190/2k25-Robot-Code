@@ -2,10 +2,13 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -19,6 +22,7 @@ import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
@@ -39,6 +43,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonSuperstructure superstructure;
 
   // Controller
+  CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
 
@@ -100,7 +105,14 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     }
   }
 
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    driver
+        .rightTrigger()
+        .whileTrue(
+            V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
+                superstructure, intake, manipulator))
+        .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+  }
 
   private void configureAutos() {}
 
@@ -124,6 +136,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return superstructure.allTransition();
+    return Commands.sequence(
+        V3_EpsilonCompositeCommands.intakeCoralDriverSequence(superstructure, intake, manipulator)
+    );
   }
 }
