@@ -72,12 +72,9 @@ public class V3_EpsilonManipulator {
         () -> io.setArmVoltage(0));
   }
 
-  public Command setArmGoal(ManipulatorArmState goal) {
-    return Commands.runOnce(
-        () -> {
-          isClosedLoop = true;
-          armGoal = goal;
-        });
+  public void setArmGoal(ManipulatorArmState goal) {
+    isClosedLoop = true;
+    armGoal = goal;
   }
 
   public void updateArmGains(
@@ -168,5 +165,12 @@ public class V3_EpsilonManipulator {
 
   public Rotation2d getArmAngle() {
     return inputs.armPosition;
+  }
+
+  @AutoLogOutput(key = "Manipulator/Safe Position")
+  public boolean isSafePosition() {
+    double cosThresh = Math.cos(Math.PI - ManipulatorArmState.SAFE_ANGLE.getAngle().getRadians());
+    // unsafe if -cos(theta) >= cosThresh
+    return (-inputs.armPosition.getCos()) < cosThresh;
   }
 }
