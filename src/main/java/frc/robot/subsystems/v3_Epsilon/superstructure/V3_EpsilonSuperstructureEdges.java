@@ -53,7 +53,8 @@ public class V3_EpsilonSuperstructureEdges {
     // Create edges with placeholder commands (null)
     importer.setEdgeWithAttributesFactory(
         attributes -> {
-          V3_EpsilonSuperstructureEdges.GamePieceEdge type = V3_EpsilonSuperstructureEdges.GamePieceEdge.UNCONSTRAINED;
+          V3_EpsilonSuperstructureEdges.GamePieceEdge type =
+              V3_EpsilonSuperstructureEdges.GamePieceEdge.UNCONSTRAINED;
 
           if (attributes.containsKey("type")) {
             String value = attributes.get("type").getValue();
@@ -94,7 +95,8 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(e);
 
       Map<String, Attribute> attrs = edgeAttrs.get(e);
-      V3_EpsilonSuperstructureEdges.GamePieceEdge type = V3_EpsilonSuperstructureEdges.GamePieceEdge.UNCONSTRAINED;
+      V3_EpsilonSuperstructureEdges.GamePieceEdge type =
+          V3_EpsilonSuperstructureEdges.GamePieceEdge.UNCONSTRAINED;
 
       // START --- ADDED CODE
       // Check for the 'requires' attribute to determine if motion should be
@@ -115,8 +117,9 @@ public class V3_EpsilonSuperstructureEdges {
 
       if (attrs != null && attrs.get("type") != null) {
         try {
-          type = V3_EpsilonSuperstructureEdges.GamePieceEdge.valueOf(
-              attrs.get("type").getValue().toUpperCase());
+          type =
+              V3_EpsilonSuperstructureEdges.GamePieceEdge.valueOf(
+                  attrs.get("type").getValue().toUpperCase());
         } catch (IllegalArgumentException ex) {
           System.err.println("Unknown edge type: " + attrs.get("type").getValue());
         }
@@ -140,41 +143,30 @@ public class V3_EpsilonSuperstructureEdges {
   @Builder(toBuilder = true)
   @Getter
   public static class EdgeCommand extends DefaultEdge {
-    @Setter
-    private Command command;
-    @Builder.Default
-    private GamePieceEdge gamePieceEdge = GamePieceEdge.UNCONSTRAINED;
+    @Setter private Command command;
+    @Builder.Default private GamePieceEdge gamePieceEdge = GamePieceEdge.UNCONSTRAINED;
     // START --- ADDED CODE
-    @Setter
-    @Builder.Default
-    private boolean requiresElevator = false;
-    @Setter
-    @Builder.Default
-    private boolean requiresArm = false;
+    @Setter @Builder.Default private boolean requiresElevator = false;
+    @Setter @Builder.Default private boolean requiresArm = false;
     // END --- ADDED CODE
   }
 
   /**
-   * Gets the command to execute for a given edge in the superstructure state
-   * graph. This command
-   * typically involves coordinating the elevator, funnel, intake, and manipulator
-   * subsystems to
+   * Gets the command to execute for a given edge in the superstructure state graph. This command
+   * typically involves coordinating the elevator, funnel, intake, and manipulator subsystems to
    * move from one state to another.
    *
-   * @param from             The starting state of the superstructure.
-   * @param to               The target state of the superstructure.
-   * @param elevator         The elevator subsystem.
-   * @param intake           The intake subsystem.
-   * @param manipulator      The manipulator subsystem.
-   * @param requiresElevator Flag indicating the elevator must finish its move
-   *                         before other
-   *                         mechanisms start.
-   * @param requiresArm      Flag indicating the arm/intake must finish its move
-   *                         before the elevator
-   *                         starts.
-   * @return A {@link Command} that, when executed, transitions the superstructure
-   *         from the 'from'
-   *         state to the 'to' state.
+   * @param from The starting state of the superstructure.
+   * @param to The target state of the superstructure.
+   * @param elevator The elevator subsystem.
+   * @param intake The intake subsystem.
+   * @param manipulator The manipulator subsystem.
+   * @param requiresElevator Flag indicating the elevator must finish its move before other
+   *     mechanisms start.
+   * @param requiresArm Flag indicating the arm/intake must finish its move before the elevator
+   *     starts.
+   * @return A {@link Command} that, when executed, transitions the superstructure from the 'from'
+   *     state to the 'to' state.
    */
   private static Command getEdgeCommand(
       V3_EpsilonSuperstructureStates from,
@@ -190,20 +182,23 @@ public class V3_EpsilonSuperstructureEdges {
 
     if (requiresElevator) {
       // Elevator moves and waits, THEN other mechanisms move.
-      moveCommand = Commands.sequence(
-          pose.setElevatorHeight(elevator),
-          elevator.waitUntilAtGoal(),
-          pose.asCommand(
-              elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
-      );
+      moveCommand =
+          Commands.sequence(
+              pose.setElevatorHeight(elevator),
+              elevator.waitUntilAtGoal(),
+              pose.asCommand(
+                  elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
+              );
 
     } else if (requiresArm) {
       // Arm moves to a safe position and waits, THEN other mechanisms move.
-      moveCommand = Commands.sequence(
-          pose.setManipulatorState(manipulator),
-          Commands.waitUntil(manipulator::isSafePosition),
-          pose.asCommand(elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
-      );
+      moveCommand =
+          Commands.sequence(
+              pose.setManipulatorState(manipulator),
+              Commands.waitUntil(manipulator::isSafePosition),
+              pose.asCommand(
+                  elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
+              );
     } else {
       // Default case: All mechanisms move in parallel.
       moveCommand = pose.asCommand(elevator, intake, manipulator);
@@ -217,18 +212,15 @@ public class V3_EpsilonSuperstructureEdges {
   }
 
   /**
-   * Adds edges to the superstructure state graph based on the provided list of
-   * edges and algae
+   * Adds edges to the superstructure state graph based on the provided list of edges and algae
    * condition.
    *
-   * @param graph       The graph to which edges are added.
-   * @param edges       A list of {@link Edge} objects representing the
-   *                    transitions between states.
-   * @param type        The {@link GamePieceEdge} type associated with these
-   *                    edges.
-   * @param elevator    The elevator subsystem.
+   * @param graph The graph to which edges are added.
+   * @param edges A list of {@link Edge} objects representing the transitions between states.
+   * @param type The {@link GamePieceEdge} type associated with these edges.
+   * @param elevator The elevator subsystem.
    * @param manipulator The manipulator subsystem.
-   * @param intake      The intake subsystem.
+   * @param intake The intake subsystem.
    */
   private static void addEdges(
       Graph<V3_EpsilonSuperstructureStates, EdgeCommand> graph,
@@ -254,13 +246,12 @@ public class V3_EpsilonSuperstructureEdges {
   }
 
   /**
-   * Adds all predefined edges to the superstructure state graph, categorized by
-   * algae condition.
+   * Adds all predefined edges to the superstructure state graph, categorized by algae condition.
    *
-   * @param graph       The graph to which edges are added.
-   * @param elevator    The elevator subsystem.
+   * @param graph The graph to which edges are added.
+   * @param elevator The elevator subsystem.
    * @param manipulator The manipulator subsystem.
-   * @param intake      The intake subsystem.
+   * @param intake The intake subsystem.
    */
   public static void addEdges(
       Graph<V3_EpsilonSuperstructureStates, EdgeCommand> graph,
@@ -292,26 +283,28 @@ public class V3_EpsilonSuperstructureEdges {
     V3_EpsilonSuperstructurePose pose = state.getPose();
 
     // Add this command to log the check's status
-    Command logCheck = Commands.runOnce(
-        () -> {
-          boolean elevatorOk = elevator.atGoal();
-          boolean intakeOk = intake.pivotAtGoal();
-          boolean armOk = manipulator.armAtGoal();
-          System.out.println(
-              "Checking pose for: "
-                  + state.toString()
-                  + " -> Elevator OK: "
-                  + elevatorOk
-                  + ", Intake OK: "
-                  + intakeOk
-                  + ", Arm OK: "
-                  + armOk);
-        });
+    Command logCheck =
+        Commands.runOnce(
+            () -> {
+              boolean elevatorOk = elevator.atGoal();
+              boolean intakeOk = intake.pivotAtGoal();
+              boolean armOk = manipulator.armAtGoal();
+              System.out.println(
+                  "Checking pose for: "
+                      + state.toString()
+                      + " -> Elevator OK: "
+                      + elevatorOk
+                      + ", Intake OK: "
+                      + intakeOk
+                      + ", Arm OK: "
+                      + armOk);
+            });
 
-    Command wait = Commands.sequence(
-        Commands.waitSeconds(0.02),
-        Commands.waitUntil(
-            () -> elevator.atGoal() && intake.pivotAtGoal() && manipulator.armAtGoal()));
+    Command wait =
+        Commands.sequence(
+            Commands.waitSeconds(0.02),
+            Commands.waitUntil(
+                () -> elevator.atGoal() && intake.pivotAtGoal() && manipulator.armAtGoal()));
 
     // Run the log once right before starting the wait
     return Commands.sequence(wait, logCheck);
