@@ -34,8 +34,6 @@ public class V3_EpsilonManipulatorConstants {
     ARM_PARAMETERS =
         new ArmParameters(
             DCMotor.getKrakenX60Foc(1),
-            Rotation2d.fromDegrees(-77.0),
-            Rotation2d.fromDegrees(75.0),
             1,
             90.0,
             0.5);
@@ -130,8 +128,6 @@ public class V3_EpsilonManipulatorConstants {
 
   public static record ArmParameters(
       DCMotor MOTOR_CONFIG,
-      Rotation2d MIN_ANGLE,
-      Rotation2d MAX_ANGLE,
       int NUM_MOTORS,
       double GEAR_RATIO,
       double LENGTH_METERS) {}
@@ -152,7 +148,10 @@ public class V3_EpsilonManipulatorConstants {
 
     private final Rotation2d angle;
 
-    public Rotation2d getAngle() {
+    public Rotation2d getAngle(Side side) {
+      if (side == Side.NEGATIVE) {
+        return angle.unaryMinus();
+      }
       return angle;
     }
   }
@@ -177,5 +176,10 @@ public class V3_EpsilonManipulatorConstants {
     public double getVoltage() {
       return voltage;
     }
+  }
+
+  public enum Side {
+    POSITIVE,
+    NEGATIVE
   }
 }

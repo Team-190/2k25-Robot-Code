@@ -1,9 +1,12 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
@@ -15,7 +18,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.AccelerationUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -56,18 +61,21 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armConfig = new TalonFXConfiguration();
 
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    armConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT();
+    armConfig.CurrentLimits.SupplyCurrentLimit = V3_EpsilonManipulatorConstants.CURRENT_LIMITS
+        .MANIPULATOR_SUPPLY_CURRENT_LIMIT();
     armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    armConfig.Feedback.SensorToMechanismRatio =
-        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
-    armConfig.Slot0 =
-        Slot0Configs.from(V3_EpsilonManipulatorConstants.EMPTY_GAINS.toTalonFXSlotConfigs());
-    armConfig.Slot1 =
-        Slot1Configs.from(V3_EpsilonManipulatorConstants.CORAL_GAINS.toTalonFXSlotConfigs());
-    armConfig.Slot2 =
-        Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
+    armConfig.Feedback.SensorToMechanismRatio = V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
+    armConfig.Slot0 = Slot0Configs.from(V3_EpsilonManipulatorConstants.EMPTY_GAINS.toTalonFXSlotConfigs());
+    armConfig.Slot1 = Slot1Configs.from(V3_EpsilonManipulatorConstants.CORAL_GAINS.toTalonFXSlotConfigs());
+    armConfig.Slot2 = Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    armConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    armConfig.MotionMagic = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(AngularAcceleration.ofRelativeUnits(
+            V3_EpsilonManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared().get(),
+            RotationsPerSecondPerSecond))
+        .withMotionMagicCruiseVelocity(AngularVelocity.ofRelativeUnits(
+            V3_EpsilonManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get(), RotationsPerSecond));
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -83,8 +91,8 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonManipulatorConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = V3_EpsilonManipulatorConstants.CURRENT_LIMITS
+        .ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
@@ -123,26 +131,23 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   public void updateInputs(ManipulatorIOInputs inputs) {
 
     inputs.armPosition = new Rotation2d(armPositionRotations.getValue());
-    inputs.armVelocityRadiansPerSecond =
-        armVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.armVelocityRadiansPerSecond = armVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
     inputs.armAppliedVolts = armAppliedVoltage.getValueAsDouble();
     inputs.armSupplyCurrentAmps = armSupplyCurrentAmps.getValueAsDouble();
     inputs.armTorqueCurrentAmps = armTorqueCurrentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
 
     inputs.rollerPosition = new Rotation2d(rollerPositionRotations.getValue());
-    inputs.rollerVelocityRadiansPerSecond =
-        Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.rollerVelocityRadiansPerSecond = Units
+        .rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
     inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
 
     inputs.armPositionGoal = new Rotation2d(armMotionMagicRequest.getPositionMeasure());
-    inputs.armPositionSetpoint =
-        Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
-    inputs.armPositionError =
-        Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
+    inputs.armPositionSetpoint = Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
+    inputs.armPositionError = Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
   }
 
   @Override
