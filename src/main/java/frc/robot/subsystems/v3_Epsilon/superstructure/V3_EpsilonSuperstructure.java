@@ -599,14 +599,12 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
                 all.andThen(
                     runGoal(sink),
                     runOnce(() -> System.out.println("Initial Pose:" + sink)),
-                    Commands.waitUntil(this::atGoal),
-                    Commands.waitSeconds(.05));
+                    Commands.waitSeconds(2));
             all =
                 all.andThen(
                     runGoal(source),
                     runOnce(() -> System.out.println("Final Pose:" + source)),
-                    Commands.waitUntil(this::atGoal),
-                    Commands.waitSeconds(.05));
+                    Commands.waitSeconds(2));
           }
         }
       }
