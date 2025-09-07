@@ -31,7 +31,7 @@ public class V3_EpsilonManipulatorConstants {
   public static final double CORAL_CAN_RANGE_THRESHOLD = 0.5;
 
   static {
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .618);
+    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
     EMPTY_GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
