@@ -32,6 +32,8 @@ public class V3_EpsilonManipulator {
 
   private boolean isClosedLoop;
 
+  @Setter @Getter private boolean clearsElevator;
+
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -40,6 +42,8 @@ public class V3_EpsilonManipulator {
     armGoal = ManipulatorArmState.VERTICAL_UP;
     armSide = Side.POSITIVE;
     rollerGoal = ManipulatorRollerState.STOP;
+
+    clearsElevator = false;
   }
 
   public void periodic() {
@@ -47,7 +51,17 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      io.setArmGoal(armGoal.getAngle(armSide));
+      Rotation2d goal = armGoal.getAngle(armSide);
+
+      if (!isSafePosition() || clearsElevator) {
+        if (armSide == Side.POSITIVE) {
+          goal = Rotation2d.fromRotations(goal.getRotations() - 1.0);
+        } else {
+          goal = Rotation2d.fromRotations(goal.getRotations() + 1.0);
+        }
+      }
+
+      io.setArmGoal(goal);
     }
 
     if (hasAlgae()
