@@ -13,7 +13,11 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 
 public enum V3_EpsilonSuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
-  STOW_DOWN("STOW_DOWN", new SubsystemPoses(), SubsystemActions.empty()),
+  STOW_DOWN(
+      "STOW_DOWN",
+      new SubsystemPoses(
+          ReefState.STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.ARM_CLEAR),
+      SubsystemActions.empty()),
   STOW_UP(
       "STOW_UP",
       new SubsystemPoses(
@@ -43,20 +47,20 @@ public enum V3_EpsilonSuperstructureStates {
 
   L2(
       "L2",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.TRANSITION, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   L2_SCORE(
       "L2_SCORE",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.ARM_CLEAR),
       new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
   L3(
       "L3",
-      new SubsystemPoses(ReefState.L3, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.TRANSITION, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   L3_SCORE(
       "L3_SCORE",
-      new SubsystemPoses(ReefState.L3, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.SCORE, IntakePivotState.ARM_CLEAR),
       new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
   L4(
@@ -74,42 +78,48 @@ public enum V3_EpsilonSuperstructureStates {
       SubsystemActions.empty()),
   INTERMEDIATE_WAIT_FOR_ELEVATOR(
       "INTERMEDIATE_WAIT_FOR_ELEVATOR",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
+      new SubsystemPoses(
+          ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   INTERMEDIATE_WAIT_FOR_ARM(
       "INTERMEDIATE_WAIT_FOR_ARM",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.SAFE_ANGLE, IntakePivotState.STOW),
+      new SubsystemPoses(
+          ReefState.HANDOFF, ManipulatorArmState.SAFE_ANGLE, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
 
   L2_ALGAE(
       "L2_ALGAE",
       new SubsystemPoses(
-          ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+          ReefState.ALGAE_INTAKE_BOTTOM,
+          ManipulatorArmState.REEF_INTAKE,
+          IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   L2_ALGAE_INTAKE(
       "L2_ALGAE_INTAKE",
       new SubsystemPoses(
-          ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+          ReefState.ALGAE_INTAKE_BOTTOM,
+          ManipulatorArmState.REEF_INTAKE,
+          IntakePivotState.ARM_CLEAR),
       new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
 
   L3_ALGAE(
       "L3_ALGAE",
       new SubsystemPoses(
-          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   L3_ALGAE_INTAKE(
       "L3_ALGAE_INTAKE",
       new SubsystemPoses(
-          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.ARM_CLEAR),
       new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
 
   PROCESSOR(
       "PROCESSOR",
-      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.ARM_CLEAR),
       SubsystemActions.empty()),
   PROCESSOR_SCORE(
       "PROCESSOR_SCORE",
-      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.ARM_CLEAR),
       new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
 
   BARGE(

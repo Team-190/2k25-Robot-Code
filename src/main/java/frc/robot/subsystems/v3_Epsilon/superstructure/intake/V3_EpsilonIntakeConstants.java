@@ -39,7 +39,8 @@ public class V3_EpsilonIntakeConstants {
     INTAKE_CORAL(Rotation2d.fromDegrees(123.6)),
     HANDOFF(Rotation2d.fromDegrees(0)),
     L1(Rotation2d.fromDegrees(-82 + 123.6)),
-    INTAKE_ALGAE(new Rotation2d());
+    INTAKE_ALGAE(new Rotation2d()),
+    ARM_CLEAR(Rotation2d.fromDegrees(15.0));
 
     @Getter private final Rotation2d angle;
   }

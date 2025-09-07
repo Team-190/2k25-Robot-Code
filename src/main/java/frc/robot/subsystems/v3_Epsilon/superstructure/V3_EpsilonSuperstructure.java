@@ -154,7 +154,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
     Logger.recordOutput(
         NTPrefixes.SUPERSTRUCTURE + "Clears Base",
-        0.1
+        0.075
             >= (manipulator.getArmAngle().rotateBy(new Rotation2d(-Math.PI / 2)).getSin()
                     * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
                 - elevator.getPositionMeters()));
