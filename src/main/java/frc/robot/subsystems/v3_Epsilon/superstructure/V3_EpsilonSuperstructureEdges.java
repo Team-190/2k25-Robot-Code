@@ -1,11 +1,16 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -204,11 +209,75 @@ public class V3_EpsilonSuperstructureEdges {
       moveCommand = pose.asCommand(elevator, intake, manipulator);
     }
 
+    // move intake out of the way if it will collide
+    if (willCollide(from, to)) {
+      System.out.println("Collision predicted from " + from + " to " + to + ", moving intake out");
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> intake.setPivotGoal(IntakePivotState.ARM_CLEAR)),
+              intake.waitUntilPivotAtGoal(),
+              moveCommand);
+    }
+
     // THE CRITICAL FIX:
     // No matter how we start the move, we append a final wait condition.
     // This ensures the command doesn't end until the robot is physically at the
     // target pose.
     return Commands.sequence(moveCommand, waitForPoseCommand(to, elevator, intake, manipulator));
+  }
+
+  private static boolean willCollide(
+      V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to) {
+
+    final int samples = 20; // number of interpolation steps
+
+    for (int i = 0; i <= samples; i++) {
+      double t = i / (double) samples;
+
+      // Interpolate elevator height
+      double elevHeight =
+          ElevatorConstants.ElevatorPositions.getPosition(from.getPose().getElevatorHeight())
+                      .getPosition()
+                  * (1 - t)
+              + ElevatorConstants.ElevatorPositions.getPosition(to.getPose().getElevatorHeight())
+                      .getPosition()
+                  * t;
+
+      // Interpolate arm angle
+      Rotation2d armAngle =
+          from.getPose()
+              .getArmState()
+              .getAngle(Side.POSITIVE)
+              .interpolate(to.getPose().getArmState().getAngle(Side.POSITIVE), t);
+
+      // Interpolate intake angle
+      Rotation2d intakeAngle =
+          from.getPose()
+              .getIntakeState()
+              .getAngle()
+              .interpolate(to.getPose().getIntakeState().getAngle(), t);
+
+      // Arm height
+      double armHeight =
+          -armAngle.rotateBy(new Rotation2d(-Math.PI / 2)).getSin()
+                  * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+              + elevHeight;
+
+      // Arm horizontal extension
+      double horiz =
+          Math.abs(
+              armAngle.rotateBy(new Rotation2d(-Math.PI / 2)).getCos()
+                  * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS());
+
+      // Check safety
+      boolean clearsIntake = intakeAngle.getDegrees() > 15 || armHeight > 0.37 || horiz > 0.35;
+
+      if (!clearsIntake) {
+        return true; // Collision predicted
+      }
+    }
+
+    return false; // Safe through transition
   }
 
   /**

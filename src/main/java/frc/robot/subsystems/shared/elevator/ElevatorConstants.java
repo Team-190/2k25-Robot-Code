@@ -360,5 +360,14 @@ public class ElevatorConstants {
           return position.V1();
       }
     }
+
+    public static ElevatorPositions getPosition(ReefState state) {
+      for (ElevatorPositions pos : values()) {
+        if (REEF_STATE_ELEVATOR_POSITION_MAP.get(state) == pos) {
+          return pos;
+        }
+      }
+      return null;
+    }
   }
 }
