@@ -15,7 +15,7 @@ public class V3_EpsilonIntakeConstants {
 
   public static final Gains PIVOT_GAINS = new Gains(1.0, 0.01, 0.0, 0.0, 0.0, 0.0);
   public static final Constraints PIVOT_CONSTRAINTS =
-      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(3.0));
+      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(1.5));
 
   public static final IntakeParems PIVOT_PARAMS =
       new IntakeParems(
@@ -40,7 +40,7 @@ public class V3_EpsilonIntakeConstants {
     HANDOFF(Rotation2d.fromDegrees(0)),
     L1(Rotation2d.fromDegrees(-82 + 123.6)),
     INTAKE_ALGAE(new Rotation2d()),
-    ARM_CLEAR(Rotation2d.fromDegrees(15.0));
+    ARM_CLEAR(Rotation2d.fromDegrees(17.0));
 
     @Getter private final Rotation2d angle;
   }

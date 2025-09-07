@@ -152,12 +152,20 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     intake.periodic();
     manipulator.periodic();
 
+    double armHeight =
+        -manipulator.getArmAngle().rotateBy(new Rotation2d(-Math.PI / 2)).getSin()
+                * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+            + elevator.getPositionMeters();
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Arm Height", armHeight);
+    Logger.recordOutput(NTPrefixes.SUPERSTRUCTURE + "Clears Base", 0.075 < armHeight);
     Logger.recordOutput(
-        NTPrefixes.SUPERSTRUCTURE + "Clears Base",
-        0.075
-            >= (manipulator.getArmAngle().rotateBy(new Rotation2d(-Math.PI / 2)).getSin()
-                    * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
-                - elevator.getPositionMeters()));
+        NTPrefixes.SUPERSTRUCTURE + "Clears Intake",
+        intake.getPivotAngle().getDegrees() > 15
+            || armHeight > 0.37
+            || Math.abs(
+                    manipulator.getArmAngle().rotateBy(new Rotation2d(-Math.PI / 2)).getCos()
+                        * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS())
+                > 0.35);
   }
 
   /**
@@ -591,12 +599,14 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
                 all.andThen(
                     runGoal(sink),
                     runOnce(() -> System.out.println("Initial Pose:" + sink)),
-                    Commands.waitSeconds(2));
+                    Commands.waitUntil(this::atGoal),
+                    Commands.waitSeconds(.05));
             all =
                 all.andThen(
                     runGoal(source),
                     runOnce(() -> System.out.println("Final Pose:" + source)),
-                    Commands.waitSeconds(2));
+                    Commands.waitUntil(this::atGoal),
+                    Commands.waitSeconds(.05));
           }
         }
       }
