@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
@@ -209,14 +210,55 @@ public class V3_EpsilonSuperstructureEdges {
       moveCommand = pose.asCommand(elevator, intake, manipulator);
     }
 
+    if (from == V3_EpsilonSuperstructureStates.HANDOFF) {
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+              elevator.waitUntilAtGoal(),
+              moveCommand);
+    }
     // move intake out of the way if it will collide
-    if (willCollide(from, to)) {
-      System.out.println("Collision predicted from " + from + " to " + to + ", moving intake out");
+    else if (willCollide(from, to)) {
       moveCommand =
           Commands.sequence(
               Commands.runOnce(() -> intake.setPivotGoal(IntakePivotState.ARM_CLEAR)),
               intake.waitUntilPivotAtGoal(),
               moveCommand);
+    }
+
+    if (to == V3_EpsilonSuperstructureStates.HANDOFF) {
+
+      if (requiresArm) {
+        moveCommand =
+            Commands.sequence(
+                pose.setManipulatorState(manipulator),
+                Commands.waitUntil(manipulator::isSafePosition),
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+                elevator.waitUntilAtGoal(),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      } else if (requiresElevator) {
+        moveCommand =
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+                elevator.waitUntilAtGoal(),
+                pose.setManipulatorState(manipulator),
+                manipulator.waitUntilArmAtGoal(),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      } else {
+        moveCommand =
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID))
+                    .alongWith(pose.setManipulatorState(manipulator)),
+                Commands.waitSeconds(0.02),
+                Commands.waitUntil(() -> elevator.atGoal() || manipulator.armAtGoal()),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      }
     }
 
     // THE CRITICAL FIX:
