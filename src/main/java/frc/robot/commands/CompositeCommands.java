@@ -22,6 +22,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -649,5 +653,18 @@ public class CompositeCommands {
         Commands.runOnce(() -> elevator.setPosition()));
   }
 
-  public static final class V3_EpsilonCompositeCommands {}
+  public static final class V3_EpsilonCompositeCommands {
+
+    /**
+     * Creates a command to score coral.
+     *
+     * @param superstructure The superstructure subsystem.
+     * @param goal This is the goal.
+     * @return A command to score coral.
+     */
+    public static final Command scoreCoral(
+        V3_EpsilonSuperstructure superstructure, Supplier<ReefState> goal) {
+      return superstructure.runReefScoreGoal(goal).withTimeout(0.4);
+    }
+}
 }
