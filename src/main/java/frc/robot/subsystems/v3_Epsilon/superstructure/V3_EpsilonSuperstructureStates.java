@@ -80,7 +80,8 @@ public enum V3_EpsilonSuperstructureStates {
   HANDOFF(
       "HANDOFF",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.STOW),
-      SubsystemActions.empty()),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.OUTTAKE)),
+
   INTERMEDIATE_WAIT_FOR_ELEVATOR(
       "INTERMEDIATE_WAIT_FOR_ELEVATOR",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),

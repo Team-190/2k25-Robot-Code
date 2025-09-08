@@ -159,6 +159,7 @@ public class V3_EpsilonManipulatorConstants {
   }
 
   // Will add more states later
+  @RequiredArgsConstructor
   public static enum ManipulatorRollerState {
     STOP(0.0),
     CORAL_INTAKE(6.0),
@@ -171,9 +172,9 @@ public class V3_EpsilonManipulatorConstants {
 
     private final double voltage;
 
-    ManipulatorRollerState(double voltage) {
+    /*ManipulatorRollerState(double voltage) {
       this.voltage = voltage;
-    }
+    }*/
 
     public double getVoltage() {
       return voltage;

@@ -677,23 +677,24 @@ public class CompositeCommands {
         V3_EpsilonSuperstructure superstructure,
         V3_EpsilonIntake intake,
         V3_EpsilonManipulator manipulator) {
-      return Commands.sequence(
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
-          Commands.parallel(
-                  Commands.run(
-                      () ->
-                          intake.setRollerGoal(
-                              frc.robot
-                                  .subsystems
-                                  .v3_Epsilon
-                                  .superstructure
-                                  .intake
-                                  .V3_EpsilonIntakeConstants
-                                  .IntakeRollerState
-                                  .OUTTAKE)),
-                  Commands.run(
-                      () -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)))
-              .until(() -> manipulator.hasCoral()));
+      // return Commands.sequence(
+
+      return superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF);
+      /*Commands.parallel(
+      Commands.waitSeconds(10),
+      Commands.runOnce(
+          () ->
+              intake.setRollerGoal(
+                  frc.robot
+                      .subsystems
+                      .v3_Epsilon
+                      .superstructure
+                      .intake
+                      .V3_EpsilonIntakeConstants
+                      .IntakeRollerState
+                      .OUTTAKE)),
+      Commands.runOnce(
+          () -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE))));*/
     }
   }
 }
