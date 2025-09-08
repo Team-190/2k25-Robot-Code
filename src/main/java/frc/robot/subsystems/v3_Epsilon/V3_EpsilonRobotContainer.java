@@ -137,7 +137,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     return Commands.sequence(
-        V3_EpsilonCompositeCommands.intakeCoralDriverSequence(superstructure, intake, manipulator)
-    );
+        V3_EpsilonCompositeCommands.intakeCoralDriverSequence(superstructure, intake, manipulator));
   }
 }
