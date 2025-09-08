@@ -22,6 +22,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -649,5 +653,50 @@ public class CompositeCommands {
         Commands.runOnce(() -> elevator.setPosition()));
   }
 
-  public static final class V3_EpsilonCompositeCommands {}
-}
+  public static final class V3_EpsilonCompositeCommands {
+    public static final Command dropAlgae(
+      Drive drive,
+      ElevatorFSM elevator,
+      V3_EpsilonManipulator manipulator,
+      V3_EpsilonIntake intake,
+      V3_EpsilonSuperstructure superstructure,
+      Camera cameras,
+      Supplier<ReefState> level
+    ){
+      return Commands.sequence(
+        DriveCommands.autoAlignReefAlgae(drive,cameras);
+        Commands.sequence(
+          superstructure.runGoal(
+              () -> {
+                switch (level.get()) {
+                  case L3_ALGAE:
+                    return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                  case L2_ALGAE:
+                    return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                  default:
+                    return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                }
+              })
+          .until(() -> RobotState.isHasAlgae())
+          Commands.waitSeconds(2.0),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
+                  .withTimeout(0.5)),
+          superstructure.runGoal(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L3;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V2_RedundancySuperstructureStates.DROP_REEF_L2;
+                  default:
+                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                }
+              }),
+          Commands.waitSeconds(1.0),
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)
+          );
+        }
+     }
+    }
