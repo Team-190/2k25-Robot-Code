@@ -677,6 +677,19 @@ public class CompositeCommands {
       // superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
 
+    /**
+     * Creates a command to automatically align the robot to the optimal side of the
+     * coral based on
+     * the current reef height and the robot's orientation. This command sets the
+     * score side in the
+     * RobotState and then runs the auto-alignment command. After the command ends,
+     * it resets the score
+     * side to center.
+     *
+     * @param drive The drive subsystem.
+     * @return A command to auto-align to the optimal side of the coral.
+     */
+
     public static final Command optimalAutoAlignReefCoral(Drive drive) {
       return Commands.sequence(
           Commands.runOnce(
