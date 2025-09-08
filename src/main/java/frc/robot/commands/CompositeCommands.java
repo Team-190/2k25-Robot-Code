@@ -22,8 +22,6 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.util.AllianceFlipUtil;
@@ -666,5 +664,56 @@ public class CompositeCommands {
         V3_EpsilonSuperstructure superstructure, Supplier<ReefState> goal) {
       return superstructure.runReefScoreGoal(goal).withTimeout(0.4);
     }
-}
+
+    /**
+     * public static final Command intakeAlgaeReef(V3_EpsilonSuperstructure superstructure,
+     * V3_EpsilonSuperstructureStates goal, V3_EpsilonSuperstructureAction action, V3_EpsilonIntake
+     * intake, V3_EpsilonSuperstructure hasalgae) { return Commands.sequence(
+     * superstructure.runGoal(), Commands.run(() -> action.runIntake(intake)),
+     * superstructure.isHasAlgae() == (edge.getGamePieceEdge() != (GamePieceEdge.NO_ALGAE) ); ); }
+     */
+    public static final Command intakeAlgaeFromReef(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Supplier<ReefState> level) {
+
+      return Commands.sequence(
+          // DriveCommands.autoAlignReefAlgae(drive),
+          superstructure
+              .runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae())
+              .withTimeout(3),
+          Commands.parallel(
+              Commands.sequence(
+                      Commands.waitSeconds(0.25),
+                      Commands.either(
+                          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP),
+                          superstructure.runGoal(
+                              () -> {
+                                switch (level.get()) {
+                                  case ALGAE_INTAKE_TOP:
+                                    return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                                  default:
+                                    return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                                }
+                              }),
+                          () -> RobotState.isHasAlgae()),
+                      Commands.runEnd(
+                          () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)),
+                          () -> drive.stop()))
+                  .withTimeout(0.5)));
+    }
+  }
+
+  /**
+   * drive to reef go to algae level (L2 or L3) turn intake on go until it has algae then stow up
+   */
 }

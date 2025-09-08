@@ -129,8 +129,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     return Commands.sequence(
-        V3_EpsilonCompositeCommands.scoreCoral(superstructure, () -> ReefState.L4),
-        Commands.waitSeconds(3),
+        V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
+            drive, superstructure, () -> ReefState.ALGAE_INTAKE_TOP),
+        Commands.waitSeconds(5),
         superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
   }
 }
