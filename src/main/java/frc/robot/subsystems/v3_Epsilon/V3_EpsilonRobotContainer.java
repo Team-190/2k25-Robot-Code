@@ -8,7 +8,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -136,7 +138,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        V3_EpsilonCompositeCommands.intakeCoralDriverSequence(superstructure, intake, manipulator));
+    return Commands.sequence(DriveCommands.autoAlignReefCoral(drive, ScoreSide.RIGHT));
   }
 }
