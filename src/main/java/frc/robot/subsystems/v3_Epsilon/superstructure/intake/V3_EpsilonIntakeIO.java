@@ -23,6 +23,10 @@ public interface V3_EpsilonIntakeIO {
     public double rollerSupplyCurrentAmps = 0.0;
     public double rollerTorqueCurrentAmps = 0.0;
     public double rollerTemperatureCelsius = 0.0;
+
+    public boolean leftHasCoral =
+        false; // Left and Right based on the robot's perspective with intake at the front
+    public boolean rightHasCoral = false;
   }
 
   /**

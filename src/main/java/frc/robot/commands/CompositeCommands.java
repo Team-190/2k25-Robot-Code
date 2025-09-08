@@ -22,6 +22,9 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -649,5 +652,14 @@ public class CompositeCommands {
         Commands.runOnce(() -> elevator.setPosition()));
   }
 
-  public static final class V3_EpsilonCompositeCommands {}
+  public static final class V3_EpsilonCompositeCommands {
+    public static final Command intakeCoralFromGround(
+        V3_EpsilonSuperstructure superstructure, V3_EpsilonIntake intake) {
+      return Commands.sequence(
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
+          Commands.runOnce(() -> intake.stopRoller()),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+    }
+  }
 }

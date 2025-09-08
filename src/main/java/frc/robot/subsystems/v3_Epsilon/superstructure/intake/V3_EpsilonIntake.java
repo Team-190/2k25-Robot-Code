@@ -44,7 +44,7 @@ public class V3_EpsilonIntake {
 
   @AutoLogOutput(key = "Intake/Has Coral")
   public boolean hasCoral() {
-    return false; // Udpate later
+    return inputs.leftHasCoral && inputs.rightHasCoral;
   }
 
   @AutoLogOutput(key = "Intake/At Goal")
@@ -64,7 +64,12 @@ public class V3_EpsilonIntake {
   }
 
   public void setRollerVoltage(double volts) {
+    // This will set it for both rollers
     io.setRollerVoltage(volts);
+  }
+
+  public void stopRoller() {
+    io.setRollerVoltage(0);
   }
 
   public void setPivotVoltage(double volts) {

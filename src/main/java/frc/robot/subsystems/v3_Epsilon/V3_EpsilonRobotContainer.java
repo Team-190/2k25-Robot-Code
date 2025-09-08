@@ -6,6 +6,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -124,6 +125,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return superstructure.allTransition();
+    // return superstructure.allTransition();
+    return V3_EpsilonCompositeCommands.intakeCoralFromGround(superstructure, intake);
   }
 }

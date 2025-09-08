@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -19,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.PhoenixUtil;
@@ -41,7 +43,8 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
 
   private final TalonFXConfiguration pivotConfig;
 
-  private final TalonFX rollerTalonFX;
+  private final TalonFX rollerTalonFXBottom;
+  private final TalonFX rollerTalonFXTop;
 
   private final StatusSignal<Angle> rollerPositionRotations;
   private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
@@ -54,9 +57,19 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
 
   private final TalonFXConfiguration rollerConfig;
 
+  private final CANrange leftCANrange;
+  private final CANrange rightCANrange;
+
+  private final StatusSignal<Distance> leftCANrangeStatusSignal;
+  private final StatusSignal<Distance> rightCANrangeStatusSignal;
+
   public V3_EpsilonIntakeIOTalonFX() {
     pivotTalonFX = new TalonFX(V3_EpsilonIntakeConstants.PIVOT_CAN_ID);
-    rollerTalonFX = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID);
+    rollerTalonFXBottom = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID_BOTTOM);
+    rollerTalonFXTop = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID_TOP);
+
+    leftCANrange = new CANrange(V3_EpsilonIntakeConstants.LEFT_SENSOR_CAN_ID);
+    rightCANrange = new CANrange(V3_EpsilonIntakeConstants.RIGHT_SENSOR_CAN_ID);
 
     pivotConfig = new TalonFXConfiguration();
     pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -109,6 +122,9 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     pivotPositionSetpoint = pivotTalonFX.getClosedLoopReference();
     pivotPositionError = pivotTalonFX.getClosedLoopError();
 
+    leftCANrangeStatusSignal = leftCANrange.getDistance();
+    rightCANrangeStatusSignal = rightCANrange.getDistance();
+
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerConfig.CurrentLimits.SupplyCurrentLimit =
@@ -121,7 +137,8 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
+    tryUntilOk(5, () -> rollerTalonFXBottom.getConfigurator().apply(rollerConfig, 0.25));
+    tryUntilOk(5, () -> rollerTalonFXTop.getConfigurator().apply(rollerConfig, 0.25));
 
     rollerPositionRotations = pivotTalonFX.getPosition();
     rollerVelocityRotationsPerSecond = pivotTalonFX.getVelocity();
@@ -149,7 +166,9 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         rollerAppliedVoltage,
         rollerSupplyCurrentAmps,
         rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius);
+        rollerTemperatureCelsius,
+        leftCANrangeStatusSignal,
+        rightCANrangeStatusSignal);
   }
 
   @Override
@@ -175,6 +194,17 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+
+    inputs.leftHasCoral =
+        leftCANrangeStatusSignal.getValueAsDouble() > V3_EpsilonIntakeConstants.INTAKE_CAN_THRESHOLD
+            ? true
+            : false;
+    // result = condition ? true : false;
+    inputs.rightHasCoral =
+        rightCANrangeStatusSignal.getValueAsDouble()
+                > V3_EpsilonIntakeConstants.INTAKE_CAN_THRESHOLD
+            ? true
+            : false;
   }
 
   public void setPivotVoltage(double volts) {
@@ -182,7 +212,8 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
   }
 
   public void setRollerVoltage(double volts) {
-    rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+    rollerTalonFXBottom.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+    rollerTalonFXTop.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   public void setPivotMotionMagic(Rotation2d position) {

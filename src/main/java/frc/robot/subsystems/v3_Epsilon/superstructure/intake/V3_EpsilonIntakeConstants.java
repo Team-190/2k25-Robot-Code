@@ -8,7 +8,14 @@ import lombok.RequiredArgsConstructor;
 public class V3_EpsilonIntakeConstants {
   public static final int PIVOT_CAN_ID;
 
-  public static final int ROLLER_CAN_ID;
+  public static final int ROLLER_CAN_ID_TOP;
+  public static final int ROLLER_CAN_ID_BOTTOM;
+
+  public static final int LEFT_SENSOR_CAN_ID;
+
+  public static final int RIGHT_SENSOR_CAN_ID;
+
+  public static final double INTAKE_CAN_THRESHOLD;
 
   public static final IntakeCurrentLimits CURRENT_LIMITS =
       new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
@@ -30,7 +37,19 @@ public class V3_EpsilonIntakeConstants {
 
   static {
     PIVOT_CAN_ID = 60;
-    ROLLER_CAN_ID = 61;
+    ROLLER_CAN_ID_TOP =
+        42; // This used to be 61, but there are two motors, so I replace this with 42 until it gets
+    // sorted out fs
+    ROLLER_CAN_ID_BOTTOM = 42; // This one I just created.
+  }
+
+  static {
+    LEFT_SENSOR_CAN_ID = 0; // TODO: Check numbers here
+    RIGHT_SENSOR_CAN_ID = 1;
+  }
+
+  static {
+    INTAKE_CAN_THRESHOLD = 42; // In meters= 42; TODO: Set value after robot built
   }
 
   @RequiredArgsConstructor
