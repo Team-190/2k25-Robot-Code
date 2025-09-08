@@ -8,7 +8,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.RobotState.ScoreSide;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -108,6 +108,15 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   }
 
   private void configureButtonBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            () -> false,
+            driver.back(),
+            driver.povRight()));
     driver
         .rightTrigger()
         .whileTrue(
@@ -138,6 +147,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(DriveCommands.autoAlignReefCoral(drive, ScoreSide.RIGHT));
+    return Commands.sequence(CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoAlignReefCoral(drive));
   }
 }

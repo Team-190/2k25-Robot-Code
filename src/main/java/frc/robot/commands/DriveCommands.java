@@ -545,8 +545,9 @@ public final class DriveCommands {
 
   public static Command autoAlignReefCoral(Drive drive, ScoreSide scoreSide, Camera... cameras) {
     return Commands.sequence(
-        Commands.runOnce(() -> RobotState.setScoreSide(scoreSide)),
-        autoAlignReefCoral(drive, cameras));
+            Commands.runOnce(() -> RobotState.setScoreSide(scoreSide)),
+            autoAlignReefCoral(drive, cameras))
+        .finallyDo(() -> RobotState.setScoreSide(ScoreSide.CENTER));
   }
 
   public static Command autoAlignReefAlgae(Drive drive, Camera... cameras) {
