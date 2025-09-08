@@ -125,7 +125,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return CompositeCommands.V3_EpsilonCompositeCommands.emergencyEject(
-        manipulator, superstructure);
+    return CompositeCommands.V3_EpsilonCompositeCommands.handoffCoral(
+        superstructure, intake, manipulator);
   }
 }

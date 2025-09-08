@@ -24,6 +24,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
@@ -670,6 +671,29 @@ public class CompositeCommands {
       return superstructure
           .runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)
           .until(() -> manipulator.hasAlgae()); // add intake for algae after
+    }
+
+    public static final Command handoffCoral(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
+          Commands.parallel(
+                  Commands.run(
+                      () ->
+                          intake.setRollerGoal(
+                              frc.robot
+                                  .subsystems
+                                  .v3_Epsilon
+                                  .superstructure
+                                  .intake
+                                  .V3_EpsilonIntakeConstants
+                                  .IntakeRollerState
+                                  .OUTTAKE)),
+                  Commands.run(
+                      () -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)))
+              .until(() -> manipulator.hasCoral()));
     }
   }
 }
