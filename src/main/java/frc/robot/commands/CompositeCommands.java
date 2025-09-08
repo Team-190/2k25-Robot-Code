@@ -685,17 +685,17 @@ public class CompositeCommands {
           superstructure.runGoal(
               () -> {
                 switch (level.get()) {
-                  case ALGAE_INTAKE_TOP:
-                    return V2_RedundancySuperstructureStates.DROP_REEF_L3;
-                  case ALGAE_INTAKE_BOTTOM:
-                    return V2_RedundancySuperstructureStates.DROP_REEF_L2;
+                  case L3_ALGAE_INTAKE:
+                    return V3_EpsilonSuperstructureStates.L3_ALGAE;
+                  case L2_ALGAE_INTAKE:
+                    return V3_EpsilonSuperstructureStates.L2_ALGAE;
                   default:
-                    return V2_RedundancySuperstructureStates.STOW_DOWN;
+                    return V3_EpsilonSuperstructureStates.STOW_DOWN;
                 }
               }),
           Commands.waitSeconds(1.0),
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-          superstructure.runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN)
           );
         }
      }
