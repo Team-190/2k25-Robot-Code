@@ -147,6 +147,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoAlignReefCoral(drive));
+    return Commands.sequence(
+        CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoAlignReefAlgae(drive));
   }
 }
