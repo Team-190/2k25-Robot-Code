@@ -712,4 +712,24 @@ public class CompositeCommands {
               .finallyDo(() -> RobotState.setScoreSide(ScoreSide.CENTER)));
     }
   }
+
+  public static final Command optimalAutoAlignReefAlgae(Drive drive, Camera... cameras) {
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              double rotationError = RobotState.getRobotPoseField()
+                  .getRotation()
+                  .minus(RobotState.getReefAlignData().algaeSetpoint().getRotation())
+                  .getDegrees();
+              if (rotationError < 180 && rotationError > 0) {
+                RobotState.setScoreSide(ScoreSide.RIGHT);
+              } else {
+                RobotState.setScoreSide(ScoreSide.LEFT);
+              }
+            }),
+        DriveCommands.autoAlignReefAlgae(drive, cameras)
+            .finallyDo(() -> RobotState.setScoreSide(ScoreSide.CENTER)
+        )
+    );
+  }
 }
