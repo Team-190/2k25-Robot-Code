@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
-import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
@@ -541,13 +540,6 @@ public final class DriveCommands {
                           "Total Time Auto Align Coral",
                           "Command Scheduler/Drive Commands/Auto Align Coral");
                     }));
-  }
-
-  public static Command autoAlignReefCoral(Drive drive, ScoreSide scoreSide, Camera... cameras) {
-    return Commands.sequence(
-            Commands.runOnce(() -> RobotState.setScoreSide(scoreSide)),
-            autoAlignReefCoral(drive, cameras))
-        .finallyDo(() -> RobotState.setScoreSide(ScoreSide.CENTER));
   }
 
   public static Command autoAlignReefAlgae(Drive drive, Camera... cameras) {

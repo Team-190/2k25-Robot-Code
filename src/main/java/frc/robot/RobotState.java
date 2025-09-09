@@ -141,12 +141,13 @@ public class RobotState {
     InternalLoggedTracer.record("Get Minimum Distance To Reef Tag", "RobotState/Periodic");
 
     // if (RobotMode.disabled()) {
-    //   resetRobotPose(getRobotPoseField());
+    // resetRobotPose(getRobotPoseField());
     // }
 
     InternalLoggedTracer.reset();
 
-    // Code will set the robot to the correct position based on the reef tag it is closest to for
+    // Code will set the robot to the correct position based on the reef tag it is
+    // closest to for
     // auto
     // alignment to the reef to score coral
 
@@ -168,7 +169,8 @@ public class RobotState {
               autoAlignCoralSetpoint.getRotation().rotateBy(new Rotation2d(Math.PI / 2)));
     }
 
-    // @Author: Abhiraam Venigalla, Ananth Krishna Gomattam, Atharv Joshi, Chris Xu, Anshu Adiga,
+    // @Author: Abhiraam Venigalla, Ananth Krishna Gomattam, Atharv Joshi, Chris Xu,
+    // Anshu Adiga,
     // Adnan Dembele, Hartej Anand
     // Code will rotate the robot if we need to score in a certain region
     // Rotates the robot relative to the reef to the orientation desired
@@ -199,10 +201,20 @@ public class RobotState {
 
     boolean atCoralSetpoint =
         Math.abs(distanceToCoralSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
+            && Math.abs(autoAlignCoralSetpoint.getRotation().minus(robotHeading).getRadians())
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .tolerance()
+                    .get();
     boolean atAlgaeSetpoint =
         Math.abs(distanceToAlgaeSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
+            && Math.abs(autoAlignAlgaeSetpoint.getRotation().minus(robotHeading).getRadians())
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .tolerance()
+                    .get();
 
     ReefState algaeHeight;
     switch (closestReefTag) {
