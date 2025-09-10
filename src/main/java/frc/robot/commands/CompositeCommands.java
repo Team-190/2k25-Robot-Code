@@ -674,9 +674,6 @@ public class CompositeCommands {
           Commands.waitSeconds(0.2),
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()));
-      // superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE),
-      // Commands.waitSeconds(0.2),
-      // superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
 
     /**
@@ -691,64 +688,51 @@ public class CompositeCommands {
      * @param drive The drive subsystem.
      * @return A command to auto-align to the optimal side of the coral.
      */
-    public static final Command optimalAutoAlignReefCoral(Drive drive) {
-      return Commands.deadline(
-          DriveCommands.autoAlignReefCoral(drive),
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return Commands.sequence(
           Commands.runOnce(
               () -> {
                 if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
                   RobotState.setScoreSide(ScoreSide.CENTER);
-                } else if (Math.abs(
-                    MathUtil.angleModulus(
-                        RobotState.getReefAlignData()
-                            .coralSetpoint()
-                            .getRotation()
-                            .rotateBy(Rotation2d.fromDegrees(-90))
-                            .minus(RobotState.getRobotPoseField().getRotation())
-                            .getRadians())) <= Math.abs(
-                                MathUtil.angleModulus(
-                                    RobotState.getReefAlignData()
-                                        .coralSetpoint()
-                                        .getRotation()
-                                        .rotateBy(Rotation2d.fromDegrees(90))
-                                        .minus(RobotState.getRobotPoseField().getRotation())
-                                        .getRadians()))) {
-                  RobotState.setScoreSide(ScoreSide.RIGHT);
                 } else {
-                  RobotState.setScoreSide(ScoreSide.LEFT);
+                  RobotState.setScoreSide(
+                      optimalSide(RobotState.getReefAlignData().coralSetpoint()));
                 }
-              }))
-          .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER));
+              })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.setPosition(),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
     }
 
-    public static final Command optimalAutoAlignReefAlgae(Drive drive, Camera... cameras) {
-      return Commands.deadline(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
+    public static final Command optimalAutoAlignReefAlgae(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return Commands.sequence(
           Commands.runOnce(
               () -> {
                 int closestReefTag = RobotState.getReefAlignData().closestReefTag();
                 if (closestReefTag != -1) {
                   Pose2d baseAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
-                  if (Math.abs(
-                      MathUtil.angleModulus(
-                          baseAlgaeSetpoint
-                              .getRotation()
-                              .rotateBy(Rotation2d.fromDegrees(-90))
-                              .minus(RobotState.getRobotPoseField().getRotation())
-                              .getRadians())) <= Math.abs(
-                                  MathUtil.angleModulus(
-                                      baseAlgaeSetpoint
-                                          .getRotation()
-                                          .rotateBy(Rotation2d.fromDegrees(90))
-                                          .minus(RobotState.getRobotPoseField().getRotation())
-                                          .getRadians()))) {
-                    RobotState.setScoreSide(ScoreSide.RIGHT);
-                  } else {
-                    RobotState.setScoreSide(ScoreSide.LEFT);
-                  }
+                  RobotState.setScoreSide(optimalSide(baseAlgaeSetpoint));
                 }
-              }))
-          .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER));
+              })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
+          DriveCommands.autoAlignReefAlgae(drive, cameras));
+    }
+
+    private static final ScoreSide optimalSide(Pose2d baseSetpoint) {
+      if (Math.abs(
+          MathUtil.angleModulus(baseSetpoint.getRotation().rotateBy(Rotation2d.fromDegrees(-90))
+              .minus(RobotState.getRobotPoseField().getRotation()).getRadians())) <= Math
+                  .abs(MathUtil.angleModulus(baseSetpoint.getRotation().rotateBy(Rotation2d.fromDegrees(90))
+                      .minus(RobotState.getRobotPoseField().getRotation()).getRadians()))) {
+        return ScoreSide.RIGHT;
+      } else {
+        return ScoreSide.LEFT;
+      }
     }
   }
 }

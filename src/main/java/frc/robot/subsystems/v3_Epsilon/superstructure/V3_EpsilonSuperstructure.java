@@ -7,12 +7,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -103,7 +105,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-
+    manipulator.setArmSide(
+        RobotState.getScoreSide().equals(ScoreSide.LEFT) ? Side.NEGATIVE : Side.POSITIVE);
     manipulator.setClearsElevator(
         elevator.getPositionMeters()
             > V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS() * 1.1);
