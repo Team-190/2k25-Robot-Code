@@ -694,7 +694,7 @@ public class CompositeCommands {
     public static final Command optimalAutoAlignReefCoral(Drive drive) {
       return Commands.deadline(
           DriveCommands.autoAlignReefCoral(drive),
-          Commands.run(
+          Commands.runOnce(
               () -> {
                 if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
                   RobotState.setScoreSide(ScoreSide.CENTER);
@@ -724,7 +724,7 @@ public class CompositeCommands {
     public static final Command optimalAutoAlignReefAlgae(Drive drive, Camera... cameras) {
       return Commands.deadline(
           DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.run(
+          Commands.runOnce(
               () -> {
                 int closestReefTag = RobotState.getReefAlignData().closestReefTag();
                 if (closestReefTag != -1) {
