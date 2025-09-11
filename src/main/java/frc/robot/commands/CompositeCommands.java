@@ -28,23 +28,16 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
- * A class that holds composite commands, which are sequences of commands for
- * complex robot actions.
+ * A class that holds composite commands, which are sequences of commands for complex robot actions.
  */
 public class CompositeCommands {
-  /**
-   * A class that holds composite commands that are shared across different robot
-   * versions.
-   */
+  /** A class that holds composite commands that are shared across different robot versions. */
   public static final class SharedCommands {
     /**
      * Creates a command to reset the robot's heading to the alliance-specific zero.
@@ -54,18 +47,17 @@ public class CompositeCommands {
      */
     public static final Command resetHeading(Drive drive) {
       return Commands.runOnce(
-          () -> {
-            RobotState.resetRobotPose(
-                new Pose2d(
-                    RobotState.getRobotPoseField().getTranslation(),
-                    AllianceFlipUtil.apply(new Rotation2d())));
-          })
+              () -> {
+                RobotState.resetRobotPose(
+                    new Pose2d(
+                        RobotState.getRobotPoseField().getTranslation(),
+                        AllianceFlipUtil.apply(new Rotation2d())));
+              })
           .ignoringDisable(true);
     }
 
     /**
-     * Creates a command to set a static reef height in the robot state. This does
-     * not move any
+     * Creates a command to set a static reef height in the robot state. This does not move any
      * mechanisms.
      *
      * @param height The reef height to set.
@@ -81,37 +73,37 @@ public class CompositeCommands {
     /**
      * Creates a command to intake coral from the station.
      *
-     * @param elevator    The elevator subsystem.
-     * @param funnel      The funnel subsystem.
+     * @param elevator The elevator subsystem.
+     * @param funnel The funnel subsystem.
      * @param manipulator The manipulator subsystem.
      * @return A command to intake coral.
      */
     public static final Command intakeCoral(
         ElevatorCSB elevator, FunnelCSB funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-          Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-          elevator.setPosition(() -> ReefState.CORAL_INTAKE),
-          Commands.waitUntil(elevator::atGoal),
-          Commands.race(
-              manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              elevator.setPosition(() -> ReefState.CORAL_INTAKE),
+              Commands.waitUntil(elevator::atGoal),
+              Commands.race(
+                  manipulator.intakeCoral(), funnel.intakeCoral(() -> manipulator.hasCoral())))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
     /**
      * Creates a command to intake coral from the station with an override.
      *
-     * @param elevator    The elevator subsystem.
-     * @param funnel      The funnel subsystem.
+     * @param elevator The elevator subsystem.
+     * @param funnel The funnel subsystem.
      * @param manipulator The manipulator subsystem.
      * @return A command to intake coral with an override.
      */
     public static final Command intakeCoralOverride(
         ElevatorCSB elevator, FunnelCSB funnel, V1_StackUpManipulator manipulator) {
       return Commands.sequence(
-          Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
-          elevator.setPosition(() -> ReefState.CORAL_INTAKE),
-          Commands.waitUntil(elevator::atGoal),
-          Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
+              Commands.runOnce(() -> RobotState.setIntakingCoral(true)),
+              elevator.setPosition(() -> ReefState.CORAL_INTAKE),
+              Commands.waitUntil(elevator::atGoal),
+              Commands.parallel(manipulator.intakeCoral(), funnel.intakeCoral(() -> false)))
           .finallyDo(() -> RobotState.setIntakingCoral(false));
     }
 
@@ -128,7 +120,7 @@ public class CompositeCommands {
     /**
      * Creates a command sequence to score coral, waiting for auto-alignment.
      *
-     * @param elevator    The elevator subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
      * @param autoAligned A supplier that returns true when the robot is aligned.
      * @return A command sequence to score coral.
@@ -139,8 +131,9 @@ public class CompositeCommands {
           Commands.either(
               elevator.setPosition(() -> ReefState.L3),
               elevator.setPosition(),
-              () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
-                  && !elevator.getPosition().equals(ElevatorPositions.L4)),
+              () ->
+                  RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
+                      && !elevator.getPosition().equals(ElevatorPositions.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           elevator.setPosition(),
           Commands.waitSeconds(0.05),
@@ -154,10 +147,10 @@ public class CompositeCommands {
     /**
      * Creates a command sequence to automatically score coral.
      *
-     * @param drive       The drive subsystem.
-     * @param elevator    The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
-     * @param cameras     The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command sequence to auto-score coral.
      */
     public static final Command autoScoreCoralSequence(
@@ -168,11 +161,12 @@ public class CompositeCommands {
               Commands.either(
                   elevator.setPosition(() -> ReefState.L2),
                   Commands.none(),
-                  () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1)
-                      || RobotState.getOIData().currentReefHeight().equals(ReefState.STOW)
-                      || RobotState.getOIData()
-                          .currentReefHeight()
-                          .equals(ReefState.CORAL_INTAKE)),
+                  () ->
+                      RobotState.getOIData().currentReefHeight().equals(ReefState.L1)
+                          || RobotState.getOIData().currentReefHeight().equals(ReefState.STOW)
+                          || RobotState.getOIData()
+                              .currentReefHeight()
+                              .equals(ReefState.CORAL_INTAKE)),
               Commands.parallel(
                   DriveCommands.autoAlignReefCoral(drive, cameras),
                   scoreCoralSequence(
@@ -182,18 +176,19 @@ public class CompositeCommands {
               elevator
                   .setPosition(() -> ReefState.STOW)
                   .onlyIf(
-                      () -> elevator.getPosition().equals(ElevatorPositions.L3)
-                          || elevator.getPosition().equals(ElevatorPositions.L2))),
+                      () ->
+                          elevator.getPosition().equals(ElevatorPositions.L3)
+                              || elevator.getPosition().equals(ElevatorPositions.L2))),
           () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
     /**
      * Creates a command sequence to automatically score coral at L1.
      *
-     * @param drive       The drive subsystem.
-     * @param elevator    The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
-     * @param cameras     The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command sequence to auto-score coral at L1.
      */
     public static final Command autoScoreL1CoralSequence(
@@ -206,8 +201,8 @@ public class CompositeCommands {
     /**
      * Creates a command to score coral at L1.
      *
-     * @param drive       The drive subsystem.
-     * @param elevator    The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
      * @return A command to score coral at L1.
      */
@@ -230,7 +225,7 @@ public class CompositeCommands {
     /**
      * Creates a command for an emergency eject of coral.
      *
-     * @param elevator    The elevator subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
      * @return A command to eject coral.
      */
@@ -245,38 +240,38 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command to remove algae from the reef. This uses the closest reef
-     * tag to
+     * Creates a command to remove algae from the reef. This uses the closest reef tag to
      * automatically pick the reef height.
      *
-     * @param drive       The drive subsystem.
-     * @param elevator    The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
-     * @param cameras     The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command to remove algae.
      */
     public static final Command twerk(
         Drive drive, ElevatorCSB elevator, V1_StackUpManipulator manipulator, Camera... cameras) {
       return Commands.deferredProxy(
-          () -> twerk(
-              drive,
-              elevator,
-              manipulator,
-              switch (RobotState.getReefAlignData().closestReefTag()) {
-                case 10, 6, 8, 21, 17, 19 -> ReefState.ASS_BOT;
-                case 9, 11, 7, 22, 20, 18 -> ReefState.ASS_TOP;
-                default -> ReefState.ASS_BOT;
-              },
-              cameras));
+          () ->
+              twerk(
+                  drive,
+                  elevator,
+                  manipulator,
+                  switch (RobotState.getReefAlignData().closestReefTag()) {
+                    case 10, 6, 8, 21, 17, 19 -> ReefState.ASS_BOT;
+                    case 9, 11, 7, 22, 20, 18 -> ReefState.ASS_TOP;
+                    default -> ReefState.ASS_BOT;
+                  },
+                  cameras));
     }
 
     /**
      * Creates a command to remove algae from the reef.
      *
-     * @param drive       The drive subsystem.
-     * @param elevator    The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param manipulator The manipulator subsystem.
-     * @param cameras     The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command to remove algae.
      */
     public static final Command twerk(
@@ -298,11 +293,10 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command to set the dynamic reef height in the robot state. This
-     * sets the height and
+     * Creates a command to set the dynamic reef height in the robot state. This sets the height and
      * then moves the elevator to that position.
      *
-     * @param height   The reef height to set.
+     * @param height The reef height to set.
      * @param elevator The elevator subsystem.
      * @return A command to set the dynamic reef height.
      */
@@ -315,9 +309,9 @@ public class CompositeCommands {
      * Creates a command to climb the robot.
      *
      * @param elevator The elevator subsystem.
-     * @param funnel   The funnel subsystem.
-     * @param climber  The climber subsystem.
-     * @param drive    The drive subsystem.
+     * @param funnel The funnel subsystem.
+     * @param climber The climber subsystem.
+     * @param drive The drive subsystem.
      * @return A command to climb.
      */
     public static final Command climb(
@@ -341,7 +335,7 @@ public class CompositeCommands {
      * Creates a command to intake coral from the station.
      *
      * @param superstructure The superstructure subsystem.
-     * @param intake         The intake subsystem.
+     * @param intake The intake subsystem.
      * @return A command to intake coral.
      */
     public static final Command intakeCoralDriverSequence(
@@ -354,11 +348,10 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command to intake coral from the station using the operator
-     * sequence.
+     * Creates a command to intake coral from the station using the operator sequence.
      *
      * @param superstructure The superstructure subsystem.
-     * @param intake         The intake subsystem.
+     * @param intake The intake subsystem.
      * @return A command to intake coral using the operator sequence.
      */
     public static final Command intakeCoralOperatorSequence(
@@ -372,7 +365,7 @@ public class CompositeCommands {
     /**
      * Creates a command to score coral at L1.
      *
-     * @param drive          The drive subsystem.
+     * @param drive The drive subsystem.
      * @param superstructure The superstructure subsystem.
      * @return A command to score coral at L1.
      */
@@ -393,7 +386,7 @@ public class CompositeCommands {
     /**
      * Creates a command sequence to score coral at L1, waiting for auto-alignment.
      *
-     * @param drive          The drive subsystem.
+     * @param drive The drive subsystem.
      * @param superstructure The superstructure subsystem.
      * @return A command sequence to score coral at L1.
      */
@@ -409,9 +402,9 @@ public class CompositeCommands {
     /**
      * Creates a command sequence to score coral, waiting for auto-alignment.
      *
-     * @param elevator       The elevator subsystem.
+     * @param elevator The elevator subsystem.
      * @param superstructure The superstructure subsystem.
-     * @param autoAligned    A supplier that returns true when the robot is aligned.
+     * @param autoAligned A supplier that returns true when the robot is aligned.
      * @return A command sequence to score coral.
      */
     public static final Command scoreCoralSequence(
@@ -422,26 +415,28 @@ public class CompositeCommands {
           Commands.either(
               superstructure.runGoal(V2_RedundancySuperstructureStates.L3),
               superstructure.runReefGoal(() -> RobotState.getOIData().currentReefHeight()),
-              () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
-                  && !superstructure
-                      .getCurrentState()
-                      .equals(V2_RedundancySuperstructureStates.L4)),
+              () ->
+                  RobotState.getOIData().currentReefHeight().equals(ReefState.L4)
+                      && !superstructure
+                          .getCurrentState()
+                          .equals(V2_RedundancySuperstructureStates.L4)),
           Commands.waitUntil(() -> autoAligned.getAsBoolean()),
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()),
           superstructure
               .runGoal(V2_RedundancySuperstructureStates.STOW_DOWN)
               .onlyIf(
-                  () -> elevator.getPosition().equals(ElevatorPositions.L3)
-                      || elevator.getPosition().equals(ElevatorPositions.L2)));
+                  () ->
+                      elevator.getPosition().equals(ElevatorPositions.L3)
+                          || elevator.getPosition().equals(ElevatorPositions.L2)));
     }
 
     /**
      * Creates a command sequence to automatically score coral.
      *
-     * @param drive          The drive subsystem.
-     * @param elevator       The elevator subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
      * @param superstructure The superstructure subsystem.
-     * @param cameras        The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command sequence to auto-score coral.
      */
     public static final Command autoScoreCoralSequence(
@@ -458,11 +453,12 @@ public class CompositeCommands {
               Commands.either(
                   superstructure.runGoal(V2_RedundancySuperstructureStates.L2),
                   Commands.none(),
-                  () -> RobotState.getOIData().currentReefHeight().equals(ReefState.L1)
-                      || RobotState.getOIData().currentReefHeight().equals(ReefState.STOW)
-                      || RobotState.getOIData()
-                          .currentReefHeight()
-                          .equals(ReefState.CORAL_INTAKE)),
+                  () ->
+                      RobotState.getOIData().currentReefHeight().equals(ReefState.L1)
+                          || RobotState.getOIData().currentReefHeight().equals(ReefState.STOW)
+                          || RobotState.getOIData()
+                              .currentReefHeight()
+                              .equals(ReefState.CORAL_INTAKE)),
               Commands.parallel(
                   DriveCommands.autoAlignReefCoral(drive, cameras),
                   scoreCoralSequence(
@@ -476,13 +472,12 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command to intake algae from the reef. This uses the closest reef
-     * tag to
+     * Creates a command to intake algae from the reef. This uses the closest reef tag to
      * automatically pick the reef height and reef face.
      *
-     * @param drive          The drive subsystem.
+     * @param drive The drive subsystem.
      * @param superstructure The superstructure subsystem.
-     * @param cameras        The vision cameras.
+     * @param cameras The vision cameras.
      * @return A command to remove algae.
      */
     public static final Command intakeAlgaeFromReefSequence(
@@ -520,20 +515,20 @@ public class CompositeCommands {
                           }),
                       () -> RobotState.isHasAlgae())),
               Commands.runEnd(
-                  () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
+                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)));
     }
 
     /**
      * Creates a command to drop algae from the reef.
      *
-     * @param drive          The drive subsystem.
-     * @param elevator       The elevator subsystem.
-     * @param manipulator    The manipulator subsystem.
-     * @param intake         The intake subsystem.
+     * @param drive The drive subsystem.
+     * @param elevator The elevator subsystem.
+     * @param manipulator The manipulator subsystem.
+     * @param intake The intake subsystem.
      * @param superstructure The superstructure subsystem.
-     * @param level          A supplier that provides the current reef level.
-     * @param cameras        The vision cameras.
+     * @param level A supplier that provides the current reef level.
+     * @param cameras The vision cameras.
      * @return A command to drop algae from the reef.
      */
     public static final Command dropAlgae(
@@ -562,7 +557,7 @@ public class CompositeCommands {
                   .until(() -> RobotState.isHasAlgae()),
               Commands.waitSeconds(2.0),
               Commands.runEnd(
-                  () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
+                      () -> drive.runVelocity(new ChassisSpeeds(1.0, 0.0, 0.0)), () -> drive.stop())
                   .withTimeout(0.5)),
           superstructure.runGoal(
               () -> {
@@ -594,8 +589,7 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command that posts the floor intake sequence, which can either go
-     * up or down based
+     * Creates a command that posts the floor intake sequence, which can either go up or down based
      * on whether the robot has algae.
      *
      * @param superstructure The superstructure subsystem.
@@ -610,11 +604,10 @@ public class CompositeCommands {
     }
 
     /**
-     * Creates a command to set the dynamic reef height in the robot state. This
-     * sets the height and
+     * Creates a command to set the dynamic reef height in the robot state. This sets the height and
      * then moves the superstructure to that position.
      *
-     * @param height         The reef height to set.
+     * @param height The reef height to set.
      * @param superstructure The superstructure subsystem.
      * @return A command to set the dynamic reef height.
      */
@@ -628,8 +621,8 @@ public class CompositeCommands {
      * Creates a command to climb the robot.
      *
      * @param superstructure The superstructure subsystem.
-     * @param climber        The climber subsystem.
-     * @param drive          The drive subsystem.
+     * @param climber The climber subsystem.
+     * @param drive The drive subsystem.
      * @return A command to climb.
      */
     public static final Command climb(
@@ -646,12 +639,11 @@ public class CompositeCommands {
   }
 
   /**
-   * Creates a command sequence for homing all subsystems in the V2_Redundancy
-   * robot.
+   * Creates a command sequence for homing all subsystems in the V2_Redundancy robot.
    *
    * @param manipulator The manipulator subsystem.
-   * @param intake      The intake subsystem.
-   * @param elevator    The elevator subsystem.
+   * @param intake The intake subsystem.
+   * @param elevator The elevator subsystem.
    * @return A command sequence to home all subsystems.
    */
   public static final Command homingSequences(
@@ -663,8 +655,9 @@ public class CompositeCommands {
         intake.homingSequence(),
         Commands.runOnce(() -> elevator.setPosition()));
   }
-public static final class V3_EpsilonCompositeCommands {
-    
+
+  public static final class V3_EpsilonCompositeCommands {
+
     public static final Command intakeCoralDriverSequence(
         V3_EpsilonSuperstructure superstructure,
         V3_EpsilonIntake intake,
@@ -679,12 +672,9 @@ public static final class V3_EpsilonCompositeCommands {
     }
 
     /**
-     * Creates a command to automatically align the robot to the optimal side of the
-     * coral based on
-     * the current reef height and the robot's orientation. This command sets the
-     * score side in the
-     * RobotState and then runs the auto-alignment command. After the command ends,
-     * it resets the
+     * Creates a command to automatically align the robot to the optimal side of the coral based on
+     * the current reef height and the robot's orientation. This command sets the score side in the
+     * RobotState and then runs the auto-alignment command. After the command ends, it resets the
      * score side to center.
      *
      * @param drive The drive subsystem.
@@ -694,14 +684,14 @@ public static final class V3_EpsilonCompositeCommands {
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.sequence(
           Commands.runOnce(
-              () -> {
-                if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-                  RobotState.setScoreSide(ScoreSide.CENTER);
-                } else {
-                  RobotState.setScoreSide(
-                      optimalSide(RobotState.getReefAlignData().coralSetpoint()));
-                }
-              })
+                  () -> {
+                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+                      RobotState.setScoreSide(ScoreSide.CENTER);
+                    } else {
+                      RobotState.setScoreSide(
+                          optimalSide(RobotState.getReefAlignData().coralSetpoint()));
+                    }
+                  })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.setPosition(),
           DriveCommands.autoAlignReefCoral(drive, cameras),
@@ -713,13 +703,14 @@ public static final class V3_EpsilonCompositeCommands {
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.sequence(
           Commands.runOnce(
-              () -> {
-                int closestReefTag = RobotState.getReefAlignData().closestReefTag();
-                if (closestReefTag != -1) {
-                  Pose2d baseAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
-                  RobotState.setScoreSide(optimalSide(baseAlgaeSetpoint));
-                }
-              })
+                  () -> {
+                    int closestReefTag = RobotState.getReefAlignData().closestReefTag();
+                    if (closestReefTag != -1) {
+                      Pose2d baseAlgaeSetpoint =
+                          Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+                      RobotState.setScoreSide(optimalSide(baseAlgaeSetpoint));
+                    }
+                  })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
           DriveCommands.autoAlignReefAlgae(drive, cameras));
@@ -727,10 +718,19 @@ public static final class V3_EpsilonCompositeCommands {
 
     private static final ScoreSide optimalSide(Pose2d baseSetpoint) {
       if (Math.abs(
-          MathUtil.angleModulus(baseSetpoint.getRotation().rotateBy(Rotation2d.fromDegrees(-90))
-              .minus(RobotState.getRobotPoseField().getRotation()).getRadians())) <= Math
-                  .abs(MathUtil.angleModulus(baseSetpoint.getRotation().rotateBy(Rotation2d.fromDegrees(90))
-                      .minus(RobotState.getRobotPoseField().getRotation()).getRadians()))) {
+              MathUtil.angleModulus(
+                  baseSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(-90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))
+          <= Math.abs(
+              MathUtil.angleModulus(
+                  baseSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))) {
         return ScoreSide.RIGHT;
       } else {
         return ScoreSide.LEFT;
