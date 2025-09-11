@@ -17,16 +17,22 @@ public interface V3_EpsilonIntakeIO {
     public Rotation2d pivotPositionSetpoint = new Rotation2d();
     public Rotation2d pivotPositionError = new Rotation2d();
 
-    public Rotation2d rollerPosition = new Rotation2d();
-    public double rollerVelocityRadiansPerSecond = 0.0;
-    public double rollerAppliedVolts = 0.0;
-    public double rollerSupplyCurrentAmps = 0.0;
-    public double rollerTorqueCurrentAmps = 0.0;
-    public double rollerTemperatureCelsius = 0.0;
+    public Rotation2d rollerOuterPosition = new Rotation2d();
+    public double rollerOuterVelocityRadiansPerSecond = 0.0;
+    public double rollerOuterAppliedVolts = 0.0;
+    public double rollerOuterSupplyCurrentAmps = 0.0;
+    public double rollerOuterTorqueCurrentAmps = 0.0;
+    public double rollerOuterTemperatureCelsius = 0.0;
 
-    public boolean leftHasCoral =
-        false; // Left and Right based on the robot's perspective with intake at the front
-    public boolean rightHasCoral = false;
+    public Rotation2d rollerInnerPosition = new Rotation2d();
+    public double rollerInnerVelocityRadiansPerSecond = 0.0;
+    public double rollerInnerAppliedVolts = 0.0;
+    public double rollerInnerSupplyCurrentAmps = 0.0;
+    public double rollerInnerTorqueCurrentAmps = 0.0;
+    public double rollerInnerTemperatureCelsius = 0.0;
+
+    public double leftCANDistance; // Left and Right based on the robot's perspective with intake at the front
+    public double rightCANDistance;
   }
 
   /**
@@ -44,11 +50,18 @@ public interface V3_EpsilonIntakeIO {
   public default void setPivotVoltage(double volts) {}
 
   /**
-   * Sets the voltage for the manipulator.
+   * Sets the voltage for the inner manipulator roller.
    *
    * @param volts The voltage to set.
    */
-  public default void setRollerVoltage(double volts) {}
+  public default void setInnerRollerVoltage(double volts) {}
+
+  /**
+   * Sets the voltage for the outer manipulator roller.
+   *
+   * @param volts The voltage to set.
+   */
+  public default void setOuterRollerVoltage(double volts) {}
 
   /**
    * Sets the position goal for the intake.

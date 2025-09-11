@@ -658,7 +658,6 @@ public class CompositeCommands {
       return Commands.sequence(
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
-          Commands.runOnce(() -> intake.stopRoller()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
   }
