@@ -94,9 +94,11 @@ public class V3_EpsilonIntake {
                 V3_EpsilonIntakeConstants.IntakeRollerState.STOP)
             .contains(rollerGoal)) {
 
-      io.setRollerVoltage(0);
+      io.setInnerRollerVoltage(0);
+      io.setOuterRollerVoltage(0);
     } else {
-      io.setRollerVoltage(rollerGoal.getVoltage());
+      io.setInnerRollerVoltage(rollerGoal.getInnerVoltage());
+      io.setOuterRollerVoltage(rollerGoal.getOuterVoltage());
     }
   }
 
