@@ -14,7 +14,7 @@ public class FieldConstants {
   public static final double fieldLength = Units.inchesToMeters(690.876);
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
-      Units.inchesToMeters(299.438); // Measured from the inside of starting line
+      Units.inchesToMeters(299.438); // Measured from the inside of starting line sigma
 
   public static class Processor {
     public static final Pose2d centerFace =
@@ -48,6 +48,8 @@ public class FieldConstants {
   }
 
   public static class Reef {
+    public static final double coralWidth = Units.inchesToMeters(4.5);
+
     public static enum ReefPose {
       RIGHT,
       LEFT,
@@ -132,8 +134,14 @@ public class FieldConstants {
       double adjustYBranch =
           Units.inchesToMeters(6.469); // Offset Y setpoint by center of tag to reef branch
       double adjustXBranch =
-          DriveConstants.DRIVE_CONFIG.bumperWidth()
-              / 2.0; // Offset X setpoint by center of robot to bumper
+          Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON)
+                  || Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON_SIM)
+              ? (DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0)
+                  + FieldConstants.Reef
+                      .coralWidth // Offset X setpoint by center of robot to bumper + coral width
+              // sigma
+              : DriveConstants.DRIVE_CONFIG.bumperWidth()
+                  / 2.0; // Offset X setpoint by center of robot to bumper
 
       //   double adjustYAlgae =
       //       Units.inchesToMeters(3.5); // Offset Y setpoint by center of tag to algae setpoint
