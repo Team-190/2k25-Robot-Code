@@ -1,13 +1,16 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -660,6 +663,84 @@ public class CompositeCommands {
 
   public static final class V3_EpsilonCompositeCommands {
 
+    public static final Command intakeCoralDriverSequence(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
+          Commands.waitSeconds(0.2),
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()));
+    }
+
+    /**
+     * Creates a command to automatically align the robot to the optimal side of the coral based on
+     * the current reef height and the robot's orientation. This command sets the score side in the
+     * RobotState and then runs the auto-alignment command. After the command ends, it resets the
+     * score side to center.
+     *
+     * @param drive The drive subsystem.
+     * @return A command to auto-align to the optimal side of the coral.
+     */
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return Commands.sequence(
+          Commands.runOnce(
+                  () -> {
+                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+                      RobotState.setScoreSide(ScoreSide.CENTER);
+                    } else {
+                      RobotState.setScoreSide(
+                          optimalSide(RobotState.getReefAlignData().coralSetpoint()));
+                    }
+                  })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.setPosition(),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
+    }
+
+    public static final Command optimalAutoAlignReefAlgae(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return Commands.sequence(
+          Commands.runOnce(
+                  () -> {
+                    int closestReefTag = RobotState.getReefAlignData().closestReefTag();
+                    if (closestReefTag != -1) {
+                      Pose2d baseAlgaeSetpoint =
+                          Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+                      RobotState.setScoreSide(optimalSide(baseAlgaeSetpoint));
+                    }
+                  })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
+          DriveCommands.autoAlignReefAlgae(drive, cameras));
+    }
+
+    private static final ScoreSide optimalSide(Pose2d baseSetpoint) {
+      if (Math.abs(
+              MathUtil.angleModulus(
+                  baseSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(-90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))
+          <= Math.abs(
+              MathUtil.angleModulus(
+                  baseSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))) {
+        return ScoreSide.RIGHT;
+      } else {
+        return ScoreSide.LEFT;
+      }
+    }
     /**
      * Creates a command to score coral.
      *
