@@ -28,6 +28,9 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
@@ -660,9 +663,8 @@ public class CompositeCommands {
         intake.homingSequence(),
         Commands.runOnce(() -> elevator.setPosition()));
   }
-
-  public static final class V3_EpsilonCompositeCommands {
-
+public static final class V3_EpsilonCompositeCommands {
+    
     public static final Command intakeCoralDriverSequence(
         V3_EpsilonSuperstructure superstructure,
         V3_EpsilonIntake intake,
@@ -733,6 +735,76 @@ public class CompositeCommands {
       } else {
         return ScoreSide.LEFT;
       }
+    }
+    /**
+     * Creates a command to score coral.
+     *
+     * @param superstructure The superstructure subsystem.
+     * @param goal This is the goal.
+     * @return A command to score coral.
+     */
+    public static final Command scoreCoral(
+        V3_EpsilonSuperstructure superstructure, Supplier<ReefState> goal) {
+      return superstructure.runReefScoreGoal(goal);
+    }
+
+    /**
+     * public static final Command intakeAlgaeReef(V3_EpsilonSuperstructure superstructure,
+     * V3_EpsilonSuperstructureStates goal, V3_EpsilonSuperstructureAction action, V3_EpsilonIntake
+     * intake, V3_EpsilonSuperstructure hasalgae) { return Commands.sequence(
+     * superstructure.runGoal(), Commands.run(() -> action.runIntake(intake)),
+     * superstructure.isHasAlgae() == (edge.getGamePieceEdge() != (GamePieceEdge.NO_ALGAE) ); ); }
+     */
+
+    /**
+     * drive to reef go to algae level (L2 or L3) turn intake on go until it has algae then stow up
+     */
+    public static final Command intakeAlgaeFromReef(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Supplier<ReefState> level) {
+
+      return Commands.sequence(
+          // DriveCommands.autoAlignReefAlgae(drive),
+          superstructure
+              .runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae())
+              .withTimeout(3),
+          Commands.parallel(
+              Commands.sequence(
+                  Commands.waitSeconds(0.25),
+                  Commands.either(
+                      superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP),
+                      superstructure.runGoal(
+                          () -> {
+                            switch (level.get()) {
+                              case ALGAE_INTAKE_TOP:
+                                return V3_EpsilonSuperstructureStates.L3_ALGAE;
+                              default:
+                                return V3_EpsilonSuperstructureStates.L2_ALGAE;
+                            }
+                          }),
+                      () -> RobotState.isHasAlgae())),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)),
+                      () -> drive.stop())
+                  .withTimeout(0.5)));
+    }
+
+    public static final Command intakeCoralFromGround(
+        V3_EpsilonSuperstructure superstructure, V3_EpsilonIntake intake) {
+      return Commands.sequence(
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
   }
 }

@@ -8,7 +8,14 @@ import lombok.RequiredArgsConstructor;
 public class V3_EpsilonIntakeConstants {
   public static final int PIVOT_CAN_ID;
 
-  public static final int ROLLER_CAN_ID;
+  public static final int ROLLER_CAN_ID_INNER;
+  public static final int ROLLER_CAN_ID_OUTER;
+
+  public static final int LEFT_SENSOR_CAN_ID;
+
+  public static final int RIGHT_SENSOR_CAN_ID;
+
+  public static final double INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS;
 
   public static final IntakeCurrentLimits CURRENT_LIMITS =
       new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
@@ -30,7 +37,20 @@ public class V3_EpsilonIntakeConstants {
 
   static {
     PIVOT_CAN_ID = 60;
-    ROLLER_CAN_ID = 61;
+    ROLLER_CAN_ID_OUTER =
+        61; // This used to be 61, but there are two motors, so I replace this with 42 until it gets
+    // sorted out fs
+    ROLLER_CAN_ID_INNER = 62; // This one I just created.
+  }
+
+  static {
+    LEFT_SENSOR_CAN_ID = 0; // TODO: Check numbers here
+    RIGHT_SENSOR_CAN_ID = 1;
+  }
+
+  static {
+    INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS =
+        42; // In meters= 42; TODO: Set value after robot built
   }
 
   @RequiredArgsConstructor
@@ -72,20 +92,18 @@ public class V3_EpsilonIntakeConstants {
 
   // Will add more states later
   public static enum IntakeRollerState {
-    STOP(0.0),
-    CORAL_INTAKE(6.0),
-    ALGAE_INTAKE(12.0),
-    SCORE_CORAL(6.0),
-    OUTTAKE(10.0);
+    STOP(0.0, 0.0),
+    CORAL_INTAKE(6.0, 6.0),
+    ALGAE_INTAKE(12.0, 12.0),
+    SCORE_CORAL(6.0, 6.0),
+    OUTTAKE(10.0, 10.0);
 
-    private final double voltage;
+    @Getter private final double innerVoltage;
+    @Getter private final double outerVoltage;
 
-    IntakeRollerState(double voltage) {
-      this.voltage = voltage;
-    }
-
-    public double getVoltage() {
-      return voltage;
+    IntakeRollerState(double innerVoltage, double outerVoltage) {
+      this.innerVoltage = innerVoltage;
+      this.outerVoltage = outerVoltage;
     }
   }
 }

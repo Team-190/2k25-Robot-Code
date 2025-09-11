@@ -33,7 +33,7 @@ public enum V3_EpsilonSuperstructureStates {
       "GROUND_INTAKE",
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
-      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CORAL_INTAKE)),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.CORAL_INTAKE)),
 
   L1(
       "L1",

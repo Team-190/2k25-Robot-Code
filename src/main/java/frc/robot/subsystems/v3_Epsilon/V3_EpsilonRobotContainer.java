@@ -6,11 +6,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -151,5 +153,11 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     return Commands.sequence(
         CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
             drive, superstructure));
+    // return superstructure.allTransition();
+    // return Commands.sequence(
+    //     V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
+    //         drive, superstructure, () -> ReefState.ALGAE_INTAKE_TOP),
+    //     Commands.waitSeconds(5),
+    //     superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
   }
 }
