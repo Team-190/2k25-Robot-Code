@@ -3,12 +3,14 @@ package frc.robot.subsystems.v3_Epsilon;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -43,6 +45,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonSuperstructure superstructure;
 
   // Controller
+  CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
 
@@ -102,9 +105,26 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
       }
     }
+    configureButtonBindings();
   }
 
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            () -> false,
+            driver.back(),
+            driver.povRight()));
+    driver
+        .rightTrigger()
+        .whileTrue(
+            V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
+                superstructure, intake, manipulator))
+        .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+  }
 
   private void configureAutos() {}
 
@@ -128,11 +148,14 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    // return superstructure.allTransition();
     return Commands.sequence(
-        V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
-            drive, superstructure, () -> ReefState.ALGAE_INTAKE_TOP),
-        Commands.waitSeconds(5),
-        superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+        CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+            drive, superstructure));
+    // return superstructure.allTransition();
+    // return Commands.sequence(
+    //     V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
+    //         drive, superstructure, () -> ReefState.ALGAE_INTAKE_TOP),
+    //     Commands.waitSeconds(5),
+    //     superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
   }
 }

@@ -42,6 +42,7 @@ public class V3_EpsilonIntake {
     }
   }
 
+  // Double check if this is right
   @AutoLogOutput(key = "Intake/Has Coral")
   public boolean hasCoral() {
     return inputs.leftCANRangeDistanceMeters
