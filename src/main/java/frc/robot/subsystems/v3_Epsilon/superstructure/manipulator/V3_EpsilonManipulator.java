@@ -6,8 +6,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -19,11 +21,18 @@ public class V3_EpsilonManipulator {
   @Getter
   private ManipulatorArmState armGoal;
 
+  @Setter
+  @Getter
+  @AutoLogOutput(key = "Manipulator/Arm Side")
+  private Side armSide;
+
   @AutoLogOutput(key = "Manipulator/Roller Goal")
   @Getter
   private ManipulatorRollerState rollerGoal;
 
   private boolean isClosedLoop;
+
+  @Setter @Getter private boolean clearsElevator;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
     this.io = io;
@@ -31,7 +40,10 @@ public class V3_EpsilonManipulator {
 
     isClosedLoop = true;
     armGoal = ManipulatorArmState.VERTICAL_UP;
+    armSide = Side.POSITIVE;
     rollerGoal = ManipulatorRollerState.STOP;
+
+    clearsElevator = false;
   }
 
   public void periodic() {
@@ -39,7 +51,17 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      io.setArmGoal(armGoal.getAngle());
+      Rotation2d goal = armGoal.getAngle(armSide);
+
+      if (!isSafePosition() || clearsElevator) {
+        if (armSide == Side.POSITIVE) {
+          goal = Rotation2d.fromRotations(goal.getRotations() - 1.0);
+        } else {
+          goal = Rotation2d.fromRotations(goal.getRotations() + 1.0);
+        }
+      }
+
+      io.setArmGoal(goal);
     }
 
     if (hasAlgae()
@@ -111,9 +133,7 @@ public class V3_EpsilonManipulator {
   }
 
   public boolean armAtGoal(ManipulatorArmState state) {
-    return Math.hypot(
-            inputs.armPosition.getCos() - state.getAngle().getCos(),
-            inputs.armPosition.getSin() - state.getAngle().getSin())
+    return Math.abs(inputs.armPosition.minus(state.getAngle(armSide)).getRadians())
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
@@ -165,5 +185,13 @@ public class V3_EpsilonManipulator {
 
   public Rotation2d getArmAngle() {
     return inputs.armPosition;
+  }
+
+  @AutoLogOutput(key = "Manipulator/Safe Position")
+  public boolean isSafePosition() {
+    double cosThresh =
+        Math.cos(Math.PI - ManipulatorArmState.SAFE_ANGLE.getAngle(armSide).getRadians());
+    // unsafe if -cos(theta) >= cosThresh
+    return (-inputs.armPosition.getCos()) < cosThresh;
   }
 }

@@ -42,6 +42,7 @@ public class RobotState {
 
   @Getter @Setter private static RobotMode mode;
   @Getter @Setter private static boolean hasAlgae;
+  @Getter @Setter private static ScoreSide scoreSide;
 
   @Getter @Setter private static boolean isIntakingCoral;
   @Getter @Setter private static boolean isIntakingAlgae;
@@ -73,6 +74,7 @@ public class RobotState {
     }
 
     OIData = new OperatorInputData(ReefPose.LEFT, ReefState.STOW);
+    scoreSide = ScoreSide.CENTER;
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -139,15 +141,54 @@ public class RobotState {
     InternalLoggedTracer.record("Get Minimum Distance To Reef Tag", "RobotState/Periodic");
 
     // if (RobotMode.disabled()) {
-    //   resetRobotPose(getRobotPoseField());
+    // resetRobotPose(getRobotPoseField());
     // }
 
     InternalLoggedTracer.reset();
+
+    // Code will set the robot to the correct position based on the reef tag it is
+    // closest to for
+    // auto
+    // alignment to the reef to score coral
+
     Pose2d autoAlignCoralSetpoint =
         OIData.currentReefHeight().equals(ReefState.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
+    if (scoreSide == ScoreSide.RIGHT) {
+      autoAlignCoralSetpoint =
+          new Pose2d(
+              autoAlignCoralSetpoint.getX(),
+              autoAlignCoralSetpoint.getY(),
+              autoAlignCoralSetpoint.getRotation().rotateBy(new Rotation2d(-Math.PI / 2)));
+    } else if (scoreSide == ScoreSide.LEFT) {
+      autoAlignCoralSetpoint =
+          new Pose2d(
+              autoAlignCoralSetpoint.getX(),
+              autoAlignCoralSetpoint.getY(),
+              autoAlignCoralSetpoint.getRotation().rotateBy(new Rotation2d(Math.PI / 2)));
+    }
+
+    // @Author: Abhiraam Venigalla, Ananth Krishna Gomattam, Atharv Joshi, Chris Xu,
+    // Anshu Adiga,
+    // Adnan Dembele, Hartej Anand
+    // Code will rotate the robot if we need to score in a certain region
+    // Rotates the robot relative to the reef to the orientation desired
+
     Pose2d autoAlignAlgaeSetpoint = Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
+    if (scoreSide == ScoreSide.RIGHT) {
+      autoAlignAlgaeSetpoint =
+          new Pose2d(
+              autoAlignAlgaeSetpoint.getX(),
+              autoAlignAlgaeSetpoint.getY(),
+              autoAlignAlgaeSetpoint.getRotation().rotateBy(new Rotation2d(-Math.PI / 2)));
+    } else if (scoreSide == ScoreSide.LEFT) {
+      autoAlignAlgaeSetpoint =
+          new Pose2d(
+              autoAlignAlgaeSetpoint.getX(),
+              autoAlignAlgaeSetpoint.getY(),
+              autoAlignAlgaeSetpoint.getRotation().rotateBy(new Rotation2d(Math.PI / 2)));
+    }
 
     double distanceToCoralSetpoint =
         RobotState.getRobotPoseReef()
@@ -160,10 +201,20 @@ public class RobotState {
 
     boolean atCoralSetpoint =
         Math.abs(distanceToCoralSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
+            && Math.abs(autoAlignCoralSetpoint.getRotation().minus(robotHeading).getRadians())
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .tolerance()
+                    .get();
     boolean atAlgaeSetpoint =
         Math.abs(distanceToAlgaeSetpoint)
-            <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get();
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
+            && Math.abs(autoAlignAlgaeSetpoint.getRotation().minus(robotHeading).getRadians())
+                <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
+                    .omegaPIDConstants()
+                    .tolerance()
+                    .get();
 
     ReefState algaeHeight;
     switch (closestReefTag) {
@@ -405,5 +456,11 @@ public class RobotState {
     public static boolean auto() {
       return auto(RobotState.getMode());
     }
+  }
+
+  public enum ScoreSide {
+    LEFT,
+    RIGHT,
+    CENTER
   }
 }
