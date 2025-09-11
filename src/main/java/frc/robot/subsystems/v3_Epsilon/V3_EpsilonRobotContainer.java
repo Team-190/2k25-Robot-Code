@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v3_Epsilon;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -21,8 +23,9 @@ import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
@@ -41,6 +44,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonIntake intake;
   private V3_EpsilonManipulator manipulator;
   private V3_EpsilonSuperstructure superstructure;
+  private Vision vision;
 
   // Controller
   CommandXboxController driver = new CommandXboxController(0);
@@ -63,6 +67,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+          vision =
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  RobotCameras.V2_REDUNDANCY_CAMS);
           break;
         case V3_EPSILON_SIM:
           drive =
@@ -76,6 +84,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOSim());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+          vision =
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         default:
           break;
@@ -103,7 +113,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
       }
     }
-    configureButtonBindings();
   }
 
   private void configureButtonBindings() {
@@ -133,7 +142,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),
         drive.getModulePositions(),
-        null);
+        vision.getCameras());
 
     LTNUpdater.updateDrive(drive);
     LTNUpdater.updateElevator(elevator);
@@ -146,6 +155,15 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return superstructure.allTransition();
+    // return superstructure.allTransition();
+    return Commands.sequence(
+        V3_EpsilonCompositeCommands.dropAlgae(
+            drive,
+            elevator,
+            manipulator,
+            intake,
+            superstructure,
+            () -> ReefState.ALGAE_INTAKE_TOP,
+            RobotCameras.V3_EPSILON_CAMS));
   }
 }
