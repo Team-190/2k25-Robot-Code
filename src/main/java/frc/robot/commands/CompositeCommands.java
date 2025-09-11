@@ -761,6 +761,51 @@ public class CompositeCommands {
     /**
      * drive to reef go to algae level (L2 or L3) turn intake on go until it has algae then stow up
      */
+    public static final Command dropAlgae(
+        Drive drive,
+        ElevatorFSM elevator,
+        V3_EpsilonManipulator manipulator,
+        V3_EpsilonIntake intake,
+        V3_EpsilonSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+      return Commands.sequence(
+          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          Commands.sequence(
+              superstructure
+                  .runGoal(
+                      () -> {
+                        switch (level.get()) {
+                          case ALGAE_INTAKE_TOP:
+                            return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                          case ALGAE_INTAKE_BOTTOM:
+                            return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                          default:
+                            return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                        }
+                      })
+                  .until(() -> RobotState.isHasAlgae()),
+              Commands.waitSeconds(2.0),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)),
+                      () -> drive.stop())
+                  .withTimeout(0.5)),
+          superstructure.runGoal(
+              () -> {
+                switch (level.get()) {
+                  case ALGAE_INTAKE_TOP:
+                    return V3_EpsilonSuperstructureStates.L3_ALGAE_DROP;
+                  case ALGAE_INTAKE_BOTTOM:
+                    return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
+                  default:
+                    return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                }
+              }),
+          Commands.waitSeconds(1.0),
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    }
+
     public static final Command intakeAlgaeFromReef(
         Drive drive, V3_EpsilonSuperstructure superstructure, Supplier<ReefState> level) {
 
@@ -808,7 +853,7 @@ public class CompositeCommands {
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
-    
+
     public static final Command emergencyEject(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
