@@ -31,14 +31,7 @@ public class V3_EpsilonManipulatorConstants {
   public static final double CORAL_CAN_RANGE_THRESHOLD = 0.5;
 
   static {
-    ARM_PARAMETERS =
-        new ArmParameters(
-            DCMotor.getKrakenX60Foc(1),
-            Rotation2d.fromDegrees(-77.0),
-            Rotation2d.fromDegrees(75.0),
-            1,
-            90.0,
-            0.5);
+    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
     EMPTY_GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
@@ -129,22 +122,17 @@ public class V3_EpsilonManipulatorConstants {
       LoggedTunableNumber L1_VOLTS) {}
 
   public static record ArmParameters(
-      DCMotor MOTOR_CONFIG,
-      Rotation2d MIN_ANGLE,
-      Rotation2d MAX_ANGLE,
-      int NUM_MOTORS,
-      double GEAR_RATIO,
-      double LENGTH_METERS) {}
+      DCMotor MOTOR_CONFIG, int NUM_MOTORS, double GEAR_RATIO, double LENGTH_METERS) {}
 
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
-    PROCESSOR(Rotation2d.fromDegrees(-61.279296875 + 20)),
-    REEF_INTAKE(Rotation2d.fromDegrees(-61.279296875 + 15)),
-    INTAKE_OUT_LINE(Rotation2d.fromDegrees(-61)),
-    FLOOR_INTAKE(Rotation2d.fromDegrees(-68.5 - 5)),
-    STOW_LINE(Rotation2d.fromDegrees(-75)),
+    PROCESSOR(Rotation2d.fromDegrees(41.279296875)),
+    REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
+    INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
+    FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
+    STOW_LINE(Rotation2d.fromDegrees(75)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
@@ -152,7 +140,10 @@ public class V3_EpsilonManipulatorConstants {
 
     private final Rotation2d angle;
 
-    public Rotation2d getAngle() {
+    public Rotation2d getAngle(Side side) {
+      if (side == Side.NEGATIVE) {
+        return angle.unaryMinus();
+      }
       return angle;
     }
   }
@@ -177,5 +168,10 @@ public class V3_EpsilonManipulatorConstants {
     public double getVoltage() {
       return voltage;
     }
+  }
+
+  public enum Side {
+    POSITIVE,
+    NEGATIVE
   }
 }
