@@ -2,13 +2,11 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -148,14 +146,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
-            drive, superstructure));
-    // return superstructure.allTransition();
-    // return Commands.sequence(
-    //     V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
-    //         drive, superstructure, () -> ReefState.ALGAE_INTAKE_TOP),
-    //     Commands.waitSeconds(5),
-    //     superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    return superstructure.allTransition();
   }
 }

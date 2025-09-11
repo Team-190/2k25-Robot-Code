@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerState;
+import java.util.Set;
 import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -86,6 +87,19 @@ public class V3_EpsilonIntake {
 
   public void setRollerGoal(IntakeRollerState rollerGoal) {
     this.rollerGoal = rollerGoal;
+    if (hasCoral()
+        && Set.of(
+                V3_EpsilonIntakeConstants.IntakeRollerState.ALGAE_INTAKE,
+                V3_EpsilonIntakeConstants.IntakeRollerState.CORAL_INTAKE,
+                V3_EpsilonIntakeConstants.IntakeRollerState.STOP)
+            .contains(rollerGoal)) {
+
+      io.setInnerRollerVoltage(0);
+      io.setOuterRollerVoltage(0);
+    } else {
+      io.setInnerRollerVoltage(rollerGoal.getInnerVoltage());
+      io.setOuterRollerVoltage(rollerGoal.getOuterVoltage());
+    }
   }
 
   public Rotation2d getPivotAngle() {

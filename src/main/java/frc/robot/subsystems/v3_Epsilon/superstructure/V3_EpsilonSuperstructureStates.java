@@ -29,6 +29,15 @@ public enum V3_EpsilonSuperstructureStates {
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
       SubsystemActions.empty()),
+  GROUND_INTAKE_ALGAE(
+      "GROUND_INTAKE_ALGAE",
+      new SubsystemPoses(ReefState.HIGH_STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
+  GROUND_AQUISITION_ALGAE(
+      "GROUND_AQUISITION_ALGAE",
+      new SubsystemPoses(ReefState.HIGH_STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      SubsystemActions.empty()),
+
   GROUND_INTAKE(
       "GROUND_INTAKE",
       new SubsystemPoses(
@@ -73,8 +82,9 @@ public enum V3_EpsilonSuperstructureStates {
 
   HANDOFF(
       "HANDOFF",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
-      SubsystemActions.empty()),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.OUTTAKE)),
+
   INTERMEDIATE_WAIT_FOR_ELEVATOR(
       "INTERMEDIATE_WAIT_FOR_ELEVATOR",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),

@@ -29,6 +29,8 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -857,6 +859,33 @@ public class CompositeCommands {
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+    }
+    
+    public static final Command emergencyEject(
+        V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
+      return Commands.sequence(
+          superstructure.override(
+              () -> {
+                manipulator.setArmGoal(ManipulatorArmState.EMERGENCY_EJECT_ANGLE);
+                manipulator.setRollerGoal(ManipulatorRollerState.L4_SCORE);
+              }));
+    }
+
+    public static final Command intakeAlgaeFloor(
+        V3_EpsilonSuperstructure superstructure, V3_EpsilonManipulator manipulator) {
+      return superstructure
+          .runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)
+          .until(() -> manipulator.hasAlgae()); // add intake for algae after
+    }
+
+    public static final Command handoffCoral(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
+          Commands.waitUntil(() -> manipulator.hasCoral()),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
     }
   }
 }

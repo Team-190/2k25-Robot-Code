@@ -111,6 +111,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         elevator.getPositionMeters()
             > V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS() * 1.1);
 
+    if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE))
+      currentState.getAction().get(intake, manipulator);
     if (RobotMode.disabled()) {
       nextState = null;
     } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
