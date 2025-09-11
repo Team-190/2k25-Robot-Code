@@ -31,8 +31,10 @@ public interface V3_EpsilonIntakeIO {
     public double rollerInnerTorqueCurrentAmps = 0.0;
     public double rollerInnerTemperatureCelsius = 0.0;
 
-    public double leftCANDistance; // Left and Right based on the robot's perspective with intake at the front
-    public double rightCANDistance;
+    public double
+        leftCANRangeDistanceMeters; // Left and Right based on the robot's perspective with intake
+    // at the front
+    public double rightCANRangeDistanceMeters;
   }
 
   /**

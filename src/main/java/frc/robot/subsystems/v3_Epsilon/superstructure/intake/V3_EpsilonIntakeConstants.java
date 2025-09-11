@@ -15,7 +15,7 @@ public class V3_EpsilonIntakeConstants {
 
   public static final int RIGHT_SENSOR_CAN_ID;
 
-  public static final double INTAKE_CAN_CORAL_DETECTED_THRESHOLD;
+  public static final double INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS;
 
   public static final IntakeCurrentLimits CURRENT_LIMITS =
       new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
@@ -38,9 +38,9 @@ public class V3_EpsilonIntakeConstants {
   static {
     PIVOT_CAN_ID = 60;
     ROLLER_CAN_ID_OUTER =
-        42; // This used to be 61, but there are two motors, so I replace this with 42 until it gets
+        61; // This used to be 61, but there are two motors, so I replace this with 42 until it gets
     // sorted out fs
-    ROLLER_CAN_ID_INNER = 42; // This one I just created.
+    ROLLER_CAN_ID_INNER = 62; // This one I just created.
   }
 
   static {
@@ -49,7 +49,8 @@ public class V3_EpsilonIntakeConstants {
   }
 
   static {
-    INTAKE_CAN_CORAL_DETECTED_THRESHOLD = 42; // In meters= 42; TODO: Set value after robot built
+    INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS =
+        42; // In meters= 42; TODO: Set value after robot built
   }
 
   @RequiredArgsConstructor
@@ -97,10 +98,8 @@ public class V3_EpsilonIntakeConstants {
     SCORE_CORAL(6.0, 6.0),
     OUTTAKE(10.0, 10.0);
 
-    @Getter
-    private final double innerVoltage;
-    @Getter
-    private final double outerVoltage;
+    @Getter private final double innerVoltage;
+    @Getter private final double outerVoltage;
 
     IntakeRollerState(double innerVoltage, double outerVoltage) {
       this.innerVoltage = innerVoltage;
