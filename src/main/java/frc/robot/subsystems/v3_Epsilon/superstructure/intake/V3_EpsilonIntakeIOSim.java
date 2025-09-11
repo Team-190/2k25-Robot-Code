@@ -12,13 +12,15 @@ import frc.robot.Constants;
 
 public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   private SingleJointedArmSim pivotMotorSim;
-  private DCMotorSim rollerMotorSim;
+  private DCMotorSim rollerInnerMotorSim;
+  private DCMotorSim rollerOuterMotorSim;
 
   private final ProfiledPIDController armFeedbackController;
   private final ArmFeedforward armFeedforwardController;
 
   private double pivotAppliedVoltage;
-  private double rollerAppliedVoltage;
+  private double rollerInnerAppliedVoltage;
+  private double rollerOuterAppliedVoltage;
 
   private boolean isClosedLoop;
 
@@ -37,7 +39,15 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
             true,
             V3_EpsilonIntakeConstants.PIVOT_PARAMS.MIN_ANGLE().getRadians());
 
-    rollerMotorSim =
+    rollerInnerMotorSim =
+        new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                V3_EpsilonIntakeConstants.ROLLER_PARAMS.MOTOR(),
+                0.04,
+                V3_EpsilonIntakeConstants.ROLLER_PARAMS.PIVOT_GEAR_RATIO()),
+            V3_EpsilonIntakeConstants.ROLLER_PARAMS.MOTOR());
+
+    rollerOuterMotorSim =
         new DCMotorSim(
             LinearSystemId.createDCMotorSystem(
                 V3_EpsilonIntakeConstants.ROLLER_PARAMS.MOTOR(),
@@ -61,7 +71,8 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
             V3_EpsilonIntakeConstants.PIVOT_GAINS.kA());
 
     pivotAppliedVoltage = 0.0;
-    rollerAppliedVoltage = 0.0;
+    rollerInnerAppliedVoltage = 0.0;
+    rollerOuterAppliedVoltage = 0.0;
     isClosedLoop = false;
   }
 
@@ -75,13 +86,17 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
     }
 
     pivotAppliedVoltage = MathUtil.clamp(pivotAppliedVoltage, -12.0, 12.0);
-    rollerAppliedVoltage = MathUtil.clamp(rollerAppliedVoltage, -12.0, 12.0);
+    rollerInnerAppliedVoltage = MathUtil.clamp(rollerInnerAppliedVoltage, -12.0, 12.0);
+    rollerOuterAppliedVoltage = MathUtil.clamp(rollerOuterAppliedVoltage, -12.0, 12.0);
 
     pivotMotorSim.setInputVoltage(pivotAppliedVoltage);
     pivotMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
-    rollerMotorSim.setInputVoltage(rollerAppliedVoltage);
-    rollerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    rollerInnerMotorSim.setInputVoltage(rollerInnerAppliedVoltage);
+    rollerInnerMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+
+    rollerOuterMotorSim.setInputVoltage(rollerOuterAppliedVoltage);
+    rollerOuterMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.pivotPosition = new Rotation2d(pivotMotorSim.getAngleRads());
     inputs.pivotVelocityRadiansPerSecond = pivotMotorSim.getVelocityRadPerSec();
@@ -92,10 +107,15 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
     inputs.pivotPositionSetpoint = new Rotation2d(armFeedbackController.getSetpoint().position);
     inputs.pivotPositionError = new Rotation2d(armFeedbackController.getPositionError());
 
-    inputs.rollerPosition = new Rotation2d(rollerMotorSim.getAngularPosition());
-    inputs.rollerVelocityRadiansPerSecond = rollerMotorSim.getAngularVelocityRadPerSec();
-    inputs.rollerAppliedVolts = rollerAppliedVoltage;
-    inputs.rollerSupplyCurrentAmps = rollerMotorSim.getCurrentDrawAmps();
+    inputs.rollerInnerPosition = new Rotation2d(rollerInnerMotorSim.getAngularPosition());
+    inputs.rollerInnerVelocityRadiansPerSecond = rollerInnerMotorSim.getAngularVelocityRadPerSec();
+    inputs.rollerInnerAppliedVolts = rollerInnerAppliedVoltage;
+    inputs.rollerInnerSupplyCurrentAmps = rollerInnerMotorSim.getCurrentDrawAmps();
+
+    inputs.rollerOuterPosition = new Rotation2d(rollerOuterMotorSim.getAngularPosition());
+    inputs.rollerOuterVelocityRadiansPerSecond = rollerOuterMotorSim.getAngularVelocityRadPerSec();
+    inputs.rollerOuterAppliedVolts = rollerOuterAppliedVoltage;
+    inputs.rollerOuterSupplyCurrentAmps = rollerOuterMotorSim.getCurrentDrawAmps();
   }
 
   @Override
@@ -105,8 +125,12 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
   }
 
   @Override
-  public void setRollerVoltage(double voltage) {
-    rollerAppliedVoltage = voltage;
+  public void setInnerRollerVoltage(double voltage) {
+    rollerInnerAppliedVoltage = voltage;
+  }
+
+  public void setOuterRollerVoltage(double voltage) {
+    rollerOuterAppliedVoltage = voltage;
   }
 
   @Override

@@ -44,7 +44,10 @@ public class V3_EpsilonIntake {
 
   @AutoLogOutput(key = "Intake/Has Coral")
   public boolean hasCoral() {
-    return false; // Udpate later
+    return inputs.leftCANRangeDistanceMeters
+            > V3_EpsilonIntakeConstants.INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS
+        && inputs.rightCANRangeDistanceMeters
+            > V3_EpsilonIntakeConstants.INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS;
   }
 
   @AutoLogOutput(key = "Intake/At Goal")
@@ -63,8 +66,12 @@ public class V3_EpsilonIntake {
     this.pivotGoal = goal;
   }
 
-  public void setRollerVoltage(double volts) {
-    io.setRollerVoltage(volts);
+  public void setInnerRollerVoltage(double volts) {
+    io.setInnerRollerVoltage(volts);
+  }
+
+  public void setOuterRollerVoltage(double volts) {
+    io.setOuterRollerVoltage(volts);
   }
 
   public void setPivotVoltage(double volts) {
