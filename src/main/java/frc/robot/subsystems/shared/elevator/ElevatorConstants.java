@@ -304,7 +304,7 @@ public class ElevatorConstants {
             0.2161583093038944 + Units.inchesToMeters(1))),
     ALGAE_MID(
         new PositionConstants(
-            0.7073684509805078, 0.7073684509805078, 0.0)), // DOES NOT EXIST FOR V3
+            0.7073684509805078, 0.7073684509805078, 1.2)), // USED AS PRE-HANDOFF FOR V3
     ALGAE_INTAKE_TOP(
         new PositionConstants(
             1.17 - Units.inchesToMeters(8),
@@ -359,6 +359,15 @@ public class ElevatorConstants {
         default:
           return position.V1();
       }
+    }
+
+    public static ElevatorPositions getPosition(ReefState state) {
+      for (ElevatorPositions pos : values()) {
+        if (REEF_STATE_ELEVATOR_POSITION_MAP.get(state) == pos) {
+          return pos;
+        }
+      }
+      return null;
     }
   }
 }
