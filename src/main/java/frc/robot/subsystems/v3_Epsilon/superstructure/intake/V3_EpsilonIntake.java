@@ -41,6 +41,9 @@ public class V3_EpsilonIntake {
     if (isClosedLoop) {
       io.setPivotGoal(pivotGoal.getAngle());
     }
+
+    io.setInnerRollerVoltage(rollerGoal.getInnerVoltage());
+    io.setOuterRollerVoltage(rollerGoal.getOuterVoltage());
   }
 
   // Double check if this is right
@@ -66,14 +69,6 @@ public class V3_EpsilonIntake {
   public void setPivotGoal(IntakePivotState goal) {
     isClosedLoop = true;
     this.pivotGoal = goal;
-  }
-
-  public void setInnerRollerVoltage(double volts) {
-    io.setInnerRollerVoltage(volts);
-  }
-
-  public void setOuterRollerVoltage(double volts) {
-    io.setOuterRollerVoltage(volts);
   }
 
   public void setPivotVoltage(double volts) {
