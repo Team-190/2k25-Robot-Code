@@ -880,5 +880,18 @@ public class CompositeCommands {
           Commands.waitUntil(() -> manipulator.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
     }
+
+    public static final Command processAlgae(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR_SCORE),
+          Commands.waitSeconds(3),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    }
+
+    // public static final Command climb() {}
   }
 }
