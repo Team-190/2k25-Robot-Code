@@ -13,11 +13,14 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 
 public enum V3_EpsilonSuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
-  STOW_DOWN("STOW_DOWN", new SubsystemPoses(), SubsystemActions.empty()),
+  STOW_DOWN(
+      "STOW_DOWN",
+      new SubsystemPoses(ReefState.STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
+      SubsystemActions.empty()),
   STOW_UP(
       "STOW_UP",
       new SubsystemPoses(
-          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
+          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
 
@@ -39,7 +42,7 @@ public enum V3_EpsilonSuperstructureStates {
       "GROUND_INTAKE",
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.INTAKE_CORAL),
-      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CORAL_INTAKE)),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.CORAL_INTAKE)),
 
   L1(
       "L1",
@@ -70,17 +73,18 @@ public enum V3_EpsilonSuperstructureStates {
 
   L4(
       "L4",
-      new SubsystemPoses(ReefState.L4, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L4, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   L4_SCORE(
       "L4_SCORE",
-      new SubsystemPoses(ReefState.L4, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L4, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.L4_SCORE, IntakeRollerState.STOP)),
 
   HANDOFF(
       "HANDOFF",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.STOW),
-      SubsystemActions.empty()),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.OUTTAKE)),
+
   INTERMEDIATE_WAIT_FOR_ELEVATOR(
       "INTERMEDIATE_WAIT_FOR_ELEVATOR",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
@@ -95,6 +99,11 @@ public enum V3_EpsilonSuperstructureStates {
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
       SubsystemActions.empty()),
+  L2_ALGAE_DROP(
+      "L2_ALGAE_DROP",
+      new SubsystemPoses(
+          ReefState.ALGAE_INTAKE_BOTTOM, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.REMOVE_ALGAE, IntakeRollerState.STOP)),
   L2_ALGAE_INTAKE(
       "L2_ALGAE_INTAKE",
       new SubsystemPoses(
@@ -106,6 +115,11 @@ public enum V3_EpsilonSuperstructureStates {
       new SubsystemPoses(
           ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
       SubsystemActions.empty()),
+  L3_ALGAE_DROP(
+      "L3_ALGAE_DROP",
+      new SubsystemPoses(
+          ReefState.ALGAE_INTAKE_TOP, ManipulatorArmState.REEF_INTAKE, IntakePivotState.STOW),
+      new SubsystemActions(ManipulatorRollerState.REMOVE_ALGAE, IntakeRollerState.STOP)),
   L3_ALGAE_INTAKE(
       "L3_ALGAE_INTAKE",
       new SubsystemPoses(
@@ -124,11 +138,12 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",
-      new SubsystemPoses(ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(
+          ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
   ;
 

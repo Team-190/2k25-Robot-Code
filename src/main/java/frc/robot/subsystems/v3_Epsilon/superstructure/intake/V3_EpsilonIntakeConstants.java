@@ -8,14 +8,21 @@ import lombok.RequiredArgsConstructor;
 public class V3_EpsilonIntakeConstants {
   public static final int PIVOT_CAN_ID;
 
-  public static final int ROLLER_CAN_ID;
+  public static final int ROLLER_CAN_ID_INNER;
+  public static final int ROLLER_CAN_ID_OUTER;
+
+  public static final int LEFT_SENSOR_CAN_ID;
+
+  public static final int RIGHT_SENSOR_CAN_ID;
+
+  public static final double INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS;
 
   public static final IntakeCurrentLimits CURRENT_LIMITS =
       new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0);
 
   public static final Gains PIVOT_GAINS = new Gains(1.0, 0.01, 0.0, 0.0, 0.0, 0.0);
   public static final Constraints PIVOT_CONSTRAINTS =
-      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(3.0));
+      new Constraints(500.0, 500.0, Rotation2d.fromDegrees(1.5));
 
   public static final IntakeParems PIVOT_PARAMS =
       new IntakeParems(
@@ -30,16 +37,30 @@ public class V3_EpsilonIntakeConstants {
 
   static {
     PIVOT_CAN_ID = 60;
-    ROLLER_CAN_ID = 61;
+    ROLLER_CAN_ID_OUTER =
+        61; // This used to be 61, but there are two motors, so I replace this with 42 until it gets
+    // sorted out fs
+    ROLLER_CAN_ID_INNER = 62; // This one I just created.
+  }
+
+  static {
+    LEFT_SENSOR_CAN_ID = 0; // TODO: Check numbers here
+    RIGHT_SENSOR_CAN_ID = 1;
+  }
+
+  static {
+    INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS =
+        42; // In meters= 42; TODO: Set value after robot built
   }
 
   @RequiredArgsConstructor
   public enum IntakePivotState {
-    STOW(Rotation2d.fromDegrees(0)),
+    STOW(Rotation2d.fromDegrees(25.0)),
     INTAKE_CORAL(Rotation2d.fromDegrees(123.6)),
     HANDOFF(Rotation2d.fromDegrees(0)),
     L1(Rotation2d.fromDegrees(-82 + 123.6)),
-    INTAKE_ALGAE(new Rotation2d());
+    INTAKE_ALGAE(new Rotation2d()),
+    ARM_CLEAR(Rotation2d.fromDegrees(35));
 
     @Getter private final Rotation2d angle;
   }
@@ -71,20 +92,18 @@ public class V3_EpsilonIntakeConstants {
 
   // Will add more states later
   public static enum IntakeRollerState {
-    STOP(0.0),
-    CORAL_INTAKE(6.0),
-    ALGAE_INTAKE(12.0),
-    SCORE_CORAL(6.0),
-    OUTTAKE(10.0);
+    STOP(0.0, 0.0),
+    CORAL_INTAKE(6.0, 6.0),
+    ALGAE_INTAKE(12.0, 12.0),
+    SCORE_CORAL(6.0, 6.0),
+    OUTTAKE(10.0, 10.0);
 
-    private final double voltage;
+    @Getter private final double innerVoltage;
+    @Getter private final double outerVoltage;
 
-    IntakeRollerState(double voltage) {
-      this.voltage = voltage;
-    }
-
-    public double getVoltage() {
-      return voltage;
+    IntakeRollerState(double innerVoltage, double outerVoltage) {
+      this.innerVoltage = innerVoltage;
+      this.outerVoltage = outerVoltage;
     }
   }
 }

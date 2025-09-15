@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -19,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.PhoenixUtil;
@@ -41,22 +43,42 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
 
   private final TalonFXConfiguration pivotConfig;
 
-  private final TalonFX rollerTalonFX;
+  private final TalonFX rollerTalonFXOuter;
+  private final TalonFX rollerTalonFXInner;
 
-  private final StatusSignal<Angle> rollerPositionRotations;
-  private final StatusSignal<AngularVelocity> rollerVelocityRotationsPerSecond;
-  private final StatusSignal<Voltage> rollerAppliedVoltage;
-  private final StatusSignal<Current> rollerSupplyCurrentAmps;
-  private final StatusSignal<Current> rollerTorqueCurrentAmps;
-  private final StatusSignal<Temperature> rollerTemperatureCelsius;
+  private final StatusSignal<Angle> rollerInnerPositionRotations;
+  private final StatusSignal<AngularVelocity> rollerInnerVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> rollerInnerAppliedVoltage;
+  private final StatusSignal<Current> rollerInnerSupplyCurrentAmps;
+  private final StatusSignal<Current> rollerInnerTorqueCurrentAmps;
+  private final StatusSignal<Temperature> rollerInnerTemperatureCelsius;
 
-  private final VoltageOut rollerVoltageRequest;
+  private final StatusSignal<Angle> rollerOuterPositionRotations;
+  private final StatusSignal<AngularVelocity> rollerOuterVelocityRotationsPerSecond;
+  private final StatusSignal<Voltage> rollerOuterAppliedVoltage;
+  private final StatusSignal<Current> rollerOuterSupplyCurrentAmps;
+  private final StatusSignal<Current> rollerOuterTorqueCurrentAmps;
+  private final StatusSignal<Temperature> rollerOuterTemperatureCelsius;
 
-  private final TalonFXConfiguration rollerConfig;
+  private final VoltageOut rollerInnerVoltageRequest;
+  private final VoltageOut rollerOuterVoltageRequest;
+
+  private final TalonFXConfiguration rollerInnerConfig;
+  private final TalonFXConfiguration rollerOuterConfig;
+
+  private final CANrange leftCANrange;
+  private final CANrange rightCANrange;
+
+  private final StatusSignal<Distance> leftCANrangeStatusSignal;
+  private final StatusSignal<Distance> rightCANrangeStatusSignal;
 
   public V3_EpsilonIntakeIOTalonFX() {
     pivotTalonFX = new TalonFX(V3_EpsilonIntakeConstants.PIVOT_CAN_ID);
-    rollerTalonFX = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID);
+    rollerTalonFXOuter = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID_OUTER);
+    rollerTalonFXInner = new TalonFX(V3_EpsilonIntakeConstants.ROLLER_CAN_ID_INNER);
+
+    leftCANrange = new CANrange(V3_EpsilonIntakeConstants.LEFT_SENSOR_CAN_ID);
+    rightCANrange = new CANrange(V3_EpsilonIntakeConstants.RIGHT_SENSOR_CAN_ID);
 
     pivotConfig = new TalonFXConfiguration();
     pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -109,32 +131,56 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     pivotPositionSetpoint = pivotTalonFX.getClosedLoopReference();
     pivotPositionError = pivotTalonFX.getClosedLoopError();
 
-    rollerConfig = new TalonFXConfiguration();
-    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit =
+    leftCANrangeStatusSignal = leftCANrange.getDistance();
+    rightCANrangeStatusSignal = rightCANrange.getDistance();
+
+    rollerInnerConfig = new TalonFXConfiguration();
+    rollerInnerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    rollerInnerConfig.CurrentLimits.SupplyCurrentLimit =
         V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
-    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rollerConfig.CurrentLimits.StatorCurrentLimit =
+    rollerInnerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerInnerConfig.CurrentLimits.StatorCurrentLimit =
         V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
-    rollerConfig.Feedback.SensorToMechanismRatio =
+    rollerInnerConfig.Feedback.SensorToMechanismRatio =
         V3_EpsilonIntakeConstants.ROLLER_PARAMS.PIVOT_GEAR_RATIO();
-    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    rollerInnerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    rollerInnerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
+    rollerOuterConfig = new TalonFXConfiguration();
+    rollerOuterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    rollerOuterConfig.CurrentLimits.SupplyCurrentLimit =
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+    rollerOuterConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerOuterConfig.CurrentLimits.StatorCurrentLimit =
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
+    rollerOuterConfig.Feedback.SensorToMechanismRatio =
+        V3_EpsilonIntakeConstants.ROLLER_PARAMS.PIVOT_GEAR_RATIO();
+    rollerOuterConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    rollerOuterConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-    rollerPositionRotations = pivotTalonFX.getPosition();
-    rollerVelocityRotationsPerSecond = pivotTalonFX.getVelocity();
-    rollerAppliedVoltage = pivotTalonFX.getSupplyVoltage();
-    rollerSupplyCurrentAmps = pivotTalonFX.getSupplyCurrent();
-    rollerTorqueCurrentAmps = pivotTalonFX.getTorqueCurrent();
-    rollerTemperatureCelsius = pivotTalonFX.getDeviceTemp();
+    tryUntilOk(5, () -> rollerTalonFXOuter.getConfigurator().apply(rollerOuterConfig, 0.25));
+    tryUntilOk(5, () -> rollerTalonFXInner.getConfigurator().apply(rollerInnerConfig, 0.25));
+
+    rollerInnerPositionRotations = rollerTalonFXInner.getPosition();
+    rollerInnerVelocityRotationsPerSecond = rollerTalonFXInner.getVelocity();
+    rollerInnerAppliedVoltage = rollerTalonFXInner.getSupplyVoltage();
+    rollerInnerSupplyCurrentAmps = rollerTalonFXInner.getSupplyCurrent();
+    rollerInnerTorqueCurrentAmps = rollerTalonFXInner.getTorqueCurrent();
+    rollerInnerTemperatureCelsius = rollerTalonFXInner.getDeviceTemp();
+
+    rollerOuterPositionRotations = rollerTalonFXOuter.getPosition();
+    rollerOuterVelocityRotationsPerSecond = rollerTalonFXOuter.getVelocity();
+    rollerOuterAppliedVoltage = rollerTalonFXOuter.getSupplyVoltage();
+    rollerOuterSupplyCurrentAmps = rollerTalonFXOuter.getSupplyCurrent();
+    rollerOuterTorqueCurrentAmps = rollerTalonFXOuter.getTorqueCurrent();
+    rollerOuterTemperatureCelsius = rollerTalonFXOuter.getDeviceTemp();
 
     pivotVoltageRequest = new VoltageOut(0);
     pivotMotionMagicRequest =
         new MotionMagicVoltage(V3_EpsilonIntakeConstants.PIVOT_PARAMS.MIN_ANGLE().getMeasure());
 
-    rollerVoltageRequest = new VoltageOut(0);
+    rollerInnerVoltageRequest = new VoltageOut(0);
+    rollerOuterVoltageRequest = new VoltageOut(0);
 
     PhoenixUtil.registerSignals(
         false,
@@ -144,12 +190,20 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         pivotSupplyCurrentAmps,
         pivotTorqueCurrentAmps,
         pivotTemperatureCelsius,
-        rollerPositionRotations,
-        rollerVelocityRotationsPerSecond,
-        rollerAppliedVoltage,
-        rollerSupplyCurrentAmps,
-        rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius);
+        rollerInnerPositionRotations,
+        rollerOuterPositionRotations,
+        rollerInnerVelocityRotationsPerSecond,
+        rollerOuterVelocityRotationsPerSecond,
+        rollerInnerAppliedVoltage,
+        rollerOuterAppliedVoltage,
+        rollerInnerSupplyCurrentAmps,
+        rollerOuterSupplyCurrentAmps,
+        rollerInnerTorqueCurrentAmps,
+        rollerOuterTorqueCurrentAmps,
+        rollerInnerTemperatureCelsius,
+        rollerOuterTemperatureCelsius,
+        leftCANrangeStatusSignal,
+        rightCANrangeStatusSignal);
   }
 
   @Override
@@ -167,22 +221,37 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         Rotation2d.fromRotations(pivotPositionSetpoint.getValueAsDouble());
     inputs.pivotPositionError = Rotation2d.fromRotations(pivotPositionError.getValueAsDouble());
 
-    inputs.rollerPosition = new Rotation2d(rollerPositionRotations.getValue());
-    inputs.rollerVelocityRadiansPerSecond =
-        rollerVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
-    inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
-    inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
-    inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
-    inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
-    inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
+    inputs.rollerInnerPosition = new Rotation2d(rollerInnerPositionRotations.getValue());
+    inputs.rollerInnerVelocityRadiansPerSecond =
+        rollerInnerVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.rollerInnerAppliedVolts = rollerInnerAppliedVoltage.getValueAsDouble();
+    inputs.rollerInnerSupplyCurrentAmps = rollerInnerSupplyCurrentAmps.getValueAsDouble();
+    inputs.rollerInnerTorqueCurrentAmps = rollerInnerTorqueCurrentAmps.getValueAsDouble();
+    inputs.rollerInnerTemperatureCelsius = rollerInnerTemperatureCelsius.getValueAsDouble();
+
+    inputs.rollerOuterPosition = new Rotation2d(rollerOuterPositionRotations.getValue());
+    inputs.rollerOuterVelocityRadiansPerSecond =
+        rollerOuterVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.rollerOuterAppliedVolts = rollerOuterAppliedVoltage.getValueAsDouble();
+    inputs.rollerOuterSupplyCurrentAmps = rollerOuterSupplyCurrentAmps.getValueAsDouble();
+    inputs.rollerOuterTorqueCurrentAmps = rollerOuterTorqueCurrentAmps.getValueAsDouble();
+    inputs.rollerOuterTemperatureCelsius = rollerOuterTemperatureCelsius.getValueAsDouble();
+
+    inputs.leftCANRangeDistanceMeters = leftCANrangeStatusSignal.getValueAsDouble();
+    // result = condition ? true : false;
+    inputs.rightCANRangeDistanceMeters = rightCANrangeStatusSignal.getValueAsDouble();
   }
 
   public void setPivotVoltage(double volts) {
     pivotTalonFX.setControl(pivotVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
-  public void setRollerVoltage(double volts) {
-    rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+  public void setInnerRollerVoltage(double volts) {
+    rollerTalonFXInner.setControl(rollerInnerVoltageRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  public void setOuterRollerVoltage(double volts) {
+    rollerTalonFXOuter.setControl(rollerOuterVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   public void setPivotMotionMagic(Rotation2d position) {

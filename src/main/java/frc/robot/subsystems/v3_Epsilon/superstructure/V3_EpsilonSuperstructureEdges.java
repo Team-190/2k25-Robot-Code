@@ -1,12 +1,17 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -100,7 +105,8 @@ public class V3_EpsilonSuperstructureEdges {
           V3_EpsilonSuperstructureEdges.GamePieceEdge.UNCONSTRAINED;
 
       // START --- ADDED CODE
-      // Check for the 'requires' attribute to determine if motion should be sequential
+      // Check for the 'requires' attribute to determine if motion should be
+      // sequential
       boolean requiresElevator = false;
       boolean requiresArm = false;
       if (attrs != null && attrs.containsKey("requires")) {
@@ -185,7 +191,7 @@ public class V3_EpsilonSuperstructureEdges {
       moveCommand =
           Commands.sequence(
               pose.setElevatorHeight(elevator),
-              Commands.waitUntil(elevator::atGoal),
+              elevator.waitUntilAtGoal(),
               pose.asCommand(
                   elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
               );
@@ -195,10 +201,7 @@ public class V3_EpsilonSuperstructureEdges {
       moveCommand =
           Commands.sequence(
               pose.setManipulatorState(manipulator),
-              Commands.waitUntil(
-                  () ->
-                      manipulator.getArmAngle().getDegrees()
-                          < ManipulatorArmState.SAFE_ANGLE.getAngle().getDegrees()),
+              Commands.waitUntil(manipulator::isSafePosition),
               pose.asCommand(
                   elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
               );
@@ -207,10 +210,116 @@ public class V3_EpsilonSuperstructureEdges {
       moveCommand = pose.asCommand(elevator, intake, manipulator);
     }
 
+    if (from == V3_EpsilonSuperstructureStates.HANDOFF) {
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+              elevator.waitUntilAtGoal(),
+              moveCommand);
+    }
+    // move intake out of the way if it will collide
+    else if (willCollide(from, to)) {
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> intake.setPivotGoal(IntakePivotState.ARM_CLEAR)),
+              intake.waitUntilPivotAtGoal(),
+              moveCommand);
+    }
+
+    if (to == V3_EpsilonSuperstructureStates.HANDOFF) {
+
+      if (requiresArm) {
+        moveCommand =
+            Commands.sequence(
+                pose.setManipulatorState(manipulator),
+                Commands.waitUntil(manipulator::isSafePosition),
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+                elevator.waitUntilAtGoal(),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      } else if (requiresElevator) {
+        moveCommand =
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID)),
+                elevator.waitUntilAtGoal(),
+                pose.setManipulatorState(manipulator),
+                manipulator.waitUntilArmAtGoal(),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      } else {
+        moveCommand =
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_MID))
+                    .alongWith(pose.setManipulatorState(manipulator)),
+                Commands.waitSeconds(0.02),
+                Commands.waitUntil(() -> elevator.atGoal() || manipulator.armAtGoal()),
+                pose.setIntakeState(intake),
+                intake.waitUntilPivotAtGoal(),
+                pose.setElevatorHeight(elevator));
+      }
+    }
+
     // THE CRITICAL FIX:
     // No matter how we start the move, we append a final wait condition.
-    // This ensures the command doesn't end until the robot is physically at the target pose.
+    // This ensures the command doesn't end until the robot is physically at the
+    // target pose.
     return Commands.sequence(moveCommand, waitForPoseCommand(to, elevator, intake, manipulator));
+  }
+
+  private static boolean willCollide(
+      V3_EpsilonSuperstructureStates from, V3_EpsilonSuperstructureStates to) {
+
+    final int samples = 20; // number of interpolation steps
+
+    for (int i = 0; i <= samples; i++) {
+      double t = i / (double) samples;
+
+      // Interpolate elevator height
+      double elevHeight =
+          ElevatorConstants.ElevatorPositions.getPosition(from.getPose().getElevatorHeight())
+                      .getPosition()
+                  * (1 - t)
+              + ElevatorConstants.ElevatorPositions.getPosition(to.getPose().getElevatorHeight())
+                      .getPosition()
+                  * t;
+
+      // Interpolate arm angle
+      Rotation2d armAngle =
+          from.getPose()
+              .getArmState()
+              .getAngle(Side.POSITIVE)
+              .interpolate(to.getPose().getArmState().getAngle(Side.POSITIVE), t);
+
+      // Interpolate intake angle
+      Rotation2d intakeAngle =
+          from.getPose()
+              .getIntakeState()
+              .getAngle()
+              .interpolate(to.getPose().getIntakeState().getAngle(), t);
+
+      // Arm height
+      double armHeight =
+          -armAngle.rotateBy(new Rotation2d(-Math.PI / 2)).getSin()
+                  * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+              + elevHeight;
+
+      // Arm horizontal extension
+      double horiz =
+          Math.abs(
+              armAngle.rotateBy(new Rotation2d(-Math.PI / 2)).getCos()
+                  * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS());
+
+      // Check safety
+      boolean clearsIntake = intakeAngle.getDegrees() > 15 || armHeight > 0.37 || horiz > 0.35;
+
+      if (!clearsIntake) {
+        return true; // Collision predicted
+      }
+    }
+
+    return false; // Safe through transition
   }
 
   /**
@@ -268,7 +377,8 @@ public class V3_EpsilonSuperstructureEdges {
         intake,
         manipulator);
 
-    // NOTE: The two lines below are likely redundant. The loadEdgesFromDot method already
+    // NOTE: The two lines below are likely redundant. The loadEdgesFromDot method
+    // already
     // adds all edges to the graph. You may want to remove these calls.
     addEdges(graph, UNCONSTRAINED, GamePieceEdge.UNCONSTRAINED, elevator, manipulator, intake);
     addEdges(graph, NO_ALGAE_EDGES, GamePieceEdge.NO_ALGAE, elevator, manipulator, intake);

@@ -1,9 +1,12 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
@@ -16,6 +19,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -68,6 +72,21 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armConfig.Slot2 =
         Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    armConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    armConfig.MotionMagic =
+        new MotionMagicConfigs()
+            .withMotionMagicAcceleration(
+                AngularAcceleration.ofRelativeUnits(
+                    V3_EpsilonManipulatorConstants.CONSTRAINTS
+                        .maxAccelerationRotationsPerSecondSquared()
+                        .get(),
+                    RotationsPerSecondPerSecond))
+            .withMotionMagicCruiseVelocity(
+                AngularVelocity.ofRelativeUnits(
+                    V3_EpsilonManipulatorConstants.CONSTRAINTS
+                        .cruisingVelocityRotationsPerSecond()
+                        .get(),
+                    RotationsPerSecond));
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
