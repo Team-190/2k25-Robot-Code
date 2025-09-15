@@ -261,6 +261,14 @@ public class V3_EpsilonSuperstructureEdges {
       }
     }
 
+    if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
+      return Commands.sequence(
+          moveCommand,
+          Commands.race(
+              Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters()),
+              waitForPoseCommand(to, elevator, intake, manipulator)));
+    }
+
     // THE CRITICAL FIX:
     // No matter how we start the move, we append a final wait condition.
     // This ensures the command doesn't end until the robot is physically at the

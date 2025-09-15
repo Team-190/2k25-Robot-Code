@@ -808,7 +808,7 @@ public class CompositeCommands {
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
     }
-    
+
     public static final Command emergencyEject(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
@@ -834,6 +834,15 @@ public class CompositeCommands {
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
           Commands.waitUntil(() -> manipulator.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
+    }
+
+    public static final Command processScore(
+        V3_EpsilonSuperstructure superstructure, V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          Commands.runOnce(
+              () -> superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR_SCORE)),
+          Commands.waitUntil(() -> !manipulator.hasAlgae()).withTimeout(3),
+          Commands.runOnce(() -> superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN)));
     }
   }
 }
