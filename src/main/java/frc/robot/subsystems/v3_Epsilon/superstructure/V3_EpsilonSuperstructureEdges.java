@@ -11,7 +11,6 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -289,8 +288,10 @@ public class V3_EpsilonSuperstructureEdges {
       Rotation2d armAngle =
           from.getPose()
               .getArmState()
-              .getAngle(Side.POSITIVE)
-              .interpolate(to.getPose().getArmState().getAngle(Side.POSITIVE), t);
+              .getAngle(V3_EpsilonManipulatorConstants.Side.POSITIVE)
+              .interpolate(
+                  to.getPose().getArmState().getAngle(V3_EpsilonManipulatorConstants.Side.POSITIVE),
+                  t);
 
       // Interpolate intake angle
       Rotation2d intakeAngle =

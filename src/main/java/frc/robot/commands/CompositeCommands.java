@@ -669,11 +669,6 @@ public class CompositeCommands {
           Commands.waitSeconds(0.2),
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()));
-<<<<<<< HEAD
-      // superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE),
-      // Commands.waitSeconds(0.2),
-      // superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
-=======
     }
 
     /**
@@ -855,7 +850,6 @@ public class CompositeCommands {
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
->>>>>>> feature-v3
     }
 
     public static final Command emergencyEject(

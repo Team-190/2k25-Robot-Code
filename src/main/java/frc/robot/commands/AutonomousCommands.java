@@ -1869,22 +1869,22 @@ public class AutonomousCommands {
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
-                Commands.parallel(
-                    CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(V3_EpsilonSuperstructureStates.L4)),
-                superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
+                CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, cameras),
+                Commands.print("Scored first coral"),
                 path2.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                     superstructure, intake, manipulator),
                 path3.cmd(),
-                Commands.parallel(
-                    DriveCommands.autoAlignReefCoral(drive, cameras),
-                    superstructure.runGoal(V3_EpsilonSuperstructureStates.L4)),
+                CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 path4.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                     superstructure, intake, manipulator),
                 path5.cmd()));
+    CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+        drive, superstructure, cameras);
     return routine;
   }
 }
