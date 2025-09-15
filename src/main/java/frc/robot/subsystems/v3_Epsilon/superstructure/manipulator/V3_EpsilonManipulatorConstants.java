@@ -149,7 +149,8 @@ public class V3_EpsilonManipulatorConstants {
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
-    EMERGENCY_EJECT_ANGLE(Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
+    EMERGENCY_EJECT_ANGLE(
+        Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
     private final Rotation2d angle;
 

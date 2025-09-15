@@ -2,13 +2,12 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
-import frc.robot.commands.CompositeCommands;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -137,7 +136,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return CompositeCommands.V3_EpsilonCompositeCommands.emergencyEject(
-        manipulator, superstructure);
+    return AutonomousCommands.autoELeftPath(drive, superstructure, intake, manipulator).cmd();
   }
 }
