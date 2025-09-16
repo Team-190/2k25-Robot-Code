@@ -7,6 +7,7 @@ public interface ElevatorIO {
   public static class ElevatorIOInputs {
     public double positionMeters = 0.0;
     public double velocityMetersPerSecond = 0.0;
+    public double accelerationMetersPerSecondSquared = 0.0;
 
     public double[] appliedVolts = {0.0, 0.0, 0.0, 0.0};
     public double[] supplyCurrentAmps = {0.0, 0.0, 0.0, 0.0};
