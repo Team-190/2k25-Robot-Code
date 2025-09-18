@@ -1894,7 +1894,7 @@ public class AutonomousCommands {
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
                         drive, superstructure, cameras)
                     .withTimeout(0.5),
-                    CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(superstructure, () -> ReefState.L4)));
+                CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(superstructure, () -> ReefState.L4)));
     // CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
     //     superstructure, intake, manipulator),
     // path3.cmd(),
