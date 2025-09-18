@@ -1855,6 +1855,7 @@ public class AutonomousCommands {
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator,
       Camera... cameras) {
+
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoELeftPath");
     LoggedAutoTrajectory path1 = routine.trajectory("E_LEFT_PATH_1");
     LoggedAutoTrajectory path2 = routine.trajectory("E_LEFT_PATH_2");
@@ -1870,21 +1871,43 @@ public class AutonomousCommands {
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
                 path1.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
-                    drive, superstructure, cameras),
-                Commands.print("Scored first coral"),
+                        drive, superstructure, cameras)
+                    .withTimeout(0.5),
+                CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(
+                    superstructure, () -> ReefState.L4),
                 path2.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
-                    superstructure, intake, manipulator),
+                        superstructure, intake, manipulator)
+                    .withTimeout(0.5),
+                superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
                 path3.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
-                    drive, superstructure, cameras),
-                superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
+                        drive, superstructure, cameras)
+                    .withTimeout(0.5),
+                CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(
+                    superstructure, () -> ReefState.L4),
                 path4.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
-                    superstructure, intake, manipulator),
-                path5.cmd()));
-    CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
-        drive, superstructure, cameras);
+                        superstructure, intake, manipulator)
+                    .withTimeout(0.5),
+                path5.cmd(),
+                CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+                        drive, superstructure, cameras)
+                    .withTimeout(0.5),
+                    CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(superstructure, () -> ReefState.L4)));
+    // CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
+    //     superstructure, intake, manipulator),
+    // path3.cmd(),
+    // CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(
+    //     drive, superstructure, cameras),
+    // superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
+    // path4.cmd(),
+    // CompositeCommands.V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
+    //     superstructure, intake, manipulator),
+    // path5.cmd(),
+    // CompositeCommands.V3_EpsilonCompositeCommands.scoreCoral(
+    //     drive, superstructure, cameras));
+
     return routine;
   }
 }
