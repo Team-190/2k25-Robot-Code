@@ -5,20 +5,17 @@ import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO.V3_EpsilonClimberIOInputs;
 import frc.robot.util.PhoenixUtil;
 
-public class V3_EpsilonClimberIOTalonFX {
+public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
 
   private final TalonFX rollerTalonFX;
   private final TalonFX deploymentTalonFX;
@@ -44,7 +41,7 @@ public class V3_EpsilonClimberIOTalonFX {
   private final StatusSignal<Current> deploymentTorqueCurrentAmps;
   private final StatusSignal<Temperature> deploymentTemperatureCelsius;
 
-  public V3_EpsilonClimberIOTalonFX(){
+  public V3_EpsilonClimberIOTalonFX() {
     rollerTalonFX = new TalonFX(V3_EpsilonClimberConstants.ROLLER_CAN_ID);
     deploymentTalonFX = new TalonFX(V3_EpsilonClimberConstants.DEPLOYMENT_CAN_ID);
 
@@ -84,6 +81,7 @@ public class V3_EpsilonClimberIOTalonFX {
         rollerTorqueCurrentAmps,
         rollerTemperatureCelsius);
   }
+
   @Override
   public void updateInputs(V3_EpsilonClimberIOInputs inputs) {
     inputs.deploymentPosition = new Rotation2d(deploymentPositionRotations.getValue());
@@ -110,5 +108,4 @@ public class V3_EpsilonClimberIOTalonFX {
   public void setRollerVoltage(double volts) {
     rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
-    
 }

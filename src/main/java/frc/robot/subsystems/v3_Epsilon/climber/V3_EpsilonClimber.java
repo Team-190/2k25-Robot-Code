@@ -1,26 +1,24 @@
 package frc.robot.subsystems.v3_Epsilon.climber;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
-import frc.robot.util.ExternalLoggedTracer;
-import frc.robot.util.InternalLoggedTracer;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.ExternalLoggedTracer;
+import frc.robot.util.InternalLoggedTracer;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
-public class V3_EpsilonClimber extends SubsystemBase{
-    private final V3_EpsilonClimberIO io;
-    private final V3_EpsilonClimberIOInputsAutoLogged inputs;
+public class V3_EpsilonClimber extends SubsystemBase {
+  private final V3_EpsilonClimberIO io;
+  private final V3_EpsilonClimberIOInputsAutoLogged inputs;
 
-    @AutoLogOutput(key = "Climber/override")
-    private boolean override;
+  @AutoLogOutput(key = "Climber/override")
+  private boolean override;
 
-    @AutoLogOutput(key = "Climber/isClimbed")
-    private boolean isClimbed;
+  @AutoLogOutput(key = "Climber/isClimbed")
+  private boolean isClimbed;
 
-    public V3_EpsilonClimber(V3_EpsilonClimberIO io) {
+  public V3_EpsilonClimber(V3_EpsilonClimberIO io) {
     this.io = io;
     inputs = new V3_EpsilonClimberIOInputsAutoLogged();
 
@@ -64,10 +62,6 @@ public class V3_EpsilonClimber extends SubsystemBase{
     return Commands.run(() -> io.setRollerVoltage(volts));
   }
 
-
-//TODO: NOTHING BELOW THIS POINT WORKS!!!
-
-
   /**
    * Creates a command to release the climber. The climber is released by applying voltage until the
    * position is greater than or equal to 20 radians.
@@ -75,8 +69,8 @@ public class V3_EpsilonClimber extends SubsystemBase{
    * @return A command to release the climber.
    */
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setVoltage(1), () -> io.setVoltage(0))
-        .until(() -> inputs.positionRadians >= 20);
+    return this.runEnd(() -> io.setDeploymentVoltage(1), () -> io.setDeploymentVoltage(0))
+        .until(() -> inputs.deploymentPosition.getRadians() >= 20);
   }
 
   /**
@@ -86,7 +80,8 @@ public class V3_EpsilonClimber extends SubsystemBase{
    * @return A command to winch the climber.
    */
   public Command winchClimber() {
-    return Commands.runEnd(() -> io.setVoltage(12), () -> io.setVoltage(0)).until(() -> isClimbed);
+    return Commands.runEnd(() -> io.setRollerVoltage(12), () -> io.setRollerVoltage(0))
+        .until(() -> isClimbed);
   }
 
   /**
@@ -95,7 +90,7 @@ public class V3_EpsilonClimber extends SubsystemBase{
    * @return A command to manually winch the climber.
    */
   public Command winchClimberManual() {
-    return this.runEnd(() -> io.setVoltage(4), () -> io.setVoltage(0));
+    return this.runEnd(() -> io.setRollerVoltage(4), () -> io.setRollerVoltage(0));
   }
 
   /**
@@ -107,5 +102,4 @@ public class V3_EpsilonClimber extends SubsystemBase{
   public Command manualDeployOverride(boolean override) { // set using debug board button
     return Commands.runOnce(() -> this.override = override);
   }
-
 }

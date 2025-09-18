@@ -145,7 +145,12 @@ public enum V3_EpsilonSuperstructureStates {
       new SubsystemPoses(
           ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
-  ;
+
+  CLIMB(
+      "CLIMB",
+      new SubsystemPoses(
+          ReefState.STOW, ManipulatorArmState.EMERGENCY_EJECT_ANGLE, IntakePivotState.ARM_CLEAR),
+      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.STOP));
 
   // Readable name for state
   private final String name;
