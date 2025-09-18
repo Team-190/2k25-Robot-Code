@@ -158,8 +158,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     // return superstructure.allTransition();
-    return AutonomousCommands.autoELeft(
-            drive, intake, superstructure, (RobotCameras.V3_EPSILON_CAMS))
+    return AutonomousCommands.autoELeftArm(
+            drive, intake, superstructure, manipulator, (RobotCameras.V3_EPSILON_CAMS))
         .cmd();
   }
 }

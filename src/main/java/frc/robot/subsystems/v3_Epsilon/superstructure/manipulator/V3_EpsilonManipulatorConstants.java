@@ -132,6 +132,7 @@ public class V3_EpsilonManipulatorConstants {
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
+    STOW_DOWN(Rotation2d.fromDegrees(88)),
     STOW_LINE(Rotation2d.fromDegrees(75)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
