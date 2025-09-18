@@ -8,7 +8,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V3_EpsilonManipulatorConstants {
+public final class V3_EpsilonManipulatorConstants {
   public static final ArmParameters ARM_PARAMETERS;
   public static final Gains EMPTY_GAINS;
   public static final Gains CORAL_GAINS;
@@ -132,7 +132,8 @@ public class V3_EpsilonManipulatorConstants {
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
-    STOW_LINE(Rotation2d.fromDegrees(75)),
+    STOW_LINE(Rotation2d.fromDegrees(75)), // What is STOW_LINE?
+    STOW_DOWN(Rotation2d.fromDegrees(75)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
