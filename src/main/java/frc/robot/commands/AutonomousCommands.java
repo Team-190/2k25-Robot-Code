@@ -154,11 +154,11 @@ public class AutonomousCommands {
 
     drive.getAutoFactory().cache().loadTrajectory("D_CENTER_PATH");
 
-    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH1");
-    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH2");
-    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH3");
-    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH4");
-    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH5");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_1");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_2");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_3");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_4");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_5");
   }
 
   public static final Command autoALeft(
@@ -1921,15 +1921,15 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoELeft");
-    LoggedAutoTrajectory path1 = routine.trajectory("E_LEFT_PATH1");
+    LoggedAutoTrajectory path1 = routine.trajectory("E_LEFT_PATH_1");
 
-    LoggedAutoTrajectory path2 = routine.trajectory("E_LEFT_PATH2_ARM");
+    LoggedAutoTrajectory path2 = routine.trajectory("E_LEFT_PATH_2");
 
-    LoggedAutoTrajectory path3 = routine.trajectory("E_LEFT_PATH3");
+    LoggedAutoTrajectory path3 = routine.trajectory("E_LEFT_PATH_3");
 
-    LoggedAutoTrajectory path4 = routine.trajectory("E_LEFT_PATH4_ARM");
+    LoggedAutoTrajectory path4 = routine.trajectory("E_LEFT_PATH_4");
 
-    LoggedAutoTrajectory path5 = routine.trajectory("E_LEFT_PATH5");
+    LoggedAutoTrajectory path5 = routine.trajectory("E_LEFT_PATH_5");
 
     routine
         .active()
@@ -1947,10 +1947,9 @@ public class AutonomousCommands {
                             drive, superstructure, cameras),
                         V3_EpsilonCompositeCommands.scoreCoral(superstructure, () -> ReefState.L4))
                     .withTimeout(2),
-                Commands.parallel(
-                    path2.cmd(),
+                path2.cmd(),
                     V3_EpsilonCompositeCommands.manipulatorGroundIntake(manipulator, superstructure)
-                        .withTimeout(0.5)),
+                        .withTimeout(0.5),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                 path3.cmd(),
                 Commands.parallel(

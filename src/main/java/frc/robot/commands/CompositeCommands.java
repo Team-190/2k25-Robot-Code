@@ -901,9 +901,10 @@ public class CompositeCommands {
     public static final Command manipulatorGroundIntake(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
-          Commands.runOnce(() -> manipulator.setArmGoal(ManipulatorArmState.STOW_DOWN)),
-          Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)),
-          Commands.runOnce(() -> superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF)));
+          Commands.runOnce(() -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
+          Commands.runOnce(() ->
+              manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE))
+          );
     }
   }
 }
