@@ -4,13 +4,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -27,6 +26,10 @@ import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
@@ -47,6 +50,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonIntake intake;
   private V3_EpsilonManipulator manipulator;
   private V3_EpsilonSuperstructure superstructure;
+  private V3_EpsilonClimber climber;
   private Vision vision;
 
   // Controller
@@ -69,6 +73,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
+          climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           vision =
               new Vision(
@@ -86,6 +91,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOSim()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOSim());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
+          climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOSim());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           vision =
               new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
@@ -111,6 +117,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
       }
       if (manipulator == null) {
         manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+      }
+      if (climber == null) {
+        climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
       }
       if (superstructure == null) {
         superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
@@ -159,14 +168,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   @Override
   public Command getAutonomousCommand() {
     // return superstructure.allTransition();
-    return Commands.sequence(
-        V3_EpsilonCompositeCommands.dropAlgae(
-            drive,
-            elevator,
-            manipulator,
-            intake,
-            superstructure,
-            () -> ReefState.ALGAE_INTAKE_TOP,
-            RobotCameras.V3_EPSILON_CAMS));
+    return CompositeCommands.V3_EpsilonCompositeCommands.climb(
+        superstructure, drive, climber, intake, manipulator);
   }
 }
