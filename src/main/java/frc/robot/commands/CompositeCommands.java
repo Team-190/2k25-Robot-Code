@@ -30,7 +30,6 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureSt
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 // Removed duplicate or conflicting import for ManipulatorArmState
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
@@ -901,10 +900,9 @@ public class CompositeCommands {
     public static final Command manipulatorGroundIntake(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
-          Commands.runOnce(() -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
-          Commands.runOnce(() ->
-              manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE))
-          );
+          Commands.runOnce(
+              () -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
+          Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)));
     }
   }
 }
