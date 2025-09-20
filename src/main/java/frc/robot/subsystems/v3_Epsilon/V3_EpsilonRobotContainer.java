@@ -114,6 +114,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
       }
     }
+
+    configureButtonBindings();
+    configureAutos();
   }
 
   private void configureButtonBindings() {

@@ -392,7 +392,6 @@ public class V3_EpsilonSuperstructureEdges {
       ElevatorFSM elevator,
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
-    V3_EpsilonSuperstructurePose pose = state.getPose();
 
     // Add this command to log the check's status
     Command logCheck =
