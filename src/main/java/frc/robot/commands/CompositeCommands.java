@@ -701,6 +701,25 @@ public class CompositeCommands {
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
     }
 
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_EpsilonSuperstructure superstructure, ReefState height, Camera... cameras) {
+      return Commands.sequence(
+          Commands.runOnce(
+                  () -> {
+                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+                      RobotState.setScoreSide(ScoreSide.CENTER);
+                    } else {
+                      RobotState.setScoreSide(
+                          optimalSide(RobotState.getReefAlignData().coralSetpoint()));
+                    }
+                  })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.runReefGoal(() -> height),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          superstructure.runReefScoreGoal(() -> height));
+    }
+
     public static final Command optimalAutoAlignReefAlgae(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.sequence(

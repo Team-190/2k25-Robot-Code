@@ -454,7 +454,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
               case L1 -> 0.8;
               case L2 -> 0.15;
               case L3 -> 0.15;
-              case L4 -> 0.4;
+              case L4 -> 0.1;
               default -> 0;
             });
   }

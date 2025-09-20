@@ -31,7 +31,7 @@ public final class V3_EpsilonManipulatorConstants {
   public static final double CORAL_CAN_RANGE_THRESHOLD = 0.5;
 
   static {
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
+    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 55.5, .695);
     EMPTY_GAINS =
         new Gains(
             new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
@@ -58,7 +58,7 @@ public final class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
     CONSTRAINTS =
         new Constraints(
-            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 1000.0),
             new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
             new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
 
@@ -128,7 +128,9 @@ public final class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
-    PROCESSOR(Rotation2d.fromDegrees(41.279296875)),
+    SCORE_L4(Rotation2d.kPi),
+    PROCESSOR(Rotation2d.fromDegrees(90)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),

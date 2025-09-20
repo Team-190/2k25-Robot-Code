@@ -23,7 +23,6 @@ public enum V3_EpsilonSuperstructureStates {
           ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
-
   GROUND_ACQUISITION(
       "GROUND_ACQUISITION",
       new SubsystemPoses(
@@ -31,11 +30,13 @@ public enum V3_EpsilonSuperstructureStates {
       SubsystemActions.empty()),
   GROUND_INTAKE_ALGAE(
       "GROUND_INTAKE_ALGAE",
-      new SubsystemPoses(ReefState.HIGH_STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemPoses(
+          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
       new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
   GROUND_AQUISITION_ALGAE(
       "GROUND_AQUISITION_ALGAE",
-      new SubsystemPoses(ReefState.HIGH_STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      new SubsystemPoses(
+          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
       SubsystemActions.empty()),
 
   GROUND_INTAKE(
@@ -77,7 +78,7 @@ public enum V3_EpsilonSuperstructureStates {
       SubsystemActions.empty()),
   L4_SCORE(
       "L4_SCORE",
-      new SubsystemPoses(ReefState.L4, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
+      new SubsystemPoses(ReefState.L4, ManipulatorArmState.SCORE_L4, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.L4_SCORE, IntakeRollerState.STOP)),
 
   HANDOFF(
