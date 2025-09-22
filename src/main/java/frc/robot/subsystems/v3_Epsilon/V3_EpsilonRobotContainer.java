@@ -2,13 +2,14 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
@@ -116,6 +118,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
       }
     }
+    configureButtonBindings();
   }
 
   private void configureButtonBindings() {
@@ -154,19 +157,26 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         "Component Poses",
         V3_EpsilonMechanism3d.getPoses(
             elevator.getPositionMeters(), intake.getPivotAngle(), manipulator.getArmAngle()));
+    Logger.recordOutput(
+        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+    Logger.recordOutput(
+        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
   }
 
   @Override
   public Command getAutonomousCommand() {
+    return Commands.runOnce(
+            () -> RobotState.resetRobotPose(new Pose2d(7.25, 2.39, new Rotation2d(Math.PI / 2))))
+        .andThen(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE));
     // return superstructure.allTransition();
-    return Commands.sequence(
-        V3_EpsilonCompositeCommands.dropAlgae(
-            drive,
-            elevator,
-            manipulator,
-            intake,
-            superstructure,
-            () -> ReefState.ALGAE_INTAKE_TOP,
-            RobotCameras.V3_EPSILON_CAMS));
+    // return Commands.sequence(
+    // V3_EpsilonCompositeCommands.dropAlgae(
+    // drive,
+    // elevator,
+    // manipulator,
+    // intake,
+    // superstructure,
+    // () -> ReefState.ALGAE_INTAKE_TOP,
+    // RobotCameras.V3_EPSILON_CAMS));
   }
 }

@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -125,6 +126,8 @@ public class Robot extends LoggedRobot {
         // Running a physics simulator, log to NT
         // setUseTiming(false);
         Logger.addDataReceiver(new NT4Publisher());
+        // setting up maple sim field
+        SimulatedArena.getInstance();
         break;
 
       case REPLAY:
@@ -263,37 +266,40 @@ public class Robot extends LoggedRobot {
     // LoggedTracer.reset();
     // var canStatus = RobotController.getCANStatus();
     // if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-    //   canErrorTimer.restart();
+    // canErrorTimer.restart();
     // }
     // canErrorAlert.set(
-    //     !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-    //         && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // !canErrorTimer.hasElapsed(canErrorTimeThreshold)
+    // && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
 
     // // Log CANivore status
     // if (Constants.getMode() == Constants.Mode.REAL) {
-    //   var canivoreStatus = canivoreReader.getStatus();
-    //   if (canivoreStatus.isPresent()) {
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
-    //     if (!canivoreStatus.get().Status.isOK()
-    //         || canStatus.transmitErrorCount > 0
-    //         || canStatus.receiveErrorCount > 0) {
-    //       canivoreErrorTimer.restart();
-    //     }
-    //   }
-    //   canivoreErrorAlert.set(
-    //       !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
-    //           && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
+    // var canivoreStatus = canivoreReader.getStatus();
+    // if (canivoreStatus.isPresent()) {
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "Status",
+    // canivoreStatus.get().Status.getName());
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "Utilization",
+    // canivoreStatus.get().BusUtilization);
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "TxFullCount",
+    // canivoreStatus.get().TxFullCount);
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
+    // Logger.recordOutput(
+    // NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
+    // if (!canivoreStatus.get().Status.isOK()
+    // || canStatus.transmitErrorCount > 0
+    // || canStatus.receiveErrorCount > 0) {
+    // canivoreErrorTimer.restart();
+    // }
+    // }
+    // canivoreErrorAlert.set(
+    // !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
+    // && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
     // }
     // LoggedTracer.record("Check CANivore Status", "Robot");
   }

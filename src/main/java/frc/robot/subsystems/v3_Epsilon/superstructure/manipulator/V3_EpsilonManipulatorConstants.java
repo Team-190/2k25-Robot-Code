@@ -128,6 +128,7 @@ public class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
+    BARGE_SCORE(Rotation2d.fromDegrees(18.67)),
     PROCESSOR(Rotation2d.fromDegrees(41.279296875)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),

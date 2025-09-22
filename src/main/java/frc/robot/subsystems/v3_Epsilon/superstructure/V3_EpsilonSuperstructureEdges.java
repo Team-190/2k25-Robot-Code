@@ -264,9 +264,7 @@ public class V3_EpsilonSuperstructureEdges {
     if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
       return Commands.sequence(
           moveCommand,
-          Commands.race(
-              Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters()),
-              waitForPoseCommand(to, elevator, intake, manipulator)));
+          Commands.race(Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters())));
     }
 
     // THE CRITICAL FIX:

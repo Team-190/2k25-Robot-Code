@@ -170,6 +170,7 @@ public class V3_EpsilonManipulator {
   }
 
   public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
+    this.rollerGoal = rollerGoal;
     if (hasAlgae()
         && Set.of(
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
@@ -193,5 +194,13 @@ public class V3_EpsilonManipulator {
         Math.cos(Math.PI - ManipulatorArmState.SAFE_ANGLE.getAngle(armSide).getRadians());
     // unsafe if -cos(theta) >= cosThresh
     return (-inputs.armPosition.getCos()) < cosThresh;
+  }
+
+  public double getArmVelocity() {
+    return inputs.armVelocityRadiansPerSecond;
+  }
+
+  public double getRollerVelocity() {
+    return inputs.rollerVelocityRadiansPerSecond;
   }
 }

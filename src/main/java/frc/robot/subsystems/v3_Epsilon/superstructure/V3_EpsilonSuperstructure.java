@@ -1,9 +1,21 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
@@ -14,7 +26,9 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEd
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +41,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -97,6 +113,94 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
     // Add edges between states
     V3_EpsilonSuperstructureEdges.addEdges(graph, elevator, intake, manipulator);
+
+    // trigger to run
+    new Trigger(
+            () ->
+                targetState == V3_EpsilonSuperstructureStates.BARGE_SCORE
+                    && manipulator.getRollerGoal() == ManipulatorRollerState.SCORE_ALGAE && !Constants.getMode().equals(Constants.Mode.REAL))
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  System.out.println("Algae shot at " + Timer.getFPGATimestamp());
+                  Translation2d shooterPositionOnRobot =
+                      new Translation2d(
+                          V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+                                  * manipulator.getArmAngle().getSin()
+                              - 0.05,
+                          0);
+                  Distance initialHeight =
+                      Distance.ofBaseUnits(
+                          V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+                                  * manipulator.getArmAngle().getCos()
+                              + elevator.getPositionMeters(),
+                          Units.Meters);
+
+                  double v_x =
+                      manipulator.getArmVelocity()
+                              * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+                              * manipulator.getArmAngle().getSin()
+                          + -manipulator.getRollerVelocity()
+                              * edu.wpi.first.math.util.Units.inchesToMeters(1.5)
+                              * manipulator.getArmAngle().getSin();
+                  double v_y =
+                      manipulator.getArmVelocity()
+                              * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
+                              * manipulator.getArmAngle().getCos()
+                          + -manipulator.getRollerVelocity()
+                              * edu.wpi.first.math.util.Units.inchesToMeters(1.5)
+                              * manipulator.getArmAngle().getCos()
+                          + elevator.getVelocityMetersPerSecond();
+                  Logger.recordOutput("AlgaeCalculations/velocity/v_x", v_x);
+                  Logger.recordOutput("AlgaeCalculations/velocity/v_y", v_y);
+                  Angle shooterAngle =
+                      manipulator
+                          .getArmAngle()
+                          .plus(Rotation2d.kCW_90deg)
+                          .unaryMinus()
+                          .getMeasure();
+                  Logger.recordOutput(
+                      "AlgaeCalculations/shooterPositionOnRobot", shooterPositionOnRobot);
+                  Logger.recordOutput("AlgaeCalculations/initialHeight", initialHeight);
+                  Logger.recordOutput("AlgaeCalculations/shooterAngle", shooterAngle);
+                  ReefscapeAlgaeOnFly algae =
+                      new ReefscapeAlgaeOnFly(
+                          RobotState.getRobotPoseField().getTranslation(),
+                          shooterPositionOnRobot, // shooter position relative to bot
+                          new ChassisSpeeds(), // maybe fix this eventually
+                          RobotState.getRobotPoseField()
+                              .getRotation()
+                              .plus(Rotation2d.kCW_Pi_2), // good
+                          initialHeight, // initial height of the ball, in meters |
+                          // (length from arm joint to
+                          // ball * cos (arm angle)) + elevator height
+                          LinearVelocity.ofRelativeUnits(
+                              Math.hypot(v_x, v_y) * .85,
+                              Units.MetersPerSecond), // initial velocity, in m/s
+                          shooterAngle // shooter angle
+                          );
+                  algae
+                      .withTargetPosition(
+                          () -> {
+                            double x = FieldConstants.Barge.middleCage.getX();
+                            double y =
+                                AllianceFlipUtil.applyY(FieldConstants.Barge.middleCage.getY());
+                            double z = 2.018538;
+                            return new Translation3d(x, y, z);
+                          })
+                      .withTargetTolerance(
+                          new Translation3d(
+                              edu.wpi.first.math.util.Units.inchesToMeters(23), 1.86055, .242062));
+                  SimulatedArena.getInstance()
+                      .addGamePieceProjectile(
+                          algae.withProjectileTrajectoryDisplayCallBack(
+                              (poses) ->
+                                  Logger.recordOutput(
+                                      "successfulShotsTrajectory", poses.toArray(Pose3d[]::new)),
+                              (poses) ->
+                                  Logger.recordOutput(
+                                      "missedShotsTrajectory", poses.toArray(Pose3d[]::new))));
+                }));
   }
 
   /**
