@@ -122,7 +122,6 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  System.out.println("Algae shot at " + Timer.getFPGATimestamp());
                   Translation2d shooterPositionOnRobot =
                       new Translation2d(
                           V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS()
