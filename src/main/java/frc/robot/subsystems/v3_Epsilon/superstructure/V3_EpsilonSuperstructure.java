@@ -9,7 +9,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -118,7 +117,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     new Trigger(
             () ->
                 targetState == V3_EpsilonSuperstructureStates.BARGE_SCORE
-                    && manipulator.getRollerGoal() == ManipulatorRollerState.SCORE_ALGAE && !Constants.getMode().equals(Constants.Mode.REAL))
+                    && manipulator.getRollerGoal() == ManipulatorRollerState.SCORE_ALGAE
+                    && !Constants.getMode().equals(Constants.Mode.REAL))
         .onTrue(
             Commands.runOnce(
                 () -> {

@@ -13,6 +13,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
+import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
@@ -167,7 +168,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   public Command getAutonomousCommand() {
     return Commands.runOnce(
             () -> RobotState.resetRobotPose(new Pose2d(7.25, 2.39, new Rotation2d(Math.PI / 2))))
-        .andThen(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE));
+        .andThen(CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure));
     // return superstructure.allTransition();
     // return Commands.sequence(
     // V3_EpsilonCompositeCommands.dropAlgae(

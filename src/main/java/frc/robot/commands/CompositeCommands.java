@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
@@ -691,7 +692,7 @@ public class CompositeCommands {
                       RobotState.setScoreSide(ScoreSide.CENTER);
                     } else {
                       RobotState.setScoreSide(
-                          optimalSide(RobotState.getReefAlignData().coralSetpoint()));
+                          optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
                     }
                   })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
@@ -710,7 +711,7 @@ public class CompositeCommands {
                     if (closestReefTag != -1) {
                       Pose2d baseAlgaeSetpoint =
                           Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
-                      RobotState.setScoreSide(optimalSide(baseAlgaeSetpoint));
+                      RobotState.setScoreSide(optimalSideReef(baseAlgaeSetpoint));
                     }
                   })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
@@ -718,7 +719,7 @@ public class CompositeCommands {
           DriveCommands.autoAlignReefAlgae(drive, cameras));
     }
 
-    private static final ScoreSide optimalSide(Pose2d baseSetpoint) {
+    private static final ScoreSide optimalSideReef(Pose2d baseSetpoint) {
       if (Math.abs(
               MathUtil.angleModulus(
                   baseSetpoint
@@ -738,6 +739,27 @@ public class CompositeCommands {
         return ScoreSide.LEFT;
       }
     }
+
+    private static final ScoreSide optimalSideBarge() {
+      boolean facingPositive =
+          MathUtil.inputModulus(
+                      RobotState.getRobotPoseField().getRotation().getRadians(), 0, 2 * Math.PI)
+                  >= 0
+              && MathUtil.inputModulus(
+                      RobotState.getRobotPoseField().getRotation().getRadians(), 0, 2 * Math.PI)
+                  < Math.PI;
+
+      if (RobotState.getRobotPoseField().getX() < FieldConstants.fieldLength / 2)
+        return facingPositive ? ScoreSide.RIGHT : ScoreSide.LEFT;
+      else return facingPositive ? ScoreSide.LEFT : ScoreSide.RIGHT;
+    }
+
+    public static final Command optimalScoreBarge(V3_EpsilonSuperstructure superstructure) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotState.setScoreSide(optimalSideBarge())),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE));
+    }
+
     /**
      * Creates a command to score coral.
      *
@@ -807,10 +829,13 @@ public class CompositeCommands {
     }
 
     public static final Command intakeAlgaeFromReef(
-        Drive drive, V3_EpsilonSuperstructure superstructure, Supplier<ReefState> level) {
+        Drive drive,
+        V3_EpsilonSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
 
       return Commands.sequence(
-          // DriveCommands.autoAlignReefAlgae(drive),
+          optimalAutoAlignReefAlgae(drive, superstructure, cameras),
           superstructure
               .runGoalUntil(
                   () -> {
