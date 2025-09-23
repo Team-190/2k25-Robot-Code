@@ -127,6 +127,12 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     }
   }
 
+
+  /**
+   * Configure the button bindings for the robot. This method is called in
+   * the constructor and is responsible for setting up the default commands
+   * for each button on the controllers.
+   */
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -147,6 +153,12 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   private void configureAutos() {}
 
+
+/**
+ * Periodic function for the robot. This function is called every 20ms,
+ * and is responsible for updating the robot's state and logging relevant
+ * data.
+ */
   @Override
   public void robotPeriodic() {
     RobotState.periodic(
@@ -165,7 +177,13 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             elevator.getPositionMeters(), intake.getPivotAngle(), manipulator.getArmAngle()));
   }
 
-  @Override
+  /**
+   * Returns the autonomous command for the robot. This command will be scheduled
+   * for the entire autonomous period. 
+   *
+   * @return the autonomous command for the robot
+   */
+/*******  a3f2747b-04ef-49d3-bd1f-182e56d47707  *******/
   public Command getAutonomousCommand() {
     // return superstructure.allTransition();
     return CompositeCommands.V3_EpsilonCompositeCommands.climb(
