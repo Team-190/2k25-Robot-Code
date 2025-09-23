@@ -3,6 +3,7 @@ package frc.robot.subsystems.v3_Epsilon;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
@@ -36,6 +37,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
@@ -48,9 +50,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private Vision vision;
 
   // Controller
-  CommandXboxController driver = new CommandXboxController(0);
+  private static final CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
+  private static final ChoreoChooser autoChooser = new ChoreoChooser();
 
   public V3_EpsilonRobotContainer() {
 
@@ -128,7 +131,15 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
   }
 
-  private void configureAutos() {}
+  private void configureAutos() {
+    autoChooser.addRoutine(
+        "4 Piece Early Madtown",
+        () -> AutonomousCommands.autoERight(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Late Madtown",
+        () -> AutonomousCommands.autoERightBack(drive, superstructure, intake, manipulator));
+    SmartDashboard.putData("Autonomous Modes", autoChooser);
+  }
 
   @Override
   public void robotPeriodic() {
@@ -150,6 +161,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.autoERightBack(drive, superstructure, intake, manipulator).cmd();
+    return autoChooser.selectedCommand();
   }
 }
