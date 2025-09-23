@@ -206,6 +206,15 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         rightCANrangeStatusSignal);
   }
 
+
+/**
+ * Updates the inputs of the subsystem.
+ *
+ * This function is called by the robot periodic loop and should update all of the inputs
+ * of the subsystem. The inputs should be updated from the CAN bus and other sensors.
+ *
+ * @param inputs The inputs of the subsystem.
+ */
   @Override
   public void updateInputs(V3_EpsilonIntakeIOInputs inputs) {
     inputs.pivotPosition = new Rotation2d(pivotPositionRotations.getValue());
@@ -242,18 +251,57 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     inputs.rightCANRangeDistanceMeters = rightCANrangeStatusSignal.getValueAsDouble();
   }
 
+
+/**
+ * Sets the voltage for the intake pivot motor.
+ *
+ * This method is used to set the voltage for the intake pivot motor in open-loop mode.
+ * It sets the isClosedLoop flag to false, and then calls the setPivotVoltage method of the IO interface.
+ *
+ * @param volts The voltage to set for the intake pivot motor.
+ */
   public void setPivotVoltage(double volts) {
     pivotTalonFX.setControl(pivotVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
+
+
+/**
+ * Sets the voltage for the inner manipulator roller.
+ *
+ * This method is used to set the voltage for the inner manipulator roller in open-loop mode.
+ * It sets the isClosedLoop flag to false, and then calls the setControl method of the TalonFX
+ * object with the voltage request.
+ *
+ * @param volts The voltage to set for the inner manipulator roller.
+ */
 
   public void setInnerRollerVoltage(double volts) {
     rollerTalonFXInner.setControl(rollerInnerVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
+/**
+ * Sets the voltage for the outer manipulator roller.
+ *
+ * This method is used to set the voltage for the outer manipulator roller in open-loop mode.
+ * It sets the isClosedLoop flag to false, and then calls the setControl method of the TalonFX
+ * object with the voltage request.
+ *
+ * @param volts The voltage to set for the outer manipulator roller.
+ */
   public void setOuterRollerVoltage(double volts) {
     rollerTalonFXOuter.setControl(rollerOuterVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
+
+/**
+ * Sets the position of the intake pivot motor using Motion Magic.
+ *
+ * This method is used to set the position of the intake pivot motor using Motion Magic.
+ * It sets the isClosedLoop flag to true, and then calls the setControl method of the
+ * TalonFX object with the position request.
+ *
+ * @param position The desired position of the intake pivot motor.
+ */
   public void setPivotMotionMagic(Rotation2d position) {
     pivotTalonFX.setControl(
         pivotMotionMagicRequest.withPosition(position.getMeasure()).withEnableFOC(true));

@@ -26,6 +26,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
@@ -904,6 +906,33 @@ public class CompositeCommands {
           superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF),
           Commands.waitUntil(() -> manipulator.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
+    }
+
+    public static final Command processAlgae(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR_SCORE),
+          Commands.waitSeconds(3),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    }
+
+    public static final Command climb(
+        V3_EpsilonSuperstructure superstructure,
+        Drive drive,
+        V3_EpsilonClimber climber,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.CLIMB),
+          Commands.deadline(
+              climber.releaseClimber(),
+              Commands.waitSeconds(
+                  V3_EpsilonClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
+          Commands.deadline(
+              climber.winchClimber(), Commands.run(drive::stop))); 
     }
   }
 }
