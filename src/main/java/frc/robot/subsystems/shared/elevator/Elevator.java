@@ -305,12 +305,13 @@ public class Elevator {
   }
 
   public class ElevatorFSM {
+    @AutoLogOutput(key = "Elevator/Past Barge Threshold")
     public boolean pastBargeThresholdgetPositionMeters() {
       if (Constants.getMode() == Mode.REAL)
-        return inputs.accelerationMetersPerSecondSquared < -0.01
-            && inputs.velocityMetersPerSecond > 1;
+        return inputs.accelerationMetersPerSecondSquared < -1.0
+            && inputs.velocityMetersPerSecond > 4;
       else {
-        return inputs.positionMeters > .91;
+        return inputs.positionMeters > .95;
       }
     }
 
@@ -383,6 +384,10 @@ public class Elevator {
 
     public BooleanSupplier inFastScoringTolerance() {
       return Elevator.this.inFastScoringTolerance();
+    }
+
+    public double getVelocityMetersPerSecond() {
+      return inputs.velocityMetersPerSecond;
     }
   }
 
