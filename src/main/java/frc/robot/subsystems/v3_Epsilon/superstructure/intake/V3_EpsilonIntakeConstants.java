@@ -47,7 +47,7 @@ public class V3_EpsilonIntakeConstants {
     switch (Constants.ROBOT) {
       case V3_EPSILON_SIM:
         PIVOT_CONSTRAINTS = new Constraints(500.0, 500.0, Rotation2d.fromDegrees(1.5));
-        PIVOT_GAINS = new Gains(0.0, 0.00, 0.0, 0.0, 0.0, 0.0);
+        PIVOT_GAINS = new Gains(1.0, 0.01, 0.0, 0.0, 0.0, 0.0);
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0, 40.0, 40.0);
 
         break;
@@ -63,11 +63,11 @@ public class V3_EpsilonIntakeConstants {
 
   @RequiredArgsConstructor
   public enum IntakePivotState {
-    STOW(Rotation2d.fromDegrees(-123.6)),
-    INTAKE_CORAL(Rotation2d.fromDegrees(0)),
-    HANDOFF(Rotation2d.fromDegrees(-123.6)),
-    L1(Rotation2d.fromDegrees(-82)),
-    INTAKE_ALGAE(new Rotation2d(0)),
+    STOW(Rotation2d.fromDegrees(25.0)),
+    INTAKE_CORAL(Rotation2d.fromDegrees(123.6)),
+    HANDOFF(Rotation2d.fromDegrees(0)),
+    L1(Rotation2d.fromDegrees(-82 + 123.6)),
+    INTAKE_ALGAE(new Rotation2d()),
     ARM_CLEAR(Rotation2d.fromDegrees(35));
 
     @Getter private final Rotation2d angle;
