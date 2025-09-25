@@ -49,12 +49,12 @@ public class Climber extends SubsystemBase {
     override = false;
   }
 
-/**
- * Periodic function for the climber subsystem.
- *
- * Updates the inputs for the climber, processes the inputs, logs the state of the climber, and
- * records the total time taken by the periodic function.
- */
+  /**
+   * Periodic function for the climber subsystem.
+   *
+   * <p>Updates the inputs for the climber, processes the inputs, logs the state of the climber, and
+   * records the total time taken by the periodic function.
+   */
   @Override
   public void periodic() {
     ExternalLoggedTracer.reset();

@@ -931,8 +931,7 @@ public class CompositeCommands {
               climber.releaseClimber(),
               Commands.waitSeconds(
                   V3_EpsilonClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
-          Commands.deadline(
-              climber.winchClimber(), Commands.run(drive::stop))); 
+          Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
     }
   }
 }
