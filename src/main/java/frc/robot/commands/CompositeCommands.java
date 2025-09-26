@@ -717,7 +717,9 @@ public class CompositeCommands {
           superstructure.runReefGoal(() -> height),
           DriveCommands.autoAlignReefCoral(drive, cameras),
           Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
-          superstructure.runReefScoreGoal(() -> height));
+          superstructure
+              .runReefScoreGoal(() -> height)
+              .until(() -> superstructure.armBelowThreshold()));
     }
 
     public static final Command optimalAutoAlignReefAlgae(

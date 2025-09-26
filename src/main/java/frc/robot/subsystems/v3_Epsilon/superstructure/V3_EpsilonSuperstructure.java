@@ -616,4 +616,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     }
     return all;
   }
+
+  public boolean armBelowThreshold() {
+    return manipulator.getArmAngle().getDegrees() >= 130;
+  }
 }
