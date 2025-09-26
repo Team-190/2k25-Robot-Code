@@ -133,11 +133,17 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
   private void configureAutos() {
     autoChooser.addRoutine(
-        "4 Piece Early Madtown",
+        "4 Piece Right Early Madtown",
         () -> AutonomousCommands.autoERight(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "4 Piece Late Madtown",
+        "4 Piece Right Late Madtown",
         () -> AutonomousCommands.autoERightBack(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Left Early Madtown",
+        () -> AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Left Late Madtown",
+        () -> AutonomousCommands.autoELeftBack(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
