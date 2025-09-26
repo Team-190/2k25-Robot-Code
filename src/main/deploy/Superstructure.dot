@@ -32,7 +32,7 @@ digraph Superstructure {
   L1 -> GROUND_ACQUISITION [type=UNCONSTRAINED]
   L1 -> L2 [type=UNCONSTRAINED, requires=ARM]
   L1 -> L3 [type=UNCONSTRAINED, requires=ARM]
-  L1 -> L4 [type=UNCONSTRAINED]
+  L1 -> L4 [type=UNCONSTRAINED, requires=ELEVATOR]
   L1 -> L1_SCORE [type=UNCONSTRAINED]
   L1 -> HANDOFF [type=UNCONSTRAINED]
   L1 -> STOW_UP [type=UNCONSTRAINED, requires=ARM]
@@ -131,7 +131,7 @@ digraph Superstructure {
   HANDOFF -> L2_ALGAE [type=UNCONSTRAINED, requires=ARM]
   HANDOFF -> L3_ALGAE [type=UNCONSTRAINED, requires=ARM]
   HANDOFF -> PROCESSOR [type=UNCONSTRAINED, requires=ARM]
-  HANDOFF -> BARGE [type=UNCONSTRAINED]
+  HANDOFF -> BARGE [type=UNCONSTRAINED, requires=ARM]
 
   STOW_UP -> STOW_DOWN [type=UNCONSTRAINED]
   STOW_UP -> GROUND_ACQUISITION [type=UNCONSTRAINED, requires=ELEVATOR]

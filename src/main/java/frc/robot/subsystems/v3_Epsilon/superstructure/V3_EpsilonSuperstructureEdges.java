@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotState;
 import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.RobotState;
 import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants;
@@ -270,7 +270,7 @@ public class V3_EpsilonSuperstructureEdges {
     }
 
     if (to == V3_EpsilonSuperstructureStates.CLIMB) {
-      return moveCommand.beforeStarting(()->RobotState.setScoreSide(ScoreSide.RIGHT));
+      return moveCommand.beforeStarting(() -> RobotState.setScoreSide(ScoreSide.RIGHT));
     }
 
     // THE CRITICAL FIX:
