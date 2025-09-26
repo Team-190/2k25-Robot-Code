@@ -3,6 +3,7 @@ package frc.robot.subsystems.v3_Epsilon.climber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -70,7 +71,12 @@ public class V3_EpsilonClimber extends SubsystemBase {
    */
   public Command releaseClimber() {
     return this.runEnd(() -> io.setDeploymentVoltage(1), () -> io.setDeploymentVoltage(0))
-        .until(() -> inputs.deploymentPosition.getRadians() >= 20);
+        .until(
+            () ->
+                inputs.deploymentPosition.getRadians()
+                        >= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_DEPLOYED_RADIANS
+                    || override)
+        .finallyDo(() -> RobotState.setClimberReady(true));
   }
 
   /**

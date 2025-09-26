@@ -48,6 +48,7 @@ public class RobotState {
   @Getter @Setter private static boolean isIntakingAlgae;
   @Getter @Setter private static boolean isAutoAligning;
   @Getter @Setter private static boolean autoClapOverride;
+  @Getter @Setter private static boolean climberReady;
 
   private static final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 

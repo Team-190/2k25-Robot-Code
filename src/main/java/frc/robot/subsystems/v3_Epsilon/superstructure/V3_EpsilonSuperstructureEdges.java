@@ -269,8 +269,16 @@ public class V3_EpsilonSuperstructureEdges {
           Commands.race(Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters())));
     }
 
+    // arm has to be on the right and elevator has to be up for climber to deploy
     if (to == V3_EpsilonSuperstructureStates.CLIMB) {
-      return moveCommand.beforeStarting(() -> RobotState.setScoreSide(ScoreSide.RIGHT));
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_SCORE))
+                  .alongWith(pose.setManipulatorState(manipulator), pose.setIntakeState(intake))
+                  .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.RIGHT)),
+              elevator.waitUntilAtGoal(),
+              Commands.waitUntil(RobotState::isClimberReady),
+              pose.setElevatorHeight(elevator));
     }
 
     // THE CRITICAL FIX:
@@ -403,7 +411,6 @@ public class V3_EpsilonSuperstructureEdges {
       ElevatorFSM elevator,
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
-    V3_EpsilonSuperstructurePose pose = state.getPose();
 
     // Add this command to log the check's status
     Command logCheck =
