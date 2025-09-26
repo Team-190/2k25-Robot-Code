@@ -719,7 +719,11 @@ public class CompositeCommands {
           Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
           superstructure
               .runReefScoreGoal(() -> height)
-              .until(() -> superstructure.armBelowThreshold()));
+              .until(
+                  () -> {
+                    if (height.equals(ReefState.L4)) return superstructure.armBelowThreshold();
+                    else return false;
+                  }));
     }
 
     public static final Command optimalAutoAlignReefAlgae(
