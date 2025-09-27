@@ -137,10 +137,10 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     rollerInnerConfig = new TalonFXConfiguration();
     rollerInnerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerInnerConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.INNER_ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerInnerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rollerInnerConfig.CurrentLimits.StatorCurrentLimit =
-        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.INNER_ROLLER_STATOR_CURRENT_LIMIT();
     rollerInnerConfig.Feedback.SensorToMechanismRatio =
         V3_EpsilonIntakeConstants.ROLLER_PARAMS.PIVOT_GEAR_RATIO();
     rollerInnerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -149,10 +149,10 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     rollerOuterConfig = new TalonFXConfiguration();
     rollerOuterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rollerOuterConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.OUTER_ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerOuterConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rollerOuterConfig.CurrentLimits.StatorCurrentLimit =
-        V3_EpsilonIntakeConstants.CURRENT_LIMITS.ROLLER_STATOR_CURRENT_LIMIT();
+        V3_EpsilonIntakeConstants.CURRENT_LIMITS.OUTER_ROLLER_STATOR_CURRENT_LIMIT();
     rollerOuterConfig.Feedback.SensorToMechanismRatio =
         V3_EpsilonIntakeConstants.ROLLER_PARAMS.PIVOT_GEAR_RATIO();
     rollerOuterConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;

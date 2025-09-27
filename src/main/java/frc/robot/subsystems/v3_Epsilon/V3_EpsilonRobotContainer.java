@@ -78,7 +78,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           vision =
               new Vision(
                   () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-                  RobotCameras.V2_REDUNDANCY_CAMS);
+                  RobotCameras.V3_EPSILON_CAMS);
           break;
         case V3_EPSILON_SIM:
           drive =

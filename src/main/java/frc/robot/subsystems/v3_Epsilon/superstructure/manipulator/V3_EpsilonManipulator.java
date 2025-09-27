@@ -82,7 +82,8 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
-    return inputs.canRangeDistanceMeters < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD
+    return inputs.canRangeDistanceMeters
+            < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD_METERS
         && inputs.canRangeDistanceMeters > 0;
   }
 
@@ -95,7 +96,8 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return inputs.canRangeDistanceMeters < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD
+    return inputs.canRangeDistanceMeters
+            < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD_METERS
         && inputs.canRangeDistanceMeters > 0;
   }
 
