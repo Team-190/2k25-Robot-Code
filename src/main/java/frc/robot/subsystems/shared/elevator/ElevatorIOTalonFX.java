@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -30,6 +31,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   // Sensor inputs
   private StatusSignal<Angle> positionRotations;
   private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
+  private StatusSignal<AngularAcceleration> accelerationRotationsPerSecSq;
   private ArrayList<StatusSignal<Voltage>> appliedVolts;
   private ArrayList<StatusSignal<Current>> supplyCurrentAmps;
   private ArrayList<StatusSignal<Current>> torqueCurrentAmps;
@@ -109,6 +111,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     positionRotations = talonFX.getPosition();
     velocityRotationsPerSecond = talonFX.getVelocity();
+    accelerationRotationsPerSecSq = talonFX.getAcceleration();
     appliedVolts.add(talonFX.getMotorVoltage());
     supplyCurrentAmps.add(talonFX.getSupplyCurrent());
     torqueCurrentAmps.add(talonFX.getTorqueCurrent());
@@ -166,6 +169,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             * 2;
     inputs.velocityMetersPerSecond =
         (velocityRotationsPerSecond.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
+            * Math.PI
+            * ElevatorConstants.DRUM_RADIUS
+            * 2;
+    inputs.accelerationMetersPerSecondSquared =
+        (accelerationRotationsPerSecSq.getValueAsDouble() / ElevatorConstants.ELEVATOR_GEAR_RATIO)
             * Math.PI
             * ElevatorConstants.DRUM_RADIUS
             * 2;

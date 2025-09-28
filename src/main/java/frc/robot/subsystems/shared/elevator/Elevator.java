@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
@@ -303,6 +305,14 @@ public class Elevator {
   }
 
   public class ElevatorFSM {
+    public boolean pastBargeThresholdgetPositionMeters() {
+      if (Constants.getMode() == Mode.REAL)
+        return inputs.accelerationMetersPerSecondSquared < -0.01
+            && inputs.velocityMetersPerSecond > 1;
+      else {
+        return inputs.positionMeters > .91;
+      }
+    }
 
     public void periodic() {
       ExternalLoggedTracer.reset();
