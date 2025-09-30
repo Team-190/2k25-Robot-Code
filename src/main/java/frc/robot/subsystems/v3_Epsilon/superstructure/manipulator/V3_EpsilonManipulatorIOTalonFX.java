@@ -14,6 +14,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -60,33 +61,28 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armConfig = new TalonFXConfiguration();
 
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    armConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT();
+    armConfig.CurrentLimits.SupplyCurrentLimit = V3_EpsilonManipulatorConstants.CURRENT_LIMITS
+        .MANIPULATOR_SUPPLY_CURRENT_LIMIT();
     armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-    armConfig.Feedback.SensorToMechanismRatio =
-        V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
-    armConfig.Slot0 =
-        Slot0Configs.from(V3_EpsilonManipulatorConstants.EMPTY_GAINS.toTalonFXSlotConfigs());
-    armConfig.Slot1 =
-        Slot1Configs.from(V3_EpsilonManipulatorConstants.CORAL_GAINS.toTalonFXSlotConfigs());
-    armConfig.Slot2 =
-        Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
+    armConfig.Feedback.SensorToMechanismRatio = V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
+    armConfig.Slot0 = Slot0Configs.from(V3_EpsilonManipulatorConstants.EMPTY_GAINS.toTalonFXSlotConfigs());
+    armConfig.Slot1 = Slot1Configs.from(V3_EpsilonManipulatorConstants.CORAL_GAINS.toTalonFXSlotConfigs());
+    armConfig.Slot2 = Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     armConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    armConfig.MotionMagic =
-        new MotionMagicConfigs()
-            .withMotionMagicAcceleration(
-                AngularAcceleration.ofRelativeUnits(
-                    V3_EpsilonManipulatorConstants.CONSTRAINTS
-                        .maxAccelerationRotationsPerSecondSquared()
-                        .get(),
-                    RotationsPerSecondPerSecond))
-            .withMotionMagicCruiseVelocity(
-                AngularVelocity.ofRelativeUnits(
-                    V3_EpsilonManipulatorConstants.CONSTRAINTS
-                        .cruisingVelocityRotationsPerSecond()
-                        .get(),
-                    RotationsPerSecond));
+    armConfig.MotionMagic = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(
+            AngularAcceleration.ofRelativeUnits(
+                V3_EpsilonManipulatorConstants.CONSTRAINTS
+                    .maxAccelerationRotationsPerSecondSquared()
+                    .get(),
+                RotationsPerSecondPerSecond))
+        .withMotionMagicCruiseVelocity(
+            AngularVelocity.ofRelativeUnits(
+                V3_EpsilonManipulatorConstants.CONSTRAINTS
+                    .cruisingVelocityRotationsPerSecond()
+                    .get(),
+                RotationsPerSecond));
 
     tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
 
@@ -102,8 +98,8 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
 
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rollerConfig.CurrentLimits.SupplyCurrentLimit =
-        V3_EpsilonManipulatorConstants.CURRENT_LIMITS.ROLLER_SUPPLY_CURRENT_LIMIT();
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = V3_EpsilonManipulatorConstants.CURRENT_LIMITS
+        .ROLLER_SUPPLY_CURRENT_LIMIT();
     rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     tryUntilOk(5, () -> rollerTalonFX.getConfigurator().apply(rollerConfig, 0.25));
@@ -147,33 +143,34 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   public void updateInputs(ManipulatorIOInputs inputs) {
 
     inputs.armPosition = new Rotation2d(armPositionRotations.getValue());
-    inputs.armVelocityRadiansPerSecond =
-        armVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
+    inputs.armVelocityRadiansPerSecond = armVelocityRotationsPerSecond.getValue().in(RadiansPerSecond);
     inputs.armAppliedVolts = armAppliedVoltage.getValueAsDouble();
     inputs.armSupplyCurrentAmps = armSupplyCurrentAmps.getValueAsDouble();
     inputs.armTorqueCurrentAmps = armTorqueCurrentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
 
     inputs.rollerPosition = new Rotation2d(rollerPositionRotations.getValue());
-    inputs.rollerVelocityRadiansPerSecond =
-        Units.rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
+    inputs.rollerVelocityRadiansPerSecond = Units
+        .rotationsToRadians(rollerVelocityRotationsPerSecond.getValueAsDouble());
     inputs.rollerAppliedVolts = rollerAppliedVoltage.getValueAsDouble();
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentAmps.getValueAsDouble();
     inputs.rollerTorqueCurrentAmps = rollerTorqueCurrentAmps.getValueAsDouble();
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
 
     inputs.armPositionGoal = new Rotation2d(armMotionMagicRequest.getPositionMeasure());
-    inputs.armPositionSetpoint =
-        Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
-    inputs.armPositionError =
-        Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
+    inputs.armPositionSetpoint = Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
+    inputs.armPositionError = Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
   }
 
   /**
-   * Sets the voltage of the arm TalonFX to the specified value. The voltage is set in terms of
-   * volts, with positive values corresponding to clockwise rotation and negative values
-   * corresponding to counterclockwise rotation. This method is used to control the velocity of the
-   * arm, which is useful for tasks such as picking up objects or depositing objects.
+   * Sets the voltage of the arm TalonFX to the specified value. The voltage is
+   * set in terms of
+   * volts, with positive values corresponding to clockwise rotation and negative
+   * values
+   * corresponding to counterclockwise rotation. This method is used to control
+   * the velocity of the
+   * arm, which is useful for tasks such as picking up objects or depositing
+   * objects.
    *
    * @param volts the voltage to set, in volts
    */
@@ -183,10 +180,14 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   }
 
   /**
-   * Sets the voltage of the roller TalonFX to the specified value. The voltage is set in terms of
-   * volts, with positive values corresponding to clockwise rotation and negative values
-   * corresponding to counterclockwise rotation. This method is used to control the velocity of the
-   * roller, which is useful for tasks such as picking up objects or depositing objects.
+   * Sets the voltage of the roller TalonFX to the specified value. The voltage is
+   * set in terms of
+   * volts, with positive values corresponding to clockwise rotation and negative
+   * values
+   * corresponding to counterclockwise rotation. This method is used to control
+   * the velocity of the
+   * roller, which is useful for tasks such as picking up objects or depositing
+   * objects.
    */
   @Override
   public void setRollerVoltage(double volts) {
@@ -194,12 +195,15 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   }
 
   /**
-   * The position is set in terms of rotations of the TalonFX's motor shaft. This method is used to
-   * set the manipulator arm to a specific position, which is useful for tasks such as picking up
+   * The position is set in terms of rotations of the TalonFX's motor shaft. This
+   * method is used to
+   * set the manipulator arm to a specific position, which is useful for tasks
+   * such as picking up
    * objects or depositing objects.
    *
-   * @param rotation The desired position of the manipulator arm, in terms of rotations of the
-   *     TalonFX's motor shaft.
+   * @param rotation The desired position of the manipulator arm, in terms of
+   *                 rotations of the
+   *                 TalonFX's motor shaft.
    */
   @Override
   public void setArmGoal(Rotation2d rotation) {
@@ -208,12 +212,15 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   }
 
   /**
-   * Sets the current slot of the manipulator arm based on the current state of the subsystem. If
-   * the subsystem has algae, it sets the slot to 2. If the subsystem has coral, it sets the slot to
+   * Sets the current slot of the manipulator arm based on the current state of
+   * the subsystem. If
+   * the subsystem has algae, it sets the slot to 2. If the subsystem has coral,
+   * it sets the slot to
    * 1. Otherwise, it sets the slot to 0.
    *
    * @param slot The slot to set the arm to.
-   * @throws IllegalArgumentException If the slot is not between 0 and 2, inclusive.
+   * @throws IllegalArgumentException If the slot is not between 0 and 2,
+   *                                  inclusive.
    */
   @Override
   public void setSlot(int slot) {
@@ -222,5 +229,35 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     } else {
       throw new IllegalArgumentException("Invalid slot: " + slot);
     }
+  }
+
+  public void updateSlot0ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot0 = new Slot0Configs().withKP(kP).withKD(kD).withKS(kS).withKV(kV).withKA(kA).withKG(kG)
+        .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateSlot1ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot1 = new Slot1Configs().withKP(kP).withKD(kD).withKS(kS).withKV(kV).withKA(kA).withKG(kG)
+        .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateSlot2ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot2 = new Slot2Configs().withKP(kP).withKD(kD).withKS(kS).withKV(kV).withKA(kA).withKG(kG)
+        .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateArmConstraints(double maxAcceleration, double cruisingVelocity) {
+    armConfig.MotionMagic = new MotionMagicConfigs()
+        .withMotionMagicAcceleration(
+            AngularAcceleration.ofRelativeUnits(maxAcceleration, RotationsPerSecondPerSecond))
+        .withMotionMagicCruiseVelocity(
+            AngularVelocity.ofRelativeUnits(cruisingVelocity, RotationsPerSecond));
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
   }
 }
