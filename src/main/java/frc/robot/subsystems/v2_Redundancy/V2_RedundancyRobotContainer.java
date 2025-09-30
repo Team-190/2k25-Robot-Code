@@ -56,6 +56,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import org.littletonrobotics.junction.Logger;
 
@@ -154,6 +155,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       vision = new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
     }
     superstructure = new V2_RedundancySuperstructure(elevator, funnel, intake, manipulator);
+
+    LTNUpdater.registerAll(drive, elevator, funnel, intake, manipulator);
 
     configureButtonBindings();
     configureAutos();
@@ -428,11 +431,7 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
-    LTNUpdater.updateFunnel(funnel);
-    LTNUpdater.updateAlgaeArm(manipulator);
-    LTNUpdater.updateIntake(intake);
+    LoggedTunableNumber.updateAll();
 
     Logger.recordOutput(
         "Component Poses",
