@@ -2,6 +2,8 @@ package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -100,23 +102,23 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     pivotConfig.Slot0 =
         new Slot0Configs()
             .withGravityType(GravityTypeValue.Arm_Cosine)
-            .withKP(V3_EpsilonIntakeConstants.PIVOT_GAINS.kP())
-            .withKD(V3_EpsilonIntakeConstants.PIVOT_GAINS.kD())
-            .withKA(V3_EpsilonIntakeConstants.PIVOT_GAINS.kA())
-            .withKV(V3_EpsilonIntakeConstants.PIVOT_GAINS.kV())
-            .withKS(V3_EpsilonIntakeConstants.PIVOT_GAINS.kS())
-            .withKG(V3_EpsilonIntakeConstants.PIVOT_GAINS.kG());
+            .withKP(V3_EpsilonIntakeConstants.PIVOT_GAINS.kP().get())
+            .withKD(V3_EpsilonIntakeConstants.PIVOT_GAINS.kD().get())
+            .withKA(V3_EpsilonIntakeConstants.PIVOT_GAINS.kA().get())
+            .withKV(V3_EpsilonIntakeConstants.PIVOT_GAINS.kV().get())
+            .withKS(V3_EpsilonIntakeConstants.PIVOT_GAINS.kS().get())
+            .withKG(V3_EpsilonIntakeConstants.PIVOT_GAINS.kG().get());
     pivotConfig.MotionMagic =
         new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(
                 AngularVelocity.ofRelativeUnits(
                     V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
-                        .CRUISING_VELOCITY_RADIANS_PER_SECOND(),
+                        .CRUISING_VELOCITY_RADIANS_PER_SECOND().get(),
                     RadiansPerSecond))
             .withMotionMagicAcceleration(
                 AngularAcceleration.ofRelativeUnits(
                     V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
-                        .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED(),
+                        .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED().get(),
                     RadiansPerSecondPerSecond));
 
     tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
@@ -301,4 +303,27 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
     pivotTalonFX.setControl(
         pivotMotionMagicRequest.withPosition(position.getMeasure()).withEnableFOC(true));
   }
+
+  public void updateIntakeGains(
+        double kP, double kD, double kS, double kG, double kV, double kA) {
+        pivotConfig.Slot0.kP = kP;
+        pivotConfig.Slot0.kD = kD;
+        pivotConfig.Slot0.kS = kS;
+        pivotConfig.Slot0.kG = kG;
+        pivotConfig.Slot0.kV = kV;
+        pivotConfig.Slot0.kA = kA;
+    
+        tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+    }
+
+    public void updateIntakeConstraints(
+        double maxVelocityRadiansPerSecond, double maxAccelerationRadiansPerSecondSquared) {
+        pivotConfig.MotionMagic.MotionMagicCruiseVelocity =
+            AngularVelocity.ofRelativeUnits(maxVelocityRadiansPerSecond, RadiansPerSecond).in(RotationsPerSecond);
+        pivotConfig.MotionMagic.MotionMagicAcceleration =
+            AngularAcceleration.ofRelativeUnits(
+                maxAccelerationRadiansPerSecondSquared, RadiansPerSecondPerSecond).in(RotationsPerSecondPerSecond);
+    
+        tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+    }
 }

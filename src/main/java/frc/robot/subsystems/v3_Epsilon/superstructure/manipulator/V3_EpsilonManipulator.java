@@ -1,9 +1,17 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
+import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
@@ -259,6 +267,34 @@ public class V3_EpsilonManipulator {
     }
   }
 
+  /**
+   * Creates a command to run the SysId routine for the manipulator arm, generating the constants
+   * and gains for a PID.
+   *
+   * @param superstructure The V3 Epsiolon Superstructure.
+   * @return A command to run the SysId routine for the manipulator arm.
+   */
+  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
+    SysIdRoutine algaeCharacterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.5).per(Second),
+                Volts.of(6),
+                Seconds.of(4),
+                (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setArmVoltage(volts.in(Volts)), null, superstructure));
+    return Commands.sequence(
+        superstructure.runGoal(V3_EpsilonSuperstructureStates.OVERRIDE),
+        Commands.runOnce(() -> isClosedLoop = false),
+        algaeCharacterizationRoutine.quasistatic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.quasistatic(Direction.kReverse),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kForward),
+        Commands.waitSeconds(.25),
+        algaeCharacterizationRoutine.dynamic(Direction.kReverse));
+  }
   /**
    * Sets the manipulator arm to the specified state.
    *

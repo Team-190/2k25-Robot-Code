@@ -57,18 +57,18 @@ public class V3_EpsilonIntakeIOSim implements V3_EpsilonIntakeIO {
 
     armFeedbackController =
         new ProfiledPIDController(
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kP(),
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kP().get(),
             0.0,
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kD(),
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kD().get(),
             V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.getTrapezoidConstraints());
     armFeedbackController.disableContinuousInput();
 
     armFeedforwardController =
         new ArmFeedforward(
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kS(),
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kA(),
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kV(),
-            V3_EpsilonIntakeConstants.PIVOT_GAINS.kA());
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kS().get(),
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kA().get(),
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kV().get(),
+            V3_EpsilonIntakeConstants.PIVOT_GAINS.kA().get());
 
     pivotAppliedVoltage = 0.0;
     rollerInnerAppliedVoltage = 0.0;

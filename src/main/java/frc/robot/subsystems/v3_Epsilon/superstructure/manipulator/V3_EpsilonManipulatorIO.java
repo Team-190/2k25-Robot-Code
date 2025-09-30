@@ -35,6 +35,8 @@ public interface V3_EpsilonManipulatorIO {
    */
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
+  public default void setPosition() {}
+
   /**
    * Sets the voltage for the manipulator.
    *

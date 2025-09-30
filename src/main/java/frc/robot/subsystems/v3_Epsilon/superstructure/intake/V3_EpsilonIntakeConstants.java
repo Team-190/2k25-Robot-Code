@@ -3,6 +3,7 @@ package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -46,15 +47,15 @@ public class V3_EpsilonIntakeConstants {
 
     switch (Constants.ROBOT) {
       case V3_EPSILON_SIM:
-        PIVOT_CONSTRAINTS = new Constraints(500.0, 500.0, Rotation2d.fromDegrees(1.5));
-        PIVOT_GAINS = new Gains(1.0, 0.01, 0.0, 0.0, 0.0, 0.0);
+        PIVOT_CONSTRAINTS = new Constraints(new LoggedTunableNumber("Intake/Max Acceleration", 500.0), new LoggedTunableNumber("Intake/Cruising Velocity", 500.0), Rotation2d.fromDegrees(1.5));
+        PIVOT_GAINS = new Gains(new LoggedTunableNumber("Intake/kP", 1.0), new LoggedTunableNumber("Intake/kD", 0.001), new LoggedTunableNumber("Intake/kS", 0.0), new LoggedTunableNumber("Intake/kV", 0.0), new LoggedTunableNumber("Intake/kA", 0.0), new LoggedTunableNumber("Intake/kG", 0.0));
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0, 40.0, 40.0);
 
         break;
 
       default:
-        PIVOT_CONSTRAINTS = new Constraints(500.0, 500.0, Rotation2d.fromDegrees(1.5));
-        PIVOT_GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        PIVOT_CONSTRAINTS = new Constraints(new LoggedTunableNumber("Intake/Max Acceleration", 500.0), new LoggedTunableNumber("Intake/Cruising Velocity", 500.0), Rotation2d.fromDegrees(1.5));
+        PIVOT_GAINS = new Gains(new LoggedTunableNumber("Intake/kP", 0.0), new LoggedTunableNumber("Intake/kD", 0.0), new LoggedTunableNumber("Intake/kS", 0.0), new LoggedTunableNumber("Intake/kV", 0.0), new LoggedTunableNumber("Intake/kA", 0.0), new LoggedTunableNumber("Intake/kG", 0.0));
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0, 40.0, 40.0);
 
         break;
@@ -81,15 +82,15 @@ public class V3_EpsilonIntakeConstants {
       double OUTER_ROLLER_SUPPLY_CURRENT_LIMIT,
       double OUTER_ROLLER_STATOR_CURRENT_LIMIT) {}
 
-  public static record Gains(double kP, double kD, double kS, double kV, double kA, double kG) {}
+  public static record Gains(LoggedTunableNumber kP, LoggedTunableNumber kD, LoggedTunableNumber kS, LoggedTunableNumber kV, LoggedTunableNumber kA, LoggedTunableNumber kG) {}
 
   public static record Constraints(
-      double MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED,
-      double CRUISING_VELOCITY_RADIANS_PER_SECOND,
+      LoggedTunableNumber MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED,
+      LoggedTunableNumber CRUISING_VELOCITY_RADIANS_PER_SECOND,
       Rotation2d GOAL_TOLERANCE) {
     public edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints getTrapezoidConstraints() {
       return new edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints(
-          CRUISING_VELOCITY_RADIANS_PER_SECOND, MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+          CRUISING_VELOCITY_RADIANS_PER_SECOND.get(), MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.get());
     }
   }
 

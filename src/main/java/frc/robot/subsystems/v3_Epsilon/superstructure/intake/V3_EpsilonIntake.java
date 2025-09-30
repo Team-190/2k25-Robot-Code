@@ -1,8 +1,13 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.intake;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerState;
 import java.util.Set;
@@ -151,11 +156,56 @@ public class V3_EpsilonIntake {
   }
 
   /**
+   * Runs the SysId routine for the intake subsystem
+   *
+   * @param subsystem The subsystem to run the SysId routine on.
+   * @return A command that runs the SysId routine.
+   */
+  private Command sysIdRoutine(Subsystem subsystem) {
+
+    SysIdRoutine characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(1).per(Second),
+                Volts.of(6),
+                Seconds.of(10),
+                (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (volts) -> io.setPivotVoltage(volts.in(Volts)), null, subsystem));
+
+    return Commands.sequence(
+        characterizationRoutine
+            .quasistatic(Direction.kForward)
+            .until(() -> pivotAtGoal(IntakePivotState.HANDOFF)),
+        characterizationRoutine
+            .quasistatic(Direction.kReverse)
+            .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)),
+        characterizationRoutine
+            .dynamic(Direction.kForward)
+            .until(() -> pivotAtGoal(IntakePivotState.HANDOFF)),
+        characterizationRoutine
+            .dynamic(Direction.kReverse)
+            .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)));
+  }
+
+  /**
    * Gets the current angle of the intake pivot motor.
    *
    * @return The current angle of the intake pivot motor, in radians.
    */
   public Rotation2d getPivotAngle() {
     return inputs.pivotPosition;
+  }
+
+  public void updateIntakeGains(
+    double kP, double kD, double kS, double kV, double kA, double kG
+  ) {
+    io.updateIntakeGains(kP, kD, kS, kV, kA, kG);
+  }
+
+  public void updateIntakeConstraints(
+    double maxAcceleration, double cruisingVelocity
+  ) {
+    io.updateIntakeConstraints(maxAcceleration, cruisingVelocity);
   }
 }

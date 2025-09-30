@@ -213,16 +213,16 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
-                    new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 1),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
                     new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 1),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
