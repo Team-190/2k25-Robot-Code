@@ -40,6 +40,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
 
@@ -99,32 +100,35 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         default:
           break;
       }
-
-      if (drive == null) {
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-      }
-      if (elevator == null) {
-        elevator = new Elevator(new ElevatorIO() {}).getFSM();
-      }
-      if (intake == null) {
-        intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
-      }
-      if (manipulator == null) {
-        manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
-      }
-      if (climber == null) {
-        climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
-      }
-      if (superstructure == null) {
-        superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
-      }
     }
+
+    if (drive == null) {
+      drive =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
+    }
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {}).getFSM();
+    }
+    if (intake == null) {
+      intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
+    }
+    if (manipulator == null) {
+      manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+    }
+    if (climber == null) {
+      climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
+    }
+    if (superstructure == null) {
+      superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+    }
+
+    LTNUpdater.registerAll(drive, elevator, intake, manipulator);
+
     configureButtonBindings();
   }
 
@@ -165,10 +169,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
-    LTNUpdater.updateIntake(intake);
-    LTNUpdater.updateManipulatorArm(manipulator);
+    LoggedTunableNumber.updateAll();
 
     Logger.recordOutput(
         "Component Poses",
