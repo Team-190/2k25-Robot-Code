@@ -113,12 +113,14 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
             .withMotionMagicCruiseVelocity(
                 AngularVelocity.ofRelativeUnits(
                     V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
-                        .CRUISING_VELOCITY_RADIANS_PER_SECOND().get(),
+                        .CRUISING_VELOCITY_RADIANS_PER_SECOND()
+                        .get(),
                     RadiansPerSecond))
             .withMotionMagicAcceleration(
                 AngularAcceleration.ofRelativeUnits(
                     V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
-                        .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED().get(),
+                        .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED()
+                        .get(),
                     RadiansPerSecondPerSecond));
 
     tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
@@ -304,26 +306,27 @@ public class V3_EpsilonIntakeIOTalonFX implements V3_EpsilonIntakeIO {
         pivotMotionMagicRequest.withPosition(position.getMeasure()).withEnableFOC(true));
   }
 
-  public void updateIntakeGains(
-        double kP, double kD, double kS, double kG, double kV, double kA) {
-        pivotConfig.Slot0.kP = kP;
-        pivotConfig.Slot0.kD = kD;
-        pivotConfig.Slot0.kS = kS;
-        pivotConfig.Slot0.kG = kG;
-        pivotConfig.Slot0.kV = kV;
-        pivotConfig.Slot0.kA = kA;
-    
-        tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
-    }
+  public void updateIntakeGains(double kP, double kD, double kS, double kG, double kV, double kA) {
+    pivotConfig.Slot0.kP = kP;
+    pivotConfig.Slot0.kD = kD;
+    pivotConfig.Slot0.kS = kS;
+    pivotConfig.Slot0.kG = kG;
+    pivotConfig.Slot0.kV = kV;
+    pivotConfig.Slot0.kA = kA;
 
-    public void updateIntakeConstraints(
-        double maxVelocityRadiansPerSecond, double maxAccelerationRadiansPerSecondSquared) {
-        pivotConfig.MotionMagic.MotionMagicCruiseVelocity =
-            AngularVelocity.ofRelativeUnits(maxVelocityRadiansPerSecond, RadiansPerSecond).in(RotationsPerSecond);
-        pivotConfig.MotionMagic.MotionMagicAcceleration =
-            AngularAcceleration.ofRelativeUnits(
-                maxAccelerationRadiansPerSecondSquared, RadiansPerSecondPerSecond).in(RotationsPerSecondPerSecond);
-    
-        tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
-    }
+    tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+  }
+
+  public void updateIntakeConstraints(
+      double maxVelocityRadiansPerSecond, double maxAccelerationRadiansPerSecondSquared) {
+    pivotConfig.MotionMagic.MotionMagicCruiseVelocity =
+        AngularVelocity.ofRelativeUnits(maxVelocityRadiansPerSecond, RadiansPerSecond)
+            .in(RotationsPerSecond);
+    pivotConfig.MotionMagic.MotionMagicAcceleration =
+        AngularAcceleration.ofRelativeUnits(
+                maxAccelerationRadiansPerSecondSquared, RadiansPerSecondPerSecond)
+            .in(RotationsPerSecondPerSecond);
+
+    tryUntilOk(5, () -> pivotTalonFX.getConfigurator().apply(pivotConfig, 0.25));
+  }
 }

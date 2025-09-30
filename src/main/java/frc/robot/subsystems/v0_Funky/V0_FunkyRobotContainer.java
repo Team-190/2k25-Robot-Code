@@ -26,7 +26,6 @@ import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedTunableNumber;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V0_FunkyRobotContainer implements RobotContainer {
@@ -40,35 +39,38 @@ public class V0_FunkyRobotContainer implements RobotContainer {
   private final CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
-  private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Autonomous Modes");
+  private final LoggedDashboardChooser<Command> autoChooser =
+      new LoggedDashboardChooser<>("Autonomous Modes");
 
   public V0_FunkyRobotContainer() {
 
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
         case V0_FUNKY:
-          drive = new Drive(
-              new GyroIOPigeon2(),
-              new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
-              new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
-              new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
-              new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
+          drive =
+              new Drive(
+                  new GyroIOPigeon2(),
+                  new ModuleIOTalonFX(0, DriveConstants.FRONT_LEFT),
+                  new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
+                  new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
+                  new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
-          vision = new Vision(
-              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-              VisionConstants.RobotCameras.V0_FUNKY_CAMS);
+          vision =
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  VisionConstants.RobotCameras.V0_FUNKY_CAMS);
           break;
         case V0_FUNKY_SIM:
-          drive = new Drive(
-              new GyroIO() {
-              },
-              new ModuleIOSim(DriveConstants.FRONT_LEFT),
-              new ModuleIOSim(DriveConstants.FRONT_RIGHT),
-              new ModuleIOSim(DriveConstants.BACK_LEFT),
-              new ModuleIOSim(DriveConstants.BACK_RIGHT));
-          roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {
-          });
-          vision = new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
+          drive =
+              new Drive(
+                  new GyroIO() {},
+                  new ModuleIOSim(DriveConstants.FRONT_LEFT),
+                  new ModuleIOSim(DriveConstants.FRONT_RIGHT),
+                  new ModuleIOSim(DriveConstants.BACK_LEFT),
+                  new ModuleIOSim(DriveConstants.BACK_RIGHT));
+          roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
+          vision =
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         default:
           break;

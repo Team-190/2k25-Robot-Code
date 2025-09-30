@@ -197,15 +197,11 @@ public class V3_EpsilonIntake {
     return inputs.pivotPosition;
   }
 
-  public void updateIntakeGains(
-    double kP, double kD, double kS, double kV, double kA, double kG
-  ) {
+  public void updateIntakeGains(double kP, double kD, double kS, double kV, double kA, double kG) {
     io.updateIntakeGains(kP, kD, kS, kV, kA, kG);
   }
 
-  public void updateIntakeConstraints(
-    double maxAcceleration, double cruisingVelocity
-  ) {
+  public void updateIntakeConstraints(double maxAcceleration, double cruisingVelocity) {
     io.updateIntakeConstraints(maxAcceleration, cruisingVelocity);
   }
 }

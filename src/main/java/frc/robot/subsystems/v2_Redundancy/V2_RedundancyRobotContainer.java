@@ -56,8 +56,8 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOSim;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
-import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {

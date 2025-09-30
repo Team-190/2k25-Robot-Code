@@ -8,7 +8,6 @@
 package frc.robot.util;
 
 import frc.robot.Constants;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,8 +18,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
- * Class for a tunable number. Gets value from dashboard in tuning mode, returns
- * default if not or
+ * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
  * value not in dashboard. Automatically executes callbacks when values change.
  */
 public class LoggedTunableNumber implements DoubleSupplier {
@@ -88,12 +86,10 @@ public class LoggedTunableNumber implements DoubleSupplier {
   /**
    * Checks whether the number has changed since our last check
    *
-   * @param id Unique identifier for the caller to avoid conflicts when shared
-   *           between multiple
-   *           objects. Recommended approach is to pass the result of "hashCode()"
-   * @return True if the number has changed since the last time this method was
-   *         called, false
-   *         otherwise.
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
+   *     objects. Recommended approach is to pass the result of "hashCode()"
+   * @return True if the number has changed since the last time this method was called, false
+   *     otherwise.
    */
   public boolean hasChanged(int id) {
     double currentValue = get();
@@ -109,13 +105,10 @@ public class LoggedTunableNumber implements DoubleSupplier {
   /**
    * Runs action if any of the tunableNumbers have changed
    *
-   * @param id             Unique identifier for the caller to avoid conflicts
-   *                       when shared between multiple *
-   *                       objects. Recommended approach is to pass the result of
-   *                       "hashCode()"
-   * @param action         Callback to run when any of the tunable numbers have
-   *                       changed. Access tunable
-   *                       numbers in order inputted in method
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple *
+   *     objects. Recommended approach is to pass the result of "hashCode()"
+   * @param action Callback to run when any of the tunable numbers have changed. Access tunable
+   *     numbers in order inputted in method
    * @param tunableNumbers All tunable numbers to check
    */
   public static void ifChanged(
@@ -144,9 +137,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     callbacks.add(callback);
   }
 
-  /**
-   * Check if value has changed and execute callbacks if so
-   */
+  /** Check if value has changed and execute callbacks if so */
   private void checkAndUpdate() {
     double currentValue = get();
     if (Double.isNaN(lastKnownValue) || currentValue != lastKnownValue) {
@@ -156,15 +147,14 @@ public class LoggedTunableNumber implements DoubleSupplier {
   }
 
   /**
-   * Create a group of tunable numbers that will execute a callback when any of
-   * them change
+   * Create a group of tunable numbers that will execute a callback when any of them change
    *
-   * @param callback       The callback to execute when any tunable number in the
-   *                       group changes
+   * @param callback The callback to execute when any tunable number in the group changes
    * @param tunableNumbers The tunable numbers to monitor
    * @return AutoUpdateGroup for further configuration if needed
    */
-  public static AutoUpdateGroup createGroup(Runnable callback, LoggedTunableNumber... tunableNumbers) {
+  public static AutoUpdateGroup createGroup(
+      Runnable callback, LoggedTunableNumber... tunableNumbers) {
     AutoUpdateGroup group = new AutoUpdateGroup(callback, tunableNumbers);
     autoUpdateGroups.add(group);
     strayTunableNumbers.removeAll(Arrays.asList(tunableNumbers));
@@ -172,25 +162,28 @@ public class LoggedTunableNumber implements DoubleSupplier {
   }
 
   /**
-   * Create a group of tunable numbers that will execute a callback with values
-   * when any of them change
+   * Create a group of tunable numbers that will execute a callback with values when any of them
+   * change
    *
-   * @param callback       The callback to execute with current values when any
-   *                       tunable number changes
+   * @param callback The callback to execute with current values when any tunable number changes
    * @param tunableNumbers The tunable numbers to monitor
    * @return AutoUpdateGroup for further configuration if needed
    */
-  public static AutoUpdateGroup createGroup(Consumer<double[]> callback, LoggedTunableNumber... tunableNumbers) {
-    AutoUpdateGroup group = new AutoUpdateGroup(
-        () -> callback.accept(Arrays.stream(tunableNumbers).mapToDouble(LoggedTunableNumber::get).toArray()),
-        tunableNumbers);
+  public static AutoUpdateGroup createGroup(
+      Consumer<double[]> callback, LoggedTunableNumber... tunableNumbers) {
+    AutoUpdateGroup group =
+        new AutoUpdateGroup(
+            () ->
+                callback.accept(
+                    Arrays.stream(tunableNumbers).mapToDouble(LoggedTunableNumber::get).toArray()),
+            tunableNumbers);
     autoUpdateGroups.add(group);
     return group;
   }
 
   /**
-   * Call this method periodically (e.g., in robotPeriodic) to check for changes
-   * and execute callbacks
+   * Call this method periodically (e.g., in robotPeriodic) to check for changes and execute
+   * callbacks
    */
   public static void updateAll() {
     if (Constants.TUNING_MODE) {
@@ -202,9 +195,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     }
   }
 
-  /**
-   * Helper class for managing groups of tunable numbers
-   */
+  /** Helper class for managing groups of tunable numbers */
   public static class AutoUpdateGroup {
     private final Runnable callback;
     private final LoggedTunableNumber[] tunableNumbers;
