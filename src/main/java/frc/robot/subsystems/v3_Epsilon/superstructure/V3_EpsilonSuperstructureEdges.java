@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
@@ -267,6 +269,18 @@ public class V3_EpsilonSuperstructureEdges {
           Commands.race(Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters())));
     }
 
+    // arm has to be on the right and elevator has to be up for climber to deploy
+    if (to == V3_EpsilonSuperstructureStates.CLIMB) {
+      moveCommand =
+          Commands.sequence(
+              Commands.runOnce(() -> elevator.setPosition(() -> ReefState.ALGAE_SCORE))
+                  .alongWith(pose.setManipulatorState(manipulator), pose.setIntakeState(intake))
+                  .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.RIGHT)),
+              elevator.waitUntilAtGoal(),
+              Commands.waitUntil(RobotState::isClimberReady),
+              pose.setElevatorHeight(elevator));
+    }
+
     // THE CRITICAL FIX:
     // No matter how we start the move, we append a final wait condition.
     // This ensures the command doesn't end until the robot is physically at the
@@ -397,7 +411,6 @@ public class V3_EpsilonSuperstructureEdges {
       ElevatorFSM elevator,
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
-    V3_EpsilonSuperstructurePose pose = state.getPose();
 
     // Add this command to log the check's status
     Command logCheck =

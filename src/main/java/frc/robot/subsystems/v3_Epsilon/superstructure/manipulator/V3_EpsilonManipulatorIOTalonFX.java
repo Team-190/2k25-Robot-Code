@@ -138,11 +138,11 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     rollerTalonFX.optimizeBusUtilization();
   }
 
-/**
- * Updates the inputs of the manipulator with the current state of the TalonFXs.
- *
- * @param inputs the inputs to update
- */
+  /**
+   * Updates the inputs of the manipulator with the current state of the TalonFXs.
+   *
+   * @param inputs the inputs to update
+   */
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
 
@@ -169,15 +169,12 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
         Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
   }
 
-
-
   /**
-   * Sets the voltage of the arm TalonFX to the specified value.
-   * The voltage is set in terms of volts, with positive values corresponding to
-   * clockwise rotation and negative values corresponding to counterclockwise
-   * rotation.
-   * This method is used to control the velocity of the arm, which is useful
-   * for tasks such as picking up objects or depositing objects.
+   * Sets the voltage of the arm TalonFX to the specified value. The voltage is set in terms of
+   * volts, with positive values corresponding to clockwise rotation and negative values
+   * corresponding to counterclockwise rotation. This method is used to control the velocity of the
+   * arm, which is useful for tasks such as picking up objects or depositing objects.
+   *
    * @param volts the voltage to set, in volts
    */
   @Override
@@ -185,37 +182,35 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armTalonFX.setControl(armVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
-
-
-/**
- * Sets the voltage of the roller TalonFX to the specified value.
- * The voltage is set in terms of volts, with positive values corresponding to clockwise rotation and negative values corresponding to counterclockwise rotation.
- * This method is used to control the velocity of the roller, which is useful for tasks such as picking up objects or depositing objects.
- */
+  /**
+   * Sets the voltage of the roller TalonFX to the specified value. The voltage is set in terms of
+   * volts, with positive values corresponding to clockwise rotation and negative values
+   * corresponding to counterclockwise rotation. This method is used to control the velocity of the
+   * roller, which is useful for tasks such as picking up objects or depositing objects.
+   */
   @Override
   public void setRollerVoltage(double volts) {
     rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
-
   /**
-   * The position is set in terms of rotations of the TalonFX's motor shaft.
-   * This method is used to set the manipulator arm to a specific position, which is useful for tasks such as picking up objects or depositing objects.
+   * The position is set in terms of rotations of the TalonFX's motor shaft. This method is used to
+   * set the manipulator arm to a specific position, which is useful for tasks such as picking up
+   * objects or depositing objects.
    *
-   * @param rotation The desired position of the manipulator arm, in terms of rotations of the TalonFX's motor shaft.
+   * @param rotation The desired position of the manipulator arm, in terms of rotations of the
+   *     TalonFX's motor shaft.
    */
-
   @Override
   public void setArmGoal(Rotation2d rotation) {
     armTalonFX.setControl(
         armMotionMagicRequest.withPosition(rotation.getRotations()).withEnableFOC(true));
   }
 
-
   /**
-   * Sets the current slot of the manipulator arm based on the current state of the subsystem.
-   * If the subsystem has algae, it sets the slot to 2. If the subsystem has coral, it sets the slot to 1.
-   * Otherwise, it sets the slot to 0.
+   * Sets the current slot of the manipulator arm based on the current state of the subsystem. If
+   * the subsystem has algae, it sets the slot to 2. If the subsystem has coral, it sets the slot to
+   * 1. Otherwise, it sets the slot to 0.
    *
    * @param slot The slot to set the arm to.
    * @throws IllegalArgumentException If the slot is not between 0 and 2, inclusive.

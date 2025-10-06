@@ -15,8 +15,7 @@ public class V3_EpsilonClimberConstants {
 
   static {
     DEPLOYMENT_CAN_ID = 42;
-    ROLLER_CAN_ID =
-        42; // This used to be 61, but there are two motors, so I replace this with 42 until
+    ROLLER_CAN_ID = 42;
 
     MOTOR_ID = 50;
     MOTOR_PARAMETERS =
@@ -29,7 +28,8 @@ public class V3_EpsilonClimberConstants {
       DCMotor MOTOR_CONFIG, double GEAR_RATIO, double GEARBOX_EFFICIENCY, double SPOOL_DIAMETER) {}
 
   public static final double CLIMBER_CLIMBED_ZERO_RADIANS =
-      41; // TODO: None of these four lines are valid numbers i just made up stuff
+      41; // TODO: None of these four lines are valid numbers i
+  // just made up stuff
   public static final double CLIMBER_CLIMBED_DEPLOYED_RADIANS = 67;
   public static final ClimberTimingConfig CLIMBER_TIMING_CONFIG =
       new ClimberTimingConfig(1.1, 0.25, 0.5);

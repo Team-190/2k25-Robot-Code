@@ -73,41 +73,42 @@ public class V3_EpsilonManipulator {
     }
   }
 
-/**
- * Checks if the manipulator is currently detecting coral.
- * This is done by checking if the CAN range sensor is detecting a distance
- * less than the coral detection threshold and greater than 0.
- *
- * @return True if the manipulator is detecting coral, false otherwise.
- */
+  /**
+   * Checks if the manipulator is currently detecting coral. This is done by checking if the CAN
+   * range sensor is detecting a distance less than the coral detection threshold and greater than
+   * 0.
+   *
+   * @return True if the manipulator is detecting coral, false otherwise.
+   */
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
-    return inputs.canRangeDistanceMeters < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD
+    return inputs.canRangeDistanceMeters
+            < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD_METERS
         && inputs.canRangeDistanceMeters > 0;
   }
 
-/**
- * Checks if the manipulator is currently detecting algae.
- * This is done by checking if the CAN range sensor is detecting a distance
- * less than the algae detection threshold and greater than 0.
- *
- * @return True if the manipulator is detecting algae, false otherwise.
- */
+  /**
+   * Checks if the manipulator is currently detecting algae. This is done by checking if the CAN
+   * range sensor is detecting a distance less than the algae detection threshold and greater than
+   * 0.
+   *
+   * @return True if the manipulator is detecting algae, false otherwise.
+   */
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return inputs.canRangeDistanceMeters < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD
+    return inputs.canRangeDistanceMeters
+            < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD_METERS
         && inputs.canRangeDistanceMeters > 0;
   }
 
-/**
- * Creates a command to run the manipulator arm at a specified voltage.
- *
- * @param volts The voltage to set the arm to.
- * @return A command to run the arm.
- */
-
+  /**
+   * Creates a command to run the manipulator arm at a specified voltage.
+   *
+   * @param volts The voltage to set the arm to.
+   * @return A command to run the arm.
+   */
   public Command runArm(double volts) {
-   return Commands.runEnd(
+    return Commands.runEnd(
         () -> {
           isClosedLoop = false;
           io.setArmVoltage(volts);
@@ -115,43 +116,39 @@ public class V3_EpsilonManipulator {
         () -> io.setArmVoltage(0));
   }
 
-
-/**
- * Sets the goal for the manipulator arm to reach.
- *
- * @param goal The goal state to set the arm to.
- */
-
+  /**
+   * Sets the goal for the manipulator arm to reach.
+   *
+   * @param goal The goal state to set the arm to.
+   */
   public void setArmGoal(ManipulatorArmState goal) {
     isClosedLoop = true;
     armGoal = goal;
   }
 
-
-/**
- * Updates the gains for the manipulator arm.
- * This function sets the PID gains for the three slots of the arm.
- * The gains are used to control the arm's movement.
- *
- * @param kP0 The proportional gain for slot 0.
- * @param kD0 The derivative gain for slot 0.
- * @param kS0 The static gain for slot 0.
- * @param kV0 The velocity gain for slot 0.
- * @param kA0 The acceleration gain for slot 0.
- * @param kG0 The gravity gain for slot 0.
- * @param kP1 The proportional gain for slot 1.
- * @param kD1 The derivative gain for slot 1.
- * @param kS1 The static gain for slot 1.
- * @param kV1 The velocity gain for slot 1.
- * @param kA1 The acceleration gain for slot 1.
- * @param kG1 The gravity gain for slot 1.
- * @param kP2 The proportional gain for slot 2.
- * @param kD2 The derivative gain for slot 2.
- * @param kS2 The static gain for slot 2.
- * @param kV2 The velocity gain for slot 2.
- * @param kA2 The acceleration gain for slot 2.
- * @param kG2 The gravity gain for slot 2.
- */
+  /**
+   * Updates the gains for the manipulator arm. This function sets the PID gains for the three slots
+   * of the arm. The gains are used to control the arm's movement.
+   *
+   * @param kP0 The proportional gain for slot 0.
+   * @param kD0 The derivative gain for slot 0.
+   * @param kS0 The static gain for slot 0.
+   * @param kV0 The velocity gain for slot 0.
+   * @param kA0 The acceleration gain for slot 0.
+   * @param kG0 The gravity gain for slot 0.
+   * @param kP1 The proportional gain for slot 1.
+   * @param kD1 The derivative gain for slot 1.
+   * @param kS1 The static gain for slot 1.
+   * @param kV1 The velocity gain for slot 1.
+   * @param kA1 The acceleration gain for slot 1.
+   * @param kG1 The gravity gain for slot 1.
+   * @param kP2 The proportional gain for slot 2.
+   * @param kD2 The derivative gain for slot 2.
+   * @param kS2 The static gain for slot 2.
+   * @param kV2 The velocity gain for slot 2.
+   * @param kA2 The acceleration gain for slot 2.
+   * @param kG2 The gravity gain for slot 2.
+   */
   public void updateArmGains(
       double kP0,
       double kD0,
@@ -176,68 +173,63 @@ public class V3_EpsilonManipulator {
     io.updateSlot2ArmGains(kP2, kD2, kS2, kV2, kA2, kG2);
   }
 
-/**
- * Updates the constraints for the arm.
- *
- * @param maxAcceleration The maximum acceleration.
- * @param maxVelocity The maximum velocity.
- */
+  /**
+   * Updates the constraints for the arm.
+   *
+   * @param maxAcceleration The maximum acceleration.
+   * @param maxVelocity The maximum velocity.
+   */
   public void updateArmConstraints(double maxAcceleration, double maxVelocity) {
     io.updateArmConstraints(maxAcceleration, maxVelocity);
   }
 
-/**
- * Checks if the arm is at the goal position.
- *
- * This function checks if the arm is within the goal tolerance of the
- * currently set arm goal position. If the arm is within the tolerance, it
- * returns true. Otherwise, it returns false.
- *
- * @return If the arm is at the goal position.
- */
-
+  /**
+   * Checks if the arm is at the goal position.
+   *
+   * <p>This function checks if the arm is within the goal tolerance of the currently set arm goal
+   * position. If the arm is within the tolerance, it returns true. Otherwise, it returns false.
+   *
+   * @return If the arm is at the goal position.
+   */
   @AutoLogOutput(key = "Manipulator/Arm At Goal")
   public boolean armAtGoal() {
     return armAtGoal(armGoal);
   }
 
-/**
- * Checks if the arm is at the given goal position.
- *
- * This function checks if the arm is within the goal tolerance of the
- * given arm goal position. If the arm is within the tolerance, it
- * returns true. Otherwise, it returns false.
- *
- * @param state The arm goal position to check against.
- * @return If the arm is at the goal position.
- */
+  /**
+   * Checks if the arm is at the given goal position.
+   *
+   * <p>This function checks if the arm is within the goal tolerance of the given arm goal position.
+   * If the arm is within the tolerance, it returns true. Otherwise, it returns false.
+   *
+   * @param state The arm goal position to check against.
+   * @return If the arm is at the goal position.
+   */
   public boolean armAtGoal(ManipulatorArmState state) {
     return Math.abs(inputs.armPosition.minus(state.getAngle(armSide)).getRadians())
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
-/**
- * Waits until the arm is at the goal position.
- *
- * This command waits for 0.02 seconds and then checks if the arm is at the goal position.
- * If the arm is not at the goal position, it waits for 0.02 seconds and checks again.
- * This process repeats until the arm is at the goal position.
- *
- * @return A command that waits until the arm is at the goal position.
- */
+  /**
+   * Waits until the arm is at the goal position.
+   *
+   * <p>This command waits for 0.02 seconds and then checks if the arm is at the goal position. If
+   * the arm is not at the goal position, it waits for 0.02 seconds and checks again. This process
+   * repeats until the arm is at the goal position.
+   *
+   * @return A command that waits until the arm is at the goal position.
+   */
   public Command waitUntilArmAtGoal() {
     return Commands.sequence(Commands.waitSeconds(0.02), Commands.waitUntil(this::armAtGoal));
   }
 
-/**
- * Returns a voltage to hold the roller at the current position.
- * The voltage is calculated based on the current torque current of the roller.
- * The calculation is done using a piecewise polynomial function.
- * The function first checks if the current torque current is less than or equal to 20.
- * If it is, it uses one set of coefficients to calculate the voltage.
- * Otherwise, it uses another set of coefficients.
- */
-
+  /**
+   * Returns a voltage to hold the roller at the current position. The voltage is calculated based
+   * on the current torque current of the roller. The calculation is done using a piecewise
+   * polynomial function. The function first checks if the current torque current is less than or
+   * equal to 20. If it is, it uses one set of coefficients to calculate the voltage. Otherwise, it
+   * uses another set of coefficients.
+   */
   private double holdVoltage() {
     double y;
     double x = Math.abs(inputs.rollerTorqueCurrentAmps);
@@ -252,11 +244,11 @@ public class V3_EpsilonManipulator {
         V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
   }
 
-/**
- * Sets the current slot of the manipulator arm based on the current state of the subsystem.
- * If the subsystem has algae, it sets the slot to 2. If the subsystem has coral, it sets the slot to 1.
- * Otherwise, it sets the slot to 0.
- */
+  /**
+   * Sets the current slot of the manipulator arm based on the current state of the subsystem. If
+   * the subsystem has algae, it sets the slot to 2. If the subsystem has coral, it sets the slot to
+   * 1. Otherwise, it sets the slot to 0.
+   */
   public void setSlot() {
     if (hasAlgae()) {
       io.setSlot(2);
@@ -266,7 +258,6 @@ public class V3_EpsilonManipulator {
       io.setSlot(0);
     }
   }
-
 
   /**
    * Sets the manipulator arm to the specified state.
@@ -278,10 +269,9 @@ public class V3_EpsilonManipulator {
   }
 
   /**
-   * Sets the roller goal state of the manipulator.
-   * If the subsystem has algae or coral and the goal is one of the intake states,
-   * it sets the roller voltage to the hold voltage. Otherwise, it sets the roller voltage
-   * to the goal voltage.
+   * Sets the roller goal state of the manipulator. If the subsystem has algae or coral and the goal
+   * is one of the intake states, it sets the roller voltage to the hold voltage. Otherwise, it sets
+   * the roller voltage to the goal voltage.
    *
    * @param rollerGoal The desired state of the roller.
    */
@@ -302,21 +292,21 @@ public class V3_EpsilonManipulator {
 
   /**
    * Gets the current angle of the manipulator arm.
-   * 
+   *
    * @return The current angle of the manipulator arm, in radians.
    */
   public Rotation2d getArmAngle() {
     return inputs.armPosition;
   }
 
-/**
- * Checks if the manipulator arm is currently in a safe position.
- * A safe position is when the arm is pointing away from the robot's body.
- * The safe position threshold is determined by the angle between the arm and the robot's body.
- * If the angle is greater than the threshold, it is considered safe.
- *
- * @return true if the arm is in a safe position, false otherwise.
- */
+  /**
+   * Checks if the manipulator arm is currently in a safe position. A safe position is when the arm
+   * is pointing away from the robot's body. The safe position threshold is determined by the angle
+   * between the arm and the robot's body. If the angle is greater than the threshold, it is
+   * considered safe.
+   *
+   * @return true if the arm is in a safe position, false otherwise.
+   */
   @AutoLogOutput(key = "Manipulator/Safe Position")
   public boolean isSafePosition() {
     double cosThresh =
