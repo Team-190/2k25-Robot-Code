@@ -36,6 +36,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
@@ -152,6 +153,13 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                 superstructure, intake, manipulator))
         .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+
+    driver
+        .a()
+        .toggleOnTrue(
+            superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.HANDOFF)))
+        .toggleOnFalse(
+            superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.VERTICAL_UP)));
   }
 
   private void configureAutos() {}

@@ -32,7 +32,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
         new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
                 V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
-                0.004,
+                0.4389150229,
                 V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO()),
             V3_EpsilonManipulatorConstants.ARM_PARAMETERS.MOTOR_CONFIG(),
             V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO(),
@@ -43,7 +43,7 @@ public class V3_EpsilonManipulatorIOSim implements V3_EpsilonManipulatorIO {
             0.0);
     rollerMotorSim =
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, 3.0),
+            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.4389150229, 3.0),
             DCMotor.getKrakenX60Foc(1));
 
     slot0 =

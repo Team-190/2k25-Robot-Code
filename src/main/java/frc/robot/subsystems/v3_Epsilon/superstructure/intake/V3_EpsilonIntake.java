@@ -161,14 +161,14 @@ public class V3_EpsilonIntake {
    * @param subsystem The subsystem to run the SysId routine on.
    * @return A command that runs the SysId routine.
    */
-  private Command sysIdRoutine(Subsystem subsystem) {
+  public Command sysIdRoutine(Subsystem subsystem) {
 
     SysIdRoutine characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
-                Volts.of(1).per(Second),
-                Volts.of(6),
-                Seconds.of(10),
+                Volts.of(0.1).per(Second),
+                Volts.of(1),
+                Seconds.of(6),
                 (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setPivotVoltage(volts.in(Volts)), null, subsystem));
@@ -176,16 +176,16 @@ public class V3_EpsilonIntake {
     return Commands.sequence(
         characterizationRoutine
             .quasistatic(Direction.kForward)
-            .until(() -> pivotAtGoal(IntakePivotState.HANDOFF)),
-        characterizationRoutine
-            .quasistatic(Direction.kReverse)
             .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)),
         characterizationRoutine
-            .dynamic(Direction.kForward)
+            .quasistatic(Direction.kReverse)
             .until(() -> pivotAtGoal(IntakePivotState.HANDOFF)),
         characterizationRoutine
+            .dynamic(Direction.kForward)
+            .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)),
+        characterizationRoutine
             .dynamic(Direction.kReverse)
-            .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)));
+            .until(() -> pivotAtGoal(IntakePivotState.HANDOFF)));
   }
 
   /**

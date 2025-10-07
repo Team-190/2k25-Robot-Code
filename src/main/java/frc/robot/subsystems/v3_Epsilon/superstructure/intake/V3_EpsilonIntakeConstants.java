@@ -49,17 +49,17 @@ public class V3_EpsilonIntakeConstants {
       case V3_EPSILON_SIM:
         PIVOT_CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Intake/Max Acceleration", 500.0),
-                new LoggedTunableNumber("Intake/Cruising Velocity", 500.0),
+                new LoggedTunableNumber("Intake/Max Acceleration", 100.0),
+                new LoggedTunableNumber("Intake/Cruising Velocity", 75.0),
                 Rotation2d.fromDegrees(1.5));
         PIVOT_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/kP", 1.0),
-                new LoggedTunableNumber("Intake/kD", 0.001),
+                new LoggedTunableNumber("Intake/kP", 1.85),
+                new LoggedTunableNumber("Intake/kD", 0.1),
                 new LoggedTunableNumber("Intake/kS", 0.0),
                 new LoggedTunableNumber("Intake/kV", 0.0),
-                new LoggedTunableNumber("Intake/kA", 0.0),
-                new LoggedTunableNumber("Intake/kG", 0.0));
+                new LoggedTunableNumber("Intake/kA", 0.011537),
+                new LoggedTunableNumber("Intake/kG", 0.15326));
         CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0, 40.0, 40.0);
 
         break;
@@ -67,13 +67,13 @@ public class V3_EpsilonIntakeConstants {
       default:
         PIVOT_CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Intake/Max Acceleration", 500.0),
-                new LoggedTunableNumber("Intake/Cruising Velocity", 500.0),
+                new LoggedTunableNumber("Intake/Max Acceleration", 0.0),
+                new LoggedTunableNumber("Intake/Cruising Velocity", 0.0),
                 Rotation2d.fromDegrees(1.5));
         PIVOT_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/kP", 0.0),
-                new LoggedTunableNumber("Intake/kD", 0.0),
+                new LoggedTunableNumber("Intake/kP", 1.85),
+                new LoggedTunableNumber("Intake/kD", 0.1),
                 new LoggedTunableNumber("Intake/kS", 0.0),
                 new LoggedTunableNumber("Intake/kV", 0.0),
                 new LoggedTunableNumber("Intake/kA", 0.0),
