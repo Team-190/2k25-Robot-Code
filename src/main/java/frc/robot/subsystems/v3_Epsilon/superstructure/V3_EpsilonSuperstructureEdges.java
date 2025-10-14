@@ -191,7 +191,7 @@ public class V3_EpsilonSuperstructureEdges {
           Commands.sequence(
               pose.setElevatorHeight(elevator),
               elevator.waitUntilAtGoal(),
-              pose.asCommand(
+              pose.asConfigurationSpaceCommand(
                   elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
               );
 
@@ -201,12 +201,12 @@ public class V3_EpsilonSuperstructureEdges {
           Commands.sequence(
               pose.setManipulatorState(manipulator),
               Commands.waitUntil(manipulator::isSafePosition),
-              pose.asCommand(
+              pose.asConfigurationSpaceCommand(
                   elevator, intake, manipulator) // CORRECTED: Only move the other subsystems
               );
     } else {
       // Default case: All mechanisms move in parallel.
-      moveCommand = pose.asCommand(elevator, intake, manipulator);
+      moveCommand = pose.asConfigurationSpaceCommand(elevator, intake, manipulator);
     }
 
     if (from == V3_EpsilonSuperstructureStates.HANDOFF) {

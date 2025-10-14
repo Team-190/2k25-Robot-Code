@@ -76,7 +76,7 @@ public class V3_EpsilonSuperstructurePose {
    * @param manipulator The manipulator subsystem.
    * @return A Command that sets all subsystems to their respective states in parallel.
    */
-  public Command asCommand(
+  public Command asConfigurationSpaceCommand(
       ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
