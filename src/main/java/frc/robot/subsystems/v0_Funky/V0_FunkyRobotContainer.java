@@ -25,6 +25,7 @@ import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V0_FunkyRobotContainer implements RobotContainer {
@@ -75,6 +76,8 @@ public class V0_FunkyRobotContainer implements RobotContainer {
           break;
       }
     }
+
+    LTNUpdater.registerDrive(drive);
   }
 
   public void configureButtonBindings() {
@@ -112,7 +115,7 @@ public class V0_FunkyRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
+    LoggedTunableNumber.updateAll();
   }
 
   @Override
