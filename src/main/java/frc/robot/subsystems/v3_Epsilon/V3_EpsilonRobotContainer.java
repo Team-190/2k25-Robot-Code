@@ -3,6 +3,7 @@ package frc.robot.subsystems.v3_Epsilon;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
@@ -22,25 +23,20 @@ import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
-import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
-import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
-import org.ironmaple.simulation.SimulatedArena;
+import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
@@ -57,6 +53,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
+  private final ChoreoChooser autoChooser = new ChoreoChooser();
 
   public V3_EpsilonRobotContainer() {
 
@@ -70,15 +67,13 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
-          intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
-          manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
-          climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
-          superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+          // elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
+          //    intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
+          //  manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
+          // climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
+          //   superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           vision =
-              new Vision(
-                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-                  RobotCameras.V2_REDUNDANCY_CAMS);
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         case V3_EPSILON_SIM:
           drive =
@@ -126,6 +121,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
       }
     }
     configureButtonBindings();
+    configureAutos();
   }
 
   /**
@@ -150,7 +146,13 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
   }
 
-  private void configureAutos() {}
+  private void configureAutos() {
+    autoChooser.addCmd(
+        "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addCmd(
+        "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+    SmartDashboard.putData("Autonomous Modes", autoChooser);
+  }
 
   /**
    * Periodic function for the robot. This function is called every 20ms, and is responsible for
@@ -173,10 +175,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         V3_EpsilonMechanism3d.getPoses(
             elevator.getPositionMeters(), intake.getPivotAngle(), manipulator.getArmAngle()));
 
-    Logger.recordOutput(
-        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-    Logger.recordOutput(
-        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+    // Logger.recordOutput(
+    //  "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+    // Logger.recordOutput(
+    //  "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
   }
 
   /**
@@ -187,7 +189,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return superstructure.allTransition();
+    return autoChooser.selectedCommand();
     // return superstructure.allTransition();
     // return Commands.sequence(
     // V3_EpsilonCompositeCommands.dropAlgae(
