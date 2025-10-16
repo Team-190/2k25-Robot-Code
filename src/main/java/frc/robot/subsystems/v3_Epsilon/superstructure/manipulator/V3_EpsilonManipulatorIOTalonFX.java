@@ -14,6 +14,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -222,5 +223,57 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     } else {
       throw new IllegalArgumentException("Invalid slot: " + slot);
     }
+  }
+
+  public void updateSlot0ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot0 =
+        new Slot0Configs()
+            .withKP(kP)
+            .withKD(kD)
+            .withKS(kS)
+            .withKV(kV)
+            .withKA(kA)
+            .withKG(kG)
+            .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateSlot1ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot1 =
+        new Slot1Configs()
+            .withKP(kP)
+            .withKD(kD)
+            .withKS(kS)
+            .withKV(kV)
+            .withKA(kA)
+            .withKG(kG)
+            .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateSlot2ArmGains(
+      double kP, double kD, double kS, double kV, double kA, double kG) {
+    armConfig.Slot2 =
+        new Slot2Configs()
+            .withKP(kP)
+            .withKD(kD)
+            .withKS(kS)
+            .withKV(kV)
+            .withKA(kA)
+            .withKG(kG)
+            .withGravityType(GravityTypeValue.Arm_Cosine);
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
+  }
+
+  public void updateArmConstraints(double maxAcceleration, double cruisingVelocity) {
+    armConfig.MotionMagic =
+        new MotionMagicConfigs()
+            .withMotionMagicAcceleration(
+                AngularAcceleration.ofRelativeUnits(maxAcceleration, RotationsPerSecondPerSecond))
+            .withMotionMagicCruiseVelocity(
+                AngularVelocity.ofRelativeUnits(cruisingVelocity, RotationsPerSecond));
+    tryUntilOk(5, () -> armTalonFX.getConfigurator().apply(armConfig, 0.25));
   }
 }

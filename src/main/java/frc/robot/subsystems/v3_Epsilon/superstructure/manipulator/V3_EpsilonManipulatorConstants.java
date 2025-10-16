@@ -90,12 +90,12 @@ public class V3_EpsilonManipulatorConstants {
       default:
         EMPTY_GAINS =
             new Gains(
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 1),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.00014503),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 1.7708),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0.00032712));
         CORAL_GAINS =
             new Gains(
                 new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 125),
