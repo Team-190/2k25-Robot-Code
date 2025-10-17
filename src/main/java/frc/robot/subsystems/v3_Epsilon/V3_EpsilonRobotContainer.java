@@ -33,10 +33,12 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonRobotContainer implements RobotContainer {
@@ -94,32 +96,35 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         default:
           break;
       }
-
-      if (drive == null) {
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-      }
-      if (elevator == null) {
-        elevator = new Elevator(new ElevatorIO() {}).getFSM();
-      }
-      if (intake == null) {
-        intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
-      }
-      if (manipulator == null) {
-        manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
-      }
-      if (climber == null) {
-        climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
-      }
-      if (superstructure == null) {
-        superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
-      }
     }
+
+    if (drive == null) {
+      drive =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {},
+              new ModuleIO() {});
+    }
+    if (elevator == null) {
+      elevator = new Elevator(new ElevatorIO() {}).getFSM();
+    }
+    if (intake == null) {
+      intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIO() {});
+    }
+    if (manipulator == null) {
+      manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIO() {});
+    }
+    if (climber == null) {
+      climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
+    }
+    if (superstructure == null) {
+      superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+    }
+
+    LTNUpdater.registerAll(drive, elevator, intake, manipulator);
+
     configureButtonBindings();
     configureAutos();
   }
@@ -144,6 +149,13 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                 superstructure, intake, manipulator))
         .whileFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
+
+    driver
+        .a()
+        .toggleOnTrue(
+            superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.HANDOFF)))
+        .toggleOnFalse(
+            superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.VERTICAL_UP)));
   }
 
   private void configureAutos() {
@@ -167,8 +179,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
+    LoggedTunableNumber.updateAll();
 
     Logger.recordOutput(
         "Component Poses",

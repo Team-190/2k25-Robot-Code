@@ -62,7 +62,7 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 67.000000),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
@@ -70,12 +70,12 @@ public class ElevatorConstants {
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 190.0),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 41.0),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 67.000000),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
@@ -213,16 +213,16 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
-                    new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 1),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
                     new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 1),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
@@ -296,12 +296,12 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(new PositionConstants(0.0, 0.0, 0.0)),
-    CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.75))),
+    CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.85))),
     ALGAE_INTAKE(
         new PositionConstants(
             0.2161583093038944 + Units.inchesToMeters(1),
             0.2161583093038944 + Units.inchesToMeters(1),
-            0.2161583093038944 + Units.inchesToMeters(1))),
+            0)),
     ALGAE_MID(
         new PositionConstants(
             0.7073684509805078, 0.7073684509805078, 1.2)), // USED AS PRE-HANDOFF FOR V3
@@ -330,7 +330,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(57))),
+            Units.inchesToMeters(55))),
     L4_PLUS(
         new PositionConstants(
             0.0,
@@ -340,10 +340,10 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(61))),
+            Units.inchesToMeters(56))),
 
     HIGH_STOW(new PositionConstants(0, 0, 0.5)),
-    HANDOFF(new PositionConstants(0, 0, 1)),
+    HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(34.75))),
     ;
 
     private final PositionConstants position;

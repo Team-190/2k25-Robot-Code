@@ -5,11 +5,13 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
 public class V3_EpsilonManipulatorConstants {
   public static final ArmParameters ARM_PARAMETERS;
+
   public static final Gains EMPTY_GAINS;
   public static final Gains CORAL_GAINS;
   public static final Gains ALGAE_GAINS;
@@ -22,47 +24,22 @@ public class V3_EpsilonManipulatorConstants {
 
   public static final ManipulatorCurrentLimits CURRENT_LIMITS;
 
-  public static final int ARM_CAN_ID = 42;
-  public static final Rotation2d TOGGLE_ARM_ROTATION;
+  public static final double ALGAE_CAN_RANGE_THRESHOLD_METERS;
+  public static final double CORAL_CAN_RANGE_THRESHOLD_METERS;
+  public static final int ARM_CAN_ID;
 
-  public static final int CAN_RANGE_ID = 41;
-
-  public static final double ALGAE_CAN_RANGE_THRESHOLD = 0.5;
-  public static final double CORAL_CAN_RANGE_THRESHOLD = 0.5;
+  public static final int CAN_RANGE_ID;
 
   static {
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
-    EMPTY_GAINS =
-        new Gains(
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
-    CORAL_GAINS =
-        new Gains(
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 125),
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kS", 0.24274),
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0.66177),
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
-            new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
-    ALGAE_GAINS =
-        new Gains(
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 125),
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kS", 0.65347),
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kG", 2.0762),
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kV", 0.0),
-            new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
-    CONSTRAINTS =
-        new Constraints(
-            new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
-            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
-            new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
-
+    ARM_CAN_ID = 42;
+    CAN_RANGE_ID = 41;
     ROLLER_CAN_ID = 30;
+
+    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
+
+    ALGAE_CAN_RANGE_THRESHOLD_METERS = 0.5;
+    CORAL_CAN_RANGE_THRESHOLD_METERS = 0.5;
+
     ROLLER_CURRENT_THRESHOLD = 60.0;
     ROLLER_TOGGLE_ARM_ROTATION = Rotation2d.fromRadians(10);
     ROLLER_VOLTAGES =
@@ -76,9 +53,74 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/HalfScore Volts", 1.0 * 1.56),
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
-    CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
-
-    TOGGLE_ARM_ROTATION = new Rotation2d();
+    switch (Constants.ROBOT) {
+      case V3_EPSILON_SIM:
+        EMPTY_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
+        CORAL_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 125),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kS", 0.24274),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0.66177),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
+        ALGAE_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 125),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kS", 0.65347),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kG", 2.0762),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
+        CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
+                new LoggedTunableNumber(
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
+        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+        break;
+      default:
+        EMPTY_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 1),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.00014503),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 1.7708),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0.00032712));
+        CORAL_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 125),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kS", 0.24274),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0.66177),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
+        ALGAE_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 125),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kS", 0.65347),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kG", 2.0762),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
+        CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
+                new LoggedTunableNumber(
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
+        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+        break;
+    }
   }
 
   public static record Gains(
@@ -164,9 +206,11 @@ public class V3_EpsilonManipulatorConstants {
 
     private final double voltage;
 
-    /*ManipulatorRollerState(double voltage) {
-      this.voltage = voltage;
-    }*/
+    /*
+     * ManipulatorRollerState(double voltage) {
+     * this.voltage = voltage;
+     * }
+     */
 
     public double getVoltage() {
       return voltage;

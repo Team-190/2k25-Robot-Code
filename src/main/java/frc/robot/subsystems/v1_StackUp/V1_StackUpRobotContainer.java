@@ -50,6 +50,7 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIO;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOSim;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class V1_StackUpRobotContainer implements RobotContainer {
@@ -137,6 +138,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     if (vision == null) {
       vision = new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
     }
+    LTNUpdater.registerAll(drive, elevator, funnel);
 
     configureButtonBindings();
     configureAutos();
@@ -208,10 +210,13 @@ public class V1_StackUpRobotContainer implements RobotContainer {
     driver.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
     // Driver algae
-    /*driver.back().onTrue(manipulator.toggleAlgaeArm());
-    driver
-        .start()
-        .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator, RobotCameras.V1_STACKUP_CAMS));*/
+    /*
+     * driver.back().onTrue(manipulator.toggleAlgaeArm());
+     * driver
+     * .start()
+     * .onTrue(AlgaeCommands.twerk(drive, elevator, manipulator,
+     * RobotCameras.V1_STACKUP_CAMS));
+     */
 
     // Driver POV
     driver.povUp().onTrue(elevator.setPosition());
@@ -327,9 +332,7 @@ public class V1_StackUpRobotContainer implements RobotContainer {
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
-    LTNUpdater.updateFunnel(funnel);
+    LoggedTunableNumber.updateAll();
 
     if (Constants.getMode().equals(Mode.SIM)) {
       Logger.recordOutput(

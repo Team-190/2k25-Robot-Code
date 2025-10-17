@@ -19,7 +19,7 @@ import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
-import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V0_WhiplashRobotContainer implements RobotContainer {
@@ -108,7 +108,7 @@ public class V0_WhiplashRobotContainer implements RobotContainer {
         drive.getYawVelocity(),
         drive.getModulePositions(),
         vision.getCameras());
-    LTNUpdater.updateDrive(drive);
+    LoggedTunableNumber.updateAll();
   }
 
   @Override
