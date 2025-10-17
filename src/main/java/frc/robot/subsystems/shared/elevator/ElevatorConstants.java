@@ -165,7 +165,7 @@ public class ElevatorConstants {
           case SIM:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 20.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 50.0),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
@@ -173,8 +173,8 @@ public class ElevatorConstants {
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 201.078594),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 21.329982),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(

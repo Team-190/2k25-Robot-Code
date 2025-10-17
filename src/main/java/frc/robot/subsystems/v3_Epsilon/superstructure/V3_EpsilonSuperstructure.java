@@ -590,31 +590,57 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return elevator.atGoal();
   }
 
+  @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "IsTransitioning")
+  public boolean isTransitioning() {
+    return edgeCommand != null && edgeCommand.getCommand().isScheduled();
+  }
+
   public Command allTransition() {
     Command all = runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN);
     for (var source : V3_EpsilonSuperstructureStates.values()) {
       for (var sink : V3_EpsilonSuperstructureStates.values()) {
         if (source == sink) continue;
-        var edge = graph.getEdge(source, sink);
-        if (edge != null) {
-
-          if (source != V3_EpsilonSuperstructureStates.START
-              && sink != V3_EpsilonSuperstructureStates.START
-              && source != V3_EpsilonSuperstructureStates.OVERRIDE) {
-            all =
-                all.andThen(
-                    runGoal(sink),
-                    runOnce(() -> System.out.println("Initial Pose:" + sink)),
-                    Commands.waitSeconds(2));
-            all =
-                all.andThen(
-                    runGoal(source),
-                    runOnce(() -> System.out.println("Final Pose:" + source)),
-                    Commands.waitSeconds(2));
-          }
+        if (source != V3_EpsilonSuperstructureStates.START
+            && sink != V3_EpsilonSuperstructureStates.START
+            && source != V3_EpsilonSuperstructureStates.OVERRIDE
+            && sink != V3_EpsilonSuperstructureStates.OVERRIDE) {
+          all =
+              all.andThen(
+                  runGoal(sink),
+                  runOnce(() -> System.out.println("Initial Pose:" + sink)),
+                  Commands.waitUntil(() -> atGoal()));
+          all =
+              all.andThen(
+                  runGoal(source),
+                  runOnce(() -> System.out.println("Final Pose:" + source)),
+                  Commands.waitUntil(() -> atGoal()));
         }
       }
     }
+    return all;
+  }
+
+  public Command stateTransitions(V3_EpsilonSuperstructureStates source) {
+    Command all = Commands.none();
+
+    for (var sink : V3_EpsilonSuperstructureStates.values()) {
+      if (sink == source
+          || sink == V3_EpsilonSuperstructureStates.START
+          || sink == V3_EpsilonSuperstructureStates.OVERRIDE) continue;
+
+      all =
+          all.andThen(
+              Commands.sequence(
+                  runOnce(() -> System.out.println("→ " + source + " to " + sink)),
+                  runGoal(sink),
+                  Commands.waitUntil(this::atGoal),
+                  Commands.waitSeconds(1.0),
+                  runOnce(() -> System.out.println("← " + sink + " back to " + source)),
+                  runGoal(source),
+                  Commands.waitUntil(this::atGoal),
+                  Commands.waitSeconds(1.0)));
+    }
+
     return all;
   }
 

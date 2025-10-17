@@ -34,7 +34,7 @@ public final class V3_EpsilonManipulatorConstants {
     ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 55.5, .695);
     EMPTY_GAINS =
         new Gains(
-            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
+            new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 25),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
             new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
@@ -59,7 +59,7 @@ public final class V3_EpsilonManipulatorConstants {
     CONSTRAINTS =
         new Constraints(
             new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 1000.0),
-            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
+            new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 25.0),
             new LoggedTunableNumber("Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
 
     ROLLER_CAN_ID = 30;
@@ -130,7 +130,7 @@ public final class V3_EpsilonManipulatorConstants {
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
-    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(99)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
@@ -140,6 +140,7 @@ public final class V3_EpsilonManipulatorConstants {
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
+    FLIP_ANGLE(Rotation2d.fromDegrees(135)),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 

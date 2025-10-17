@@ -7,6 +7,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeCon
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
+import java.util.Optional;
 
 public enum V3_EpsilonSuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
@@ -48,7 +49,7 @@ public enum V3_EpsilonSuperstructureStates {
       SubsystemActions.empty()),
   L1_SCORE(
       "L1_SCORE",
-      new SubsystemPoses(ReefState.L1, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
       new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.SCORE_CORAL)),
 
   L2(
@@ -80,17 +81,8 @@ public enum V3_EpsilonSuperstructureStates {
 
   HANDOFF(
       "HANDOFF",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.OUTTAKE)),
-
-  INTERMEDIATE_WAIT_FOR_ELEVATOR(
-      "INTERMEDIATE_WAIT_FOR_ELEVATOR",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
-      SubsystemActions.empty()),
-  INTERMEDIATE_WAIT_FOR_ARM(
-      "INTERMEDIATE_WAIT_FOR_ARM",
-      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.SAFE_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty()),
 
   L2_ALGAE(
       "L2_ALGAE",
@@ -136,14 +128,23 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.HIGH_STOW, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",
       new SubsystemPoses(
           ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
-  ;
+  FLIP_DOWN(
+      "FLIP_DOWN",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),
+      SubsystemActions.empty(),
+      V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL),
+  FLIP_UP(
+      "FLIP_UP",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),
+      SubsystemActions.empty(),
+      V3_EpsilonSuperstructureTransitionCondition.MANIPULATOR_AT_GOAL);
 
   // Readable name for state
   private final String name;
@@ -153,6 +154,8 @@ public enum V3_EpsilonSuperstructureStates {
 
   // Actions to perform for all subsystems in this state
   private final SubsystemActions subsystemActions;
+
+  private final Optional<V3_EpsilonSuperstructureTransitionCondition> transitionCondition;
 
   /**
    * Constructor for V3_SuperstructureStates.
@@ -165,6 +168,18 @@ public enum V3_EpsilonSuperstructureStates {
     this.name = name;
     this.subsystemPoses = pose;
     this.subsystemActions = action;
+    this.transitionCondition = Optional.empty();
+  }
+
+  V3_EpsilonSuperstructureStates(
+      String name,
+      SubsystemPoses pose,
+      SubsystemActions action,
+      V3_EpsilonSuperstructureTransitionCondition condition) {
+    this.name = name;
+    this.subsystemPoses = pose;
+    this.subsystemActions = action;
+    this.transitionCondition = Optional.of(condition);
   }
 
   /**
@@ -184,6 +199,10 @@ public enum V3_EpsilonSuperstructureStates {
    */
   public V3_EpsilonSuperstructureAction getAction() {
     return new V3_EpsilonSuperstructureAction(name, subsystemActions);
+  }
+
+  public Optional<V3_EpsilonSuperstructureTransitionCondition> getTransitionCondition() {
+    return transitionCondition;
   }
 
   /**
