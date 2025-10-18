@@ -18,7 +18,7 @@ public enum V3_EpsilonSuperstructureStates {
   STOW_UP(
       "STOW_UP",
       new SubsystemPoses(
-          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
+          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW),
       SubsystemActions.empty()),
   OVERRIDE("OVERRIDE", new SubsystemPoses(), SubsystemActions.empty()),
   GROUND_ACQUISITION(
@@ -119,6 +119,11 @@ public enum V3_EpsilonSuperstructureStates {
   PROCESSOR(
       "PROCESSOR",
       new SubsystemPoses(ReefState.STOW, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
+      SubsystemActions.empty()),
+  POST_PROCESSOR(
+      "POST_PROCESSOR",
+      new SubsystemPoses(
+          ReefState.POST_PROCESSOR, ManipulatorArmState.PROCESSOR, IntakePivotState.STOW),
       SubsystemActions.empty()),
   PROCESSOR_SCORE(
       "PROCESSOR_SCORE",
