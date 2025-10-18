@@ -15,10 +15,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
-import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
-import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
@@ -27,6 +25,7 @@ import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
+import frc.robot.subsystems.v3_Epsilon.leds.V3_EpsilonLEDs;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
@@ -49,6 +48,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private V3_EpsilonManipulator manipulator;
   private V3_EpsilonSuperstructure superstructure;
   private V3_EpsilonClimber climber;
+  private V3_EpsilonLEDs leds;
   private Vision vision;
 
   // Controller
@@ -90,6 +90,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
           climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOSim());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+          leds = new V3_EpsilonLEDs();
           vision =
               new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
@@ -118,6 +119,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     }
     if (climber == null) {
       climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
+    }
+    if (leds == null) {
+      leds = new V3_EpsilonLEDs();
     }
     if (superstructure == null) {
       superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
