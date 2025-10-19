@@ -28,6 +28,7 @@ public class ElevatorConstants {
     REEF_STATE_ELEVATOR_POSITION_MAP =
         Map.ofEntries(
             Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.POST_PROCESSOR, ElevatorPositions.POST_PROCESSOR),
             Map.entry(ReefState.HIGH_STOW, ElevatorPositions.HIGH_STOW),
             Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
             Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
@@ -165,7 +166,7 @@ public class ElevatorConstants {
           case SIM:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 20.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 50.0),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
@@ -173,8 +174,8 @@ public class ElevatorConstants {
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 201.078594),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 21.329982),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
@@ -296,6 +297,7 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(new PositionConstants(0.0, 0.0, 0.0)),
+    POST_PROCESSOR(new PositionConstants(0.5, 0.5, 0.5)),
     CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.85))),
     ALGAE_INTAKE(
         new PositionConstants(

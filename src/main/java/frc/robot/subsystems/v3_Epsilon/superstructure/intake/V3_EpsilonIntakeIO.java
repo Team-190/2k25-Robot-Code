@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface V3_EpsilonIntakeIO {
   @AutoLog
-  public static class V3_EpsilonIntakeIOInputs {
+  public class V3_EpsilonIntakeIOInputs {
     public Rotation2d pivotPosition = new Rotation2d();
     public double pivotVelocityRadiansPerSecond = 0.0;
     public double pivotAppliedVolts = 0.0;

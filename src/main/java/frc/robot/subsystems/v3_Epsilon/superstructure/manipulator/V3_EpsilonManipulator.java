@@ -29,7 +29,7 @@ public class V3_EpsilonManipulator {
 
   @AutoLogOutput(key = "Manipulator/Arm Goal")
   @Getter
-  private ManipulatorArmState armGoal;
+  private Rotation2d armGoal;
 
   @Setter
   @Getter
@@ -49,7 +49,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    armGoal = ManipulatorArmState.VERTICAL_UP;
+    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(armSide);
     armSide = Side.POSITIVE;
     rollerGoal = ManipulatorRollerState.STOP;
 
@@ -61,7 +61,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      Rotation2d goal = armGoal.getAngle(armSide);
+      Rotation2d goal = armGoal;
 
       if (!isSafePosition() || clearsElevator) {
         if (armSide == Side.POSITIVE) {
@@ -132,6 +132,11 @@ public class V3_EpsilonManipulator {
    * @param goal The goal state to set the arm to.
    */
   public void setArmGoal(ManipulatorArmState goal) {
+    isClosedLoop = true;
+    armGoal = goal.getAngle(armSide);
+  }
+
+  public void setArmGoal(Rotation2d goal) {
     isClosedLoop = true;
     armGoal = goal;
   }
@@ -206,17 +211,8 @@ public class V3_EpsilonManipulator {
     return armAtGoal(armGoal);
   }
 
-  /**
-   * Checks if the arm is at the given goal position.
-   *
-   * <p>This function checks if the arm is within the goal tolerance of the given arm goal position.
-   * If the arm is within the tolerance, it returns true. Otherwise, it returns false.
-   *
-   * @param state The arm goal position to check against.
-   * @return If the arm is at the goal position.
-   */
-  public boolean armAtGoal(ManipulatorArmState state) {
-    return Math.abs(inputs.armPosition.minus(state.getAngle(armSide)).getRadians())
+  public boolean armAtGoal(Rotation2d state) {
+    return Math.abs(inputs.armPosition.minus(state).getRadians())
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
@@ -321,11 +317,11 @@ public class V3_EpsilonManipulator {
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.STOP)
-            .contains(rollerGoal)) {
+            .contains(l4Score)) {
 
       io.setRollerVoltage(holdVoltage());
     } else {
-      io.setRollerVoltage(rollerGoal.getVoltage());
+      io.setRollerVoltage(l4Score.getVoltage());
     }
   }
 

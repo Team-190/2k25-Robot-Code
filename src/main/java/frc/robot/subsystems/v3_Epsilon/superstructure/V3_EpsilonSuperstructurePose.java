@@ -8,6 +8,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
+import java.util.Optional;
 import lombok.Getter;
 
 /**
@@ -76,7 +77,7 @@ public class V3_EpsilonSuperstructurePose {
    * @param manipulator The manipulator subsystem.
    * @return A Command that sets all subsystems to their respective states in parallel.
    */
-  public Command asCommand(
+  public Command asConfigurationSpaceCommand(
       ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
     return Commands.parallel(
         Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
@@ -85,11 +86,25 @@ public class V3_EpsilonSuperstructurePose {
   }
 
   public Command wait(
-      ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
-    return Commands.parallel(
-        elevator.waitUntilAtGoal(),
-        manipulator.waitUntilArmAtGoal(),
-        intake.waitUntilPivotAtGoal());
+      ElevatorFSM elevator,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Optional<V3_EpsilonSuperstructureTransitionCondition> condition) {
+    return Commands.sequence(
+        Commands.parallel(
+            elevator.waitUntilAtGoal(),
+            manipulator.waitUntilArmAtGoal(),
+            intake.waitUntilPivotAtGoal()),
+        Commands.either(
+            Commands.either(
+                elevator.waitUntilAtGoal(),
+                manipulator.waitUntilArmAtGoal(),
+                () ->
+                    condition
+                        .get()
+                        .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
+            Commands.none(),
+            () -> condition.isPresent()));
   }
 
   /**

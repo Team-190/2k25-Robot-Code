@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.Logger;
 public class V3_EpsilonIntake {
   private final V3_EpsilonIntakeIO io;
   private final V3_EpsilonIntakeIOInputsAutoLogged inputs;
+  // private final double INTAKE_CORAL_THRESHOLD = 1.0;
 
   @Getter
   @AutoLogOutput(key = "Intake/Pivot Goal")

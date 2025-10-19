@@ -9,7 +9,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V3_EpsilonManipulatorConstants {
+public final class V3_EpsilonManipulatorConstants {
   public static final ArmParameters ARM_PARAMETERS;
 
   public static final Gains EMPTY_GAINS;
@@ -203,17 +203,21 @@ public class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
-    BARGE_SCORE(Rotation2d.fromDegrees(18.67)),
-    PROCESSOR(Rotation2d.fromDegrees(41.279296875)),
+    SCORE_L4(Rotation2d.kPi),
+    PROCESSOR(Rotation2d.fromDegrees(90)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(99)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
-    STOW_LINE(Rotation2d.fromDegrees(75)),
+    STOW_LINE(Rotation2d.fromDegrees(75)), // What is STOW_LINE?
+    STOW_DOWN(Rotation2d.fromDegrees(88)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
-    EMERGENCY_EJECT_ANGLE(Rotation2d.fromDegrees(90));
+    FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    EMERGENCY_EJECT_ANGLE(
+        Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
     private final Rotation2d angle;
 

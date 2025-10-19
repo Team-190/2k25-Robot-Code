@@ -4,14 +4,15 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
-import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
@@ -56,7 +57,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
   private Vision vision;
 
   // Controller
-  CommandXboxController driver = new CommandXboxController(0);
+  private static final CommandXboxController driver = new CommandXboxController(0);
 
   // Auto chooser
   private final ChoreoChooser autoChooser = new ChoreoChooser();
@@ -142,15 +143,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    * responsible for setting up the default commands for each button on the controllers.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX(),
-            () -> false,
-            driver.back(),
-            driver.povRight()));
     driver
         .rightTrigger()
         .whileTrue(

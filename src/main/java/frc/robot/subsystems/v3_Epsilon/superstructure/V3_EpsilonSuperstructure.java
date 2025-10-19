@@ -557,7 +557,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
               case L1 -> 0.8;
               case L2 -> 0.15;
               case L3 -> 0.15;
-              case L4 -> 0.4;
+              case L4 -> 0.1;
               default -> 0;
             });
   }
@@ -692,31 +692,71 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return elevator.atGoal();
   }
 
+  @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "IsTransitioning")
+  public boolean isTransitioning() {
+    return edgeCommand != null && edgeCommand.getCommand().isScheduled();
+  }
+
   public Command allTransition() {
     Command all = runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN);
     for (var source : V3_EpsilonSuperstructureStates.values()) {
       for (var sink : V3_EpsilonSuperstructureStates.values()) {
         if (source == sink) continue;
-        var edge = graph.getEdge(source, sink);
-        if (edge != null) {
-
-          if (source != V3_EpsilonSuperstructureStates.START
-              && sink != V3_EpsilonSuperstructureStates.START
-              && source != V3_EpsilonSuperstructureStates.OVERRIDE) {
-            all =
-                all.andThen(
-                    runGoal(sink),
-                    runOnce(() -> System.out.println("Initial Pose:" + sink)),
-                    Commands.waitSeconds(2));
-            all =
-                all.andThen(
-                    runGoal(source),
-                    runOnce(() -> System.out.println("Final Pose:" + source)),
-                    Commands.waitSeconds(2));
-          }
+        if (sink == V3_EpsilonSuperstructureStates.FLIP_DOWN) continue;
+        if (sink == V3_EpsilonSuperstructureStates.FLIP_UP) continue;
+        if (source != V3_EpsilonSuperstructureStates.START
+            && sink != V3_EpsilonSuperstructureStates.START
+            && source != V3_EpsilonSuperstructureStates.OVERRIDE
+            && sink != V3_EpsilonSuperstructureStates.OVERRIDE) {
+          all =
+              all.andThen(
+                  runGoal(sink),
+                  runOnce(
+                      () ->
+                          Logger.recordOutput(
+                              "Superstructure/Current Objective",
+                              source.toString() + " -> " + sink.toString())),
+                  Commands.waitUntil(() -> atGoal()));
+          all =
+              all.andThen(
+                  runGoal(source),
+                  runOnce(
+                      () ->
+                          Logger.recordOutput(
+                              "Superstructure/Current Objective",
+                              sink.toString() + " -> " + source.toString())),
+                  Commands.waitUntil(() -> atGoal()));
         }
       }
     }
     return all;
+  }
+
+  public Command stateTransitions(V3_EpsilonSuperstructureStates source) {
+    Command all = Commands.none();
+
+    for (var sink : V3_EpsilonSuperstructureStates.values()) {
+      if (sink == source
+          || sink == V3_EpsilonSuperstructureStates.START
+          || sink == V3_EpsilonSuperstructureStates.OVERRIDE) continue;
+
+      all =
+          all.andThen(
+              Commands.sequence(
+                  runOnce(() -> System.out.println("→ " + source + " to " + sink)),
+                  runGoal(sink),
+                  Commands.waitUntil(this::atGoal),
+                  Commands.waitSeconds(1.0),
+                  runOnce(() -> System.out.println("← " + sink + " back to " + source)),
+                  runGoal(source),
+                  Commands.waitUntil(this::atGoal),
+                  Commands.waitSeconds(1.0)));
+    }
+
+    return all;
+  }
+
+  public boolean armBelowThreshold() {
+    return manipulator.getArmAngle().getDegrees() >= 90;
   }
 }
