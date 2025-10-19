@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
@@ -274,18 +276,19 @@ public class V3_EpsilonManipulator {
    * @param superstructure The V3 Epsiolon Superstructure.
    * @return A command to run the SysId routine for the manipulator arm.
    */
-  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
+  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure, ElevatorFSM elevator) {
     SysIdRoutine algaeCharacterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.5).per(Second),
-                Volts.of(6),
-                Seconds.of(4),
+                Volts.of(8),
+                Seconds.of(10),
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setArmVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         superstructure.runGoal(V3_EpsilonSuperstructureStates.OVERRIDE),
+        Commands.runOnce(() -> elevator.setPosition(() -> ReefState.L4)),
         Commands.runOnce(() -> isClosedLoop = false),
         algaeCharacterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(.25),

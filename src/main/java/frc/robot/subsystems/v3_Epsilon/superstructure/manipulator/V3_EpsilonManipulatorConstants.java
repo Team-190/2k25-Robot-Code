@@ -31,9 +31,9 @@ public class V3_EpsilonManipulatorConstants {
   public static final int CAN_RANGE_ID;
 
   static {
-    ARM_CAN_ID = 42;
-    CAN_RANGE_ID = 41;
-    ROLLER_CAN_ID = 30;
+    ARM_CAN_ID = 30;
+    CAN_RANGE_ID = 32;
+    ROLLER_CAN_ID = 31;
 
     ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
 
@@ -54,6 +54,39 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
     switch (Constants.ROBOT) {
+      case V3_EPSILON:
+        EMPTY_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 60),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.16975),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.062944),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
+        CORAL_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kS", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
+        ALGAE_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kS", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kG", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
+        CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 5),
+                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 3),
+                new LoggedTunableNumber(
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1)));
+        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+        break;
       case V3_EPSILON_SIM:
         EMPTY_GAINS =
             new Gains(

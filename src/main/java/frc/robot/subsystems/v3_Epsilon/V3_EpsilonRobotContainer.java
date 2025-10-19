@@ -38,6 +38,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
 import frc.robot.util.LoggedTunableNumber;
@@ -74,9 +75,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           //    intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
-          //  manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
+          manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
           // climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
-          //   superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
+          // superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           vision =
               new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
@@ -124,7 +125,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
       climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
     }
     if (leds == null) {
-      leds = new V3_EpsilonLEDs();
+      // leds = new V3_EpsilonLEDs();
     }
     if (superstructure == null) {
       superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
@@ -166,7 +167,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
     driver.b().onTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.L4));
 
-    driver.x().onTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+    driver.x().onTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
   }
 
   private void configureAutos() {
@@ -211,7 +212,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return elevator.sysIdRoutine(superstructure);
+    return manipulator.sysIdRoutine(superstructure, elevator);
     // return superstructure.allTransition();
     // return Commands.sequence(
     // V3_EpsilonCompositeCommands.dropAlgae(
