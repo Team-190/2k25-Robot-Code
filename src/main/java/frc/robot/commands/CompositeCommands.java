@@ -933,49 +933,5 @@ public class CompositeCommands {
               () -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
           Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)));
     }
-
-    public static final Command runIK(
-        Matrix<N6, N1>[] trajectory,
-        V3_EpsilonSuperstructure superstructure,
-        double t,
-        Timer timer) {
-      return Commands.sequence(
-          Commands.print("Started"),
-          Commands.runOnce(() -> timer.start()),
-          Commands.run(
-              () -> {
-                if (timer.hasElapsed(t)) return;
-                double ypos =
-                    TrajectoryGenerator.evaluateQuinticTrajectory(trajectory[0], timer.get());
-                double zpos =
-                    TrajectoryGenerator.evaluateQuinticTrajectory(trajectory[1], timer.get());
-
-                superstructure.runIK(ypos, zpos);
-              }));
-    }
-
-    public static final Command createTrajectoryTestCommand(
-        V3_EpsilonSuperstructure superstructure, Timer timer) {
-      // 1. Define the start and end points of a simple trajectory
-      // For example, a 2-second move from (y=0.5, z=0.5) to (y=1.0, z=0.75)
-      double startY = 0.55, endY = -0.55;
-      double startZ = 1, endZ = 2;
-      double duration = 4.0;
-
-      // 2. Generate the trajectory coefficients for Y and Z axes
-      // We assume the arm starts and ends at rest (zero velocity and acceleration)
-      @SuppressWarnings("unchecked")
-      Matrix<N6, N1>[] trajectoryCoeffs =
-          new Matrix[] {
-            TrajectoryGenerator.generateQuinticTrajectory(startY, 0, 0, endY, 0, 0, 0, duration),
-            TrajectoryGenerator.generateQuinticTrajectory(startZ, 0, 0, endZ, 0, 0, 0, duration)
-          };
-
-      // 3. Return the composite command
-      return Commands.sequence(
-          Commands.runOnce(() -> superstructure.runIK(startY, startZ)),
-          Commands.waitSeconds(2),
-          runIK(trajectoryCoeffs, superstructure, duration, timer));
-    }
   }
 }

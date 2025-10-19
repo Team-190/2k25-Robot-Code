@@ -11,7 +11,6 @@ import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
-import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureKinematics.JointSolution;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
@@ -656,11 +655,5 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
   public boolean armBelowThreshold() {
     return manipulator.getArmAngle().getDegrees() >= 90;
-  }
-
-  public void runIK(double py, double pz) {
-    JointSolution sol = V3_EpsilonSuperstructureKinematics.ik(py, pz);
-    elevator.setPosition(sol.d3());
-    manipulator.setArmGoal(sol.theta5());
   }
 }
