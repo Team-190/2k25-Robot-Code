@@ -180,12 +180,16 @@ public class Elevator {
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(1).per(Second),
-                Volts.of(6),
-                Seconds.of(10),
+                Volts.of(3),
+                Seconds.of(3),
                 (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, subsystem));
 
     return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              isClosedLoop = false;
+            }),
         characterizationRoutine
             .quasistatic(Direction.kForward)
             .until(

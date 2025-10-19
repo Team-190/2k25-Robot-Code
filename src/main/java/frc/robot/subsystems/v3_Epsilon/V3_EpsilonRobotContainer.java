@@ -15,12 +15,15 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.drive.GyroIO;
+import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIO;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
+import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
+import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
@@ -69,7 +72,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(1, DriveConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
-          // elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
+          elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           //    intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
           //  manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
           // climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
@@ -90,7 +93,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOSim());
           climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOSim());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
-          leds = new V3_EpsilonLEDs();
+          // leds = new V3_EpsilonLEDs();
           vision =
               new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
@@ -160,6 +163,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.HANDOFF)))
         .toggleOnFalse(
             superstructure.override(() -> manipulator.setArmGoal(ManipulatorArmState.VERTICAL_UP)));
+
+    driver.b().onTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.L4));
+
+    driver.x().onTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
   }
 
   private void configureAutos() {
@@ -204,7 +211,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return elevator.sysIdRoutine(superstructure);
     // return superstructure.allTransition();
     // return Commands.sequence(
     // V3_EpsilonCompositeCommands.dropAlgae(

@@ -98,10 +98,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     this.manipulator = manipulator;
 
     previousState = null;
-    currentState = V3_EpsilonSuperstructureStates.START;
+    currentState = V3_EpsilonSuperstructureStates.STOW_DOWN;
     nextState = null;
 
-    targetState = V3_EpsilonSuperstructureStates.START;
+    targetState = V3_EpsilonSuperstructureStates.STOW_DOWN;
 
     // Initialize the graph
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
