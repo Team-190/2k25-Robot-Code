@@ -600,9 +600,8 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     for (var source : V3_EpsilonSuperstructureStates.values()) {
       for (var sink : V3_EpsilonSuperstructureStates.values()) {
         if (source == sink) continue;
-        if (source == V3_EpsilonSuperstructureStates.STOW_DOWN) continue;
-        if (source == V3_EpsilonSuperstructureStates.STOW_UP) continue;
-
+        if (sink == V3_EpsilonSuperstructureStates.FLIP_DOWN) continue;
+        if (sink == V3_EpsilonSuperstructureStates.FLIP_UP) continue;
         if (source != V3_EpsilonSuperstructureStates.START
             && sink != V3_EpsilonSuperstructureStates.START
             && source != V3_EpsilonSuperstructureStates.OVERRIDE
@@ -615,8 +614,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
                           Logger.recordOutput(
                               "Superstructure/Current Objective",
                               source.toString() + " -> " + sink.toString())),
-                  Commands.waitUntil(() -> atGoal()),
-                  Commands.waitSeconds(1.0));
+                  Commands.waitUntil(() -> atGoal()));
           all =
               all.andThen(
                   runGoal(source),
@@ -625,9 +623,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
                           Logger.recordOutput(
                               "Superstructure/Current Objective",
                               sink.toString() + " -> " + source.toString())),
-                  Commands.waitUntil(() -> atGoal()),
-                  Commands.waitUntil(() -> atGoal()),
-                  Commands.waitSeconds(1.0));
+                  Commands.waitUntil(() -> atGoal()));
         }
       }
     }
