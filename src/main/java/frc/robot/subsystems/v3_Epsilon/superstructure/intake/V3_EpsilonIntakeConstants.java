@@ -60,7 +60,7 @@ public class V3_EpsilonIntakeConstants {
                 new LoggedTunableNumber("Intake/kV", 0.0),
                 new LoggedTunableNumber("Intake/kA", 0),
                 new LoggedTunableNumber("Intake/kG", 0.083386));
-        CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 40.0, 40.0, 40.0);
+        CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 80.0, 40.0, 80.0);
 
         break;
 
@@ -151,10 +151,11 @@ public class V3_EpsilonIntakeConstants {
   // Will add more states later
   public static enum IntakeRollerState {
     STOP(0.0, 0.0),
+    CENTERING(-12.0, -12.0),
     CORAL_INTAKE(-12.0, -12.0),
     ALGAE_INTAKE(12.0, 12.0),
     SCORE_CORAL(6.0, 6.0),
-    OUTTAKE(12.0, 12.0);
+    OUTTAKE(0.0, 12.0);
 
     @Getter private final double innerVoltage;
     @Getter private final double outerVoltage;

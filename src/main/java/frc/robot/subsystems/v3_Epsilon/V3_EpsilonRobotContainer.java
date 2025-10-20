@@ -12,6 +12,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -128,7 +129,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
       climber = new V3_EpsilonClimber(new V3_EpsilonClimberIO() {});
     }
     if (leds == null) {
-      // leds = new V3_EpsilonLEDs();
+      leds = new V3_EpsilonLEDs();
     }
     if (superstructure == null) {
       superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
@@ -152,6 +153,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false));
+
+    driver.povDown().onTrue(SharedCommands.resetHeading(drive));
 
     driver
         .rightTrigger()

@@ -35,7 +35,9 @@ public final class V3_EpsilonManipulatorConstants {
     CAN_RANGE_ID = 32;
     ROLLER_CAN_ID = 31;
 
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 55.5, .695);
+    ARM_PARAMETERS =
+        new ArmParameters(
+            DCMotor.getKrakenX60Foc(1), 1, (60.0 / 12.0) * (40.0 / 18.0) * (80.0 / 16.0), .695);
 
     ALGAE_CAN_RANGE_THRESHOLD_METERS = 0.5;
     CORAL_CAN_RANGE_THRESHOLD_METERS = 0.5;
@@ -234,7 +236,7 @@ public final class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorRollerState {
     STOP(0.0),
     CORAL_INTAKE(-12.0),
-    ALGAE_INTAKE(12.0),
+    ALGAE_INTAKE(-12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),
     SCORE_ALGAE(-6),

@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -78,6 +77,8 @@ public class V3_EpsilonManipulator {
         && Set.of(ManipulatorRollerState.CORAL_INTAKE, ManipulatorRollerState.STOP)
             .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());
+    } else if (hasCoral()) {
+      io.setRollerVoltage(holdVoltage());
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
@@ -92,9 +93,7 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
-    return inputs.canRangeDistanceMeters
-            < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD_METERS
-        && inputs.canRangeDistanceMeters > 0;
+    return inputs.canRangeGot;
   }
 
   /**
@@ -106,9 +105,7 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return inputs.canRangeDistanceMeters
-            < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD_METERS
-        && inputs.canRangeDistanceMeters > 0;
+    return inputs.canRangeGot;
   }
 
   /**
@@ -237,17 +234,7 @@ public class V3_EpsilonManipulator {
    * uses another set of coefficients.
    */
   private double holdVoltage() {
-    double y;
-    double x = Math.abs(inputs.rollerTorqueCurrentAmps);
-    if (x <= 20) {
-      y = -0.0003 * Math.pow(x, 3) + 0.0124286 * Math.pow(x, 2) - 0.241071 * x + 4.00643;
-    } else {
-      y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
-    }
-    return MathUtil.clamp(
-        1.25 * y,
-        0.10,
-        V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
+    return -1;
   }
 
   /**
@@ -312,7 +299,7 @@ public class V3_EpsilonManipulator {
    */
   public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
     this.rollerGoal = rollerGoal;
-    if (hasAlgae()
+    if ((hasAlgae() || hasCoral())
         && Set.of(
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,

@@ -668,9 +668,8 @@ public class CompositeCommands {
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoralLoose()),
-          Commands.waitSeconds(0.2),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.L1, () -> intake.hasCoralLocked()));
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> intake.hasCoralLocked()));
     }
 
     public static final Command postIntakeCoralSequence(
@@ -679,7 +678,7 @@ public class CompositeCommands {
         V3_EpsilonManipulator manipulator) {
       return Commands.sequence(
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()),
+              V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
     }
 

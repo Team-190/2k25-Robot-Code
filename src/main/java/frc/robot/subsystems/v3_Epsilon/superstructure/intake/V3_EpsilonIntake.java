@@ -54,8 +54,13 @@ public class V3_EpsilonIntake {
       io.setPivotGoal(pivotGoal.getAngle());
     }
 
-    io.setInnerRollerVoltage(rollerGoal.getInnerVoltage());
-    io.setOuterRollerVoltage(rollerGoal.getOuterVoltage());
+    if (hasCoralLocked() && !rollerGoal.equals(IntakeRollerState.OUTTAKE)) {
+      io.setInnerRollerVoltage(IntakeRollerState.STOP.getInnerVoltage());
+      io.setOuterRollerVoltage(IntakeRollerState.STOP.getOuterVoltage());
+    } else {
+      io.setInnerRollerVoltage(rollerGoal.getInnerVoltage());
+      io.setOuterRollerVoltage(rollerGoal.getOuterVoltage());
+    }
   }
 
   // Double check if this is right

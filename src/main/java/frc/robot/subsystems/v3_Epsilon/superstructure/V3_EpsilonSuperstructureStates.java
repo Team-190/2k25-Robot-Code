@@ -82,6 +82,11 @@ public enum V3_EpsilonSuperstructureStates {
   HANDOFF(
       "HANDOFF",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
+      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CENTERING)),
+
+  HANDOFF_SPIN(
+      "HANDOFF",
+      new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.OUTTAKE)),
 
   L2_ALGAE(

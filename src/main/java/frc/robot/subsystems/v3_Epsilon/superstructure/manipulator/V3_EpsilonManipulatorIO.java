@@ -25,7 +25,7 @@ public interface V3_EpsilonManipulatorIO {
     public double rollerTorqueCurrentAmps = 0.0;
     public double rollerTemperatureCelsius = 0.0;
 
-    public double canRangeDistanceMeters = 0.0;
+    public boolean canRangeGot = false;
   }
 
   /**
