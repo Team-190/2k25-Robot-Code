@@ -317,11 +317,11 @@ public class V3_EpsilonManipulator {
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.STOP)
-            .contains(l4Score)) {
+            .contains(rollerGoal)) {
 
       io.setRollerVoltage(holdVoltage());
     } else {
-      io.setRollerVoltage(l4Score.getVoltage());
+      io.setRollerVoltage(rollerGoal.getVoltage());
     }
   }
 

@@ -68,11 +68,12 @@ public class V3_EpsilonIntake {
    * @return True if the intake is detecting coral, false otherwise.
    */
   @AutoLogOutput(key = "Intake/Has Coral")
-  public boolean hasCoral() {
-    return inputs.leftCANRangeDistanceMeters
-            > V3_EpsilonIntakeConstants.INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS
-        && inputs.rightCANRangeDistanceMeters
-            > V3_EpsilonIntakeConstants.INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS;
+  public boolean hasCoralLocked() {
+    return inputs.leftCANRange && inputs.rightCANRange;
+  }
+
+  public boolean hasCoralLoose() {
+    return inputs.leftCANRange || inputs.rightCANRange;
   }
 
   /**
@@ -141,12 +142,13 @@ public class V3_EpsilonIntake {
 
   public void setRollerGoal(IntakeRollerState rollerGoal) {
     this.rollerGoal = rollerGoal;
-    if (hasCoral()
-        && Set.of(
-                V3_EpsilonIntakeConstants.IntakeRollerState.ALGAE_INTAKE,
-                V3_EpsilonIntakeConstants.IntakeRollerState.CORAL_INTAKE,
-                V3_EpsilonIntakeConstants.IntakeRollerState.STOP)
-            .contains(rollerGoal)) {
+    if (hasCoralLocked()
+        || hasCoralLoose()
+            && Set.of(
+                    V3_EpsilonIntakeConstants.IntakeRollerState.ALGAE_INTAKE,
+                    V3_EpsilonIntakeConstants.IntakeRollerState.CORAL_INTAKE,
+                    V3_EpsilonIntakeConstants.IntakeRollerState.STOP)
+                .contains(rollerGoal)) {
 
       io.setInnerRollerVoltage(0);
       io.setOuterRollerVoltage(0);
@@ -168,13 +170,14 @@ public class V3_EpsilonIntake {
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.1).per(Second),
-                Volts.of(1),
-                Seconds.of(6),
+                Volts.of(3),
+                Seconds.of(10),
                 (state) -> Logger.recordOutput("Intake/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setPivotVoltage(volts.in(Volts)), null, subsystem));
 
     return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine
             .quasistatic(Direction.kForward)
             .until(() -> pivotAtGoal(IntakePivotState.INTAKE_CORAL)),

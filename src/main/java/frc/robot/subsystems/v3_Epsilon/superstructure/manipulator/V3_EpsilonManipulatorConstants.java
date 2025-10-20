@@ -35,7 +35,7 @@ public final class V3_EpsilonManipulatorConstants {
     CAN_RANGE_ID = 32;
     ROLLER_CAN_ID = 31;
 
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
+    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 55.5, .695);
 
     ALGAE_CAN_RANGE_THRESHOLD_METERS = 0.5;
     CORAL_CAN_RANGE_THRESHOLD_METERS = 0.5;
@@ -57,10 +57,10 @@ public final class V3_EpsilonManipulatorConstants {
       case V3_EPSILON:
         EMPTY_GAINS =
             new Gains(
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 60),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 100),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.16975),
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.062944),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.12926),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.024193),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
         CORAL_GAINS =
@@ -81,11 +81,11 @@ public final class V3_EpsilonManipulatorConstants {
                 new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
         CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 5),
-                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 3),
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 8),
+                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5),
                 new LoggedTunableNumber(
                     "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1)));
-        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 40, 40, 40);
+        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 20, 40, 20);
         break;
       case V3_EPSILON_SIM:
         EMPTY_GAINS =
@@ -205,7 +205,7 @@ public final class V3_EpsilonManipulatorConstants {
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
-    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(99)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
@@ -233,7 +233,7 @@ public final class V3_EpsilonManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ManipulatorRollerState {
     STOP(0.0),
-    CORAL_INTAKE(6.0),
+    CORAL_INTAKE(-12.0),
     ALGAE_INTAKE(12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),

@@ -704,6 +704,19 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         if (source == sink) continue;
         if (sink == V3_EpsilonSuperstructureStates.FLIP_DOWN) continue;
         if (sink == V3_EpsilonSuperstructureStates.FLIP_UP) continue;
+        if (sink == V3_EpsilonSuperstructureStates.STOW_DOWN) continue;
+        if (sink == V3_EpsilonSuperstructureStates.STOW_UP) continue;
+        if (sink == V3_EpsilonSuperstructureStates.GROUND_ACQUISITION) continue;
+        if (sink == V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE) continue;
+        if (sink == V3_EpsilonSuperstructureStates.GROUND_AQUISITION_ALGAE) continue;
+        if (sink == V3_EpsilonSuperstructureStates.GROUND_INTAKE) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L1) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L1_SCORE) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L2) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L2_SCORE) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L3) continue;
+        if (sink == V3_EpsilonSuperstructureStates.L3_SCORE) continue;
+
         if (source != V3_EpsilonSuperstructureStates.START
             && sink != V3_EpsilonSuperstructureStates.START
             && source != V3_EpsilonSuperstructureStates.OVERRIDE

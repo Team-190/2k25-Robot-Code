@@ -46,7 +46,7 @@ public enum V3_EpsilonSuperstructureStates {
   L1(
       "L1",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
-      SubsystemActions.empty()),
+      new SubsystemActions(ManipulatorRollerState.STOP, IntakeRollerState.CORAL_INTAKE)),
   L1_SCORE(
       "L1_SCORE",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.HANDOFF, IntakePivotState.L1),
@@ -138,7 +138,7 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE_SCORE(
       "BARGE_SCORE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.BARGE_SCORE, IntakePivotState.HANDOFF),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
   FLIP_DOWN(
       "FLIP_DOWN",
