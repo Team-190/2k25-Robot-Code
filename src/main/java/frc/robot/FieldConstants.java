@@ -59,6 +59,7 @@ public class FieldConstants {
 
     public static enum ReefState {
       STOW,
+      POST_PROCESSOR,
       HIGH_STOW,
       CORAL_INTAKE,
       ALGAE_FLOOR_INTAKE,

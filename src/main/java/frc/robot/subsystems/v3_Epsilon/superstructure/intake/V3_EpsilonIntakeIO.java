@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface V3_EpsilonIntakeIO {
   @AutoLog
-  public static class V3_EpsilonIntakeIOInputs {
+  public class V3_EpsilonIntakeIOInputs {
     public Rotation2d pivotPosition = new Rotation2d();
     public double pivotVelocityRadiansPerSecond = 0.0;
     public double pivotAppliedVolts = 0.0;
@@ -31,10 +31,9 @@ public interface V3_EpsilonIntakeIO {
     public double rollerInnerTorqueCurrentAmps = 0.0;
     public double rollerInnerTemperatureCelsius = 0.0;
 
-    public double
-        leftCANRangeDistanceMeters; // Left and Right based on the robot's perspective with intake
+    public boolean leftCANRange; // Left and Right based on the robot's perspective with intake
     // at the front
-    public double rightCANRangeDistanceMeters;
+    public boolean rightCANRange;
   }
 
   /**

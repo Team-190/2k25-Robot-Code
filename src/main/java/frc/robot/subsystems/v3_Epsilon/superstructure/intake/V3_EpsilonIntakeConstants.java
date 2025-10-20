@@ -26,26 +26,44 @@ public class V3_EpsilonIntakeConstants {
   public static final IntakeParems ROLLER_PARAMS;
 
   static {
-    PIVOT_CAN_ID = 60;
-    ROLLER_CAN_ID_OUTER = 61; // TODO: Check numbers here
-    ROLLER_CAN_ID_INNER = 62; // TODO: Check numbers here
-    LEFT_SENSOR_CAN_ID = 0; // TODO: Check numbers here
-    RIGHT_SENSOR_CAN_ID = 1;
+    PIVOT_CAN_ID = 40;
+    ROLLER_CAN_ID_OUTER = 41;
+    ROLLER_CAN_ID_INNER = 42;
+    LEFT_SENSOR_CAN_ID = 44;
+    RIGHT_SENSOR_CAN_ID = 43;
 
-    INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS = 0.05; // TODO: Check this value
+    INTAKE_CAN_CORAL_DETECTED_THRESHOLD_METERS = 0.05;
 
     PIVOT_PARAMS =
         new IntakeParems(
-            3.0,
+            (60.0 / 12.0) * (52.0 / 28.0) * (64.0 / 18.0) * (20.0 / 9.0),
             DCMotor.getKrakenX60Foc(1),
             0.0042,
-            Rotation2d.fromDegrees(0.0),
-            Rotation2d.fromDegrees(124.6));
+            Rotation2d.fromDegrees(40.0),
+            Rotation2d.fromDegrees(124.6 + 48));
     ROLLER_PARAMS =
         new IntakeParems(
             1, DCMotor.getKrakenX60Foc(1), 0, new Rotation2d(), Rotation2d.fromDegrees(0));
 
     switch (Constants.ROBOT) {
+      case V3_EPSILON:
+        PIVOT_CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Intake/Max Acceleration", 160),
+                new LoggedTunableNumber("Intake/Cruising Velocity", 80),
+                Rotation2d.fromDegrees(1.5));
+        PIVOT_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Intake/kP", 175.0),
+                new LoggedTunableNumber("Intake/kD", 5.0),
+                new LoggedTunableNumber("Intake/kS", 0.38466),
+                new LoggedTunableNumber("Intake/kV", 0.0),
+                new LoggedTunableNumber("Intake/kA", 0),
+                new LoggedTunableNumber("Intake/kG", 0.083386));
+        CURRENT_LIMITS = new IntakeCurrentLimits(40.0, 40.0, 40.0, 80.0, 40.0, 80.0);
+
+        break;
+
       case V3_EPSILON_SIM:
         PIVOT_CONSTRAINTS =
             new Constraints(
@@ -86,12 +104,12 @@ public class V3_EpsilonIntakeConstants {
 
   @RequiredArgsConstructor
   public enum IntakePivotState {
-    STOW(Rotation2d.fromDegrees(25.0)),
-    INTAKE_CORAL(Rotation2d.fromDegrees(123.6)),
-    HANDOFF(Rotation2d.fromDegrees(0)),
-    L1(Rotation2d.fromDegrees(-82 + 123.6)),
-    INTAKE_ALGAE(new Rotation2d()),
-    ARM_CLEAR(Rotation2d.fromDegrees(35));
+    STOW(Rotation2d.fromDegrees(-82 + 123.6 + 48)),
+    INTAKE_CORAL(Rotation2d.fromDegrees(123.6 + 48)),
+    HANDOFF(Rotation2d.fromDegrees(48)),
+    L1(Rotation2d.fromDegrees(-82 + 123.6 + 48)),
+    INTAKE_ALGAE(Rotation2d.fromDegrees(25.0 + 48)),
+    ARM_CLEAR(Rotation2d.fromDegrees(35 + 48));
 
     @Getter private final Rotation2d angle;
   }
@@ -133,10 +151,11 @@ public class V3_EpsilonIntakeConstants {
   // Will add more states later
   public static enum IntakeRollerState {
     STOP(0.0, 0.0),
-    CORAL_INTAKE(6.0, 6.0),
+    CENTERING(-12.0, -12.0),
+    CORAL_INTAKE(-12.0, -12.0),
     ALGAE_INTAKE(12.0, 12.0),
     SCORE_CORAL(6.0, 6.0),
-    OUTTAKE(10.0, 10.0);
+    OUTTAKE(0.0, 12.0);
 
     @Getter private final double innerVoltage;
     @Getter private final double outerVoltage;

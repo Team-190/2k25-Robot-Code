@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
-import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO.V3_EpsilonClimberIOInputs;
 
 public class V3_EpsilonClimberIOSim implements V3_EpsilonClimberIO {
   private final DCMotorSim sim;

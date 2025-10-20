@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static frc.robot.util.PhoenixUtil.*;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -13,6 +14,7 @@ import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -25,6 +27,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.util.PhoenixUtil;
+import java.util.ArrayList;
 
 public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
 
@@ -51,12 +55,18 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
   private final StatusSignal<Current> rollerTorqueCurrentAmps;
   private final StatusSignal<Temperature> rollerTemperatureCelsius;
 
+  private StatusSignal<?>[] statusSignals;
+
   private final VoltageOut rollerVoltageRequest;
   private final TalonFXConfiguration rollerConfig;
+
+  private final CANrange canRange;
+  private final StatusSignal<Boolean> isDetected;
 
   public V3_EpsilonManipulatorIOTalonFX() {
     armTalonFX = new TalonFX(V3_EpsilonManipulatorConstants.ARM_CAN_ID);
     rollerTalonFX = new TalonFX(V3_EpsilonManipulatorConstants.ROLLER_CAN_ID);
+    canRange = new CANrange(V3_EpsilonManipulatorConstants.CAN_RANGE_ID);
 
     armConfig = new TalonFXConfiguration();
 
@@ -64,6 +74,9 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armConfig.CurrentLimits.SupplyCurrentLimit =
         V3_EpsilonManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_SUPPLY_CURRENT_LIMIT();
     armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    armConfig.CurrentLimits.StatorCurrentLimit =
+        V3_EpsilonManipulatorConstants.CURRENT_LIMITS.MANIPULATOR_STATOR_CURRENT_LIMIT();
+    armConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     armConfig.Feedback.SensorToMechanismRatio =
         V3_EpsilonManipulatorConstants.ARM_PARAMETERS.GEAR_RATIO();
     armConfig.Slot0 =
@@ -120,23 +133,39 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armVoltageRequest = new VoltageOut(0);
     armMotionMagicRequest = new MotionMagicVoltage(0);
 
-    registerSignals(
-        false,
-        armPositionRotations,
-        armVelocityRotationsPerSecond,
-        armAppliedVoltage,
-        armSupplyCurrentAmps,
-        armTorqueCurrentAmps,
-        armTemperatureCelsius,
-        rollerPositionRotations,
-        rollerVelocityRotationsPerSecond,
-        rollerAppliedVoltage,
-        rollerSupplyCurrentAmps,
-        rollerTorqueCurrentAmps,
-        rollerTemperatureCelsius);
+    isDetected = canRange.getIsDetected();
+
+    var signalsList = new ArrayList<StatusSignal<?>>();
+
+    signalsList.add(armPositionRotations);
+    signalsList.add(armVelocityRotationsPerSecond);
+    signalsList.add(armAppliedVoltage);
+    signalsList.add(armSupplyCurrentAmps);
+    signalsList.add(armTorqueCurrentAmps);
+    signalsList.add(armTemperatureCelsius);
+    signalsList.add(armPositionSetpointRotations);
+    signalsList.add(armPositionErrorRotations);
+    signalsList.add(rollerPositionRotations);
+    signalsList.add(rollerVelocityRotationsPerSecond);
+    signalsList.add(rollerAppliedVoltage);
+    signalsList.add(rollerSupplyCurrentAmps);
+    signalsList.add(rollerTorqueCurrentAmps);
+    signalsList.add(rollerTemperatureCelsius);
+    signalsList.add(isDetected);
+
+    statusSignals = new StatusSignal[signalsList.size()];
+
+    for (int i = 0; i < signalsList.size(); i++) {
+      statusSignals[i] = signalsList.get(i);
+    }
+
+    BaseStatusSignal.setUpdateFrequencyForAll(50, statusSignals);
 
     armTalonFX.optimizeBusUtilization();
     rollerTalonFX.optimizeBusUtilization();
+    canRange.optimizeBusUtilization();
+
+    PhoenixUtil.registerSignals(false, statusSignals);
   }
 
   /**
@@ -168,6 +197,8 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
         Rotation2d.fromRotations(armPositionSetpointRotations.getValueAsDouble());
     inputs.armPositionError =
         Rotation2d.fromRotations(armPositionErrorRotations.getValueAsDouble());
+
+    inputs.canRangeGot = isDetected.getValue();
   }
 
   /**

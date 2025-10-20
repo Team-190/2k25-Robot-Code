@@ -4,12 +4,13 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
@@ -27,7 +28,7 @@ public class V3_EpsilonManipulator {
 
   @AutoLogOutput(key = "Manipulator/Arm Goal")
   @Getter
-  private ManipulatorArmState armGoal;
+  private Rotation2d armGoal;
 
   @Setter
   @Getter
@@ -47,7 +48,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    armGoal = ManipulatorArmState.VERTICAL_UP;
+    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(armSide);
     armSide = Side.POSITIVE;
     rollerGoal = ManipulatorRollerState.STOP;
 
@@ -59,7 +60,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      Rotation2d goal = armGoal.getAngle(armSide);
+      Rotation2d goal = armGoal;
 
       if (!isSafePosition() || clearsElevator) {
         if (armSide == Side.POSITIVE) {
@@ -76,6 +77,8 @@ public class V3_EpsilonManipulator {
         && Set.of(ManipulatorRollerState.CORAL_INTAKE, ManipulatorRollerState.STOP)
             .contains(rollerGoal)) {
       io.setRollerVoltage(holdVoltage());
+    } else if (hasCoral()) {
+      io.setRollerVoltage(holdVoltage());
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
@@ -90,9 +93,7 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Coral")
   public boolean hasCoral() {
-    return inputs.canRangeDistanceMeters
-            < V3_EpsilonManipulatorConstants.CORAL_CAN_RANGE_THRESHOLD_METERS
-        && inputs.canRangeDistanceMeters > 0;
+    return inputs.canRangeGot;
   }
 
   /**
@@ -104,9 +105,7 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return inputs.canRangeDistanceMeters
-            < V3_EpsilonManipulatorConstants.ALGAE_CAN_RANGE_THRESHOLD_METERS
-        && inputs.canRangeDistanceMeters > 0;
+    return inputs.canRangeGot;
   }
 
   /**
@@ -130,6 +129,11 @@ public class V3_EpsilonManipulator {
    * @param goal The goal state to set the arm to.
    */
   public void setArmGoal(ManipulatorArmState goal) {
+    isClosedLoop = true;
+    armGoal = goal.getAngle(armSide);
+  }
+
+  public void setArmGoal(Rotation2d goal) {
     isClosedLoop = true;
     armGoal = goal;
   }
@@ -204,17 +208,8 @@ public class V3_EpsilonManipulator {
     return armAtGoal(armGoal);
   }
 
-  /**
-   * Checks if the arm is at the given goal position.
-   *
-   * <p>This function checks if the arm is within the goal tolerance of the given arm goal position.
-   * If the arm is within the tolerance, it returns true. Otherwise, it returns false.
-   *
-   * @param state The arm goal position to check against.
-   * @return If the arm is at the goal position.
-   */
-  public boolean armAtGoal(ManipulatorArmState state) {
-    return Math.abs(inputs.armPosition.minus(state.getAngle(armSide)).getRadians())
+  public boolean armAtGoal(Rotation2d state) {
+    return Math.abs(inputs.armPosition.minus(state).getRadians())
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
@@ -239,17 +234,7 @@ public class V3_EpsilonManipulator {
    * uses another set of coefficients.
    */
   private double holdVoltage() {
-    double y;
-    double x = Math.abs(inputs.rollerTorqueCurrentAmps);
-    if (x <= 20) {
-      y = -0.0003 * Math.pow(x, 3) + 0.0124286 * Math.pow(x, 2) - 0.241071 * x + 4.00643;
-    } else {
-      y = 0.0005 * Math.pow(x, 2) - 0.1015 * x + 3.7425;
-    }
-    return MathUtil.clamp(
-        1.25 * y,
-        0.10,
-        V3_EpsilonManipulatorConstants.ROLLER_VOLTAGES.ALGAE_INTAKE_VOLTS().getAsDouble() / 1.5);
+    return -1;
   }
 
   /**
@@ -274,18 +259,19 @@ public class V3_EpsilonManipulator {
    * @param superstructure The V3 Epsiolon Superstructure.
    * @return A command to run the SysId routine for the manipulator arm.
    */
-  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure) {
+  public Command sysIdRoutine(V3_EpsilonSuperstructure superstructure, ElevatorFSM elevator) {
     SysIdRoutine algaeCharacterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(0.5).per(Second),
-                Volts.of(6),
-                Seconds.of(4),
+                Volts.of(8),
+                Seconds.of(10),
                 (state) -> Logger.recordOutput("Manipulator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> io.setArmVoltage(volts.in(Volts)), null, superstructure));
     return Commands.sequence(
         superstructure.runGoal(V3_EpsilonSuperstructureStates.OVERRIDE),
+        Commands.runOnce(() -> elevator.setPosition(() -> ReefState.L4)),
         Commands.runOnce(() -> isClosedLoop = false),
         algaeCharacterizationRoutine.quasistatic(Direction.kForward),
         Commands.waitSeconds(.25),
@@ -313,7 +299,7 @@ public class V3_EpsilonManipulator {
    */
   public void setRollerGoal(V3_EpsilonManipulatorConstants.ManipulatorRollerState rollerGoal) {
     this.rollerGoal = rollerGoal;
-    if (hasAlgae()
+    if ((hasAlgae() || hasCoral())
         && Set.of(
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.ALGAE_INTAKE,
                 V3_EpsilonManipulatorConstants.ManipulatorRollerState.CORAL_INTAKE,

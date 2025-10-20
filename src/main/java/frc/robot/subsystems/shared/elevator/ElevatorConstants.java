@@ -28,6 +28,7 @@ public class ElevatorConstants {
     REEF_STATE_ELEVATOR_POSITION_MAP =
         Map.ofEntries(
             Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.POST_PROCESSOR, ElevatorPositions.POST_PROCESSOR),
             Map.entry(ReefState.HIGH_STOW, ElevatorPositions.HIGH_STOW),
             Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
             Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
@@ -122,14 +123,14 @@ public class ElevatorConstants {
       case V3_EPSILON_SIM:
         ELEVATOR_CAN_ID = 20;
         ELEVATOR_GEAR_RATIO = 4.0;
-        DRUM_RADIUS = Units.inchesToMeters(2.256 / 2.0);
+        DRUM_RADIUS = Units.inchesToMeters(2.211 / 2.0);
 
         ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
         ELEVATOR_STATOR_CURRENT_LIMIT = 80;
 
         ELEVATOR_PARAMETERS =
             new ElevatorParameters(
-                DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, Units.inchesToMeters(62), 2);
+                DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, Units.inchesToMeters(53), 2);
 
         switch (Constants.getMode()) {
           case REAL:
@@ -137,35 +138,35 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
-                    new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
-                    new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
-                    new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
-                    new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 5),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0),
+                    new LoggedTunableNumber("Elevator/Gains/kS", 0.070776),
+                    new LoggedTunableNumber("Elevator/Gains/kG", 0.35521),
+                    new LoggedTunableNumber("Elevator/Gains/kV", 0),
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 11),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 5),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Stow Gains/kP", 2.0),
-                    new LoggedTunableNumber("Elevator/Stow Gains/kD", 0.1),
-                    new LoggedTunableNumber("Elevator/Stow Gains/kS", 0.225),
-                    new LoggedTunableNumber("Elevator/Stow Gains/kG", 0.075),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kP", 5),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kD", 0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kS", 0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kG", 0),
                     new LoggedTunableNumber("Elevator/Stow Gains/kV", 0.0),
                     new LoggedTunableNumber("Elevator/Stow Gains/kA", 0.0));
             STOW_CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Stow Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Stow Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Stow Max Acceleration", 11),
+                    new LoggedTunableNumber("Elevator/Stow Cruising Velocity", 5),
                     new LoggedTunableNumber("Elevator/Stow Goal Tolerance", 0.02));
             break;
           case SIM:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 20.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 50.0),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
@@ -173,8 +174,8 @@ public class ElevatorConstants {
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 101.078594),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 11.329982),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 201.078594),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 21.329982),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
@@ -296,6 +297,7 @@ public class ElevatorConstants {
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
     STOW(new PositionConstants(0.0, 0.0, 0.0)),
+    POST_PROCESSOR(new PositionConstants(0.5, 0.5, 0.5)),
     CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.85))),
     ALGAE_INTAKE(
         new PositionConstants(
@@ -330,7 +332,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(55))),
+            Units.inchesToMeters(48))),
     L4_PLUS(
         new PositionConstants(
             0.0,
@@ -340,10 +342,10 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(56))),
+            Units.inchesToMeters(50))),
 
     HIGH_STOW(new PositionConstants(0, 0, 0.5)),
-    HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(34.75))),
+    HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(33.25))),
     ;
 
     private final PositionConstants position;
@@ -357,7 +359,7 @@ public class ElevatorConstants {
         case V3_EPSILON, V3_EPSILON_SIM:
           return position.V3();
         default:
-          return position.V1();
+          return position.V3();
       }
     }
 

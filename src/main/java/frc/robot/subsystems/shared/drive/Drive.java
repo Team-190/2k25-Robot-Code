@@ -56,6 +56,7 @@ public class Drive extends SubsystemBase {
   private final SwerveDriveKinematics kinematics;
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
+  @Getter private ChassisSpeeds measuredChassisSpeeds;
 
   @Getter private final LoggedAutoFactory autoFactory;
 
@@ -178,6 +179,7 @@ public class Drive extends SubsystemBase {
       }
 
       ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+      measuredChassisSpeeds = chassisSpeeds;
       Translation2d rawFieldRelativeVelocity =
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
               .rotateBy(getRawGyroRotation());

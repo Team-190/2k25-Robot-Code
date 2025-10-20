@@ -9,7 +9,7 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
-public class V3_EpsilonManipulatorConstants {
+public final class V3_EpsilonManipulatorConstants {
   public static final ArmParameters ARM_PARAMETERS;
 
   public static final Gains EMPTY_GAINS;
@@ -31,11 +31,13 @@ public class V3_EpsilonManipulatorConstants {
   public static final int CAN_RANGE_ID;
 
   static {
-    ARM_CAN_ID = 42;
-    CAN_RANGE_ID = 41;
-    ROLLER_CAN_ID = 30;
+    ARM_CAN_ID = 30;
+    CAN_RANGE_ID = 32;
+    ROLLER_CAN_ID = 31;
 
-    ARM_PARAMETERS = new ArmParameters(DCMotor.getKrakenX60Foc(1), 1, 90.0, .695);
+    ARM_PARAMETERS =
+        new ArmParameters(
+            DCMotor.getKrakenX60Foc(1), 1, (60.0 / 12.0) * (40.0 / 18.0) * (80.0 / 16.0), .695);
 
     ALGAE_CAN_RANGE_THRESHOLD_METERS = 0.5;
     CORAL_CAN_RANGE_THRESHOLD_METERS = 0.5;
@@ -54,6 +56,39 @@ public class V3_EpsilonManipulatorConstants {
             new LoggedTunableNumber("Manipulator/L1 Volts", 3.5 * 1.56));
 
     switch (Constants.ROBOT) {
+      case V3_EPSILON:
+        EMPTY_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 100),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.12926),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.024193),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kV", 0),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kA", 0));
+        CORAL_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kP", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kS", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kG", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithoutAlgae/kA", 0.0));
+        ALGAE_GAINS =
+            new Gains(
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kP", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kD", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kS", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kG", 0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kV", 0.0),
+                new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
+        CONSTRAINTS =
+            new Constraints(
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 8),
+                new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5),
+                new LoggedTunableNumber(
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1)));
+        CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 20, 40, 20);
+        break;
       case V3_EPSILON_SIM:
         EMPTY_GAINS =
             new Gains(
@@ -170,17 +205,21 @@ public class V3_EpsilonManipulatorConstants {
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
     SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
-    BARGE_SCORE(Rotation2d.fromDegrees(18.67)),
-    PROCESSOR(Rotation2d.fromDegrees(41.279296875)),
+    SCORE_L4(Rotation2d.kPi),
+    PROCESSOR(Rotation2d.fromDegrees(90)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
     REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
-    STOW_LINE(Rotation2d.fromDegrees(75)),
+    STOW_LINE(Rotation2d.fromDegrees(75)), // What is STOW_LINE?
+    STOW_DOWN(Rotation2d.fromDegrees(88)),
     TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
-    EMERGENCY_EJECT_ANGLE(Rotation2d.fromDegrees(90));
+    FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    EMERGENCY_EJECT_ANGLE(
+        Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
     private final Rotation2d angle;
 
@@ -196,8 +235,8 @@ public class V3_EpsilonManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ManipulatorRollerState {
     STOP(0.0),
-    CORAL_INTAKE(6.0),
-    ALGAE_INTAKE(12.0),
+    CORAL_INTAKE(-12.0),
+    ALGAE_INTAKE(-12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),
     SCORE_ALGAE(-6),

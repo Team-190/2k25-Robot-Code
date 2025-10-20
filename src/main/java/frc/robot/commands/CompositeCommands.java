@@ -26,13 +26,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstruc
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
-import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
-import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
@@ -670,10 +667,19 @@ public class CompositeCommands {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setHasAlgae(false)),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
-          Commands.waitSeconds(0.2),
+              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoralLoose()),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.HANDOFF, () -> manipulator.hasCoral()));
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> intake.hasCoralLocked()));
+    }
+
+    public static final Command postIntakeCoralSequence(
+        V3_EpsilonSuperstructure superstructure,
+        V3_EpsilonIntake intake,
+        V3_EpsilonManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoalUntil(
+              V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
     }
 
     /**
@@ -702,6 +708,31 @@ public class CompositeCommands {
           DriveCommands.autoAlignReefCoral(drive, cameras),
           Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
+    }
+
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_EpsilonSuperstructure superstructure, ReefState height, Camera... cameras) {
+      return Commands.sequence(
+          Commands.runOnce(
+                  () -> {
+                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+                      RobotState.setScoreSide(ScoreSide.CENTER);
+                    } else {
+                      RobotState.setScoreSide(
+                          optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
+                    }
+                  })
+              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          superstructure.runReefGoal(() -> height),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          superstructure
+              .runReefScoreGoal(() -> height)
+              .until(
+                  () -> {
+                    if (height.equals(ReefState.L4)) return superstructure.armBelowThreshold();
+                    else return false;
+                  }));
     }
 
     public static final Command optimalAutoAlignReefAlgae(
@@ -873,21 +904,29 @@ public class CompositeCommands {
                   .withTimeout(0.5)));
     }
 
-    public static final Command intakeCoralFromGround(
-        V3_EpsilonSuperstructure superstructure, V3_EpsilonIntake intake) {
-      return Commands.sequence(
-          superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoral()),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.HANDOFF));
-    }
-
     public static final Command emergencyEject(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           superstructure.override(
               () -> {
-                manipulator.setArmGoal(ManipulatorArmState.EMERGENCY_EJECT_ANGLE);
-                manipulator.setRollerGoal(ManipulatorRollerState.L4_SCORE);
+                manipulator.setArmGoal(
+                    frc.robot
+                        .subsystems
+                        .v3_Epsilon
+                        .superstructure
+                        .manipulator
+                        .V3_EpsilonManipulatorConstants
+                        .ManipulatorArmState
+                        .EMERGENCY_EJECT_ANGLE);
+                manipulator.setRollerGoal(
+                    frc.robot
+                        .subsystems
+                        .v3_Epsilon
+                        .superstructure
+                        .manipulator
+                        .V3_EpsilonManipulatorConstants
+                        .ManipulatorRollerState
+                        .L4_SCORE);
               }));
     }
 
@@ -919,19 +958,12 @@ public class CompositeCommands {
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
     }
 
-    public static final Command climb(
-        V3_EpsilonSuperstructure superstructure,
-        Drive drive,
-        V3_EpsilonClimber climber,
-        V3_EpsilonIntake intake,
-        V3_EpsilonManipulator manipulator) {
+    public static final Command manipulatorGroundIntake(
+        V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.CLIMB),
-          Commands.deadline(
-              climber.releaseClimber(),
-              Commands.waitSeconds(
-                  V3_EpsilonClimberConstants.CLIMBER_TIMING_CONFIG.WAIT_AFTER_RELEASE_SECONDS())),
-          Commands.deadline(climber.winchClimber(), Commands.run(drive::stop)));
+          Commands.runOnce(
+              () -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
+          Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)));
     }
   }
 }
