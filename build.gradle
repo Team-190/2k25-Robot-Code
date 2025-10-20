@@ -6,12 +6,50 @@ plugins {
     id "com.diffplug.spotless" version "6.12.0"
 }
 
+ext {
+    deploySrcDir = "src/main/deploy"
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+gradle.projectsEvaluated {
+    def buildDir = new File("${project.buildDir}/classes/java/main")
+    if (!buildDir.exists()) {
+        println "⚠️ Warning: compiled classes not found. Make sure compileJava runs first."
+        project.ext.deploySrcDir = "src/main/deploy"
+        return
+    }
+
+    try {
+        def loader = new URLClassLoader([buildDir.toURI().toURL()] as URL[], this.class.classLoader)
+        def constantsClass = loader.loadClass("frc.robot.Constants")
+        def robotField = constantsClass.getDeclaredField("ROBOT")
+        robotField.setAccessible(true)
+        def robotEnumValue = robotField.get(null)  // static field
+
+        println "Detected RobotType: ${robotEnumValue}"
+
+        def baseName = robotEnumValue.toString().toLowerCase().replaceAll(/_sim$/, "")
+        def candidateDir = "src/main/deploy/${baseName}"
+
+        if (file(candidateDir).exists()) {
+            project.ext.deploySrcDir = candidateDir
+        } else {
+            println "Folder '${candidateDir}' does not exist. Using default deploy folder."
+        }
+
+        println "deploySrcDir set to: ${project.ext.deploySrcDir}"
+
+    } catch (Throwable e) {
+        println "Could not read RobotType: ${e.message}"
+        project.ext.deploySrcDir = "src/main/deploy"
+    }
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -53,7 +91,7 @@ deploy {
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
-                    files = project.fileTree('src/main/deploy')
+                    files = project.fileTree(project.ext.deploySrcDir)
                     directory = '/home/lvuser/deploy'
                     // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory on roboRIO

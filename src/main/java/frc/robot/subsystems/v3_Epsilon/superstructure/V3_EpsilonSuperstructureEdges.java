@@ -1,6 +1,7 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
@@ -141,7 +142,10 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
     loadEdgesFromDot(
-        Filesystem.getDeployDirectory().toPath().resolve("Superstructure.dot").toString(),
+        Filesystem.getDeployDirectory()
+            .toPath()
+            .resolve(!RobotBase.isSimulation() ? "" : "v3_epsilon/" + "Superstructure.dot")
+            .toString(),
         graph,
         elevator,
         intake,
