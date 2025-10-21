@@ -239,7 +239,7 @@ public final class V3_EpsilonManipulatorConstants {
     ALGAE_INTAKE(-12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),
-    SCORE_ALGAE(-6),
+    SCORE_ALGAE(6),
     REMOVE_ALGAE(-12),
     L1_SCORE(3.5 * 1.56);
 

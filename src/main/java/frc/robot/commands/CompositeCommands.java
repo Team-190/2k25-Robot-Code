@@ -694,19 +694,20 @@ public class CompositeCommands {
     public static final Command optimalAutoScoreCoralSequence(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.sequence(
-          Commands.runOnce(
-                  () -> {
-                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-                      RobotState.setScoreSide(ScoreSide.CENTER);
-                    } else {
-                      RobotState.setScoreSide(
-                          optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
-                    }
-                  })
-              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+          // Commands.runOnce(
+          //         () -> {
+          //           if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+          //             RobotState.setScoreSide(ScoreSide.CENTER);
+          //           } else {
+          //             RobotState.setScoreSide(
+          //                 optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
+          //           }
+          //         })
+          //     .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.setPosition(),
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          // DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitSeconds(1),
+          // Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
     }
 
@@ -724,8 +725,9 @@ public class CompositeCommands {
                   })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.runReefGoal(() -> height),
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          // DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitSeconds(2),
+          // Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
           superstructure
               .runReefScoreGoal(() -> height)
               .until(
@@ -749,7 +751,8 @@ public class CompositeCommands {
                   })
               .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
-          DriveCommands.autoAlignReefAlgae(drive, cameras));
+          // DriveCommands.autoAlignReefAlgae(drive, cameras)
+          Commands.waitSeconds(2));
     }
 
     private static final ScoreSide optimalSideReef(Pose2d baseSetpoint) {
@@ -825,7 +828,8 @@ public class CompositeCommands {
         Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
+          // DriveCommands.autoAlignReefAlgae(drive, cameras),
+          Commands.waitSeconds(2),
           Commands.sequence(
               superstructure
                   .runGoal(

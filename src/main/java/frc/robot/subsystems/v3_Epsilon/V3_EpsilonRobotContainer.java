@@ -198,13 +198,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .onTrue(V3_EpsilonCompositeCommands.setDynamicReefHeight(ReefState.L1, superstructure));
 
     driver
-        .rightTrigger()
+        .rightTrigger(0.5)
         .whileTrue(
-            V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
-                superstructure, intake, manipulator))
-        .whileFalse(
-            V3_EpsilonCompositeCommands.postIntakeCoralSequence(
-                superstructure, intake, manipulator));
+            V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(drive, superstructure));
     driver
         .leftTrigger(0.5)
         .whileTrue(
@@ -270,7 +266,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .whileTrue(
             V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                 superstructure, intake, manipulator))
-        .onFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+        .whileFalse(
+            V3_EpsilonCompositeCommands.postIntakeCoralSequence(
+                superstructure, intake, manipulator));
     operator
         .rightTrigger(0.5)
         .whileTrue(
