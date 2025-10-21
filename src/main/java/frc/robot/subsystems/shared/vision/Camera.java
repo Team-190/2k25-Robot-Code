@@ -76,6 +76,8 @@ public class Camera {
         thetaStdev = Double.POSITIVE_INFINITY;
       }
 
+      thetaStdev = Double.POSITIVE_INFINITY;
+
       // Add observation to list
       double xyStdDev =
           xyStdevCoeff
@@ -120,8 +122,8 @@ public class Camera {
 
           Pose3d cameraPose =
               new Pose3d(
-                  io.getGompeiVisionConfig().robotToCameraTransform().getTranslation(),
-                  io.getGompeiVisionConfig().robotToCameraTransform().getRotation());
+                  io.getGompeiVisionConfig().robotRelativePose().getTranslation(),
+                  io.getGompeiVisionConfig().robotRelativePose().getRotation());
 
           // Use 3D distance and tag angles to find robot pose
           Translation2d camToTagTranslation =
@@ -169,11 +171,6 @@ public class Camera {
     // txTyObservations.stream()
     //     .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
     //     .forEach(RobotState::addReefLocalizerVisionMeasurement);
-
-    Logger.recordOutput(
-        "Vision/Cameras/" + name + "/RobotToCamera",
-        new Pose3d(RobotState.getRobotPoseField())
-            .transformBy(io.getGompeiVisionConfig().robotToCameraTransform()));
   }
 
   public void setValidTags(int... validIds) {
@@ -181,7 +178,7 @@ public class Camera {
     io.setValidTags(validIds);
   }
 
-  public Transform3d getTransform() {
-    return io.getGompeiVisionConfig().robotToCameraTransform();
+  public Pose3d getTransform() {
+    return io.getGompeiVisionConfig().robotRelativePose();
   }
 }

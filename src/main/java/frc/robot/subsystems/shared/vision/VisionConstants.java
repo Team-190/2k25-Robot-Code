@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -222,8 +223,8 @@ public class VisionConstants {
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
             .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
-            .robotToCameraTransform(
-                new Transform3d(
+            .robotRelativePose(
+                new Pose3d(
                     Units.inchesToMeters(-11.0),
                     Units.inchesToMeters(-11.75),
                     Units.inchesToMeters(9.182678),
@@ -269,8 +270,8 @@ public class VisionConstants {
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
             .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
-            .robotToCameraTransform(
-                new Transform3d(
+            .robotRelativePose(
+                new Pose3d(
                     Units.inchesToMeters(11.0),
                     Units.inchesToMeters(11.75),
                     Units.inchesToMeters(9.182678),
@@ -317,8 +318,8 @@ public class VisionConstants {
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
             .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
-            .robotToCameraTransform(
-                new Transform3d(
+            .robotRelativePose(
+                new Pose3d(
                     Units.inchesToMeters(-11.0),
                     Units.inchesToMeters(11.75),
                     Units.inchesToMeters(9.182678),
@@ -340,12 +341,12 @@ public class VisionConstants {
                     MatBuilder.fill(
                         N3.instance,
                         N3.instance,
-                        1387.928742097397,
+                        1110.6402873755883,
                         0,
-                        736.9807673004121,
+                        613.8829964701134,
                         0,
-                        1380.979555171942,
-                        621.6284332514149,
+                        1105.8384147122115,
+                        492.2432667528521,
                         0,
                         0,
                         1)))
@@ -354,18 +355,18 @@ public class VisionConstants {
                     MatBuilder.fill(
                         N5.instance,
                         N1.instance,
-                        0.006931789004551,
-                        -0.124967324063348,
-                        -0.003115210783801,
-                        -0.002924665828185,
-                        0.169363227039459)))
+                        -0.028655371446734232,
+                        -0.011652596818001043,
+                        -0.0013733428778411353,
+                        0.003188600213446814,
+                        0.03699152783241122)))
             .verticalFOV(ThriftyCamConstants.VERTICAL_FOV)
             .singletagXYStdev(ThriftyCamConstants.SINGLETAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .thetaStdev(ThriftyCamConstants.THETA_STANDARD_DEVIATION_COEFFICIENT)
             .multitagXYStdev(ThriftyCamConstants.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT)
             .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
-            .robotToCameraTransform(
-                new Transform3d(
+            .robotRelativePose(
+                new Pose3d(
                     Units.inchesToMeters(11.0),
                     Units.inchesToMeters(-11.75),
                     Units.inchesToMeters(9.182678),
@@ -389,18 +390,18 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
     public static final Camera[] V3_EPSILON_CAMS = {
-      new Camera(
-          new CameraIOGompeiVision(
-              BACK_BOTTOM_LEFT,
-              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-        new Camera(
-            new CameraIOGompeiVision(
-                BACK_RIGHT,
-                () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-        new Camera(
-            new CameraIOGompeiVision(
-                FRONT_RIGHT,
-                () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      //   new Camera(
+      //       new CameraIOGompeiVision(
+      //           BACK_BOTTOM_LEFT,
+      //           () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      //     new Camera(
+      //         new CameraIOGompeiVision(
+      //             BACK_RIGHT,
+      //             () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      //     new Camera(
+      //         new CameraIOGompeiVision(
+      //             FRONT_RIGHT,
+      //             () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
       new Camera(
           new CameraIOGompeiVision(
               FRONT_LEFT,
@@ -437,5 +438,5 @@ public class VisionConstants {
       double thetaStdev,
       double multitagXYStdev,
       List<CameraDuty> cameraDuties,
-      Transform3d robotToCameraTransform) {}
+      Pose3d robotRelativePose) {}
 }
