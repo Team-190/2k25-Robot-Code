@@ -32,6 +32,7 @@ import frc.robot.subsystems.shared.elevator.ElevatorIO;
 import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
@@ -90,7 +91,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           leds = new V3_EpsilonLEDs();
           vision =
-              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  RobotCameras.V3_EPSILON_CAMS);
           break;
         case V3_EPSILON_SIM:
           drive =
@@ -107,7 +110,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           leds = new V3_EpsilonLEDs();
           vision =
-              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  RobotCameras.V3_EPSILON_CAMS);
           break;
         default:
           break;
@@ -206,7 +211,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .whileTrue(
             V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
                 superstructure, intake, manipulator))
-        .onFalse(superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+        .onFalse(
+            V3_EpsilonCompositeCommands.postIntakeCoralSequence(
+                superstructure, intake, manipulator));
 
     driver
         .leftBumper()

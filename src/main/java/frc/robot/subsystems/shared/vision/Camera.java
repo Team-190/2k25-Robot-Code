@@ -27,7 +27,7 @@ public class Camera {
   private final CameraIOInputsAutoLogged inputs;
 
   private final CameraIO io;
-  private final String name;
+  @Getter private final String name;
 
   @Getter int[] validIds;
   private final Map<Integer, Pose2d> tagPoses2d = new HashMap<>();
@@ -169,10 +169,19 @@ public class Camera {
     // txTyObservations.stream()
     //     .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
     //     .forEach(RobotState::addReefLocalizerVisionMeasurement);
+
+    Logger.recordOutput(
+        "Vision/Cameras/" + name + "/RobotToCamera",
+        new Pose3d(RobotState.getRobotPoseField())
+            .transformBy(io.getGompeiVisionConfig().robotToCameraTransform()));
   }
 
   public void setValidTags(int... validIds) {
     this.validIds = validIds;
     io.setValidTags(validIds);
+  }
+
+  public Transform3d getTransform() {
+    return io.getGompeiVisionConfig().robotToCameraTransform();
   }
 }
