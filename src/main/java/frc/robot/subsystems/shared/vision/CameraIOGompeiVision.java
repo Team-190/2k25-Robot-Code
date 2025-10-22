@@ -213,17 +213,19 @@ public class CameraIOGompeiVision implements CameraIO {
       for (int i = (values[0] == 1 ? 9 : 17); i < values.length; i += 10) {
         int tagId = (int) values[i];
         lastTagDetectionTimes.put(tagId, Timer.getTimestamp());
-        Optional<Pose3d> tagPose = aprilTagLayoutSupplier.get().getTagPose((int) values[i]);
+        Optional<Pose3d> tagPose = aprilTagLayoutSupplier.get().getTagPose(tagId);
         tagPose.ifPresent(tagPoses::add);
       }
 
-      int[] tagIds = new int[tagPoses.size()];
-      double[][] txs = new double[tagPoses.size()][];
-      double[][] tys = new double[tagPoses.size()][];
-      double[] distances = new double[tagPoses.size()];
+      // Prepare arrays
+      int totalTags = tagPoses.size();
+      int[] tagIds = new int[totalTags];
+      double[][] txs = new double[totalTags][];
+      double[][] tys = new double[totalTags][];
+      double[] distances = new double[totalTags];
 
       if (!tagPoses.isEmpty()) {
-        // Calculate average distance to tag
+        // Calculate average distance
         double totalDistance = 0.0;
         for (Pose3d tagPose : tagPoses) {
           totalDistance += tagPose.getTranslation().getDistance(cameraPose.getTranslation());
@@ -231,7 +233,7 @@ public class CameraIOGompeiVision implements CameraIO {
         averageDistance = totalDistance / tagPoses.size();
         totalTargets = tagPoses.size();
 
-        // Add TxTy observations
+        // --- Parse tag angle + distance data ---
         int tagEstimationDataEndIndex =
             switch ((int) values[0]) {
               default -> 0;
@@ -240,21 +242,40 @@ public class CameraIOGompeiVision implements CameraIO {
             };
 
         int indexCounter = 0;
-        for (int index = tagEstimationDataEndIndex + 1; index < values.length; index += 10) {
+
+        // Step through each 10-value chunk safely
+        for (int index = tagEstimationDataEndIndex + 1; index + 9 < values.length; index += 10) {
+          int tagId = (int) values[index];
           double[] tx = new double[4];
           double[] ty = new double[4];
+
+          // Read 4 corner pairs
           for (int i = 0; i < 4; i++) {
             tx[i] = values[index + 1 + (2 * i)];
             ty[i] = values[index + 1 + (2 * i) + 1];
           }
-          int tagId = (int) values[index];
+
           double distance = values[index + 9];
 
-          tagIds[indexCounter] = tagId;
-          txs[indexCounter] = tx;
-          tys[indexCounter] = ty;
-          distances[indexCounter] = distance;
-          indexCounter++;
+          // Store data
+          if (indexCounter < totalTags) {
+            tagIds[indexCounter] = tagId;
+            txs[indexCounter] = tx;
+            tys[indexCounter] = ty;
+            distances[indexCounter] = distance;
+            indexCounter++;
+          } else {
+            System.out.println("[WARN] More tag data than expected: indexCounter=" + indexCounter);
+          }
+        }
+
+        // Optional debug check
+        if ((values.length - (tagEstimationDataEndIndex + 1)) % 10 != 0) {
+          System.out.println(
+              "[WARN] Observation array not multiple of 10! Length="
+                  + values.length
+                  + " start="
+                  + (tagEstimationDataEndIndex + 1));
         }
       }
 

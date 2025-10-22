@@ -48,7 +48,7 @@ public class FieldConstants {
   }
 
   public static class Reef {
-    public static final double coralWidth = Units.inchesToMeters(4.5);
+    public static final double coralWidth = Units.inchesToMeters(2.0); // ffudge
 
     public static enum ReefPose {
       RIGHT,

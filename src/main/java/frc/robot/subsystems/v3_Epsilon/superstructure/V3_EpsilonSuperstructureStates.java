@@ -54,20 +54,20 @@ public enum V3_EpsilonSuperstructureStates {
 
   L2(
       "L2",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   L2_SCORE(
       "L2_SCORE",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
   L3(
       "L3",
-      new SubsystemPoses(ReefState.L3, ManipulatorArmState.TRANSITION, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   L3_SCORE(
       "L3_SCORE",
-      new SubsystemPoses(ReefState.L3, ManipulatorArmState.SCORE, IntakePivotState.STOW),
+      new SubsystemPoses(ReefState.L3, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
   L4(

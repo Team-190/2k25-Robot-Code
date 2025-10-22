@@ -303,11 +303,11 @@ public class DriveConstants {
                 new LoggedTunableNumber("Drive/Align Robot To April Tag/Omega Constants/kD", 0.05),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/tolerance",
-                    Units.degreesToRadians(0.25)),
+                    Units.degreesToRadians(1)),
                 new LoggedTunableNumber(
                     "Drive/Align Robot To April Tag/Omega Constants/maxVelocity", Math.PI)),
             new LoggedTunableNumber(
-                "Drive/Align Robot To April Tag/positionThresholdDegrees", 0.03));
+                "Drive/Align Robot To April Tag/positionThresholdDegrees", 0.02));
   }
 
   public record DriveConfig(

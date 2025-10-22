@@ -705,8 +705,8 @@ public class CompositeCommands {
           //         })
           //     .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.setPosition(),
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          DriveCommands.autoAlignReefCoral(drive, cameras)
+              .until(() -> RobotState.getReefAlignData().atCoralSetpoint()),
           superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
     }
 

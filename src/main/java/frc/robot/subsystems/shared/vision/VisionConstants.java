@@ -390,18 +390,18 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
     public static final Camera[] V3_EPSILON_CAMS = {
-      //   new Camera(
-      //       new CameraIOGompeiVision(
-      //           BACK_BOTTOM_LEFT,
-      //           () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-      //     new Camera(
-      //         new CameraIOGompeiVision(
-      //             BACK_RIGHT,
-      //             () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
-      //     new Camera(
-      //         new CameraIOGompeiVision(
-      //             FRONT_RIGHT,
-      //             () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              BACK_BOTTOM_LEFT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              BACK_RIGHT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
+      new Camera(
+          new CameraIOGompeiVision(
+              FRONT_RIGHT,
+              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark))),
       new Camera(
           new CameraIOGompeiVision(
               FRONT_LEFT,
