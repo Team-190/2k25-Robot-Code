@@ -4,7 +4,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -356,16 +355,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        superstructure.allTransition(), Commands.runOnce(() -> leds.solid(Color.kGreen)));
-    // return Commands.sequence(
-    // V3_EpsilonCompositeCommands.dropAlgae(
-    // drive,
-    // elevator,
-    // manipulator,
-    // intake,
-    // superstructure,
-    // () -> ReefState.ALGAE_INTAKE_TOP,
-    // RobotCameras.V3_EPSILON_CAMS));
+    return autoChooser.selectedCommand();
   }
 }

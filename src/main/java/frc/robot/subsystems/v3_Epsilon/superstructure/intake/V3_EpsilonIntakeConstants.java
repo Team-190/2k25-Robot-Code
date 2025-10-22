@@ -72,7 +72,7 @@ public class V3_EpsilonIntakeConstants {
                 Rotation2d.fromDegrees(1.5));
         PIVOT_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/kP", 1.85),
+                new LoggedTunableNumber("Intake/kP", 100),
                 new LoggedTunableNumber("Intake/kD", 0.1),
                 new LoggedTunableNumber("Intake/kS", 0.0),
                 new LoggedTunableNumber("Intake/kV", 0.0),
