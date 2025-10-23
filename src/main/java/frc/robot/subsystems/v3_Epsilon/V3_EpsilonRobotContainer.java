@@ -233,7 +233,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .leftStick()
         .onTrue(V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(drive, superstructure));
 
-    driver.back().whileTrue(V3_EpsilonCompositeCommands.intakeAlgaeFromReef(drive, superstructure));
+    driver
+        .back()
+        .whileTrue(V3_EpsilonCompositeCommands.intakeAlgaeFromReef(drive, superstructure))
+        .whileFalse(V3_EpsilonCompositeCommands.postIntakeAlgaeFromReef(drive, superstructure));
 
     driver
         .start()
@@ -285,9 +288,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    // operator.povUp().onTrue(V3_EpsilonCompositeCommands.climb(superstructure,
-    // climber, drive)); fix later
-    // operator.povDown().whileTrue(climber.winchClimberManual());
+    operator.povUp().onTrue(climber.releaseClimber()).onFalse(climber.winchClimber());
+    operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()
         .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR))
@@ -329,6 +331,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     autoChooser.addRoutine(
         "4 Piece Left Late Madtown",
         () -> AutonomousCommands.autoELeftBack(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "Algae", () -> AutonomousCommands.autoFLeft(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

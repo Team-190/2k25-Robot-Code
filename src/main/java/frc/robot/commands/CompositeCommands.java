@@ -798,7 +798,9 @@ public class CompositeCommands {
     public static final Command optimalScoreBarge(V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setScoreSide(optimalSideBarge())),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE));
+          superstructure
+              .runGoalUntil(V3_EpsilonSuperstructureStates.BARGE_SCORE, () -> false)
+              .withTimeout(0.5));
     }
 
     /**
@@ -901,7 +903,13 @@ public class CompositeCommands {
               DriveCommands.autoAlignReefAlgae(drive, cameras)),
           Commands.runEnd(
                   () -> drive.runVelocity(new ChassisSpeeds(0.0, 2.0, 0.0)), () -> drive.stop())
-              .withTimeout(0.5));
+              .withTimeout(0.5),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
+    public static final Command postIntakeAlgaeFromReef(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP);
     }
 
     public static final Command intakeAlgaeFromReef(

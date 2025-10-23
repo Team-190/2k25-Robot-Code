@@ -40,6 +40,11 @@ public class V3_EpsilonClimber extends SubsystemBase {
     InternalLoggedTracer.record("Climber Input Processing", "Climber/Periodic");
 
     isClimbed = io.isClimbed();
+
+    if (RobotState.isClimberReady()) {
+      io.setRollerVoltage(12);
+    }
+
     ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
   }
 

@@ -342,7 +342,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(50))),
+            Units.inchesToMeters(53))),
 
     HIGH_STOW(new PositionConstants(0, 0, 0.5)),
     HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(33.25))),

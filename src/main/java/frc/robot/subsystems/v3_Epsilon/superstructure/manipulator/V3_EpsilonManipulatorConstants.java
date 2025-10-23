@@ -92,7 +92,7 @@ public final class V3_EpsilonManipulatorConstants {
       case V3_EPSILON_SIM:
         EMPTY_GAINS =
             new Gains(
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 100),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
@@ -116,7 +116,7 @@ public final class V3_EpsilonManipulatorConstants {
                 new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
         CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 100.0),
                 new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
                 new LoggedTunableNumber(
                     "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
@@ -208,6 +208,7 @@ public final class V3_EpsilonManipulatorConstants {
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
     ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
+    CORAL_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
     REEF_INTAKE(Rotation2d.fromDegrees(90)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
@@ -218,6 +219,7 @@ public final class V3_EpsilonManipulatorConstants {
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 

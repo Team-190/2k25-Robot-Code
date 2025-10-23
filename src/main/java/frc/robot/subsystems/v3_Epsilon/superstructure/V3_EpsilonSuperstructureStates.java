@@ -37,6 +37,12 @@ public enum V3_EpsilonSuperstructureStates {
           ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
       SubsystemActions.empty()),
 
+  GROUND_INTAKE_CORAL(
+      "GROUND_INTAKE_CORAL",
+      new SubsystemPoses(
+          ReefState.STOW, ManipulatorArmState.CORAL_INTAKE_FLOOR, IntakePivotState.INTAKE_CORAL),
+      new SubsystemActions(ManipulatorRollerState.CORAL_INTAKE, IntakeRollerState.STOP)),
+
   GROUND_INTAKE(
       "GROUND_INTAKE",
       new SubsystemPoses(
@@ -153,6 +159,18 @@ public enum V3_EpsilonSuperstructureStates {
   FLIP_UP(
       "FLIP_UP",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),
+      SubsystemActions.empty(),
+      V3_EpsilonSuperstructureTransitionCondition.MANIPULATOR_AT_GOAL),
+  INVERSE_FLIP_DOWN(
+      "INVERSE_FLIP_DOWN",
+      new SubsystemPoses(
+          ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
+      SubsystemActions.empty(),
+      V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL),
+  INVERSE_FLIP_UP(
+      "FLIP_UP",
+      new SubsystemPoses(
+          ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
       SubsystemActions.empty(),
       V3_EpsilonSuperstructureTransitionCondition.MANIPULATOR_AT_GOAL);
 
