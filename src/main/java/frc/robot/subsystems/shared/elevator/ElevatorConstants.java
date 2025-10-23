@@ -316,7 +316,7 @@ public class ElevatorConstants {
         new PositionConstants(
             0.79 - Units.inchesToMeters(8),
             0.79 - Units.inchesToMeters(8),
-            Units.inchesToMeters(25))),
+            Units.inchesToMeters(24))),
     ASS_TOP(new PositionConstants(1.2, 0.0, 0.0)),
     ASS_BOT(new PositionConstants(0.82, 0.0, 0.0)),
     L1(

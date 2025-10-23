@@ -204,11 +204,11 @@ public final class V3_EpsilonManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
-    SCORE(Rotation2d.fromDegrees(70.0)), // Placeholder value. Make sure to test
+    SCORE(Rotation2d.fromDegrees(90.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
     ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
-    REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
+    REEF_INTAKE(Rotation2d.fromDegrees(90)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
     STOW_LINE(Rotation2d.fromDegrees(75)), // What is STOW_LINE?
@@ -239,9 +239,10 @@ public final class V3_EpsilonManipulatorConstants {
     ALGAE_INTAKE(-12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),
-    SCORE_ALGAE(6),
+    SCORE_ALGAE(12),
     REMOVE_ALGAE(-12),
-    L1_SCORE(3.5 * 1.56);
+    L1_SCORE(3.5 * 1.56),
+    ALGAE_HOLD(-12);
 
     private final double voltage;
 

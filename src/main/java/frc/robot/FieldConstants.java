@@ -150,6 +150,11 @@ public class FieldConstants {
           DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0
               + Units.inchesToMeters(2); // Offset X setpoint by center of robot to bumper
 
+      //   if (Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON)
+      //       || Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON_SIM)) {
+      //     adjustXAlgae += Units.inchesToMeters(5);
+      //   }
+
       reefMap.put(
           18,
           new FaceSetpoints(

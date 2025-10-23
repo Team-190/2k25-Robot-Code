@@ -46,8 +46,7 @@ public class V3_EpsilonMechanism3d {
             new Transform3d(0, 0, stage1Height - ELEVATOR_STAGE_1_MIN_HEIGHT, new Rotation3d()));
     Pose3d ELEVATOR_CARRIAGE_POSE =
         ELEVATOR_CARRIAGE_MANIPULATOR.transformBy(
-            new Transform3d(
-                0, 0, carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT, new Rotation3d()));
+            new Transform3d(0, 0, carriageHeight, new Rotation3d()));
 
     Logger.recordOutput(
         "Zero Poses",
@@ -62,10 +61,7 @@ public class V3_EpsilonMechanism3d {
       new Pose3d(-0.15381615, 0, 0.270855, new Rotation3d())
           .transformBy(
               new Transform3d(
-                  0,
-                  0,
-                  carriageHeight - ELEVATOR_CARRIAGE_MANIPULATOR_MIN_HEIGHT,
-                  new Rotation3d(armAngle.getRadians(), 0.0, 0.0))),
+                  0, 0, carriageHeight, new Rotation3d(armAngle.getRadians(), 0.0, 0.0))),
     };
   }
 }

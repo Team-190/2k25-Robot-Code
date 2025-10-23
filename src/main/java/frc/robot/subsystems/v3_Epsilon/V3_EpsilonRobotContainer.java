@@ -14,6 +14,7 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState;
+import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
@@ -174,7 +175,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             () -> false,
-            operator.back(),
+            () -> false,
             driver.povRight()));
 
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
@@ -245,10 +246,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
                 superstructure,
                 () -> RobotState.getReefAlignData().algaeIntakeHeight()));
 
-    operator.y().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
-    operator.x().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
-    operator.b().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
-    operator.a().and(elevatorStow).onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
+    operator.y().onTrue(SharedCommands.setStaticReefHeight(ReefState.L4));
+    operator.x().onTrue(SharedCommands.setStaticReefHeight(ReefState.L3));
+    operator.b().onTrue(SharedCommands.setStaticReefHeight(ReefState.L2));
+    operator.a().onTrue(SharedCommands.setStaticReefHeight(ReefState.L1));
 
     operator
         .y()
@@ -316,6 +317,18 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         "Drive FF Characterization", () -> DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addCmd(
         "Wheel Radius Characterization", () -> DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addRoutine(
+        "4 Piece Right Early Madtown",
+        () -> AutonomousCommands.autoERight(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Right Late Madtown",
+        () -> AutonomousCommands.autoERightBack(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Left Early Madtown",
+        () -> AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "4 Piece Left Late Madtown",
+        () -> AutonomousCommands.autoELeftBack(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

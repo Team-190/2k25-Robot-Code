@@ -1994,6 +1994,7 @@ public class AutonomousCommands {
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
                     drive, superstructure, ReefState.L4, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
+                Commands.waitUntil(superstructure::armBelowThreshold),
                 Commands.parallel(
                     path2.cmd(),
                     superstructure
@@ -2003,6 +2004,7 @@ public class AutonomousCommands {
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
                     drive, superstructure, ReefState.L2, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L2_SCORE),
+                Commands.waitUntil(superstructure::atGoal),
                 Commands.parallel(
                     Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
                     path3.cmd(),
@@ -2013,6 +2015,7 @@ public class AutonomousCommands {
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
                     drive, superstructure, ReefState.L2, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L2_SCORE),
+                Commands.waitUntil(superstructure::atGoal),
                 Commands.parallel(
                     path4.cmd(),
                     superstructure
