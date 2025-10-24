@@ -2,6 +2,7 @@ package frc.robot.subsystems.v3_Epsilon;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -87,7 +88,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
-          // climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
+          //   climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           leds = new V3_EpsilonLEDs();
           vision =
@@ -288,7 +289,14 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     operator.leftBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)));
     operator.rightBumper().onTrue(Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)));
 
-    operator.povUp().onTrue(climber.releaseClimber()).onFalse(climber.winchClimber());
+    operator
+        .povUp()
+        .onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> manipulator.setArmGoal(Rotation2d.fromDegrees(90))),
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.HANDOFF)),
+                climber.releaseClimber()))
+        .onFalse(climber.winchClimber());
     operator.povDown().whileTrue(climber.winchClimberManual());
     operator
         .povLeft()

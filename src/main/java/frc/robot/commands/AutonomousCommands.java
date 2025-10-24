@@ -2126,17 +2126,15 @@ public class AutonomousCommands {
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 superstructure.waitUntilAtGoal(),
                 Commands.parallel(
-                    path2.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.L2_ALGAE)),
-                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReefAuto(
-                    drive, superstructure, cameras),
+                    path2.cmd(),
+                    superstructure.runGoal(V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE)),
                 Commands.parallel(
                     path3.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
                 Commands.runOnce(() -> drive.stop()),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure),
                 Commands.parallel(
-                    path4.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
-                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReefAuto(
-                    drive, superstructure, cameras),
+                    path4.cmd(),
+                    superstructure.runGoal(V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE)),
                 Commands.parallel(
                     path5.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
                 Commands.runOnce(() -> drive.stop()),

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -107,5 +108,11 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
 
   public void setRollerVoltage(double volts) {
     rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  @Override
+  public boolean isClimbed() {
+    return Units.rotationsToRadians(deploymentPositionRotations.getValueAsDouble())
+        >= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_RADIANS;
   }
 }
