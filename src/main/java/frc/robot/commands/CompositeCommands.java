@@ -800,7 +800,7 @@ public class CompositeCommands {
           Commands.runOnce(() -> RobotState.setScoreSide(optimalSideBarge())),
           superstructure
               .runGoalUntil(V3_EpsilonSuperstructureStates.BARGE_SCORE, () -> false)
-              .withTimeout(0.5));
+              .withTimeout(2));
     }
 
     /**
@@ -907,6 +907,30 @@ public class CompositeCommands {
           postIntakeAlgaeFromReef(drive, superstructure, cameras));
     }
 
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive,
+        V3_EpsilonSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+
+      return Commands.sequence(
+          Commands.parallel(
+              superstructure.runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae()),
+              DriveCommands.autoAlignReefAlgae(drive, cameras)),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
     public static final Command postIntakeAlgaeFromReef(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP);
@@ -915,6 +939,12 @@ public class CompositeCommands {
     public static final Command intakeAlgaeFromReef(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return intakeAlgaeFromReef(
+          drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
+    }
+
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return intakeAlgaeFromReefAuto(
           drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
     }
 

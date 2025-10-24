@@ -356,7 +356,7 @@ public class Drive extends SubsystemBase {
 
   /** Runs a choreo path from swerve samples */
   public void choreoDrive(SwerveSample sample) {
-    Pose2d pose = RobotState.getRobotPoseField();
+    Pose2d pose = RobotState.getRobotPoseReef();
     double xFF = sample.vx;
     double yFF = sample.vy;
     double rotationFF = sample.omega;

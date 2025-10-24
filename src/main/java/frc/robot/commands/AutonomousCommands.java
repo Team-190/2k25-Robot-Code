@@ -2114,9 +2114,6 @@ public class AutonomousCommands {
     LoggedAutoTrajectory path3 = (routine.trajectory("F_PATH_3"));
     LoggedAutoTrajectory path4 = (routine.trajectory("F_PATH_4"));
     LoggedAutoTrajectory path5 = (routine.trajectory("F_PATH_5"));
-    LoggedAutoTrajectory path6 = (routine.trajectory("F_PATH_6"));
-    LoggedAutoTrajectory path7 = (routine.trajectory("F_PATH_7"));
-    LoggedAutoTrajectory path8 = (routine.trajectory("F_PATH_8"));
 
     routine
         .active()
@@ -2124,39 +2121,26 @@ public class AutonomousCommands {
             Commands.sequence(
                 path1.resetOdometry(),
                 Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
-                path1.cmd(),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
                     drive, superstructure, ReefState.L4, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 superstructure.waitUntilAtGoal(),
-                path2.cmd(),
-                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
-                        drive, superstructure, cameras)
-                    .withTimeout(1),
+                Commands.parallel(
+                    path2.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.L2_ALGAE)),
+                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReefAuto(
+                    drive, superstructure, cameras),
                 Commands.parallel(
                     path3.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
                 Commands.runOnce(() -> drive.stop()),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure),
                 Commands.parallel(
                     path4.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
-                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
-                        drive, superstructure, cameras)
-                    .withTimeout(1),
+                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReefAuto(
+                    drive, superstructure, cameras),
                 Commands.parallel(
                     path5.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
                 Commands.runOnce(() -> drive.stop()),
-                CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure),
-                Commands.parallel(
-                    path6.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
-                CompositeCommands.V3_EpsilonCompositeCommands.intakeAlgaeFromReef(
-                        drive, superstructure, cameras)
-                    .withTimeout(1),
-                Commands.parallel(
-                    path7.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
-                Commands.runOnce(() -> drive.stop()),
-                CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure),
-                Commands.parallel(
-                    path8.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP))));
+                CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure)));
 
     return routine;
   }
