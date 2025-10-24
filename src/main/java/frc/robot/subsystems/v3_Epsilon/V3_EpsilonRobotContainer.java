@@ -37,6 +37,7 @@ import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
+import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.leds.V3_EpsilonLEDs;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
@@ -88,7 +89,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
           intake = new V3_EpsilonIntake(new V3_EpsilonIntakeIOTalonFX());
           manipulator = new V3_EpsilonManipulator(new V3_EpsilonManipulatorIOTalonFX());
-          //   climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
+          climber = new V3_EpsilonClimber(new V3_EpsilonClimberIOTalonFX());
           superstructure = new V3_EpsilonSuperstructure(elevator, intake, manipulator);
           leds = new V3_EpsilonLEDs();
           vision =
@@ -294,10 +295,12 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(() -> manipulator.setArmGoal(Rotation2d.fromDegrees(90))),
-                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.HANDOFF)),
-                climber.releaseClimber()))
-        .onFalse(climber.winchClimber());
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.HANDOFF))));
     operator.povDown().whileTrue(climber.winchClimberManual());
+    Trigger isClimberReady = new Trigger(() -> RobotState.isClimberReady());
+    isClimberReady
+        .and(operator.povDown())
+        .onTrue(Commands.runOnce(() -> elevator.setPosition(() -> ReefState.STOW)));
     operator
         .povLeft()
         .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR))

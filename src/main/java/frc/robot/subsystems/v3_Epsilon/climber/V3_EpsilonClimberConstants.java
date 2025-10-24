@@ -26,7 +26,7 @@ public class V3_EpsilonClimberConstants {
       DCMotor MOTOR_CONFIG, double GEAR_RATIO, double GEARBOX_EFFICIENCY, double SPOOL_DIAMETER) {}
 
   public static final double CLIMBER_CLIMBED_ZERO_RADIANS = 41;
-  public static final double CLIMBER_CLIMBED_DEPLOYED_RADIANS = Units.rotationsToRadians(-2);
+  public static final double CLIMBER_CLIMBED_DEPLOYED_RADIANS = -10;
   public static final ClimberTimingConfig CLIMBER_TIMING_CONFIG =
       new ClimberTimingConfig(1.1, 0.25, 0.5);
   public static final CurrentLimits CURRENT_LIMITS = new CurrentLimits(40.0, 80.0);

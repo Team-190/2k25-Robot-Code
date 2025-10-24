@@ -49,7 +49,7 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     rollerConfig = new TalonFXConfiguration();
     rollerPositionRotations = rollerTalonFX.getPosition();
     rollerVelocityRotationsPerSecond = rollerTalonFX.getVelocity();
-    rollerAppliedVoltage = rollerTalonFX.getSupplyVoltage();
+    rollerAppliedVoltage = rollerTalonFX.getMotorVoltage();
     rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
@@ -58,7 +58,7 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     deploymentConfig = new TalonFXConfiguration();
     deploymentPositionRotations = deploymentTalonFX.getPosition();
     deploymentVelocityRotationsPerSecond = deploymentTalonFX.getVelocity();
-    deploymentAppliedVoltage = deploymentTalonFX.getSupplyVoltage();
+    deploymentAppliedVoltage = deploymentTalonFX.getMotorVoltage();
     deploymentSupplyCurrentAmps = deploymentTalonFX.getSupplyCurrent();
     deploymentTorqueCurrentAmps = deploymentTalonFX.getTorqueCurrent();
     deploymentTemperatureCelsius = deploymentTalonFX.getDeviceTemp();
