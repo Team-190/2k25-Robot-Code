@@ -670,7 +670,7 @@ public class CompositeCommands {
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoralLoose()),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> intake.hasCoralLocked()),
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> intake.hasCoralLocked()),
           postIntakeCoralSequence(superstructure, intake, manipulator));
     }
 

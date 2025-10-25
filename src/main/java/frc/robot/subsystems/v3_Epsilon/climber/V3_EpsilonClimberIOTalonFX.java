@@ -102,7 +102,8 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
   }
 
-  public void setdeploymentVoltage(double volts) {
+  @Override
+  public void setDeploymentVoltage(double volts) {
     deploymentTalonFX.setControl(deploymentVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
@@ -113,6 +114,6 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
   @Override
   public boolean isClimbed() {
     return Units.rotationsToRadians(deploymentPositionRotations.getValueAsDouble())
-        >= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_RADIANS;
+        <= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_RADIANS;
   }
 }

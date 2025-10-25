@@ -42,6 +42,7 @@ import frc.robot.subsystems.v3_Epsilon.leds.V3_EpsilonLEDs;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
@@ -295,12 +296,16 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(() -> manipulator.setArmGoal(Rotation2d.fromDegrees(90))),
-                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.HANDOFF))));
-    operator.povDown().whileTrue(climber.winchClimberManual());
-    Trigger isClimberReady = new Trigger(() -> RobotState.isClimberReady());
-    isClimberReady
-        .and(operator.povDown())
-        .onTrue(Commands.runOnce(() -> elevator.setPosition(() -> ReefState.STOW)));
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.HANDOFF)),
+                Commands.runOnce(() -> intake.setPivotGoal(IntakePivotState.L1)),
+                climber.releaseClimber()));
+    operator
+        .povDown()
+        .whileTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> RobotState.setClimberReady(false)),
+                Commands.runOnce(() -> elevator.setPosition(() -> ReefState.STOW)),
+                climber.winchClimber()));
     operator
         .povLeft()
         .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR))

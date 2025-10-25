@@ -332,7 +332,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(48))),
+            Units.inchesToMeters(50))),
     L4_PLUS(
         new PositionConstants(
             0.0,

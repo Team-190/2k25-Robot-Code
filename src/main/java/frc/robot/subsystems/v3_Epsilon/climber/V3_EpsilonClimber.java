@@ -42,7 +42,7 @@ public class V3_EpsilonClimber extends SubsystemBase {
     isClimbed = io.isClimbed();
 
     if (RobotState.isClimberReady()) {
-      io.setRollerVoltage(12);
+      io.setRollerVoltage(-12);
     }
 
     ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
@@ -75,13 +75,15 @@ public class V3_EpsilonClimber extends SubsystemBase {
    * @return A command to release the climber.
    */
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setDeploymentVoltage(-1), () -> io.setDeploymentVoltage(0))
-        .until(
-            () ->
-                inputs.deploymentPosition.getRadians()
-                        <= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_DEPLOYED_RADIANS
-                    || override)
-        .finallyDo(() -> RobotState.setClimberReady(true));
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setRollerVoltage(12)),
+        this.runEnd(() -> io.setDeploymentVoltage(-1), () -> io.setDeploymentVoltage(0))
+            .until(
+                () ->
+                    inputs.deploymentPosition.getRadians()
+                            <= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_DEPLOYED_RADIANS
+                        || override)
+            .finallyDo(() -> RobotState.setClimberReady(true)));
   }
 
   /**
