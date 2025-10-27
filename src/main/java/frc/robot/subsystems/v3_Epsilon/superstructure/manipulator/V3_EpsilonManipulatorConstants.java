@@ -217,6 +217,7 @@ public final class V3_EpsilonManipulatorConstants {
     TRANSITION(Rotation2d.fromDegrees(25.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
+    FLIPPED_SCORE(Rotation2d.fromDegrees(-270)),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
     INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
@@ -224,6 +225,14 @@ public final class V3_EpsilonManipulatorConstants {
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
     private final Rotation2d angle;
+
+    public Rotation2d setRotationDirection(boolean direction) {
+      if (direction == true) {
+        return angle;
+      } else {
+        return angle.minus(Rotation2d.kPi).minus(Rotation2d.kPi);
+      }
+    }
 
     public Rotation2d getAngle(Side side) {
       if (side == Side.NEGATIVE) {

@@ -34,6 +34,7 @@ import frc.robot.subsystems.shared.elevator.ElevatorIOSim;
 import frc.robot.subsystems.shared.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.shared.vision.Vision;
 import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
+import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimber;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIO;
 import frc.robot.subsystems.v3_Epsilon.climber.V3_EpsilonClimberIOSim;
@@ -47,6 +48,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOSim;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIO;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorIOSim;
@@ -388,6 +390,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return Commands.sequence(Commands.runOnce(() -> manipulator.setArmGoal(V3_EpsilonManipulatorConstants.ManipulatorArmState.SCORE)), Commands.waitSeconds(0.4),
+        V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+        drive, superstructure, ReefState.L2));
   }
 }
