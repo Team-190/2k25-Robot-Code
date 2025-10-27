@@ -338,6 +338,7 @@ public class Elevator {
     }
   }
 
+  //FSM for the Elevator
   public class ElevatorFSM {
     @AutoLogOutput(key = "Elevator/Past Barge Threshold")
     public boolean pastBargeThresholdgetPositionMeters() {
