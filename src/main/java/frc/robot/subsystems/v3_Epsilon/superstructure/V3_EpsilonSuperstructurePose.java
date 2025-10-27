@@ -90,21 +90,36 @@ public class V3_EpsilonSuperstructurePose {
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator,
       Optional<V3_EpsilonSuperstructureTransitionCondition> condition) {
-    return Commands.sequence(
+
+    return Commands.either(
+        Commands.either(
+            elevator.waitUntilAtGoal(),
+            manipulator.waitUntilArmAtGoal(),
+            () ->
+                condition
+                    .get()
+                    .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
         Commands.parallel(
             elevator.waitUntilAtGoal(),
             manipulator.waitUntilArmAtGoal(),
             intake.waitUntilPivotAtGoal()),
-        Commands.either(
-            Commands.either(
-                elevator.waitUntilAtGoal(),
-                manipulator.waitUntilArmAtGoal(),
-                () ->
-                    condition
-                        .get()
-                        .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
-            Commands.none(),
-            () -> condition.isPresent()));
+        () -> condition.isPresent());
+
+    // return Commands.sequence(
+    // Commands.parallel(
+    // elevator.waitUntilAtGoal(),
+    // manipulator.waitUntilArmAtGoal(),
+    // intake.waitUntilPivotAtGoal()),
+    // Commands.either(
+    // Commands.either(
+    // elevator.waitUntilAtGoal(),
+    // manipulator.waitUntilArmAtGoal(),
+    // () ->
+    // condition
+    // .get()
+    // .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
+    // Commands.none(),
+    // () -> condition.isPresent()));
   }
 
   /**
