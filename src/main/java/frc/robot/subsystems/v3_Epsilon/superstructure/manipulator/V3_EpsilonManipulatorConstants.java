@@ -225,10 +225,8 @@ public final class V3_EpsilonManipulatorConstants {
 
     private final Rotation2d angle;
 
-    public Rotation2d getAngle(Side side) {
-      if (side == Side.NEGATIVE) {
-        return angle.unaryMinus();
-      }
+    public Rotation2d getAngle() {
+
       return angle;
     }
   }
@@ -257,10 +255,5 @@ public final class V3_EpsilonManipulatorConstants {
     public double getVoltage() {
       return voltage;
     }
-  }
-
-  public enum Side {
-    POSITIVE,
-    NEGATIVE
   }
 }

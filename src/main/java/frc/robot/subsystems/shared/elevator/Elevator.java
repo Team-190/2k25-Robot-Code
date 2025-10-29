@@ -338,7 +338,7 @@ public class Elevator {
     }
   }
 
-  //FSM for the Elevator
+  // FSM for the Elevator
   public class ElevatorFSM {
     @AutoLogOutput(key = "Elevator/Past Barge Threshold")
     public boolean pastBargeThresholdgetPositionMeters() {
@@ -429,6 +429,10 @@ public class Elevator {
 
     public boolean atGoal(ReefState position) {
       return Elevator.this.atGoal(Elevator.this.getPosition(position));
+    }
+
+    public boolean inTolerance(double toleranceMeters) {
+      return Math.abs(positionGoalMeters - inputs.positionMeters) <= toleranceMeters;
     }
 
     public Command waitUntilAtGoal() {

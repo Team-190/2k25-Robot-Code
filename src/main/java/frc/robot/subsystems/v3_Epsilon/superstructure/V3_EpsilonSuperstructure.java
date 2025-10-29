@@ -18,7 +18,6 @@ import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
-import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
@@ -26,7 +25,6 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
@@ -208,12 +206,6 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    manipulator.setArmSide(
-        RobotState.getScoreSide().equals(ScoreSide.LEFT) ? Side.NEGATIVE : Side.POSITIVE);
-    manipulator.setClearsElevator(
-        elevator.getPositionMeters()
-            > V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS() * 1.1);
-
     if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE))
       currentState.getAction().get(intake, manipulator);
     if (RobotMode.disabled()) {
@@ -372,8 +364,53 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
-    return edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
-        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
+    // --- 1. Algae Check (Original Logic) ---
+    boolean gamePieceAllowed =
+        edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
+            || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
+
+    if (!gamePieceAllowed) {
+      return false; // Fail fast if game piece logic disallows it
+    }
+
+    // Condition is TRUE, so we must apply the path forcing logic.
+    V3_EpsilonSuperstructureStates from = graph.getEdgeSource(edge);
+    V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(edge);
+
+    boolean needsFlip = RobotState.getReefAlignData().distanceToCoralSetpoint() < 0.5;
+
+    // If the final goal is L2, force path through L2_WINDMILL
+    if (goal == V3_EpsilonSuperstructureStates.L2) {
+      // DISALLOW any direct path to L2 UNLESS it comes from L2_WINDMILL
+      if (to == V3_EpsilonSuperstructureStates.L2
+          && from != V3_EpsilonSuperstructureStates.L2_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    // If the final goal is L3, force path through L3_WINDMILL
+    if (goal == V3_EpsilonSuperstructureStates.L3) {
+      // DISALLOW any direct path to L3 UNLESS it comes from L3_WINDMILL
+      if (to == V3_EpsilonSuperstructureStates.L3
+          && from != V3_EpsilonSuperstructureStates.L3_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    // If you add `L4_WINDMILL` to the enum, you can uncomment this block.
+    if (goal == V3_EpsilonSuperstructureStates.L4) {
+      // DISALLOW any direct path to L4 UNLESS it comes from L4_WINDMILL
+      if (to == V3_EpsilonSuperstructureStates.L4
+          && from != V3_EpsilonSuperstructureStates.L4_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    // --- 3. If all checks pass, the edge is allowed ---
+    return true;
   }
 
   /** Resets the superstructure to initial auto state. */

@@ -124,7 +124,7 @@ public class V3_EpsilonSuperstructureEdges {
 
     return Commands.sequence(
         pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
-        pose.wait(elevator, intake, manipulator, to.getTransitionCondition()));
+        pose.wait(elevator, intake, manipulator));
   }
 
   /**
