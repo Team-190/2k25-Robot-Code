@@ -72,7 +72,7 @@ public class V3_EpsilonIntakeConstants {
                 Rotation2d.fromDegrees(1.5));
         PIVOT_GAINS =
             new Gains(
-                new LoggedTunableNumber("Intake/kP", 1.85),
+                new LoggedTunableNumber("Intake/kP", 100),
                 new LoggedTunableNumber("Intake/kD", 0.1),
                 new LoggedTunableNumber("Intake/kS", 0.0),
                 new LoggedTunableNumber("Intake/kV", 0.0),
@@ -154,7 +154,7 @@ public class V3_EpsilonIntakeConstants {
     CENTERING(-12.0, -12.0),
     CORAL_INTAKE(-12.0, -12.0),
     ALGAE_INTAKE(12.0, 12.0),
-    SCORE_CORAL(6.0, 6.0),
+    SCORE_CORAL(0.0, 6.0),
     OUTTAKE(0.0, 12.0);
 
     @Getter private final double innerVoltage;

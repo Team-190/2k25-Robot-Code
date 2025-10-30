@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -48,7 +49,7 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     rollerConfig = new TalonFXConfiguration();
     rollerPositionRotations = rollerTalonFX.getPosition();
     rollerVelocityRotationsPerSecond = rollerTalonFX.getVelocity();
-    rollerAppliedVoltage = rollerTalonFX.getSupplyVoltage();
+    rollerAppliedVoltage = rollerTalonFX.getMotorVoltage();
     rollerSupplyCurrentAmps = rollerTalonFX.getSupplyCurrent();
     rollerTorqueCurrentAmps = rollerTalonFX.getTorqueCurrent();
     rollerTemperatureCelsius = rollerTalonFX.getDeviceTemp();
@@ -57,7 +58,7 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     deploymentConfig = new TalonFXConfiguration();
     deploymentPositionRotations = deploymentTalonFX.getPosition();
     deploymentVelocityRotationsPerSecond = deploymentTalonFX.getVelocity();
-    deploymentAppliedVoltage = deploymentTalonFX.getSupplyVoltage();
+    deploymentAppliedVoltage = deploymentTalonFX.getMotorVoltage();
     deploymentSupplyCurrentAmps = deploymentTalonFX.getSupplyCurrent();
     deploymentTorqueCurrentAmps = deploymentTalonFX.getTorqueCurrent();
     deploymentTemperatureCelsius = deploymentTalonFX.getDeviceTemp();
@@ -101,11 +102,18 @@ public class V3_EpsilonClimberIOTalonFX implements V3_EpsilonClimberIO {
     inputs.rollerTemperatureCelsius = rollerTemperatureCelsius.getValueAsDouble();
   }
 
-  public void setdeploymentVoltage(double volts) {
+  @Override
+  public void setDeploymentVoltage(double volts) {
     deploymentTalonFX.setControl(deploymentVoltageRequest.withOutput(volts).withEnableFOC(true));
   }
 
   public void setRollerVoltage(double volts) {
     rollerTalonFX.setControl(rollerVoltageRequest.withOutput(volts).withEnableFOC(true));
+  }
+
+  @Override
+  public boolean isClimbed() {
+    return Units.rotationsToRadians(deploymentPositionRotations.getValueAsDouble())
+        <= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_RADIANS;
   }
 }

@@ -92,7 +92,7 @@ public final class V3_EpsilonManipulatorConstants {
       case V3_EPSILON_SIM:
         EMPTY_GAINS =
             new Gains(
-                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 50),
+                new LoggedTunableNumber("Manipulator/Arm/Empty/kP", 100),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kD", 0),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kS", 0.24274),
                 new LoggedTunableNumber("Manipulator/Arm/Empty/kG", 0.66177),
@@ -116,7 +116,7 @@ public final class V3_EpsilonManipulatorConstants {
                 new LoggedTunableNumber("Manipulator/ArmWithAlgae/kA", 0.0));
         CONSTRAINTS =
             new Constraints(
-                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 20.0),
+                new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 100.0),
                 new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 50.0),
                 new LoggedTunableNumber(
                     "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
@@ -204,20 +204,22 @@ public final class V3_EpsilonManipulatorConstants {
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
     PRE_SCORE(Rotation2d.fromDegrees(50.0)),
-    SCORE(Rotation2d.fromDegrees(55.0)), // Placeholder value. Make sure to test
+    SCORE(Rotation2d.fromDegrees(90.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
     ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
-    REEF_INTAKE(Rotation2d.fromDegrees(46.279296875)),
+    CORAL_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
+    REEF_INTAKE(Rotation2d.fromDegrees(90)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
     FLOOR_INTAKE(Rotation2d.fromDegrees(73.5)),
     STOW_LINE(Rotation2d.fromDegrees(75)), // What is STOW_LINE?
     STOW_DOWN(Rotation2d.fromDegrees(88)),
-    TRANSITION(Rotation2d.fromDegrees(15.0)), // Placeholder value. Make sure to test
+    TRANSITION(Rotation2d.fromDegrees(25.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
@@ -239,9 +241,10 @@ public final class V3_EpsilonManipulatorConstants {
     ALGAE_INTAKE(-12.0),
     L4_SCORE(4.6 * 1.56),
     SCORE_CORAL(4.8 * 1.56),
-    SCORE_ALGAE(-6),
+    SCORE_ALGAE(12),
     REMOVE_ALGAE(-12),
-    L1_SCORE(3.5 * 1.56);
+    L1_SCORE(3.5 * 1.56),
+    ALGAE_HOLD(-12);
 
     private final double voltage;
 

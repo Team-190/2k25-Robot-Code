@@ -166,6 +166,8 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     canRange.optimizeBusUtilization();
 
     PhoenixUtil.registerSignals(false, statusSignals);
+
+    armTalonFX.setPosition(0);
   }
 
   /**

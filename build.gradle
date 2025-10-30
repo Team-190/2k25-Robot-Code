@@ -108,7 +108,7 @@ import com.jcraft.jsch.JSch
 
 ext {
     // RoboRIO SSH details
-    roboRIOHost = 'roboRIO-190-FRC.local' // Replace with your team number
+    roboRIOHost = 'roboRIO-9991-FRC.local' // Replace with your team number
     roboRIOUser = 'admin'                 // Default user
     roboRIOPassword = ''                  // Default password
     machineInfoFile = '/etc/machine-info' // Path to the file to read

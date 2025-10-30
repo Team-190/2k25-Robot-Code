@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.vision.VisionConstants.GompeiVisionConfig;
+import frc.robot.util.GeometryUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +25,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.Getter;
+import lombok.experimental.ExtensionMethod;
 import org.littletonrobotics.junction.Logger;
 
+@ExtensionMethod({GeometryUtil.class})
 public class CameraIOGompeiVision implements CameraIO {
   private final GompeiVisionConfig config;
   private final Supplier<AprilTagFieldLayout> aprilTagLayoutSupplier;
@@ -144,7 +147,10 @@ public class CameraIOGompeiVision implements CameraIO {
                   values[3],
                   values[4],
                   new Rotation3d(new Quaternion(values[5], values[6], values[7], values[8])));
-          robotPose = cameraPose.transformBy(config.robotToCameraTransform().inverse()).toPose2d();
+          robotPose =
+              cameraPose
+                  .toPose2d()
+                  .transformBy(config.robotRelativePose().toPose2d().toTransform2d().inverse());
           break;
 
         case 2:
@@ -164,14 +170,14 @@ public class CameraIOGompeiVision implements CameraIO {
                   values[11],
                   values[12],
                   new Rotation3d(new Quaternion(values[13], values[14], values[15], values[16])));
-          Transform3d cameraToRobot = config.robotToCameraTransform().inverse();
-
-          Pose2d robotPose0 = cameraPose0.transformBy(cameraToRobot).toPose2d();
-          Pose2d robotPose1 = cameraPose1.transformBy(cameraToRobot).toPose2d();
+          Transform2d cameraToRobot =
+              config.robotRelativePose().toPose2d().toTransform2d().inverse();
+          Pose2d robotPose0 = cameraPose0.toPose2d().transformBy(cameraToRobot);
+          Pose2d robotPose1 = cameraPose1.toPose2d().transformBy(cameraToRobot);
 
           if (error0 < error1 * VisionConstants.AMBIGUITY_THRESHOLD
               || error1 < error0 * VisionConstants.AMBIGUITY_THRESHOLD) {
-            Rotation2d currentRotation = RobotState.getHeadingData().robotHeading();
+            Rotation2d currentRotation = RobotState.getRobotPoseField().getRotation();
             Rotation2d visionRotation0 = robotPose0.getRotation();
             Rotation2d visionRotation1 = robotPose1.getRotation();
             if (Math.abs(currentRotation.minus(visionRotation0).getRadians())
@@ -207,17 +213,19 @@ public class CameraIOGompeiVision implements CameraIO {
       for (int i = (values[0] == 1 ? 9 : 17); i < values.length; i += 10) {
         int tagId = (int) values[i];
         lastTagDetectionTimes.put(tagId, Timer.getTimestamp());
-        Optional<Pose3d> tagPose = aprilTagLayoutSupplier.get().getTagPose((int) values[i]);
+        Optional<Pose3d> tagPose = aprilTagLayoutSupplier.get().getTagPose(tagId);
         tagPose.ifPresent(tagPoses::add);
       }
 
-      int[] tagIds = new int[tagPoses.size()];
-      double[][] txs = new double[tagPoses.size()][];
-      double[][] tys = new double[tagPoses.size()][];
-      double[] distances = new double[tagPoses.size()];
+      // Prepare arrays
+      int totalTags = tagPoses.size();
+      int[] tagIds = new int[totalTags];
+      double[][] txs = new double[totalTags][];
+      double[][] tys = new double[totalTags][];
+      double[] distances = new double[totalTags];
 
       if (!tagPoses.isEmpty()) {
-        // Calculate average distance to tag
+        // Calculate average distance
         double totalDistance = 0.0;
         for (Pose3d tagPose : tagPoses) {
           totalDistance += tagPose.getTranslation().getDistance(cameraPose.getTranslation());
@@ -225,7 +233,7 @@ public class CameraIOGompeiVision implements CameraIO {
         averageDistance = totalDistance / tagPoses.size();
         totalTargets = tagPoses.size();
 
-        // Add TxTy observations
+        // --- Parse tag angle + distance data ---
         int tagEstimationDataEndIndex =
             switch ((int) values[0]) {
               default -> 0;
@@ -234,21 +242,40 @@ public class CameraIOGompeiVision implements CameraIO {
             };
 
         int indexCounter = 0;
-        for (int index = tagEstimationDataEndIndex + 1; index < values.length; index += 10) {
+
+        // Step through each 10-value chunk safely
+        for (int index = tagEstimationDataEndIndex + 1; index + 9 < values.length; index += 10) {
+          int tagId = (int) values[index];
           double[] tx = new double[4];
           double[] ty = new double[4];
+
+          // Read 4 corner pairs
           for (int i = 0; i < 4; i++) {
             tx[i] = values[index + 1 + (2 * i)];
             ty[i] = values[index + 1 + (2 * i) + 1];
           }
-          int tagId = (int) values[index];
+
           double distance = values[index + 9];
 
-          tagIds[indexCounter] = tagId;
-          txs[indexCounter] = tx;
-          tys[indexCounter] = ty;
-          distances[indexCounter] = distance;
-          indexCounter++;
+          // Store data
+          if (indexCounter < totalTags) {
+            tagIds[indexCounter] = tagId;
+            txs[indexCounter] = tx;
+            tys[indexCounter] = ty;
+            distances[indexCounter] = distance;
+            indexCounter++;
+          } else {
+            System.out.println("[WARN] More tag data than expected: indexCounter=" + indexCounter);
+          }
+        }
+
+        // Optional debug check
+        if ((values.length - (tagEstimationDataEndIndex + 1)) % 10 != 0) {
+          System.out.println(
+              "[WARN] Observation array not multiple of 10! Length="
+                  + values.length
+                  + " start="
+                  + (tagEstimationDataEndIndex + 1));
         }
       }
 

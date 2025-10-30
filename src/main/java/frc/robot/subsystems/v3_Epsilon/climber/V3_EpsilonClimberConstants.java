@@ -8,29 +8,25 @@ public class V3_EpsilonClimberConstants {
 
   public static final int ROLLER_CAN_ID;
 
-  public static final int MOTOR_ID;
   public static final MotorParameters MOTOR_PARAMETERS;
 
   public static final double CLIMBER_CLIMBED_RADIANS;
 
   static {
-    DEPLOYMENT_CAN_ID = 42;
-    ROLLER_CAN_ID = 42;
+    DEPLOYMENT_CAN_ID = 50;
+    ROLLER_CAN_ID = 51;
 
-    MOTOR_ID = 50;
     MOTOR_PARAMETERS =
-        new MotorParameters(DCMotor.getKrakenX60Foc(1), 24.0, 0.81, Units.inchesToMeters(1.78));
+        new MotorParameters(DCMotor.getKrakenX60Foc(1), 16.0, 0.81, Units.inchesToMeters(1.78));
 
-    CLIMBER_CLIMBED_RADIANS = 410;
+    CLIMBER_CLIMBED_RADIANS = -350;
   }
 
   public static record MotorParameters(
       DCMotor MOTOR_CONFIG, double GEAR_RATIO, double GEARBOX_EFFICIENCY, double SPOOL_DIAMETER) {}
 
-  public static final double CLIMBER_CLIMBED_ZERO_RADIANS =
-      41; // TODO: None of these four lines are valid numbers i
-  // just made up stuff
-  public static final double CLIMBER_CLIMBED_DEPLOYED_RADIANS = 67;
+  public static final double CLIMBER_CLIMBED_ZERO_RADIANS = 41;
+  public static final double CLIMBER_CLIMBED_DEPLOYED_RADIANS = -10;
   public static final ClimberTimingConfig CLIMBER_TIMING_CONFIG =
       new ClimberTimingConfig(1.1, 0.25, 0.5);
   public static final CurrentLimits CURRENT_LIMITS = new CurrentLimits(40.0, 80.0);

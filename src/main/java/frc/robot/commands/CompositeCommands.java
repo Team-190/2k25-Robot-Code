@@ -32,6 +32,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -669,17 +670,21 @@ public class CompositeCommands {
           superstructure.runGoalUntil(
               V3_EpsilonSuperstructureStates.GROUND_INTAKE, () -> intake.hasCoralLoose()),
           superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.HANDOFF, () -> intake.hasCoralLocked()));
+              V3_EpsilonSuperstructureStates.HANDOFF, () -> intake.hasCoralLocked()),
+          postIntakeCoralSequence(superstructure, intake, manipulator));
     }
 
     public static final Command postIntakeCoralSequence(
         V3_EpsilonSuperstructure superstructure,
         V3_EpsilonIntake intake,
         V3_EpsilonManipulator manipulator) {
-      return Commands.sequence(
-          superstructure.runGoalUntil(
-              V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
+      return Commands.either(
+          Commands.sequence(
+              superstructure.runGoalUntil(
+                  V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+              superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
+          superstructure.runGoal(V3_EpsilonSuperstructureStates.L1),
+          () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
     /**
@@ -693,21 +698,24 @@ public class CompositeCommands {
      */
     public static final Command optimalAutoScoreCoralSequence(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
-      return Commands.sequence(
-          Commands.runOnce(
-                  () -> {
-                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-                      RobotState.setScoreSide(ScoreSide.CENTER);
-                    } else {
-                      RobotState.setScoreSide(
-                          optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
-                    }
-                  })
-              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
-          superstructure.setPosition(),
-          DriveCommands.autoAlignReefCoral(drive, cameras),
-          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
-          superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight()));
+      return Commands.either(
+          Commands.sequence(
+              // Commands.runOnce(
+              //         () -> {
+              //           if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
+              //             RobotState.setScoreSide(ScoreSide.CENTER);
+              //           } else {
+              //             RobotState.setScoreSide(
+              //                 optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
+              //           }
+              //         })
+              //     .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
+              superstructure.setPosition(),
+              DriveCommands.autoAlignReefCoral(drive, cameras)
+                  .until(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+              superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight())),
+          superstructure.runGoalUntil(V3_EpsilonSuperstructureStates.L1_SCORE, () -> false),
+          () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
 
     public static final Command optimalAutoScoreCoralSequence(
@@ -790,7 +798,9 @@ public class CompositeCommands {
     public static final Command optimalScoreBarge(V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           Commands.runOnce(() -> RobotState.setScoreSide(optimalSideBarge())),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE));
+          superstructure
+              .runGoalUntil(V3_EpsilonSuperstructureStates.BARGE_SCORE, () -> false)
+              .withTimeout(2));
     }
 
     /**
@@ -825,10 +835,8 @@ public class CompositeCommands {
         Supplier<ReefState> level,
         Camera... cameras) {
       return Commands.sequence(
-          DriveCommands.autoAlignReefAlgae(drive, cameras),
-          Commands.sequence(
-              superstructure
-                  .runGoal(
+              Commands.parallel(
+                  superstructure.runGoalUntil(
                       () -> {
                         switch (level.get()) {
                           case ALGAE_INTAKE_TOP:
@@ -838,27 +846,38 @@ public class CompositeCommands {
                           default:
                             return V3_EpsilonSuperstructureStates.STOW_DOWN;
                         }
-                      })
-                  .until(() -> RobotState.isHasAlgae()),
-              Commands.waitSeconds(2.0),
+                      },
+                      () -> RobotState.isHasAlgae()),
+                  DriveCommands.autoAlignReefAlgae(drive, cameras)),
               Commands.runEnd(
-                      () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)),
-                      () -> drive.stop())
-                  .withTimeout(0.5)),
-          superstructure.runGoal(
+                      () -> drive.runVelocity(new ChassisSpeeds(0.0, 2.0, 0.0)), () -> drive.stop())
+                  .withTimeout(0.5),
+              superstructure.runActionWithTimeout(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_DROP;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
+                      default:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
+                    }
+                  },
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_DROP;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
+                      default:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
+                    }
+                  },
+                  () -> 2))
+          .finallyDo(
               () -> {
-                switch (level.get()) {
-                  case ALGAE_INTAKE_TOP:
-                    return V3_EpsilonSuperstructureStates.L3_ALGAE_DROP;
-                  case ALGAE_INTAKE_BOTTOM:
-                    return V3_EpsilonSuperstructureStates.L2_ALGAE_DROP;
-                  default:
-                    return V3_EpsilonSuperstructureStates.STOW_DOWN;
-                }
-              }),
-          Commands.waitSeconds(1.0),
-          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
+                RobotState.setHasAlgae(false);
+              });
     }
 
     public static final Command intakeAlgaeFromReef(
@@ -868,9 +887,8 @@ public class CompositeCommands {
         Camera... cameras) {
 
       return Commands.sequence(
-          optimalAutoAlignReefAlgae(drive, superstructure, cameras),
-          superstructure
-              .runGoalUntil(
+          Commands.parallel(
+              superstructure.runGoalUntil(
                   () -> {
                     switch (level.get()) {
                       case ALGAE_INTAKE_TOP:
@@ -881,27 +899,53 @@ public class CompositeCommands {
                         return V3_EpsilonSuperstructureStates.STOW_DOWN;
                     }
                   },
-                  () -> RobotState.isHasAlgae())
-              .withTimeout(3),
+                  () -> RobotState.isHasAlgae()),
+              DriveCommands.autoAlignReefAlgae(drive, cameras)),
+          Commands.runEnd(
+                  () -> drive.runVelocity(new ChassisSpeeds(0.0, 2.0, 0.0)), () -> drive.stop())
+              .withTimeout(0.5),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive,
+        V3_EpsilonSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+
+      return Commands.sequence(
           Commands.parallel(
-              Commands.sequence(
-                  Commands.waitSeconds(0.25),
-                  Commands.either(
-                      superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP),
-                      superstructure.runGoal(
-                          () -> {
-                            switch (level.get()) {
-                              case ALGAE_INTAKE_TOP:
-                                return V3_EpsilonSuperstructureStates.L3_ALGAE;
-                              default:
-                                return V3_EpsilonSuperstructureStates.L2_ALGAE;
-                            }
-                          }),
-                      () -> RobotState.isHasAlgae())),
-              Commands.runEnd(
-                      () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)),
-                      () -> drive.stop())
-                  .withTimeout(0.5)));
+              superstructure.runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_EpsilonSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_EpsilonSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_EpsilonSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae()),
+              DriveCommands.autoAlignReefAlgae(drive, cameras)),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
+    public static final Command postIntakeAlgaeFromReef(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP);
+    }
+
+    public static final Command intakeAlgaeFromReef(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return intakeAlgaeFromReef(
+          drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
+    }
+
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
+      return intakeAlgaeFromReefAuto(
+          drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
     }
 
     public static final Command emergencyEject(
@@ -947,23 +991,27 @@ public class CompositeCommands {
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP));
     }
 
-    public static final Command processAlgae(
-        V3_EpsilonSuperstructure superstructure,
-        V3_EpsilonIntake intake,
-        V3_EpsilonManipulator manipulator) {
-      return Commands.sequence(
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.PROCESSOR_SCORE),
-          Commands.waitSeconds(3),
-          superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN));
-    }
-
     public static final Command manipulatorGroundIntake(
         V3_EpsilonManipulator manipulator, V3_EpsilonSuperstructure superstructure) {
       return Commands.sequence(
           Commands.runOnce(
               () -> superstructure.runGoal(V3_EpsilonSuperstructureStates.GROUND_INTAKE_ALGAE)),
           Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)));
+    }
+
+    public static final Command setDynamicReefHeight(
+        ReefState height, V3_EpsilonSuperstructure superstructure) {
+      return Commands.either(
+          Commands.sequence(
+              Commands.runOnce(() -> RobotState.setReefHeight(height)),
+              superstructure.setPosition()),
+          Commands.none(),
+          () ->
+              Set.of(
+                      V3_EpsilonSuperstructureStates.L2,
+                      V3_EpsilonSuperstructureStates.L3,
+                      V3_EpsilonSuperstructureStates.L4)
+                  .contains(superstructure.getCurrentState()));
     }
   }
 }

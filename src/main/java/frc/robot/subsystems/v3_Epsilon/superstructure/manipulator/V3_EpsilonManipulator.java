@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
@@ -73,9 +74,16 @@ public class V3_EpsilonManipulator {
       io.setArmGoal(goal);
     }
 
-    if (hasAlgae()
-        && Set.of(ManipulatorRollerState.CORAL_INTAKE, ManipulatorRollerState.STOP)
-            .contains(rollerGoal)) {
+    if (rollerGoal.equals(ManipulatorRollerState.SCORE_ALGAE)) {
+      io.setRollerVoltage(ManipulatorRollerState.SCORE_ALGAE.getVoltage());
+    } else if (hasAlgae()
+        && Set.of(
+                ManipulatorRollerState.CORAL_INTAKE,
+                ManipulatorRollerState.STOP,
+                ManipulatorRollerState.ALGAE_INTAKE)
+            .contains(rollerGoal)
+        && !rollerGoal.equals(ManipulatorRollerState.SCORE_ALGAE)) {
+      RobotState.setHasAlgae(true);
       io.setRollerVoltage(holdVoltage());
     } else if (hasCoral()) {
       io.setRollerVoltage(holdVoltage());
@@ -105,7 +113,8 @@ public class V3_EpsilonManipulator {
    */
   @AutoLogOutput(key = "Manipulator/Has Algae")
   public boolean hasAlgae() {
-    return inputs.canRangeGot;
+    boolean hasAlgae = rollerGoal.equals(ManipulatorRollerState.ALGAE_INTAKE) && inputs.canRangeGot;
+    return hasAlgae;
   }
 
   /**
@@ -234,7 +243,7 @@ public class V3_EpsilonManipulator {
    * uses another set of coefficients.
    */
   private double holdVoltage() {
-    return -1;
+    return hasAlgae() ? -12.0 : -1;
   }
 
   /**

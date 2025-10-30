@@ -40,6 +40,11 @@ public class V3_EpsilonClimber extends SubsystemBase {
     InternalLoggedTracer.record("Climber Input Processing", "Climber/Periodic");
 
     isClimbed = io.isClimbed();
+
+    if (RobotState.isClimberReady()) {
+      io.setRollerVoltage(-12);
+    }
+
     ExternalLoggedTracer.record("Climber Total", "Climber/Periodic");
   }
 
@@ -70,13 +75,15 @@ public class V3_EpsilonClimber extends SubsystemBase {
    * @return A command to release the climber.
    */
   public Command releaseClimber() {
-    return this.runEnd(() -> io.setDeploymentVoltage(1), () -> io.setDeploymentVoltage(0))
-        .until(
-            () ->
-                inputs.deploymentPosition.getRadians()
-                        >= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_DEPLOYED_RADIANS
-                    || override)
-        .finallyDo(() -> RobotState.setClimberReady(true));
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setRollerVoltage(12)),
+        this.runEnd(() -> io.setDeploymentVoltage(-1), () -> io.setDeploymentVoltage(0))
+            .until(
+                () ->
+                    inputs.deploymentPosition.getRadians()
+                            <= V3_EpsilonClimberConstants.CLIMBER_CLIMBED_DEPLOYED_RADIANS
+                        || override)
+            .finallyDo(() -> RobotState.setClimberReady(true)));
   }
 
   /**
@@ -86,8 +93,10 @@ public class V3_EpsilonClimber extends SubsystemBase {
    * @return A command to winch the climber.
    */
   public Command winchClimber() {
-    return Commands.runEnd(() -> io.setRollerVoltage(12), () -> io.setRollerVoltage(0))
-        .until(() -> isClimbed);
+    return Commands.parallel(
+        Commands.runOnce(() -> io.setRollerVoltage(0)),
+        Commands.runEnd(() -> io.setDeploymentVoltage(-12), () -> io.setDeploymentVoltage(0))
+            .until(() -> isClimbed));
   }
 
   /**
@@ -96,7 +105,9 @@ public class V3_EpsilonClimber extends SubsystemBase {
    * @return A command to manually winch the climber.
    */
   public Command winchClimberManual() {
-    return this.runEnd(() -> io.setRollerVoltage(4), () -> io.setRollerVoltage(0));
+    return Commands.parallel(
+        Commands.runOnce(() -> io.setRollerVoltage(0)),
+        this.runEnd(() -> io.setDeploymentVoltage(-12.0), () -> io.setDeploymentVoltage(0)));
   }
 
   /**

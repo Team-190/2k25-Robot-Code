@@ -75,7 +75,7 @@ public class RobotState {
     }
 
     OIData = new OperatorInputData(ReefPose.LEFT, ReefState.STOW);
-    scoreSide = ScoreSide.CENTER;
+    scoreSide = ScoreSide.RIGHT;
 
     robotHeading = new Rotation2d();
     headingOffset = new Rotation2d();
@@ -203,7 +203,11 @@ public class RobotState {
     boolean atCoralSetpoint =
         Math.abs(distanceToCoralSetpoint)
                 <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
-            && Math.abs(autoAlignCoralSetpoint.getRotation().minus(robotHeading).getRadians())
+            && Math.abs(
+                    autoAlignCoralSetpoint
+                        .getRotation()
+                        .minus(getRobotPoseReef().getRotation())
+                        .getRadians())
                 <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
                     .omegaPIDConstants()
                     .tolerance()
@@ -211,7 +215,11 @@ public class RobotState {
     boolean atAlgaeSetpoint =
         Math.abs(distanceToAlgaeSetpoint)
                 <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS.positionThresholdMeters().get()
-            && Math.abs(autoAlignAlgaeSetpoint.getRotation().minus(robotHeading).getRadians())
+            && Math.abs(
+                    autoAlignAlgaeSetpoint
+                        .getRotation()
+                        .minus(getRobotPoseReef().getRotation())
+                        .getRadians())
                 <= DriveConstants.ALIGN_ROBOT_TO_APRIL_TAG_CONSTANTS
                     .omegaPIDConstants()
                     .tolerance()

@@ -316,7 +316,7 @@ public class ElevatorConstants {
         new PositionConstants(
             0.79 - Units.inchesToMeters(8),
             0.79 - Units.inchesToMeters(8),
-            Units.inchesToMeters(25))),
+            Units.inchesToMeters(24))),
     ASS_TOP(new PositionConstants(1.2, 0.0, 0.0)),
     ASS_BOT(new PositionConstants(0.82, 0.0, 0.0)),
     L1(
@@ -332,7 +332,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(48))),
+            Units.inchesToMeters(50))),
     L4_PLUS(
         new PositionConstants(
             0.0,
@@ -342,7 +342,7 @@ public class ElevatorConstants {
         new PositionConstants(
             1.3864590139769697 + Units.inchesToMeters(0.5),
             1.3864590139769697 + Units.inchesToMeters(0.5),
-            Units.inchesToMeters(50))),
+            Units.inchesToMeters(53))),
 
     HIGH_STOW(new PositionConstants(0, 0, 0.5)),
     HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(33.25))),

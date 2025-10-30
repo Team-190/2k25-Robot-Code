@@ -98,10 +98,10 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     this.manipulator = manipulator;
 
     previousState = null;
-    currentState = V3_EpsilonSuperstructureStates.STOW_DOWN;
+    currentState = V3_EpsilonSuperstructureStates.START;
     nextState = null;
 
-    targetState = V3_EpsilonSuperstructureStates.STOW_DOWN;
+    targetState = V3_EpsilonSuperstructureStates.START;
 
     // Initialize the graph
     graph = new DefaultDirectedGraph<>(EdgeCommand.class);
@@ -543,23 +543,39 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   public Command runReefScoreGoal(Supplier<ReefState> goal) {
     // Run appropriate action sequence depending on reef level
-    return runActionWithTimeout(
-        () ->
-            switch (goal.get()) {
-              case L1 -> V3_EpsilonSuperstructureStates.L1;
-              case L2 -> V3_EpsilonSuperstructureStates.L2;
-              case L3 -> V3_EpsilonSuperstructureStates.L3;
-              case L4 -> V3_EpsilonSuperstructureStates.L4;
-              default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
-            },
-        () ->
-            switch (goal.get()) {
-              case L1 -> 0.8;
-              case L2 -> 0.15;
-              case L3 -> 0.15;
-              case L4 -> 0.1;
-              default -> 0;
-            });
+    return this.runGoal(
+        () -> {
+          switch (goal.get()) {
+            case L1:
+              return V3_EpsilonSuperstructureStates.L1_SCORE;
+            case L2:
+              return V3_EpsilonSuperstructureStates.L2_SCORE;
+            case L3:
+              return V3_EpsilonSuperstructureStates.L3_SCORE;
+            case L4:
+              return V3_EpsilonSuperstructureStates.L4_SCORE;
+            default:
+              return V3_EpsilonSuperstructureStates.STOW_DOWN;
+          }
+        });
+
+    // return runActionWithTimeout(
+    //     () ->
+    //         switch (goal.get()) {
+    //           case L1 -> V3_EpsilonSuperstructureStates.L1;
+    //           case L2 -> V3_EpsilonSuperstructureStates.L2;
+    //           case L3 -> V3_EpsilonSuperstructureStates.L3;
+    //           case L4 -> V3_EpsilonSuperstructureStates.L4;
+    //           default -> V3_EpsilonSuperstructureStates.STOW_DOWN;
+    //         },
+    //     () ->
+    //         switch (goal.get()) {
+    //           case L1 -> 0.8;
+    //           case L2 -> 0.15;
+    //           case L3 -> 0.15;
+    //           case L4 -> 0.1;
+    //           default -> 0;
+    //         });
   }
 
   /**
