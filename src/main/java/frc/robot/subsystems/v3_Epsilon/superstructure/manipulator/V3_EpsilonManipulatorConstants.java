@@ -218,7 +218,7 @@ public final class V3_EpsilonManipulatorConstants {
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
     FLIPPED_SCORE(Rotation2d.fromDegrees(-270)),
-    WINDMILL_ANGLE(Rotation2d.fromDegrees(227.5)),
+    WINDMILL_ANGLE(Rotation2d.fromDegrees(-90)),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
     INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
