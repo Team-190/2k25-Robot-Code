@@ -389,11 +389,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return Commands.sequence(
-        Commands.runOnce(
-            () -> manipulator.setArmGoal(V3_EpsilonManipulatorConstants.ManipulatorArmState.SCORE)),
-        Commands.waitSeconds(0.4),
-        V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
-            drive, superstructure, ReefState.L2));
+    return AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator, null).cmd();
   }
 }
