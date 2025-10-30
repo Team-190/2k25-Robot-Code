@@ -215,7 +215,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
             > V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS() * 1.1);
 
     if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE))
-      currentState.getAction().get(intake, manipulator);
+      currentState.getSubsystemActions().get(intake, manipulator);
     if (RobotMode.disabled()) {
       nextState = null;
     } else if (edgeCommand == null || !edgeCommand.getCommand().isScheduled()) {
@@ -372,8 +372,46 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
-    return edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
-        || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
+
+    boolean isAlgaeGood =
+        edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
+            || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
+
+    if (!isAlgaeGood) {
+      return false; // Fail fast if game piece logic disallows it
+    }
+
+    // Condition is TRUE, so we must apply the path forcing logic.
+    V3_EpsilonSuperstructureStates from = graph.getEdgeSource(edge);
+    V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(edge);
+
+    boolean needsFlip = RobotState.getReefAlignData().distanceToCoralSetpoint() <= 0.5;
+
+    if (goal.equals(V3_EpsilonSuperstructureStates.L2)) {
+      if (to == V3_EpsilonSuperstructureStates.L2
+          && from != V3_EpsilonSuperstructureStates.L2_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    if (goal.equals(V3_EpsilonSuperstructureStates.L3)) {
+      if (to == V3_EpsilonSuperstructureStates.L3
+          && from != V3_EpsilonSuperstructureStates.L3_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    if (goal.equals(V3_EpsilonSuperstructureStates.L4)) {
+      if (to == V3_EpsilonSuperstructureStates.L4
+          && from != V3_EpsilonSuperstructureStates.L4_WINDMILL
+          && needsFlip) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /** Resets the superstructure to initial auto state. */

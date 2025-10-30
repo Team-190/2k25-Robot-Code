@@ -222,6 +222,9 @@ public class V3_EpsilonManipulator {
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
+  public boolean armInTolerance(Rotation2d tolerance) {
+    return Math.abs(inputs.armPosition.minus(armGoal).getRadians()) <= tolerance.getRadians();
+  }
   /**
    * Waits until the arm is at the goal position.
    *

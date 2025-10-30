@@ -86,7 +86,7 @@ public class V3_EpsilonManipulatorIOTalonFX implements V3_EpsilonManipulatorIO {
     armConfig.Slot2 =
         Slot2Configs.from(V3_EpsilonManipulatorConstants.ALGAE_GAINS.toTalonFXSlotConfigs());
     armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    armConfig.ClosedLoopGeneral.ContinuousWrap = false;
+    armConfig.ClosedLoopGeneral.ContinuousWrap = true;
     armConfig.MotionMagic =
         new MotionMagicConfigs()
             .withMotionMagicAcceleration(

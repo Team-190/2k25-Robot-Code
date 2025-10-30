@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
@@ -23,18 +24,32 @@ public class V3_EpsilonSuperstructurePose {
   @Getter private final ManipulatorArmState armState;
   @Getter private final IntakePivotState intakeState;
 
+  private final Optional<Rotation2d> flyByArmTolerance;
+
   /**
    * Constructs a new V3_EpsilonSuperstructurePose with the given subsystem poses.
    *
    * @param key A unique identifier for this pose.
    * @param poses The combined poses for all relevant subsystems.
    */
+  public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses, Rotation2d flyBy) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    flyByArmTolerance = Optional.of(flyBy);
+  }
+
   public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses) {
     this.key = key;
 
     this.elevatorHeight = poses.elevatorHeight();
     this.armState = poses.manipulatorArmState();
     this.intakeState = poses.intakePivotState();
+
+    flyByArmTolerance = Optional.empty();
   }
 
   /**
@@ -86,25 +101,15 @@ public class V3_EpsilonSuperstructurePose {
   }
 
   public Command wait(
-      ElevatorFSM elevator,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Optional<V3_EpsilonSuperstructureTransitionCondition> condition) {
-    return Commands.sequence(
-        Commands.parallel(
-            elevator.waitUntilAtGoal(),
-            manipulator.waitUntilArmAtGoal(),
-            intake.waitUntilPivotAtGoal()),
-        Commands.either(
-            Commands.either(
-                elevator.waitUntilAtGoal(),
-                manipulator.waitUntilArmAtGoal(),
-                () ->
-                    condition
-                        .get()
-                        .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
-            Commands.none(),
-            () -> condition.isPresent()));
+      ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
+    if (flyByArmTolerance.isPresent()) {
+      return Commands.waitUntil(() -> manipulator.armInTolerance(flyByArmTolerance.get()));
+    } else {
+      return Commands.parallel(
+          elevator.waitUntilAtGoal(),
+          manipulator.waitUntilArmAtGoal(),
+          intake.waitUntilPivotAtGoal());
+    }
   }
 
   /**
