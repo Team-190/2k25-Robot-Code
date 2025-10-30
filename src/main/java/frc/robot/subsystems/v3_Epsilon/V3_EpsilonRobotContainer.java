@@ -388,6 +388,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator, null).cmd();
+    return AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator).cmd();
   }
 }

@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -225,9 +227,14 @@ public final class V3_EpsilonManipulatorConstants {
 
     private final Rotation2d angle;
 
-    public Rotation2d getAngle() {
-
-      return angle;
+    public Rotation2d getAngle(RobotState.ScoreSide scoreSide) {
+      if (scoreSide.equals(ScoreSide.RIGHT)) {
+        return angle;
+      } else if (scoreSide.equals(ScoreSide.LEFT)) {
+        return angle.unaryMinus();
+      } else {
+        return angle;
+      }
     }
   }
 

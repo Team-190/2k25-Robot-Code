@@ -40,7 +40,7 @@ public class V3_EpsilonManipulator {
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle();
+    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(RobotState.getScoreSide());
     rollerGoal = ManipulatorRollerState.STOP;
   }
 
@@ -117,7 +117,7 @@ public class V3_EpsilonManipulator {
    */
   public void setArmGoal(ManipulatorArmState goal) {
     isClosedLoop = true;
-    armGoal = goal.getAngle();
+    armGoal = goal.getAngle(RobotState.getScoreSide());
   }
 
   public void setArmGoal(Rotation2d goal) {
