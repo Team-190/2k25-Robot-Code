@@ -303,7 +303,7 @@ public class ElevatorConstants {
         new PositionConstants(
             0.2161583093038944 + Units.inchesToMeters(1),
             0.2161583093038944 + Units.inchesToMeters(1),
-            0)),
+            0.1819)),
     ALGAE_MID(
         new PositionConstants(
             0.7073684509805078, 0.7073684509805078, 1.2)), // USED AS PRE-HANDOFF FOR V3

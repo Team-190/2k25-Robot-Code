@@ -1,8 +1,6 @@
 package frc.robot.subsystems.shared.elevator;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -338,13 +336,11 @@ public class Elevator {
     }
   }
 
-  //FSM for the Elevator
+  // FSM for the Elevator
   public class ElevatorFSM {
     @AutoLogOutput(key = "Elevator/Past Barge Threshold")
     public boolean pastBargeThresholdgetPositionMeters() {
-      if (Constants.getMode() == Mode.REAL)
-        return inputs.accelerationMetersPerSecondSquared < -1.0
-            && inputs.velocityMetersPerSecond > 4;
+      if (Constants.getMode() == Mode.REAL) return inputs.velocityMetersPerSecond > 2.75;
       else {
         return inputs.positionMeters > .95;
       }

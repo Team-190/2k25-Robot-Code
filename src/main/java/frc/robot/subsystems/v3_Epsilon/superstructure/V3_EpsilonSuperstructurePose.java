@@ -72,7 +72,6 @@ public class V3_EpsilonSuperstructurePose {
    * states defined by this pose.
    *
    * @param elevator The elevator subsystem.
-   * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
    * @param manipulator The manipulator subsystem.
    * @return A Command that sets all subsystems to their respective states in parallel.

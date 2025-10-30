@@ -207,7 +207,7 @@ public final class V3_EpsilonManipulatorConstants {
     SCORE(Rotation2d.fromDegrees(90.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
-    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(113.378906)),
     CORAL_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
     REEF_INTAKE(Rotation2d.fromDegrees(90)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),

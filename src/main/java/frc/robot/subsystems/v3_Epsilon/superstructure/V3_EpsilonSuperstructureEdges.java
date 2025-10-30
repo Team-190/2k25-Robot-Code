@@ -122,6 +122,12 @@ public class V3_EpsilonSuperstructureEdges {
 
     V3_EpsilonSuperstructurePose pose = to.getPose();
 
+    if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
+      return Commands.sequence(
+          pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
+          Commands.waitUntil(() -> elevator.pastBargeThresholdgetPositionMeters()));
+    }
+
     return Commands.sequence(
         pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
         pose.wait(elevator, intake, manipulator, to.getTransitionCondition()));

@@ -19,13 +19,7 @@ import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.shared.drive.Drive;
-import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.drive.GyroIO;
-import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
-import frc.robot.subsystems.shared.drive.ModuleIO;
-import frc.robot.subsystems.shared.drive.ModuleIOSim;
-import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.drive.*;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
@@ -388,6 +382,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.autoELeft(drive, superstructure, intake, manipulator, null).cmd();
+    return AutonomousCommands.autoELeft(
+            drive, superstructure, intake, manipulator, RobotCameras.V3_EPSILON_CAMS)
+        .cmd();
   }
 }

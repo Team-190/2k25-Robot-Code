@@ -29,12 +29,16 @@ public enum V3_EpsilonSuperstructureStates {
   GROUND_INTAKE_ALGAE(
       "GROUND_INTAKE_ALGAE",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
+          ReefState.ALGAE_FLOOR_INTAKE,
+          ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+          IntakePivotState.INTAKE_ALGAE),
       new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
   GROUND_AQUISITION_ALGAE(
       "GROUND_AQUISITION_ALGAE",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
+          ReefState.ALGAE_FLOOR_INTAKE,
+          ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+          IntakePivotState.INTAKE_ALGAE),
       SubsystemActions.empty()),
 
   GROUND_INTAKE_CORAL(
@@ -144,7 +148,7 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
+          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",
