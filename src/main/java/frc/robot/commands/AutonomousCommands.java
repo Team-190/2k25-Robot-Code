@@ -2108,7 +2108,7 @@ public class AutonomousCommands {
       V3_EpsilonManipulator manipulator,
       Camera... cameras) {
 
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoELeftBack");
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoFLeft");
     LoggedAutoTrajectory path1 = (routine.trajectory("F_PATH_1"));
     LoggedAutoTrajectory path2 = (routine.trajectory("F_PATH_2"));
     LoggedAutoTrajectory path3 = (routine.trajectory("F_PATH_3"));
@@ -2139,6 +2139,31 @@ public class AutonomousCommands {
                     path5.cmd(), superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
                 Commands.runOnce(() -> drive.stop()),
                 CompositeCommands.V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoFLeftMinimal(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoFLeftMinimal");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_PATH_1"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                CompositeCommands.V3_EpsilonCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.runOnce(() -> drive.stop())));
 
     return routine;
   }
