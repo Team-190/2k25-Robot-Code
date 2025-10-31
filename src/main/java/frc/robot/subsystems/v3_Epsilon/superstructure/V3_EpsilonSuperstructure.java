@@ -104,7 +104,7 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-        if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE)) {
+    if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE)) {
       if (nextState != null) {
         // If we are in a transition, run the actions for the destination state
         nextState.getAction().get(intake, manipulator);
@@ -279,22 +279,24 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     }
 
     // Condition is TRUE, so we must apply the path forcing logic.
-    V3_EpsilonSuperstructureStates from = graph.getEdgeSource(edge);
-    V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(edge);
+    if (!manipulator.hasAlgae()) {
+      V3_EpsilonSuperstructureStates from = graph.getEdgeSource(edge);
+      V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(edge);
 
-    boolean needsFlip = RobotState.getScoreSide().equals(ScoreSide.RIGHT);
+      boolean needsFlip = RobotState.getScoreSide().equals(ScoreSide.RIGHT);
 
-    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && needsFlip) {
-      if (to == V3_EpsilonSuperstructureStates.STOW_UP
-          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
-        return false;
+      if (goal == V3_EpsilonSuperstructureStates.STOW_UP && needsFlip) {
+        if (to == V3_EpsilonSuperstructureStates.STOW_UP
+            && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
+          return false;
+        }
       }
-    }
 
-    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && !needsFlip) {
-      if (to == V3_EpsilonSuperstructureStates.STOW_UP
-          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
-        return false;
+      if (goal == V3_EpsilonSuperstructureStates.STOW_UP && !needsFlip) {
+        if (to == V3_EpsilonSuperstructureStates.STOW_UP
+            && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
+          return false;
+        }
       }
     }
 

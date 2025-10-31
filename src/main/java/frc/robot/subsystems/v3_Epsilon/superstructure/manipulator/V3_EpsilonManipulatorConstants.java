@@ -223,6 +223,7 @@ public final class V3_EpsilonManipulatorConstants {
     WINDMILL_ANGLE(Rotation2d.fromDegrees(-90)),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    ALGAESCORE(Rotation2d.fromDegrees(25)),
     INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.

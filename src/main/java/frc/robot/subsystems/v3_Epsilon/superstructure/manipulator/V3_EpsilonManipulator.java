@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
@@ -35,6 +36,8 @@ public class V3_EpsilonManipulator {
 
   private boolean isClosedLoop;
 
+  Set<ManipulatorArmState> algaeStates;
+
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
@@ -42,6 +45,12 @@ public class V3_EpsilonManipulator {
     isClosedLoop = true;
     armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(RobotState.getScoreSide());
     rollerGoal = ManipulatorRollerState.STOP;
+
+    algaeStates =
+        Set.of(
+            ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+            ManipulatorArmState.REEF_INTAKE,
+            ManipulatorArmState.ALGAESCORE);
   }
 
   public void periodic() {
@@ -117,7 +126,11 @@ public class V3_EpsilonManipulator {
    */
   public void setArmGoal(ManipulatorArmState goal) {
     isClosedLoop = true;
-    armGoal = goal.getAngle(RobotState.getScoreSide());
+    if (!algaeStates.contains(goal)) {
+      armGoal = goal.getAngle(RobotState.getScoreSide());
+    } else {
+      armGoal = goal.getAngle(ScoreSide.CENTER);
+    }
   }
 
   public void setArmGoal(Rotation2d goal) {
@@ -309,10 +322,6 @@ public class V3_EpsilonManipulator {
    */
   public Rotation2d getArmAngle() {
     return inputs.armPosition;
-  }
-
-  public boolean armInTolerance(Rotation2d tolerance) {
-    return Math.abs(inputs.armPosition.minus(armGoal).getRadians()) <= tolerance.getRadians();
   }
 
   public double getArmVelocity() {
