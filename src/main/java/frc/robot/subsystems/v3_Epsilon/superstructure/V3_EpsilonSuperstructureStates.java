@@ -164,25 +164,7 @@ public enum V3_EpsilonSuperstructureStates {
       "INVERSE_FLIP_UP",
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty()),
-  L2_WINDMILL(
-      "L2_WINDMILL",
-      new SubsystemPoses(
-          ReefState.L2, ManipulatorArmState.CORAL_INTAKE_FLOOR, IntakePivotState.HANDOFF),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45)),
-  L3_WINDMILL(
-      "L3_WINDMILL",
-      new SubsystemPoses(
-          ReefState.L3, ManipulatorArmState.CORAL_INTAKE_FLOOR, IntakePivotState.HANDOFF),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45)),
-  L4_WINDMILL(
-      "L4_WINDMILL",
-      new SubsystemPoses(
-          ReefState.L4, ManipulatorArmState.CORAL_INTAKE_FLOOR, IntakePivotState.HANDOFF),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45));
+      SubsystemActions.empty());
 
   @Getter private final V3_EpsilonSuperstructurePose pose;
   @Getter private final V3_EpsilonSuperstructureAction action;
