@@ -149,13 +149,14 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.PRE_SCORE, IntakePivotState.HANDOFF),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",
       new SubsystemPoses(
           ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
-      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP), Rotation2d.fromDegrees(35)),
+      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP),
+      Rotation2d.fromDegrees(15)),
   FLIP_DOWN(
       "FLIP_DOWN",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),

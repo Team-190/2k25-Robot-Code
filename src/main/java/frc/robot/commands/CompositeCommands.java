@@ -737,9 +737,10 @@ public class CompositeCommands {
     }
 
     public static final Command optimalScoreBarge(V3_EpsilonSuperstructure superstructure) {
-          return superstructure
-              .runGoalUntil(V3_EpsilonSuperstructureStates.BARGE_SCORE, () -> false)
-              .withTimeout(2);
+      return superstructure
+          .runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE)
+          .andThen(
+              superstructure.runActionWithTimeout(V3_EpsilonSuperstructureStates.BARGE_SCORE, 1));
     }
 
     /**
