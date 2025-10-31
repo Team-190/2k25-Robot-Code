@@ -1,11 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -19,11 +18,7 @@ import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.shared.drive.DriveConstants;
 import frc.robot.subsystems.shared.vision.Camera;
-import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.ExternalLoggedTracer;
-import frc.robot.util.GeometryUtil;
-import frc.robot.util.InternalLoggedTracer;
-import frc.robot.util.NTPrefixes;
+import frc.robot.util.*;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -169,34 +164,56 @@ public class RobotState {
 
       // --- 2. Automatically determine the closest side of the ROBOT ---
       Pose2d robotPose = getRobotPoseReef();
-      Translation2d targetTranslation = baseCoralSetpoint.getTranslation();
-
-      // Define "left" and "right" points on the robot, relative to its center.
-      // We'll use the Y-trackwidth from DriveConstants.
-      // In WPILib, +Y is "left" and -Y is "right" in robot-local coordinates.
+      //            Translation2d targetTranslation = baseCoralSetpoint.getTranslation();
       //
-      double robotHalfWidth = DriveConstants.DRIVE_CONFIG.bumperLength() / 2.0;
+      //
+      //            // Define "left" and "right" points on the robot, relative to its center.
+      //            // We'll use the Y-trackwidth from DriveConstants.
+      //            // In WPILib, +Y is "left" and -Y is "right" in robot-local coordinates.
+      //            //
+      //            double robotHalfWidth = DriveConstants.DRIVE_CONFIG.bumperLength() / 2.0;
+      //
+      //            // Transform these robot-local points into field-global coordinates
+      //            Translation2d leftSideField =
+      //                    robotPose
+      //                            .transformBy(new Transform2d(new Translation2d(0,
+      // robotHalfWidth), new Rotation2d()))
+      //                            .getTranslation();
+      //            Translation2d rightSideField =
+      //                    robotPose
+      //                            .transformBy(new Transform2d(new Translation2d(0,
+      // -robotHalfWidth), new Rotation2d()))
+      //                            .getTranslation();
+      //
+      //            // Calculate distance from each robot side to the target
+      //            double distToLeft = leftSideField.getDistance(targetTranslation);
+      //            double distToRight = rightSideField.getDistance(targetTranslation);
+      //
+      //            // Set the static scoreSide variable based on which side is closer
+      //            // (This variable is now updated every loop)
+      //            if (distToLeft < distToRight) {
+      //                scoreSide = ScoreSide.LEFT;
+      //            } else {
+      //                scoreSide = ScoreSide.RIGHT;
+      //            }
 
-      // Transform these robot-local points into field-global coordinates
-      Translation2d leftSideField =
-          robotPose
-              .transformBy(new Transform2d(new Translation2d(0, robotHalfWidth), new Rotation2d()))
-              .getTranslation();
-      Translation2d rightSideField =
-          robotPose
-              .transformBy(new Transform2d(new Translation2d(0, -robotHalfWidth), new Rotation2d()))
-              .getTranslation();
-
-      // Calculate distance from each robot side to the target
-      double distToLeft = leftSideField.getDistance(targetTranslation);
-      double distToRight = rightSideField.getDistance(targetTranslation);
-
-      // Set the static scoreSide variable based on which side is closer
-      // (This variable is now updated every loop)
-      if (distToLeft < distToRight) {
-        scoreSide = ScoreSide.LEFT;
-      } else {
+      if (Math.abs(
+              MathUtil.angleModulus(
+                  baseCoralSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(-90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))
+          <= Math.abs(
+              MathUtil.angleModulus(
+                  baseCoralSetpoint
+                      .getRotation()
+                      .rotateBy(Rotation2d.fromDegrees(90))
+                      .minus(RobotState.getRobotPoseField().getRotation())
+                      .getRadians()))) {
         scoreSide = ScoreSide.RIGHT;
+      } else {
+        scoreSide = ScoreSide.LEFT;
       }
 
       // --- 3. Now, create the FINAL setpoint using the newly-set scoreSide ---

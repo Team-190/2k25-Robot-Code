@@ -1,8 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,7 +48,7 @@ public class V3_EpsilonManipulator {
         Set.of(
             ManipulatorArmState.ALGAE_INTAKE_FLOOR,
             ManipulatorArmState.REEF_INTAKE,
-            ManipulatorArmState.ALGAESCORE);
+            ManipulatorArmState.ALGAE_SCORE);
   }
 
   public void periodic() {
@@ -216,6 +214,7 @@ public class V3_EpsilonManipulator {
   public boolean armInTolerance(Rotation2d tolerance) {
     return Math.abs(inputs.armPosition.minus(armGoal).getRadians()) <= tolerance.getRadians();
   }
+
   /**
    * Waits until the arm is at the goal position.
    *
@@ -284,6 +283,7 @@ public class V3_EpsilonManipulator {
         Commands.waitSeconds(.25),
         algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
+
   /**
    * Sets the manipulator arm to the specified state.
    *

@@ -253,8 +253,8 @@ public class DriveConstants {
                 FRONT_RIGHT,
                 BACK_LEFT,
                 BACK_RIGHT,
-                Units.inchesToMeters(34.5),
-                Units.inchesToMeters(34.5));
+                Units.inchesToMeters(33.5),
+                Units.inchesToMeters(33.5));
 
         GAINS =
             new Gains(

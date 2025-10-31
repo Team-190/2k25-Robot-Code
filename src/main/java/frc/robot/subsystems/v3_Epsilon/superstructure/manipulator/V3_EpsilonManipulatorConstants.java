@@ -88,7 +88,7 @@ public final class V3_EpsilonManipulatorConstants {
                 new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 8),
                 new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5),
                 new LoggedTunableNumber(
-                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1)));
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
         CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 20, 40, 20);
         break;
       case V3_EPSILON_SIM:
@@ -223,7 +223,7 @@ public final class V3_EpsilonManipulatorConstants {
     WINDMILL_ANGLE(Rotation2d.fromDegrees(-90)),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
-    ALGAESCORE(Rotation2d.fromDegrees(25)),
+    ALGAE_SCORE(Rotation2d.fromDegrees(25)),
     INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
