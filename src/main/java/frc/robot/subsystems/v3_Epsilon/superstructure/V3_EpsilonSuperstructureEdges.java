@@ -120,7 +120,7 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
 
-    V3_EpsilonSuperstructurePose pose = to.getPose();
+    V3_EpsilonSuperstructurePose pose = to.getSubsystemPoses();
 
     if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
       return Commands.sequence(
@@ -130,7 +130,7 @@ public class V3_EpsilonSuperstructureEdges {
 
     return Commands.sequence(
         pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
-        pose.wait(elevator, intake, manipulator, to.getTransitionCondition()));
+        pose.wait(elevator, intake, manipulator));
   }
 
   /**
