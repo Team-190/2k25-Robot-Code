@@ -42,7 +42,7 @@ public class RobotState {
 
   @Getter @Setter private static RobotMode mode;
   @Getter @Setter private static boolean hasAlgae;
-  @Getter @Setter private static ScoreSide scoreSide;
+  @Getter private static ScoreSide scoreSide;
 
   @Getter @Setter private static boolean isIntakingCoral;
   @Getter @Setter private static boolean isIntakingAlgae;

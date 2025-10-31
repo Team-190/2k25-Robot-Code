@@ -148,7 +148,7 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.PRE_SCORE, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",

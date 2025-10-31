@@ -203,7 +203,7 @@ public final class V3_EpsilonManipulatorConstants {
 
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
-    PRE_SCORE(Rotation2d.fromDegrees(50.0)),
+    PRE_SCORE(Rotation2d.fromDegrees(25.0).unaryMinus()),
     SCORE(Rotation2d.fromDegrees(90.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
