@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = true;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V3_EPSILON_SIM;
+  public static final RobotType ROBOT = RobotType.V3_EPSILON;
 
   public static Mode getMode() {
     switch (ROBOT) {

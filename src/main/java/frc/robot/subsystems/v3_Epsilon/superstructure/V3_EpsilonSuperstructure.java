@@ -380,12 +380,16 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
     boolean needsFlip = RobotState.getScoreSide().equals(ScoreSide.RIGHT);
 
-    // If the final goal is L2, force path through L2_WINDMILL
-    if (goal == V3_EpsilonSuperstructureStates.STOW_UP) {
-      // DISALLOW any direct path to L2 UNLESS it comes from L2_WINDMILL
+    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && needsFlip) {
       if (to == V3_EpsilonSuperstructureStates.STOW_UP
-          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP
-          && needsFlip) {
+          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
+        return false;
+      }
+    }
+
+    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && !needsFlip) {
+      if (to == V3_EpsilonSuperstructureStates.STOW_UP
+          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
         return false;
       }
     }

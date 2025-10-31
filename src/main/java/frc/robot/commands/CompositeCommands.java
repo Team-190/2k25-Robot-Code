@@ -676,8 +676,7 @@ public class CompositeCommands {
         V3_EpsilonManipulator manipulator) {
       return Commands.either(
           Commands.sequence(
-              superstructure.runGoalUntil(
-                  V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+              superstructure.runGoalUntil(V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> true),
               superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.L1),
           () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
