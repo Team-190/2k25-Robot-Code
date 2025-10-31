@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureAction.SubsystemActions;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructurePose.SubsystemPoses;
@@ -7,7 +8,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeCon
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
-import java.util.Optional;
+import lombok.Getter;
 
 public enum V3_EpsilonSuperstructureStates {
   START("START", new SubsystemPoses(), SubsystemActions.empty()),
@@ -29,12 +30,16 @@ public enum V3_EpsilonSuperstructureStates {
   GROUND_INTAKE_ALGAE(
       "GROUND_INTAKE_ALGAE",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
+          ReefState.ALGAE_FLOOR_INTAKE,
+          ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+          IntakePivotState.INTAKE_ALGAE),
       new SubsystemActions(ManipulatorRollerState.ALGAE_INTAKE, IntakeRollerState.STOP)),
   GROUND_AQUISITION_ALGAE(
       "GROUND_AQUISITION_ALGAE",
       new SubsystemPoses(
-          ReefState.STOW, ManipulatorArmState.ALGAE_INTAKE_FLOOR, IntakePivotState.INTAKE_ALGAE),
+          ReefState.ALGAE_FLOOR_INTAKE,
+          ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+          IntakePivotState.INTAKE_ALGAE),
       SubsystemActions.empty()),
 
   GROUND_INTAKE_CORAL(
@@ -64,7 +69,7 @@ public enum V3_EpsilonSuperstructureStates {
       SubsystemActions.empty()),
   L2_SCORE(
       "L2_SCORE",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.SCORE, IntakePivotState.HANDOFF),
+      new SubsystemPoses(ReefState.L2, ManipulatorArmState.FLIPPED_SCORE, IntakePivotState.HANDOFF),
       new SubsystemActions(ManipulatorRollerState.SCORE_CORAL, IntakeRollerState.STOP)),
 
   L3(
@@ -144,46 +149,30 @@ public enum V3_EpsilonSuperstructureStates {
   BARGE(
       "BARGE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
+          ReefState.HIGH_STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.HANDOFF),
       SubsystemActions.empty()),
   BARGE_SCORE(
       "BARGE_SCORE",
       new SubsystemPoses(
-          ReefState.ALGAE_SCORE, ManipulatorArmState.TRANSITION, IntakePivotState.HANDOFF),
-      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP)),
+          ReefState.ALGAE_SCORE, ManipulatorArmState.ALGAE_SCORE, IntakePivotState.HANDOFF),
+      new SubsystemActions(ManipulatorRollerState.SCORE_ALGAE, IntakeRollerState.STOP),
+      Rotation2d.fromDegrees(15)),
   FLIP_DOWN(
       "FLIP_DOWN",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL),
+      SubsystemActions.empty()),
   FLIP_UP(
       "FLIP_UP",
       new SubsystemPoses(ReefState.HANDOFF, ManipulatorArmState.FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      V3_EpsilonSuperstructureTransitionCondition.MANIPULATOR_AT_GOAL),
-  INVERSE_FLIP_DOWN(
-      "INVERSE_FLIP_DOWN",
-      new SubsystemPoses(
-          ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL),
+      SubsystemActions.empty()),
   INVERSE_FLIP_UP(
-      "FLIP_UP",
+      "INVERSE_FLIP_UP",
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      V3_EpsilonSuperstructureTransitionCondition.MANIPULATOR_AT_GOAL);
+      SubsystemActions.empty());
 
-  // Readable name for state
-  private final String name;
-
-  // Target positions for all subsystems in this state
-  private final SubsystemPoses subsystemPoses;
-
-  // Actions to perform for all subsystems in this state
-  private final SubsystemActions subsystemActions;
-
-  private final Optional<V3_EpsilonSuperstructureTransitionCondition> transitionCondition;
+  @Getter private final V3_EpsilonSuperstructurePose pose;
+  @Getter private final V3_EpsilonSuperstructureAction action;
 
   /**
    * Constructor for V3_SuperstructureStates.
@@ -193,52 +182,19 @@ public enum V3_EpsilonSuperstructureStates {
    * @param action The subsystem actions for this state.
    */
   V3_EpsilonSuperstructureStates(String name, SubsystemPoses pose, SubsystemActions action) {
-    this.name = name;
-    this.subsystemPoses = pose;
-    this.subsystemActions = action;
-    this.transitionCondition = Optional.empty();
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 
   V3_EpsilonSuperstructureStates(
-      String name,
-      SubsystemPoses pose,
-      SubsystemActions action,
-      V3_EpsilonSuperstructureTransitionCondition condition) {
-    this.name = name;
-    this.subsystemPoses = pose;
-    this.subsystemActions = action;
-    this.transitionCondition = Optional.of(condition);
+      String name, SubsystemPoses pose, SubsystemActions action, Double elevatorTolerance) {
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose, elevatorTolerance);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 
-  /**
-   * Constructor for V3_SuperstructureStates with empty actions.
-   *
-   * @param name The name of the state.
-   * @param pose The subsystem poses for this state.
-   */
-  public V3_EpsilonSuperstructurePose getPose() {
-    return new V3_EpsilonSuperstructurePose(name, subsystemPoses);
-  }
-
-  /**
-   * Returns the actions associated with this superstructure state.
-   *
-   * @return The actions for this state.
-   */
-  public V3_EpsilonSuperstructureAction getAction() {
-    return new V3_EpsilonSuperstructureAction(name, subsystemActions);
-  }
-
-  public Optional<V3_EpsilonSuperstructureTransitionCondition> getTransitionCondition() {
-    return transitionCondition;
-  }
-
-  /**
-   * Returns the name of the superstructure state.
-   *
-   * @return The name of the state.
-   */
-  public String getName() {
-    return name;
+  V3_EpsilonSuperstructureStates(
+      String name, SubsystemPoses pose, SubsystemActions action, Rotation2d armTolerance) {
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose, armTolerance);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 }

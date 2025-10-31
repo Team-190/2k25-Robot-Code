@@ -1,17 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.FieldConstants;
-import frc.robot.FieldConstants.Reef;
 import frc.robot.FieldConstants.Reef.ReefPose;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
-import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.climber.Climber;
 import frc.robot.subsystems.shared.climber.ClimberConstants;
 import frc.robot.subsystems.shared.drive.Drive;
@@ -679,10 +675,17 @@ public class CompositeCommands {
         V3_EpsilonIntake intake,
         V3_EpsilonManipulator manipulator) {
       return Commands.either(
-          Commands.sequence(
-              superstructure.runGoalUntil(
-                  V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
-              superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
+          Commands.either(
+              Commands.sequence(
+                  superstructure.runGoalUntil(
+                      V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+                  superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
+              Commands.none(),
+              () ->
+                  !superstructure.getTargetState().equals(V3_EpsilonSuperstructureStates.STOW_UP)
+                      && !superstructure
+                          .getCurrentState()
+                          .equals(V3_EpsilonSuperstructureStates.STOW_UP)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.L1),
           () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
@@ -700,16 +703,6 @@ public class CompositeCommands {
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.either(
           Commands.sequence(
-              // Commands.runOnce(
-              //         () -> {
-              //           if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-              //             RobotState.setScoreSide(ScoreSide.CENTER);
-              //           } else {
-              //             RobotState.setScoreSide(
-              //                 optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
-              //           }
-              //         })
-              //     .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
               superstructure.setPosition(),
               DriveCommands.autoAlignReefCoral(drive, cameras)
                   .until(() -> RobotState.getReefAlignData().atCoralSetpoint()),
@@ -721,16 +714,6 @@ public class CompositeCommands {
     public static final Command optimalAutoScoreCoralSequence(
         Drive drive, V3_EpsilonSuperstructure superstructure, ReefState height, Camera... cameras) {
       return Commands.sequence(
-          Commands.runOnce(
-                  () -> {
-                    if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-                      RobotState.setScoreSide(ScoreSide.CENTER);
-                    } else {
-                      RobotState.setScoreSide(
-                          optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
-                    }
-                  })
-              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.runReefGoal(() -> height),
           DriveCommands.autoAlignReefCoral(drive, cameras),
           Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
@@ -746,61 +729,15 @@ public class CompositeCommands {
     public static final Command optimalAutoAlignReefAlgae(
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.sequence(
-          Commands.runOnce(
-                  () -> {
-                    int closestReefTag = RobotState.getReefAlignData().closestReefTag();
-                    if (closestReefTag != -1) {
-                      Pose2d baseAlgaeSetpoint =
-                          Reef.reefMap.get(closestReefTag).getAlgaeSetpoint();
-                      RobotState.setScoreSide(optimalSideReef(baseAlgaeSetpoint));
-                    }
-                  })
-              .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN),
           DriveCommands.autoAlignReefAlgae(drive, cameras));
     }
 
-    private static final ScoreSide optimalSideReef(Pose2d baseSetpoint) {
-      if (Math.abs(
-              MathUtil.angleModulus(
-                  baseSetpoint
-                      .getRotation()
-                      .rotateBy(Rotation2d.fromDegrees(-90))
-                      .minus(RobotState.getRobotPoseField().getRotation())
-                      .getRadians()))
-          <= Math.abs(
-              MathUtil.angleModulus(
-                  baseSetpoint
-                      .getRotation()
-                      .rotateBy(Rotation2d.fromDegrees(90))
-                      .minus(RobotState.getRobotPoseField().getRotation())
-                      .getRadians()))) {
-        return ScoreSide.RIGHT;
-      } else {
-        return ScoreSide.LEFT;
-      }
-    }
-
-    private static final ScoreSide optimalSideBarge() {
-      boolean facingPositive =
-          MathUtil.inputModulus(
-                      RobotState.getRobotPoseField().getRotation().getRadians(), 0, 2 * Math.PI)
-                  >= 0
-              && MathUtil.inputModulus(
-                      RobotState.getRobotPoseField().getRotation().getRadians(), 0, 2 * Math.PI)
-                  < Math.PI;
-
-      if (RobotState.getRobotPoseField().getX() < FieldConstants.fieldLength / 2)
-        return facingPositive ? ScoreSide.RIGHT : ScoreSide.LEFT;
-      else return facingPositive ? ScoreSide.LEFT : ScoreSide.RIGHT;
-    }
-
     public static final Command optimalScoreBarge(V3_EpsilonSuperstructure superstructure) {
-      return Commands.sequence(
-          Commands.runOnce(() -> RobotState.setScoreSide(optimalSideBarge())),
-          superstructure
-              .runGoalUntil(V3_EpsilonSuperstructureStates.BARGE_SCORE, () -> false)
-              .withTimeout(2));
+      return superstructure
+          .runGoal(V3_EpsilonSuperstructureStates.BARGE_SCORE)
+          .andThen(
+              superstructure.runActionWithTimeout(V3_EpsilonSuperstructureStates.BARGE_SCORE, 1));
     }
 
     /**

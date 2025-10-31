@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.FieldConstants.Reef.ReefState;
@@ -23,18 +24,41 @@ public class V3_EpsilonSuperstructurePose {
   @Getter private final ManipulatorArmState armState;
   @Getter private final IntakePivotState intakeState;
 
-  /**
-   * Constructs a new V3_EpsilonSuperstructurePose with the given subsystem poses.
-   *
-   * @param key A unique identifier for this pose.
-   * @param poses The combined poses for all relevant subsystems.
-   */
+  @Getter private final Optional<Double> flyByElevatorTolerance;
+  @Getter private final Optional<Rotation2d> flyByArmTolerance;
+
   public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses) {
     this.key = key;
 
     this.elevatorHeight = poses.elevatorHeight();
     this.armState = poses.manipulatorArmState();
     this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses, double elevatorTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.of(elevatorTolerance);
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_EpsilonSuperstructurePose(
+      String key, SubsystemPoses poses, Rotation2d flyByArmTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.of(flyByArmTolerance);
   }
 
   /**
@@ -72,7 +96,6 @@ public class V3_EpsilonSuperstructurePose {
    * states defined by this pose.
    *
    * @param elevator The elevator subsystem.
-   * @param funnel The funnel subsystem.
    * @param intake The intake subsystem.
    * @param manipulator The manipulator subsystem.
    * @return A Command that sets all subsystems to their respective states in parallel.
@@ -86,40 +109,18 @@ public class V3_EpsilonSuperstructurePose {
   }
 
   public Command wait(
-      ElevatorFSM elevator,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Optional<V3_EpsilonSuperstructureTransitionCondition> condition) {
+      ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
 
-    return Commands.either(
-        Commands.either(
-            elevator.waitUntilAtGoal(),
-            manipulator.waitUntilArmAtGoal(),
-            () ->
-                condition
-                    .get()
-                    .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
-        Commands.parallel(
-            elevator.waitUntilAtGoal(),
-            manipulator.waitUntilArmAtGoal(),
-            intake.waitUntilPivotAtGoal()),
-        () -> condition.isPresent());
-
-    // return Commands.sequence(
-    // Commands.parallel(
-    // elevator.waitUntilAtGoal(),
-    // manipulator.waitUntilArmAtGoal(),
-    // intake.waitUntilPivotAtGoal()),
-    // Commands.either(
-    // Commands.either(
-    // elevator.waitUntilAtGoal(),
-    // manipulator.waitUntilArmAtGoal(),
-    // () ->
-    // condition
-    // .get()
-    // .equals(V3_EpsilonSuperstructureTransitionCondition.ELEVATOR_AT_GOAL)),
-    // Commands.none(),
-    // () -> condition.isPresent()));
+    if (flyByElevatorTolerance.isPresent()) {
+      return Commands.waitUntil(() -> elevator.inTolerance(flyByElevatorTolerance.get()));
+    } else if (flyByArmTolerance.isPresent()) {
+      return Commands.waitUntil(() -> manipulator.armInTolerance(flyByArmTolerance.get()));
+    } else {
+      return Commands.parallel(
+          elevator.waitUntilAtGoal(),
+          manipulator.waitUntilArmAtGoal(),
+          intake.waitUntilPivotAtGoal());
+    }
   }
 
   /**
