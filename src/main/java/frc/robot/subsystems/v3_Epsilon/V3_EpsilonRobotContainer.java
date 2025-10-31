@@ -318,10 +318,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     operator
         .back()
         .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE))
-        .onFalse(
-            superstructure
-                .runActionWithTimeout(V3_EpsilonSuperstructureStates.BARGE_SCORE, 0.1)
-                .finallyDo(() -> RobotState.setHasAlgae(false)));
+        .onFalse(V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure));
   }
 
   private void configureAutos() {
