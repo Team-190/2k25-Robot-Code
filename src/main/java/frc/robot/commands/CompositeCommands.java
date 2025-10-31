@@ -675,10 +675,17 @@ public class CompositeCommands {
         V3_EpsilonIntake intake,
         V3_EpsilonManipulator manipulator) {
       return Commands.either(
-          Commands.sequence(
-              superstructure.runGoalUntil(
-                  V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
-              superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
+          Commands.either(
+              Commands.sequence(
+                  superstructure.runGoalUntil(
+                      V3_EpsilonSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+                  superstructure.runGoal(V3_EpsilonSuperstructureStates.STOW_UP)),
+              Commands.none(),
+              () ->
+                  !superstructure.getTargetState().equals(V3_EpsilonSuperstructureStates.STOW_UP)
+                      && !superstructure
+                          .getCurrentState()
+                          .equals(V3_EpsilonSuperstructureStates.STOW_UP)),
           superstructure.runGoal(V3_EpsilonSuperstructureStates.L1),
           () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
     }
@@ -696,16 +703,6 @@ public class CompositeCommands {
         Drive drive, V3_EpsilonSuperstructure superstructure, Camera... cameras) {
       return Commands.either(
           Commands.sequence(
-              // Commands.runOnce(
-              //         () -> {
-              //           if (RobotState.getOIData().currentReefHeight().equals(ReefState.L1)) {
-              //             RobotState.setScoreSide(ScoreSide.CENTER);
-              //           } else {
-              //             RobotState.setScoreSide(
-              //                 optimalSideReef(RobotState.getReefAlignData().coralSetpoint()));
-              //           }
-              //         })
-              //     .beforeStarting(() -> RobotState.setScoreSide(ScoreSide.CENTER)),
               superstructure.setPosition(),
               DriveCommands.autoAlignReefCoral(drive, cameras)
                   .until(() -> RobotState.getReefAlignData().atCoralSetpoint()),

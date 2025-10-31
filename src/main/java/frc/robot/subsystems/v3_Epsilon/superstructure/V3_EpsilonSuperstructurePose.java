@@ -24,23 +24,8 @@ public class V3_EpsilonSuperstructurePose {
   @Getter private final ManipulatorArmState armState;
   @Getter private final IntakePivotState intakeState;
 
-  private final Optional<Rotation2d> flyByArmTolerance;
-
-  /**
-   * Constructs a new V3_EpsilonSuperstructurePose with the given subsystem poses.
-   *
-   * @param key A unique identifier for this pose.
-   * @param poses The combined poses for all relevant subsystems.
-   */
-  public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses, Rotation2d flyBy) {
-    this.key = key;
-
-    this.elevatorHeight = poses.elevatorHeight();
-    this.armState = poses.manipulatorArmState();
-    this.intakeState = poses.intakePivotState();
-
-    flyByArmTolerance = Optional.of(flyBy);
-  }
+  @Getter private final Optional<Double> flyByElevatorTolerance;
+  @Getter private final Optional<Rotation2d> flyByArmTolerance;
 
   public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses) {
     this.key = key;
@@ -49,7 +34,31 @@ public class V3_EpsilonSuperstructurePose {
     this.armState = poses.manipulatorArmState();
     this.intakeState = poses.intakePivotState();
 
-    flyByArmTolerance = Optional.empty();
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_EpsilonSuperstructurePose(String key, SubsystemPoses poses, double elevatorTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.of(elevatorTolerance);
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_EpsilonSuperstructurePose(
+      String key, SubsystemPoses poses, Rotation2d flyByArmTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.of(flyByArmTolerance);
   }
 
   /**
@@ -101,7 +110,10 @@ public class V3_EpsilonSuperstructurePose {
 
   public Command wait(
       ElevatorFSM elevator, V3_EpsilonIntake intake, V3_EpsilonManipulator manipulator) {
-    if (flyByArmTolerance.isPresent()) {
+
+    if (flyByElevatorTolerance.isPresent()) {
+      return Commands.waitUntil(() -> elevator.inTolerance(flyByElevatorTolerance.get()));
+    } else if (flyByArmTolerance.isPresent()) {
       return Commands.waitUntil(() -> manipulator.armInTolerance(flyByArmTolerance.get()));
     } else {
       return Commands.parallel(

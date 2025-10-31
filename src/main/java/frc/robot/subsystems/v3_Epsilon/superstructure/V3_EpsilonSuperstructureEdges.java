@@ -120,7 +120,7 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonIntake intake,
       V3_EpsilonManipulator manipulator) {
 
-    V3_EpsilonSuperstructurePose pose = to.getSubsystemPoses();
+    V3_EpsilonSuperstructurePose pose = to.getPose();
 
     if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
       return Commands.sequence(

@@ -427,6 +427,10 @@ public class Elevator {
       return Elevator.this.atGoal(Elevator.this.getPosition(position));
     }
 
+    public boolean inTolerance(double toleranceMeters) {
+      return Math.abs(positionGoalMeters - inputs.positionMeters) <= toleranceMeters;
+    }
+
     public Command waitUntilAtGoal() {
       return Elevator.this.waitUntilAtGoal();
     }

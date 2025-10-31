@@ -169,31 +169,10 @@ public enum V3_EpsilonSuperstructureStates {
       "INVERSE_FLIP_UP",
       new SubsystemPoses(
           ReefState.HANDOFF, ManipulatorArmState.INVERSE_FLIP_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty()),
-  L2_WINDMILL(
-      "L2_WINDMILL",
-      new SubsystemPoses(ReefState.L2, ManipulatorArmState.WINDMILL_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45)),
-  L3_WINDMILL(
-      "L3_WINDMILL",
-      new SubsystemPoses(ReefState.L3, ManipulatorArmState.WINDMILL_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45)),
-  L4_WINDMILL(
-      "L4_WINDMILL",
-      new SubsystemPoses(ReefState.L4, ManipulatorArmState.WINDMILL_ANGLE, IntakePivotState.STOW),
-      SubsystemActions.empty(),
-      Rotation2d.fromDegrees(45));
+      SubsystemActions.empty());
 
-  // Readable name for state
-  private final String name;
-
-  // Target positions for all subsystems in this state
-  @Getter final V3_EpsilonSuperstructurePose subsystemPoses;
-
-  // Actions to perform for all subsystems in this state
-  @Getter final V3_EpsilonSuperstructureAction subsystemActions;
+  @Getter private final V3_EpsilonSuperstructurePose pose;
+  @Getter private final V3_EpsilonSuperstructureAction action;
 
   /**
    * Constructor for V3_SuperstructureStates.
@@ -203,24 +182,19 @@ public enum V3_EpsilonSuperstructureStates {
    * @param action The subsystem actions for this state.
    */
   V3_EpsilonSuperstructureStates(String name, SubsystemPoses pose, SubsystemActions action) {
-    this.name = name;
-    this.subsystemPoses = new V3_EpsilonSuperstructurePose(name, pose);
-    this.subsystemActions = new V3_EpsilonSuperstructureAction(name, action);
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 
   V3_EpsilonSuperstructureStates(
-      String name, SubsystemPoses pose, SubsystemActions action, Rotation2d flyby) {
-    this.name = name;
-    this.subsystemPoses = new V3_EpsilonSuperstructurePose(name, pose, flyby);
-    this.subsystemActions = new V3_EpsilonSuperstructureAction(name, action);
+      String name, SubsystemPoses pose, SubsystemActions action, Double elevatorTolerance) {
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose, elevatorTolerance);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 
-  /**
-   * Returns the name of the superstructure state.
-   *
-   * @return The name of the state.
-   */
-  public String getName() {
-    return name;
+  V3_EpsilonSuperstructureStates(
+      String name, SubsystemPoses pose, SubsystemActions action, Rotation2d armTolerance) {
+    this.pose = new V3_EpsilonSuperstructurePose(name, pose, armTolerance);
+    this.action = new V3_EpsilonSuperstructureAction(name, action);
   }
 }

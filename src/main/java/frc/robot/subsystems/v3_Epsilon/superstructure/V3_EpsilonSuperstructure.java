@@ -14,7 +14,6 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEd
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import frc.robot.util.NTPrefixes;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -105,19 +104,13 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    */
   @Override
   public void periodic() {
-    manipulator.setArmSide(
-        RobotState.getScoreSide().equals(ScoreSide.LEFT) ? Side.NEGATIVE : Side.POSITIVE);
-    manipulator.setClearsElevator(
-        elevator.getPositionMeters()
-            > V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS() * 1.1);
-
-    if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE)) {
+        if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE)) {
       if (nextState != null) {
         // If we are in a transition, run the actions for the destination state
-        nextState.getSubsystemActions().get(intake, manipulator);
+        nextState.getAction().get(intake, manipulator);
       } else {
         // Otherwise, just run the actions for the state we are in
-        currentState.getSubsystemActions().get(intake, manipulator);
+        currentState.getAction().get(intake, manipulator);
       }
     }
     if (RobotMode.disabled()) {
@@ -276,12 +269,12 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
    * @return true if the transition is allowed
    */
   private boolean isEdgeAllowed(EdgeCommand edge, V3_EpsilonSuperstructureStates goal) {
-
-    boolean isAlgaeGood =
+    // --- 1. Algae Check (Original Logic) ---
+    boolean gamePieceAllowed =
         edge.getGamePieceEdge() == GamePieceEdge.UNCONSTRAINED
             || RobotState.isHasAlgae() == (edge.getGamePieceEdge() != GamePieceEdge.NO_ALGAE);
 
-    if (!isAlgaeGood) {
+    if (!gamePieceAllowed) {
       return false; // Fail fast if game piece logic disallows it
     }
 
@@ -289,32 +282,23 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     V3_EpsilonSuperstructureStates from = graph.getEdgeSource(edge);
     V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(edge);
 
-    boolean needsFlip = RobotState.getReefAlignData().distanceToCoralSetpoint() <= 0.5;
+    boolean needsFlip = RobotState.getScoreSide().equals(ScoreSide.RIGHT);
 
-    if (goal.equals(V3_EpsilonSuperstructureStates.L2)) {
-      if (to == V3_EpsilonSuperstructureStates.L2
-          && from != V3_EpsilonSuperstructureStates.L2_WINDMILL
-          && needsFlip) {
+    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && needsFlip) {
+      if (to == V3_EpsilonSuperstructureStates.STOW_UP
+          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
         return false;
       }
     }
 
-    if (goal.equals(V3_EpsilonSuperstructureStates.L3)) {
-      if (to == V3_EpsilonSuperstructureStates.L3
-          && from != V3_EpsilonSuperstructureStates.L3_WINDMILL
-          && needsFlip) {
+    if (goal == V3_EpsilonSuperstructureStates.STOW_UP && !needsFlip) {
+      if (to == V3_EpsilonSuperstructureStates.STOW_UP
+          && from != V3_EpsilonSuperstructureStates.INVERSE_FLIP_UP) {
         return false;
       }
     }
 
-    if (goal.equals(V3_EpsilonSuperstructureStates.L4)) {
-      if (to == V3_EpsilonSuperstructureStates.L4
-          && from != V3_EpsilonSuperstructureStates.L4_WINDMILL
-          && needsFlip) {
-        return false;
-      }
-    }
-
+    // --- 3. If all checks pass, the edge is allowed ---
     return true;
   }
 

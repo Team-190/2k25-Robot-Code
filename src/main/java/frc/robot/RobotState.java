@@ -4,6 +4,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -152,22 +154,65 @@ public class RobotState {
     // auto
     // alignment to the reef to score coral
 
-    Pose2d autoAlignCoralSetpoint =
+    // --- 1. Get the BASE setpoint (the target location on the field) ---
+
+    Pose2d baseCoralSetpoint =
         OIData.currentReefHeight().equals(ReefState.L1)
             ? Reef.reefMap.get(closestReefTag).getPostSetpoint(ReefPose.CENTER)
             : Reef.reefMap.get(closestReefTag).getPostSetpoint(OIData.currentReefPost());
-    if (scoreSide == ScoreSide.RIGHT) {
-      autoAlignCoralSetpoint =
-          new Pose2d(
-              autoAlignCoralSetpoint.getX(),
-              autoAlignCoralSetpoint.getY(),
-              autoAlignCoralSetpoint.getRotation().rotateBy(new Rotation2d(-Math.PI / 2)));
-    } else if (scoreSide == ScoreSide.LEFT) {
-      autoAlignCoralSetpoint =
-          new Pose2d(
-              autoAlignCoralSetpoint.getX(),
-              autoAlignCoralSetpoint.getY(),
-              autoAlignCoralSetpoint.getRotation().rotateBy(new Rotation2d(Math.PI / 2)));
+
+    Pose2d autoAlignCoralSetpoint = baseCoralSetpoint;
+
+    if (OIData.currentReefHeight().equals(ReefState.L1)) {
+      scoreSide = ScoreSide.CENTER;
+    } else {
+
+      // --- 2. Automatically determine the closest side of the ROBOT ---
+      Pose2d robotPose = getRobotPoseReef();
+      Translation2d targetTranslation = baseCoralSetpoint.getTranslation();
+
+      // Define "left" and "right" points on the robot, relative to its center.
+      // We'll use the Y-trackwidth from DriveConstants.
+      // In WPILib, +Y is "left" and -Y is "right" in robot-local coordinates.
+      //
+      double robotHalfWidth = DriveConstants.DRIVE_CONFIG.bumperLength() / 2.0;
+
+      // Transform these robot-local points into field-global coordinates
+      Translation2d leftSideField =
+          robotPose
+              .transformBy(new Transform2d(new Translation2d(0, robotHalfWidth), new Rotation2d()))
+              .getTranslation();
+      Translation2d rightSideField =
+          robotPose
+              .transformBy(new Transform2d(new Translation2d(0, -robotHalfWidth), new Rotation2d()))
+              .getTranslation();
+
+      // Calculate distance from each robot side to the target
+      double distToLeft = leftSideField.getDistance(targetTranslation);
+      double distToRight = rightSideField.getDistance(targetTranslation);
+
+      // Set the static scoreSide variable based on which side is closer
+      // (This variable is now updated every loop)
+      if (distToLeft < distToRight) {
+        scoreSide = ScoreSide.LEFT;
+      } else {
+        scoreSide = ScoreSide.RIGHT;
+      }
+
+      // --- 3. Now, create the FINAL setpoint using the newly-set scoreSide ---
+      if (scoreSide == ScoreSide.RIGHT) {
+        autoAlignCoralSetpoint =
+            new Pose2d(
+                baseCoralSetpoint.getX(),
+                baseCoralSetpoint.getY(),
+                baseCoralSetpoint.getRotation().rotateBy(new Rotation2d(-Math.PI / 2)));
+      } else {
+        autoAlignCoralSetpoint =
+            new Pose2d(
+                baseCoralSetpoint.getX(),
+                baseCoralSetpoint.getY(),
+                baseCoralSetpoint.getRotation().rotateBy(new Rotation2d(Math.PI / 2)));
+      }
     }
 
     // @Author: Abhiraam Venigalla, Ananth Krishna Gomattam, Atharv Joshi, Chris Xu,
@@ -288,6 +333,7 @@ public class RobotState {
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Setpoint Error", distanceToAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "At Algae Setpoint", atAlgaeSetpoint);
     Logger.recordOutput(NTPrefixes.ALGAE_DATA + "Algae Height", algaeHeight);
+    Logger.recordOutput(NTPrefixes.REEF_DATA + "Score Side", scoreSide);
     ExternalLoggedTracer.record("Robot State Total", "RobotState/Periodic");
   }
 
