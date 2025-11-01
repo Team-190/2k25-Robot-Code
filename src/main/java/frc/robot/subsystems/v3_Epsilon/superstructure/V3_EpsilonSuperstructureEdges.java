@@ -129,7 +129,7 @@ public class V3_EpsilonSuperstructureEdges {
         if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
             return Commands.sequence(
                     pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
-                    Commands.waitUntil(() -> manipulator.armInTolerance(Rotation2d.fromDegrees(15))));
+                    Commands.waitUntil(() -> manipulator.armInTolerance(Rotation2d.fromDegrees(10))));
         }
 
         return Commands.sequence(
