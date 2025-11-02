@@ -729,9 +729,13 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   }
 
   public Command everythingsFucked(BooleanSupplier condition) {
-    return Commands.parallel(override(() -> {
-      elevator.setPosition(ElevatorPositions.L3);
-    manipulator.setArmGoal(ManipulatorArmState.HANDOFF);
-    intake.setPivotGoal(IntakePivotState.INTAKE_ALGAE);})).until(condition);
+    return Commands.parallel(
+            override(
+                () -> {
+                  elevator.setPosition(ElevatorPositions.L3);
+                  manipulator.setArmGoal(ManipulatorArmState.HANDOFF);
+                  intake.setPivotGoal(IntakePivotState.INTAKE_ALGAE);
+                }))
+        .until(condition);
   }
 }

@@ -306,7 +306,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
     Trigger trigger = driver.povLeft();
     Trigger trigger2 = driver.povRight();
-    
 
     trigger.onTrue(superstructure.everythingsFucked(trigger2));
   }
