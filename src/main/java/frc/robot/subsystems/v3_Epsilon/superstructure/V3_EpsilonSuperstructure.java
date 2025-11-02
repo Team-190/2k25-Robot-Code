@@ -106,7 +106,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
       if (nextState != null) {
         // If we are in a transition, run the actions for the destination state
-        nextState.getAction().get(intake, manipulator);
+        if (atIntermediateGoal()) {
+          nextState.getAction().get(intake, manipulator);
+        }
       } else {
         if (atIntermediateGoal()) {
           currentState.getAction().get(intake, manipulator);

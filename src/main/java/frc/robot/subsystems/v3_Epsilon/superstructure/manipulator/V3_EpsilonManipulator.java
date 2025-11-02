@@ -76,6 +76,8 @@ public class V3_EpsilonManipulator {
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
+
+    Logger.recordOutput("Manipulator/Arm In Tolerance", armInTolerance(Rotation2d.fromDegrees(15)));
   }
 
   /**
