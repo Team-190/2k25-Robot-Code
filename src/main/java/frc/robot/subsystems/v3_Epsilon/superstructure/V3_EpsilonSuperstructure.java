@@ -732,9 +732,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return Commands.parallel(
             override(
                 () -> {
-                  elevator.setPosition(ElevatorPositions.L3);
+                  elevator.setPosition(ElevatorPositions.L4);
                   manipulator.setArmGoal(ManipulatorArmState.HANDOFF);
-                  intake.setPivotGoal(IntakePivotState.INTAKE_ALGAE);
+                  intake.setPivotGoal(IntakePivotState.INTAKE_CORAL);
                 }))
         .until(condition);
   }
