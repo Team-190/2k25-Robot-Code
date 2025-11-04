@@ -224,7 +224,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
     driver.povUp().onTrue(superstructure.setPosition());
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
-    driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
+    // driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
 
     driver
         .leftStick()
@@ -303,6 +303,11 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     operator.start().whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE));
 
     operator.back().onTrue(V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure));
+
+    Trigger trigger = driver.povLeft();
+    Trigger trigger2 = driver.povRight();
+
+    trigger.onTrue(superstructure.everythingsFucked(trigger2));
   }
 
   private void configureAutos() {

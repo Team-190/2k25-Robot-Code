@@ -9,11 +9,14 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.RobotMode;
 import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
+import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.EdgeCommand;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureEdges.GamePieceEdge;
 import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
+import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.util.NTPrefixes;
 import java.util.*;
 import java.util.function.BooleanSupplier;
@@ -100,12 +103,16 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
   @Override
   public void periodic() {
     if (currentState != null && !currentState.equals(V3_EpsilonSuperstructureStates.OVERRIDE)) {
+
       if (nextState != null) {
         // If we are in a transition, run the actions for the destination state
-        nextState.getAction().get(intake, manipulator);
+        if (atIntermediateGoal()) {
+          nextState.getAction().get(intake, manipulator);
+        }
       } else {
-        // Otherwise, just run the actions for the state we are in
-        currentState.getAction().get(intake, manipulator);
+        if (atIntermediateGoal()) {
+          currentState.getAction().get(intake, manipulator);
+        }
       }
     }
     if (RobotMode.disabled()) {
@@ -379,6 +386,17 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
         && elevator.atGoal()
         && intake.pivotAtGoal()
         && manipulator.armAtGoal();
+  }
+
+  public boolean atIntermediateGoal() {
+    var tolerance =
+        Optional.of(
+            Rotation2d.fromRadians(
+                V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get()));
+    if ((currentState.getPose().getFlyByArmTolerance()).isPresent()) {
+      tolerance = currentState.getPose().getFlyByArmTolerance();
+    }
+    return elevator.atGoal() && intake.pivotAtGoal() && manipulator.armInTolerance(tolerance.get());
   }
 
   public Command waitUntilAtGoal() {
@@ -710,5 +728,16 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
 
   public boolean armBelowThreshold() {
     return manipulator.getArmAngle().getDegrees() >= 90;
+  }
+
+  public Command everythingsFucked(BooleanSupplier condition) {
+    return Commands.parallel(
+            override(
+                () -> {
+                  elevator.setPosition(ElevatorPositions.L4);
+                  manipulator.setArmGoal(ManipulatorArmState.HANDOFF);
+                  intake.setPivotGoal(IntakePivotState.INTAKE_CORAL);
+                }))
+        .until(condition);
   }
 }
