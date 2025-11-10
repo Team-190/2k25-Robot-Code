@@ -8,6 +8,7 @@ plugins {
 
 ext {
     deploySrcDir = "src/main/deploy"
+    deployRobotDir = "/home/lvuser/deploy"
 }
 
 java {
@@ -39,6 +40,7 @@ gradle.projectsEvaluated {
 
         if (file(candidateDir).exists()) {
             project.ext.deploySrcDir = candidateDir
+            project.ext.deployRobotDir = "/home/lvuser/deploy/${baseName}"
         } else {
             println "Folder '${candidateDir}' does not exist. Using default deploy folder."
         }
@@ -75,7 +77,7 @@ deploy {
 
                     // The options below may improve performance, but should only be enabled on the RIO 2
 
-                    final MAX_JAVA_HEAP_SIZE_MB = 100;
+                    final MAX_JAVA_HEAP_SIZE_MB = 100
                     jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
                     jvmArgs.add("-XX:+AlwaysPreTouch")
@@ -92,7 +94,7 @@ deploy {
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree(project.ext.deploySrcDir)
-                    directory = '/home/lvuser/deploy'
+                    directory = deployRobotDir
                     // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory on roboRIO
                     deleteOldFiles = false
