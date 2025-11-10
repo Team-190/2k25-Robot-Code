@@ -158,45 +158,13 @@ public class RobotState {
 
     Pose2d autoAlignCoralSetpoint = baseCoralSetpoint;
 
-    if (OIData.currentReefHeight().equals(ReefState.L1)) {
+    if (OIData.currentReefHeight().equals(ReefState.L1)
+        || !Constants.RobotType.V3_EPSILON.equals(Constants.ROBOT)
+        || !Constants.RobotType.V3_EPSILON_SIM.equals(Constants.ROBOT)) {
       scoreSide = ScoreSide.CENTER;
     } else {
 
       // --- 2. Automatically determine the closest side of the ROBOT ---
-      Pose2d robotPose = getRobotPoseReef();
-      //            Translation2d targetTranslation = baseCoralSetpoint.getTranslation();
-      //
-      //
-      //            // Define "left" and "right" points on the robot, relative to its center.
-      //            // We'll use the Y-trackwidth from DriveConstants.
-      //            // In WPILib, +Y is "left" and -Y is "right" in robot-local coordinates.
-      //            //
-      //            double robotHalfWidth = DriveConstants.DRIVE_CONFIG.bumperLength() / 2.0;
-      //
-      //            // Transform these robot-local points into field-global coordinates
-      //            Translation2d leftSideField =
-      //                    robotPose
-      //                            .transformBy(new Transform2d(new Translation2d(0,
-      // robotHalfWidth), new Rotation2d()))
-      //                            .getTranslation();
-      //            Translation2d rightSideField =
-      //                    robotPose
-      //                            .transformBy(new Transform2d(new Translation2d(0,
-      // -robotHalfWidth), new Rotation2d()))
-      //                            .getTranslation();
-      //
-      //            // Calculate distance from each robot side to the target
-      //            double distToLeft = leftSideField.getDistance(targetTranslation);
-      //            double distToRight = rightSideField.getDistance(targetTranslation);
-      //
-      //            // Set the static scoreSide variable based on which side is closer
-      //            // (This variable is now updated every loop)
-      //            if (distToLeft < distToRight) {
-      //                scoreSide = ScoreSide.LEFT;
-      //            } else {
-      //                scoreSide = ScoreSide.RIGHT;
-      //            }
-
       if (Math.abs(
               MathUtil.angleModulus(
                   baseCoralSetpoint
@@ -287,28 +255,11 @@ public class RobotState {
                     .tolerance()
                     .get();
 
-    ReefState algaeHeight;
-    switch (closestReefTag) {
-      case 10:
-      case 6:
-      case 8:
-      case 21:
-      case 17:
-      case 19:
-        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
-        break;
-      case 9:
-      case 11:
-      case 7:
-      case 22:
-      case 20:
-      case 18:
-        algaeHeight = ReefState.ALGAE_INTAKE_TOP;
-        break;
-      default:
-        algaeHeight = ReefState.ALGAE_INTAKE_BOTTOM;
-        break;
-    }
+    ReefState algaeHeight =
+        switch (closestReefTag) {
+          case 9, 11, 7, 22, 20, 18 -> ReefState.ALGAE_INTAKE_TOP;
+          default -> ReefState.ALGAE_INTAKE_BOTTOM;
+        };
     InternalLoggedTracer.record("Generate Setpoints", "RobotState/Periodic");
 
     InternalLoggedTracer.reset();
@@ -396,47 +347,27 @@ public class RobotState {
     }
 
     if (AllianceFlipUtil.shouldFlip()) {
-      switch (minDistanceTag) {
-        case 0:
-          minDistanceTag = 7;
-          break;
-        case 1:
-          minDistanceTag = 6;
-          break;
-        case 2:
-          minDistanceTag = 11;
-          break;
-        case 3:
-          minDistanceTag = 10;
-          break;
-        case 4:
-          minDistanceTag = 9;
-          break;
-        case 5:
-          minDistanceTag = 8;
-          break;
-      }
+      minDistanceTag =
+          switch (minDistanceTag) {
+            case 0 -> 7;
+            case 1 -> 6;
+            case 2 -> 11;
+            case 3 -> 10;
+            case 4 -> 9;
+            case 5 -> 8;
+            default -> minDistanceTag;
+          };
     } else {
-      switch (minDistanceTag) {
-        case 0:
-          minDistanceTag = 18;
-          break;
-        case 1:
-          minDistanceTag = 19;
-          break;
-        case 2:
-          minDistanceTag = 20;
-          break;
-        case 3:
-          minDistanceTag = 21;
-          break;
-        case 4:
-          minDistanceTag = 22;
-          break;
-        case 5:
-          minDistanceTag = 17;
-          break;
-      }
+      minDistanceTag =
+          switch (minDistanceTag) {
+            case 0 -> 18;
+            case 1 -> 19;
+            case 2 -> 20;
+            case 3 -> 21;
+            case 4 -> 22;
+            case 5 -> 17;
+            default -> minDistanceTag;
+          };
     }
     return minDistanceTag;
   }
@@ -472,7 +403,7 @@ public class RobotState {
     return poseBuffer.getSample(timestamp);
   }
 
-  public static final record ReefAlignData(
+  public record ReefAlignData(
       int closestReefTag,
       Pose2d coralSetpoint,
       Pose2d algaeSetpoint,
@@ -483,14 +414,12 @@ public class RobotState {
       ReefState algaeIntakeHeight,
       Camera... cameras) {}
 
-  public static final record OperatorInputData(
-      ReefPose currentReefPost, ReefState currentReefHeight) {}
+  public record OperatorInputData(ReefPose currentReefPost, ReefState currentReefHeight) {}
 
-  public static final record HeadingData(
+  public record HeadingData(
       Rotation2d robotHeading, long latestRobotHeadingTimestamp, double robotYawVelocity) {}
 
-  public static final record VisionObservation(
-      Pose2d pose, double timestamp, Matrix<N3, N1> stddevs) {}
+  public record VisionObservation(Pose2d pose, double timestamp, Matrix<N3, N1> stddevs) {}
 
   public enum RobotMode {
     DISABLED,

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V3_EPSILON_SIM;
+  public static final RobotType ROBOT = RobotType.V3_EPSILON;
 
   public static Mode getMode() {
     switch (ROBOT) {
@@ -30,13 +30,13 @@ public final class Constants {
     }
   }
 
-  public static enum Mode {
+  public enum Mode {
     REAL,
     SIM,
     REPLAY
   }
 
-  public static enum RobotType {
+  public enum RobotType {
     V0_FUNKY,
     V0_FUNKY_SIM,
     V0_WHIPLASH,
@@ -53,7 +53,7 @@ public final class Constants {
 
   public static void main(String... args) {
     if (ROBOT == RobotType.V1_STACKUP_SIM) {
-      System.err.println("Cannot deploy, invalid mode selected: " + ROBOT.toString());
+      System.err.println("Cannot deploy, invalid mode selected: " + ROBOT);
       System.exit(1);
     }
   }
