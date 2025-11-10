@@ -1,8 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure.manipulator;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,15 +9,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructure;
 import frc.robot.subsystems.v3_Epsilon.superstructure.V3_EpsilonSuperstructureStates;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorRollerState;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.Side;
 import java.util.Set;
 import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -31,29 +28,28 @@ public class V3_EpsilonManipulator {
   @Getter
   private Rotation2d armGoal;
 
-  @Setter
-  @Getter
-  @AutoLogOutput(key = "Manipulator/Arm Side")
-  private Side armSide;
-
   @AutoLogOutput(key = "Manipulator/Roller Goal")
   @Getter
   private ManipulatorRollerState rollerGoal;
 
   private boolean isClosedLoop;
 
-  @Setter @Getter private boolean clearsElevator;
+  Set<ManipulatorArmState> algaeStates;
 
   public V3_EpsilonManipulator(V3_EpsilonManipulatorIO io) {
     this.io = io;
     inputs = new ManipulatorIOInputsAutoLogged();
 
     isClosedLoop = true;
-    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(armSide);
-    armSide = Side.POSITIVE;
+    armGoal = ManipulatorArmState.VERTICAL_UP.getAngle(RobotState.getScoreSide());
     rollerGoal = ManipulatorRollerState.STOP;
 
-    clearsElevator = false;
+    algaeStates =
+        Set.of(
+            ManipulatorArmState.ALGAE_INTAKE_FLOOR,
+            ManipulatorArmState.REEF_INTAKE,
+            ManipulatorArmState.ALGAE_SCORE,
+            ManipulatorArmState.PRE_SCORE);
   }
 
   public void periodic() {
@@ -61,17 +57,7 @@ public class V3_EpsilonManipulator {
     Logger.processInputs("Manipulator", inputs);
 
     if (isClosedLoop) {
-      Rotation2d goal = armGoal;
-
-      if (!isSafePosition() || clearsElevator) {
-        if (armSide == Side.POSITIVE) {
-          goal = Rotation2d.fromRotations(goal.getRotations() - 1.0);
-        } else {
-          goal = Rotation2d.fromRotations(goal.getRotations() + 1.0);
-        }
-      }
-
-      io.setArmGoal(goal);
+      io.setArmGoal(armGoal);
     }
 
     if (rollerGoal.equals(ManipulatorRollerState.SCORE_ALGAE)) {
@@ -90,6 +76,8 @@ public class V3_EpsilonManipulator {
     } else {
       io.setRollerVoltage(rollerGoal.getVoltage());
     }
+
+    Logger.recordOutput("Manipulator/Arm In Tolerance", armInTolerance(Rotation2d.fromDegrees(15)));
   }
 
   /**
@@ -139,7 +127,11 @@ public class V3_EpsilonManipulator {
    */
   public void setArmGoal(ManipulatorArmState goal) {
     isClosedLoop = true;
-    armGoal = goal.getAngle(armSide);
+    if (!algaeStates.contains(goal)) {
+      armGoal = goal.getAngle(RobotState.getScoreSide());
+    } else {
+      armGoal = goal.getAngle(ScoreSide.CENTER);
+    }
   }
 
   public void setArmGoal(Rotation2d goal) {
@@ -222,6 +214,10 @@ public class V3_EpsilonManipulator {
         <= V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians().get();
   }
 
+  public boolean armInTolerance(Rotation2d tolerance) {
+    return Math.abs(inputs.armPosition.minus(armGoal).getRadians()) <= tolerance.getRadians();
+  }
+
   /**
    * Waits until the arm is at the goal position.
    *
@@ -243,7 +239,7 @@ public class V3_EpsilonManipulator {
    * uses another set of coefficients.
    */
   private double holdVoltage() {
-    return hasAlgae() ? -12.0 : -1;
+    return RobotState.isHasAlgae() ? -12.0 : -1;
   }
 
   /**
@@ -252,7 +248,7 @@ public class V3_EpsilonManipulator {
    * 1. Otherwise, it sets the slot to 0.
    */
   public void setSlot() {
-    if (hasAlgae()) {
+    if (RobotState.isHasAlgae()) {
       io.setSlot(2);
     } else if (hasCoral()) {
       io.setSlot(1);
@@ -290,6 +286,7 @@ public class V3_EpsilonManipulator {
         Commands.waitSeconds(.25),
         algaeCharacterizationRoutine.dynamic(Direction.kReverse));
   }
+
   /**
    * Sets the manipulator arm to the specified state.
    *
@@ -328,22 +325,6 @@ public class V3_EpsilonManipulator {
    */
   public Rotation2d getArmAngle() {
     return inputs.armPosition;
-  }
-
-  /**
-   * Checks if the manipulator arm is currently in a safe position. A safe position is when the arm
-   * is pointing away from the robot's body. The safe position threshold is determined by the angle
-   * between the arm and the robot's body. If the angle is greater than the threshold, it is
-   * considered safe.
-   *
-   * @return true if the arm is in a safe position, false otherwise.
-   */
-  @AutoLogOutput(key = "Manipulator/Safe Position")
-  public boolean isSafePosition() {
-    double cosThresh =
-        Math.cos(Math.PI - ManipulatorArmState.SAFE_ANGLE.getAngle(armSide).getRadians());
-    // unsafe if -cos(theta) >= cosThresh
-    return (-inputs.armPosition.getCos()) < cosThresh;
   }
 
   public double getArmVelocity() {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.v3_Epsilon.superstructure;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -123,9 +124,15 @@ public class V3_EpsilonSuperstructureEdges {
 
     V3_EpsilonSuperstructurePose pose = to.getPose();
 
+    if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
+      return Commands.sequence(
+          pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
+          Commands.waitUntil(() -> manipulator.armInTolerance(Rotation2d.fromDegrees(6))));
+    }
+
     return Commands.sequence(
         pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
-        pose.wait(elevator, intake, manipulator, to.getTransitionCondition()));
+        pose.wait(elevator, intake, manipulator));
   }
 
   /**

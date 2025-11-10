@@ -19,7 +19,7 @@ public class V3_EpsilonClimberConstants {
     MOTOR_PARAMETERS =
         new MotorParameters(DCMotor.getKrakenX60Foc(1), 16.0, 0.81, Units.inchesToMeters(1.78));
 
-    CLIMBER_CLIMBED_RADIANS = -350;
+    CLIMBER_CLIMBED_RADIANS = -400;
   }
 
   public static record MotorParameters(

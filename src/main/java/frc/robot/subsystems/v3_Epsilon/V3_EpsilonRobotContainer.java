@@ -19,13 +19,7 @@ import frc.robot.commands.AutonomousCommands;
 import frc.robot.commands.CompositeCommands.SharedCommands;
 import frc.robot.commands.CompositeCommands.V3_EpsilonCompositeCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.shared.drive.Drive;
-import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.drive.GyroIO;
-import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
-import frc.robot.subsystems.shared.drive.ModuleIO;
-import frc.robot.subsystems.shared.drive.ModuleIOSim;
-import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.shared.drive.*;
 import frc.robot.subsystems.shared.elevator.Elevator;
 import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
@@ -230,7 +224,7 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
 
     driver.povUp().onTrue(superstructure.setPosition());
     driver.povDown().onTrue(SharedCommands.resetHeading(drive));
-    driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
+    // driver.povLeft().onTrue(DriveCommands.inchMovement(drive, -0.5, .07));
 
     driver
         .leftStick()
@@ -275,14 +269,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         .onTrue(V3_EpsilonCompositeCommands.setDynamicReefHeight(ReefState.L1, superstructure));
 
     operator
-        .leftTrigger(0.5)
-        .whileTrue(
-            V3_EpsilonCompositeCommands.intakeCoralDriverSequence(
-                superstructure, intake, manipulator))
-        .whileFalse(
-            V3_EpsilonCompositeCommands.postIntakeCoralSequence(
-                superstructure, intake, manipulator));
-    operator
         .rightTrigger(0.5)
         .whileTrue(
             superstructure.override(
@@ -313,21 +299,15 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
             superstructure
                 .runActionWithTimeout(V3_EpsilonSuperstructureStates.PROCESSOR_SCORE, 1)
                 .finallyDo(() -> RobotState.setHasAlgae(false)));
-    operator
-        .povRight()
-        .whileTrue(
-            superstructure
-                .override(() -> manipulator.setRollerGoal(ManipulatorRollerState.SCORE_ALGAE))
-                .finallyDo(() -> RobotState.setHasAlgae(false)));
+
     operator.start().whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE));
 
-    operator
-        .back()
-        .whileTrue(superstructure.runGoal(V3_EpsilonSuperstructureStates.BARGE))
-        .onFalse(
-            superstructure
-                .runActionWithTimeout(V3_EpsilonSuperstructureStates.BARGE_SCORE, 0.1)
-                .finallyDo(() -> RobotState.setHasAlgae(false)));
+    operator.back().onTrue(V3_EpsilonCompositeCommands.optimalScoreBarge(superstructure));
+
+    Trigger trigger = driver.povLeft();
+    Trigger trigger2 = driver.povRight();
+
+    trigger.onTrue(superstructure.everythingsFucked(trigger2));
   }
 
   private void configureAutos() {
@@ -349,6 +329,9 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
         () -> AutonomousCommands.autoELeftBack(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
         "Algae", () -> AutonomousCommands.autoFLeft(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "1 piece do nothing",
+        () -> AutonomousCommands.autoFLeftMinimal(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

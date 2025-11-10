@@ -1,8 +1,7 @@
 package frc.robot.subsystems.shared.elevator;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions.L4;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -199,10 +198,7 @@ public class Elevator {
             }),
         characterizationRoutine
             .quasistatic(Direction.kForward)
-            .until(
-                () ->
-                    Elevator.this.atGoal(
-                        ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(() -> Elevator.this.atGoal(L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .quasistatic(Direction.kReverse)
             .until(
@@ -211,10 +207,7 @@ public class Elevator {
                         ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kForward)
-            .until(
-                () ->
-                    Elevator.this.atGoal(
-                        ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(() -> Elevator.this.atGoal(L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(
@@ -338,12 +331,11 @@ public class Elevator {
     }
   }
 
+  // FSM for the Elevator
   public class ElevatorFSM {
     @AutoLogOutput(key = "Elevator/Past Barge Threshold")
     public boolean pastBargeThresholdgetPositionMeters() {
-      if (Constants.getMode() == Mode.REAL)
-        return inputs.accelerationMetersPerSecondSquared < -1.0
-            && inputs.velocityMetersPerSecond > 4;
+      if (Constants.getMode() == Mode.REAL) return inputs.positionMeters >= L4.getPosition();
       else {
         return inputs.positionMeters > .95;
       }
@@ -428,6 +420,10 @@ public class Elevator {
 
     public boolean atGoal(ReefState position) {
       return Elevator.this.atGoal(Elevator.this.getPosition(position));
+    }
+
+    public boolean inTolerance(double toleranceMeters) {
+      return Math.abs(positionGoalMeters - inputs.positionMeters) <= toleranceMeters;
     }
 
     public Command waitUntilAtGoal() {

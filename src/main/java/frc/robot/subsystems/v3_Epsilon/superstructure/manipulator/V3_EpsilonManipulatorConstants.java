@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.RobotState;
+import frc.robot.RobotState.ScoreSide;
 import frc.robot.util.LoggedTunableNumber;
 import lombok.RequiredArgsConstructor;
 
@@ -86,7 +88,7 @@ public final class V3_EpsilonManipulatorConstants {
                 new LoggedTunableNumber("Manipulator/Arm/MaxAcceleration", 8),
                 new LoggedTunableNumber("Manipulator/Arm/CruisingVelocity", 5),
                 new LoggedTunableNumber(
-                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(1)));
+                    "Manipulator/Arm/GoalTolerance", Units.degreesToRadians(3)));
         CURRENT_LIMITS = new ManipulatorCurrentLimits(40, 20, 40, 20);
         break;
       case V3_EPSILON_SIM:
@@ -203,11 +205,11 @@ public final class V3_EpsilonManipulatorConstants {
 
   @RequiredArgsConstructor
   public static enum ManipulatorArmState {
-    PRE_SCORE(Rotation2d.fromDegrees(50.0)),
+    PRE_SCORE(Rotation2d.fromDegrees(25.0).unaryMinus()),
     SCORE(Rotation2d.fromDegrees(90.0)), // Placeholder value. Make sure to test
     SCORE_L4(Rotation2d.kPi),
     PROCESSOR(Rotation2d.fromDegrees(90)),
-    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(90)),
+    ALGAE_INTAKE_FLOOR(Rotation2d.fromDegrees(113.378906)),
     CORAL_INTAKE_FLOOR(Rotation2d.fromDegrees(-99)),
     REEF_INTAKE(Rotation2d.fromDegrees(90)),
     INTAKE_OUT_LINE(Rotation2d.fromDegrees(61)),
@@ -217,19 +219,33 @@ public final class V3_EpsilonManipulatorConstants {
     TRANSITION(Rotation2d.fromDegrees(25.0)), // Placeholder value. Make sure to test
     VERTICAL_UP(Rotation2d.fromDegrees(0)),
     HANDOFF(Rotation2d.kPi),
+    FLIPPED_SCORE(Rotation2d.fromDegrees(-270)),
+    WINDMILL_ANGLE(Rotation2d.fromDegrees(-90)),
     SAFE_ANGLE(Rotation2d.fromDegrees(150)),
     FLIP_ANGLE(Rotation2d.fromDegrees(135)),
+    ALGAE_SCORE(Rotation2d.fromDegrees(25)),
     INVERSE_FLIP_ANGLE(Rotation2d.fromDegrees(135).unaryMinus()),
     EMERGENCY_EJECT_ANGLE(
         Rotation2d.fromDegrees(90)); // Idk if tested. Looks fine but double check.
 
     private final Rotation2d angle;
 
-    public Rotation2d getAngle(Side side) {
-      if (side == Side.NEGATIVE) {
-        return angle.unaryMinus();
+    public Rotation2d setRotationDirection(boolean direction) {
+      if (direction == true) {
+        return angle;
+      } else {
+        return angle.minus(Rotation2d.kPi).minus(Rotation2d.kPi);
       }
-      return angle;
+    }
+
+    public Rotation2d getAngle(RobotState.ScoreSide scoreSide) {
+      if (scoreSide.equals(ScoreSide.RIGHT)) {
+        return angle;
+      } else if (scoreSide.equals(ScoreSide.LEFT)) {
+        return angle.unaryMinus();
+      } else {
+        return angle;
+      }
     }
   }
 
@@ -257,10 +273,5 @@ public final class V3_EpsilonManipulatorConstants {
     public double getVoltage() {
       return voltage;
     }
-  }
-
-  public enum Side {
-    POSITIVE,
-    NEGATIVE
   }
 }
