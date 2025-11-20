@@ -173,6 +173,9 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
                     manipulator.getArmAngle().rotateBy(new Rotation2d(-Math.PI / 2)).getCos()
                         * V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS())
                 > 0.35);
+    Logger.recordOutput(
+        NTPrefixes.SUPERSTRUCTURE + "ForwardKinematics",
+        V3_EpsilonSuperstructurePose.forwardKinematics(elevator, manipulator));
   }
 
   /**

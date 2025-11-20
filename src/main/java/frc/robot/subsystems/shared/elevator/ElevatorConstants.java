@@ -12,6 +12,7 @@ public class ElevatorConstants {
   public static final int ELEVATOR_CAN_ID;
   public static final double ELEVATOR_GEAR_RATIO;
   public static final double DRUM_RADIUS;
+  public static final double ELEVATOR_OFFSET_METERS;
 
   public static final double ELEVATOR_SUPPLY_CURRENT_LIMIT;
   public static final double ELEVATOR_STATOR_CURRENT_LIMIT;
@@ -49,6 +50,8 @@ public class ElevatorConstants {
         ELEVATOR_CAN_ID = 20;
         ELEVATOR_GEAR_RATIO = 3.0;
         DRUM_RADIUS = Units.inchesToMeters(2.256 / 2.0);
+
+        ELEVATOR_OFFSET_METERS = Units.inchesToMeters(5.0);
 
         ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
         ELEVATOR_STATOR_CURRENT_LIMIT = 40;
@@ -125,6 +128,8 @@ public class ElevatorConstants {
         ELEVATOR_GEAR_RATIO = 4.0;
         DRUM_RADIUS = Units.inchesToMeters(2.211 / 2.0);
 
+        ELEVATOR_OFFSET_METERS = Units.inchesToMeters(5.0);
+
         ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
         ELEVATOR_STATOR_CURRENT_LIMIT = 80;
 
@@ -200,6 +205,8 @@ public class ElevatorConstants {
         ELEVATOR_CAN_ID = 20;
         ELEVATOR_GEAR_RATIO = 4.0;
         DRUM_RADIUS = Units.inchesToMeters(2.256 / 2.0);
+
+        ELEVATOR_OFFSET_METERS = Units.inchesToMeters(5.0);
 
         ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
         ELEVATOR_STATOR_CURRENT_LIMIT = 80;
