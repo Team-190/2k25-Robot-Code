@@ -135,8 +135,8 @@ public class FieldConstants {
       double adjustYBranch =
           Units.inchesToMeters(6.469); // Offset Y setpoint by center of tag to reef branch
       double adjustXBranch =
-          Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON)
-                  || Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON_SIM)
+          Constants.ROBOT.equals(Constants.RobotType.V3_POOT)
+                  || Constants.ROBOT.equals(Constants.RobotType.V3_POOT_SIM)
               ? (DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0)
                   + FieldConstants.Reef
                       .coralWidth // Offset X setpoint by center of robot to bumper + coral width
@@ -150,8 +150,8 @@ public class FieldConstants {
           DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0
               + Units.inchesToMeters(2); // Offset X setpoint by center of robot to bumper
 
-      //   if (Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON)
-      //       || Constants.ROBOT.equals(Constants.RobotType.V3_EPSILON_SIM)) {
+      //   if (Constants.ROBOT.equals(Constants.RobotType.V3_POOT)
+      //       || Constants.ROBOT.equals(Constants.RobotType.V3_POOT_SIM)) {
       //     adjustXAlgae += Units.inchesToMeters(5);
       //   }
 

@@ -13,10 +13,10 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntake;
-import frc.robot.subsystems.v3_Epsilon.superstructure.intake.V3_EpsilonIntakeConstants;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulator;
-import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeConstants;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorConstants;
 
 public class LTNUpdater {
 
@@ -209,85 +209,83 @@ public class LTNUpdater {
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
-  public static void registerIntake(V3_EpsilonIntake intake) {
+  public static void registerIntake(V3_PootIntake intake) {
     LoggedTunableNumber.createGroup(
         () -> {
           intake.updateIntakeGains(
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kP().get(),
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kD().get(),
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kS().get(),
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kV().get(),
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kA().get(),
-              V3_EpsilonIntakeConstants.PIVOT_GAINS.kG().get());
+              V3_PootIntakeConstants.PIVOT_GAINS.kP().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kD().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kS().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kV().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kA().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kG().get());
           intake.updateIntakeConstraints(
-              V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
+              V3_PootIntakeConstants.PIVOT_CONSTRAINTS
                   .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED()
                   .get(),
-              V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS
+              V3_PootIntakeConstants.PIVOT_CONSTRAINTS
                   .CRUISING_VELOCITY_RADIANS_PER_SECOND()
                   .get());
         },
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kP(),
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kD(),
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kS(),
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kV(),
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kA(),
-        V3_EpsilonIntakeConstants.PIVOT_GAINS.kG(),
-        V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED(),
-        V3_EpsilonIntakeConstants.PIVOT_CONSTRAINTS.CRUISING_VELOCITY_RADIANS_PER_SECOND());
+        V3_PootIntakeConstants.PIVOT_GAINS.kP(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kD(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kS(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kV(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kA(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kG(),
+        V3_PootIntakeConstants.PIVOT_CONSTRAINTS.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED(),
+        V3_PootIntakeConstants.PIVOT_CONSTRAINTS.CRUISING_VELOCITY_RADIANS_PER_SECOND());
   }
 
-  public static void registerManipulatorArm(V3_EpsilonManipulator manipulator) {
+  public static void registerManipulatorArm(V3_PootManipulator manipulator) {
     LoggedTunableNumber.createGroup(
         () -> {
           manipulator.updateArmGains(
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kP().get(),
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kD().get(),
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kS().get(),
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kV().get(),
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kA().get(),
-              V3_EpsilonManipulatorConstants.EMPTY_GAINS.kG().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kP().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kD().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kS().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kV().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kA().get(),
-              V3_EpsilonManipulatorConstants.CORAL_GAINS.kG().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kP().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kD().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kS().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kV().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kA().get(),
-              V3_EpsilonManipulatorConstants.ALGAE_GAINS.kG().get());
+              V3_PootManipulatorConstants.EMPTY_GAINS.kP().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kD().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kS().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kV().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kA().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kG().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kP().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kD().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kS().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kV().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kA().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kG().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kP().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kD().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kS().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kV().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kA().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kG().get());
           manipulator.updateArmConstraints(
-              V3_EpsilonManipulatorConstants.CONSTRAINTS
+              V3_PootManipulatorConstants.CONSTRAINTS
                   .maxAccelerationRotationsPerSecondSquared()
                   .get(),
-              V3_EpsilonManipulatorConstants.CONSTRAINTS
-                  .cruisingVelocityRotationsPerSecond()
-                  .get());
+              V3_PootManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get());
         },
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kP(),
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kD(),
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kS(),
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kV(),
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kA(),
-        V3_EpsilonManipulatorConstants.ALGAE_GAINS.kG(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kP(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kD(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kS(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kV(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kA(),
-        V3_EpsilonManipulatorConstants.EMPTY_GAINS.kG(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kP(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kD(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kS(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kV(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kA(),
-        V3_EpsilonManipulatorConstants.CORAL_GAINS.kG(),
-        V3_EpsilonManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
-        V3_EpsilonManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond(),
-        V3_EpsilonManipulatorConstants.CONSTRAINTS.goalToleranceRadians());
+        V3_PootManipulatorConstants.ALGAE_GAINS.kP(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kD(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kS(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kV(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kA(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kG(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kP(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kD(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kS(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kV(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kA(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kG(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kP(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kD(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kS(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kV(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kA(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kG(),
+        V3_PootManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
+        V3_PootManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond(),
+        V3_PootManipulatorConstants.CONSTRAINTS.goalToleranceRadians());
   }
 
   /**
@@ -314,10 +312,7 @@ public class LTNUpdater {
   }
 
   public static void registerAll(
-      Drive drive,
-      ElevatorFSM elevator,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator) {
+      Drive drive, ElevatorFSM elevator, V3_PootIntake intake, V3_PootManipulator manipulator) {
     registerDrive(drive);
     registerElevator(elevator);
     registerIntake(intake);
