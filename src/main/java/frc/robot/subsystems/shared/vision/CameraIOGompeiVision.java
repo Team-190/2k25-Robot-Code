@@ -7,12 +7,7 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.networktables.BooleanSubscriber;
-import edu.wpi.first.networktables.ConnectionInfo;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
@@ -43,6 +38,7 @@ public class CameraIOGompeiVision implements CameraIO {
   private final DoubleArraySubscriber observationSubscriber;
   // private final IntegerSubscriber fpsAprilTagSubscriber;
   private final BooleanSubscriber cameraConnectedSubscriber;
+  private final DoubleSubscriber cameraUSBSpeedSubscriber;
 
   private final Map<Integer, Double> lastTagDetectionTimes;
 
@@ -98,6 +94,7 @@ public class CameraIOGompeiVision implements CameraIO {
                 PubSubOption.periodic(0.01));
     // this.fpsAprilTagSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
     this.cameraConnectedSubscriber = outputTable.getBooleanTopic("connected").subscribe(false);
+    this.cameraUSBSpeedSubscriber = outputTable.getDoubleTopic("usb_speed").subscribe(0.0);
 
     lastTagDetectionTimes = new HashMap<>();
 
@@ -236,9 +233,9 @@ public class CameraIOGompeiVision implements CameraIO {
         // --- Parse tag angle + distance data ---
         int tagEstimationDataEndIndex =
             switch ((int) values[0]) {
-              default -> 0;
               case 1 -> 8;
               case 2 -> 16;
+              default -> 0;
             };
 
         int indexCounter = 0;
@@ -344,11 +341,13 @@ public class CameraIOGompeiVision implements CameraIO {
 
     Logger.recordOutput(
         "Vision/Cameras/" + config.key() + "/Camera Connected", cameraConnectedSubscriber.get());
+    Logger.recordOutput(
+        "Vision/Cameras/" + config.key() + "/USB Speed", cameraUSBSpeedSubscriber.get());
   }
 
   @Override
   public boolean getIsConnected(CameraIOInputs inputs) {
-    return true;
+    return inputs.isConnected;
   }
 
   @Override
