@@ -150,7 +150,7 @@ public class V3_PootSuperstructureEdges {
     loadEdgesFromDot(
         Filesystem.getDeployDirectory()
             .toPath()
-            .resolve("v3_epsilon/" + "Superstructure.dot")
+            .resolve("v3_poot/" + "Superstructure.dot")
             .toString(),
         graph,
         elevator,

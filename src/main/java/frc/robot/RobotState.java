@@ -159,8 +159,8 @@ public class RobotState {
     Pose2d autoAlignCoralSetpoint = baseCoralSetpoint;
 
     if (OIData.currentReefHeight().equals(ReefState.L1)
-        || !Constants.RobotType.V3_EPSILON.equals(Constants.ROBOT)
-        || !Constants.RobotType.V3_EPSILON_SIM.equals(Constants.ROBOT)) {
+        || !Constants.RobotType.V3_POOT.equals(Constants.ROBOT)
+        || !Constants.RobotType.V3_POOT_SIM.equals(Constants.ROBOT)) {
       scoreSide = ScoreSide.CENTER;
     } else {
 
