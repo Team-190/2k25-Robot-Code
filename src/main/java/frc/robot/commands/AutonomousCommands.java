@@ -161,6 +161,12 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_5");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
+
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_1");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_2");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_3");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_4");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_5");
   }
 
   public static final Command autoALeft(
@@ -2164,6 +2170,101 @@ public class AutonomousCommands {
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 superstructure.waitUntilAtGoal(),
                 Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine rangeBenchOne(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchOne");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_1"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine rangeBenchTwo(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchTwo");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_2"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine rangeBenchThree(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchThree");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_3"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine rangeBenchFour(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchFour");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_4"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine rangeBenchFive(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchFive");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_5"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
 
     return routine;
   }

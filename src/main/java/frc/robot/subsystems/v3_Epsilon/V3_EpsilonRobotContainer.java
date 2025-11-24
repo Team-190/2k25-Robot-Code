@@ -366,6 +366,8 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return AutonomousCommands.rangeBenchFive(
+            drive, superstructure, intake, manipulator, RobotCameras.V3_EPSILON_CAMS)
+        .cmd();
   }
 }
