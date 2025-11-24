@@ -366,6 +366,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return autoChooser.selectedCommand();
+    return AutonomousCommands.fuckAroundAutoSlow(drive, superstructure, intake, manipulator).cmd();
   }
 }
