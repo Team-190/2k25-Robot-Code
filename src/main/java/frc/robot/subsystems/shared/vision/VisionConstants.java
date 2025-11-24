@@ -389,7 +389,7 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_LEFT)),
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
-    public static final Camera[] V3_EPSILON_CAMS = {
+    public static final Camera[] V3_POOT_CAMS = {
       new Camera(
           new CameraIOGompeiVision(
               BACK_BOTTOM_LEFT,

@@ -1,0 +1,149 @@
+package frc.robot.subsystems.v3_Poot.superstructure;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.FieldConstants.Reef.ReefState;
+import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeConstants.IntakePivotState;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorConstants.ManipulatorArmState;
+import java.util.Optional;
+import lombok.Getter;
+
+/**
+ * Represents a specific pose (configuration) of the superstructure, defining the states of the
+ * elevator, manipulator arm, intake, and funnel. This class allows for coordinated control of these
+ * subsystems to achieve a desired configuration.
+ */
+public class V3_PootSuperstructurePose {
+  private final String key;
+
+  @Getter private final ReefState elevatorHeight;
+  @Getter private final ManipulatorArmState armState;
+  @Getter private final IntakePivotState intakeState;
+
+  @Getter private final Optional<Double> flyByElevatorTolerance;
+  @Getter private final Optional<Rotation2d> flyByArmTolerance;
+
+  public V3_PootSuperstructurePose(String key, SubsystemPoses poses) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_PootSuperstructurePose(String key, SubsystemPoses poses, double elevatorTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.of(elevatorTolerance);
+    this.flyByArmTolerance = Optional.empty();
+  }
+
+  public V3_PootSuperstructurePose(String key, SubsystemPoses poses, Rotation2d flyByArmTolerance) {
+    this.key = key;
+
+    this.elevatorHeight = poses.elevatorHeight();
+    this.armState = poses.manipulatorArmState();
+    this.intakeState = poses.intakePivotState();
+
+    this.flyByElevatorTolerance = Optional.empty();
+    this.flyByArmTolerance = Optional.of(flyByArmTolerance);
+  }
+
+  /**
+   * Creates a command to set the elevator to the specified height for this pose.
+   *
+   * @param elevator The elevator subsystem to control.
+   * @return A Command that sets the elevator height and waits until it reaches the goal.
+   */
+  public Command setElevatorHeight(ElevatorFSM elevator) {
+    return Commands.parallel(Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)));
+  }
+
+  /**
+   * Creates a command to set the intake to the specified extension state for this pose.
+   *
+   * @param intake The intake subsystem to control.
+   * @return A Command that sets the intake extension state and waits until it reaches the goal.
+   */
+  public Command setIntakeState(V3_PootIntake intake) {
+    return Commands.parallel(Commands.runOnce(() -> intake.setPivotGoal(intakeState)));
+  }
+
+  /**
+   * Creates a command to set the manipulator arm to the specified state for this pose.
+   *
+   * @param manipulator The manipulator subsystem to control.
+   * @return A Command that sets the arm state and waits until it reaches the goal.
+   */
+  public Command setManipulatorState(V3_PootManipulator manipulator) {
+    return Commands.parallel(Commands.runOnce(() -> manipulator.setArmGoal(armState)));
+  }
+
+  /**
+   * Creates a command that sets all subsystems (elevator, manipulator, intake, and funnel) to the
+   * states defined by this pose.
+   *
+   * @param elevator The elevator subsystem.
+   * @param intake The intake subsystem.
+   * @param manipulator The manipulator subsystem.
+   * @return A Command that sets all subsystems to their respective states in parallel.
+   */
+  public Command asConfigurationSpaceCommand(
+      ElevatorFSM elevator, V3_PootIntake intake, V3_PootManipulator manipulator) {
+    return Commands.parallel(
+        Commands.runOnce(() -> elevator.setPosition(() -> elevatorHeight)),
+        Commands.runOnce(() -> manipulator.setArmGoal(armState)),
+        Commands.runOnce(() -> intake.setPivotGoal(intakeState)));
+  }
+
+  public Command wait(ElevatorFSM elevator, V3_PootIntake intake, V3_PootManipulator manipulator) {
+
+    if (flyByElevatorTolerance.isPresent()) {
+      return Commands.waitUntil(() -> elevator.inTolerance(flyByElevatorTolerance.get()));
+    } else if (flyByArmTolerance.isPresent()) {
+      return Commands.waitUntil(() -> manipulator.armInTolerance(flyByArmTolerance.get()));
+    } else {
+      return Commands.parallel(
+          elevator.waitUntilAtGoal(),
+          manipulator.waitUntilArmAtGoal(),
+          intake.waitUntilPivotAtGoal());
+    }
+  }
+
+  /**
+   * Returns a string representation of this pose (the key).
+   *
+   * @return The key of this pose.
+   */
+  public String toString() {
+    return key;
+  }
+
+  /**
+   * A record that groups the states of the elevator, manipulator arm, intake, and funnel
+   * subsystems. This is used to define a complete pose for the superstructure.
+   */
+  public record SubsystemPoses(
+      ReefState elevatorHeight,
+      ManipulatorArmState manipulatorArmState,
+      IntakePivotState intakePivotState) {
+
+    /**
+     * Creates a SubsystemPoses instance with default states (STOW for elevator, arm, and intake).
+     */
+    public SubsystemPoses() {
+      this(ReefState.STOW, ManipulatorArmState.VERTICAL_UP, IntakePivotState.STOW);
+    }
+  }
+}
