@@ -716,11 +716,11 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
       all =
           all.andThen(
               Commands.sequence(
-                  runOnce(() -> System.out.println("→ " + source + " to " + sink)),
+                  runOnce(() -> System.out.println("-> " + source + " to " + sink)),
                   runGoal(sink),
                   Commands.waitUntil(this::atGoal),
                   Commands.waitSeconds(1.0),
-                  runOnce(() -> System.out.println("← " + sink + " back to " + source)),
+                  runOnce(() -> System.out.println("<- " + sink + " back to " + source)),
                   runGoal(source),
                   Commands.waitUntil(this::atGoal),
                   Commands.waitSeconds(1.0)));

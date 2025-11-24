@@ -16,6 +16,7 @@ import lombok.Setter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.dot.DOTImporter;
+import org.littletonrobotics.junction.Logger;
 
 public class V3_EpsilonSuperstructureEdges {
   public static final ArrayList<Edge> UNCONSTRAINED = new ArrayList<>();
@@ -36,6 +37,11 @@ public class V3_EpsilonSuperstructureEdges {
   public enum GamePieceEdge {
     UNCONSTRAINED,
     NO_ALGAE
+  }
+
+  public enum KinematicsType {
+    FORWARD,
+    INVERSE
   }
 
   public static void loadEdgesFromDot(
@@ -62,6 +68,7 @@ public class V3_EpsilonSuperstructureEdges {
     importer.setEdgeWithAttributesFactory(
         attributes -> {
           GamePieceEdge type = GamePieceEdge.UNCONSTRAINED;
+          KinematicsType kinematics = KinematicsType.INVERSE;
 
           if (attributes.containsKey("type")) {
             try {
@@ -71,8 +78,22 @@ public class V3_EpsilonSuperstructureEdges {
             }
           }
 
+          if (attributes.containsKey("kinematics")) {
+            try {
+              kinematics =
+                  KinematicsType.valueOf(attributes.get("kinematics").getValue().toUpperCase());
+            } catch (Exception e) {
+              System.err.println(
+                  "[DOT Import] Invalid edge kinematics type, defaulting to FORWARD");
+            }
+          }
+
           // Create a proper EdgeCommand with no command yet
-          return EdgeCommand.builder().gamePieceEdge(type).command(null).build();
+          return EdgeCommand.builder()
+              .gamePieceEdge(type)
+              .kinematicsType(kinematics)
+              .command(null)
+              .build();
         });
 
     // --- Fix 3: actually import the file and verify success ---
@@ -86,7 +107,7 @@ public class V3_EpsilonSuperstructureEdges {
     for (EdgeCommand e : graph.edgeSet()) {
       V3_EpsilonSuperstructureStates from = graph.getEdgeSource(e);
       V3_EpsilonSuperstructureStates to = graph.getEdgeTarget(e);
-      e.setCommand(getEdgeCommand(from, to, elevator, intake, manipulator));
+      e.setCommand(getEdgeCommand(from, to, elevator, intake, manipulator, e.getKinematicsType()));
     }
 
     System.out.printf(
@@ -99,6 +120,7 @@ public class V3_EpsilonSuperstructureEdges {
   public static class EdgeCommand extends DefaultEdge {
     @Setter private Command command;
     @Builder.Default private GamePieceEdge gamePieceEdge = GamePieceEdge.UNCONSTRAINED;
+    @Builder.Default private KinematicsType kinematicsType = KinematicsType.FORWARD;
   }
 
   /**
@@ -119,19 +141,26 @@ public class V3_EpsilonSuperstructureEdges {
       V3_EpsilonSuperstructureStates to,
       ElevatorFSM elevator,
       V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator) {
+      V3_EpsilonManipulator manipulator,
+      KinematicsType kinematicsType) {
 
     V3_EpsilonSuperstructurePose pose = to.getPose();
 
+    Command transitionCommand;
+    Logger.recordOutput("Superstructure/KinematicType", kinematicsType.toString());
+    if (kinematicsType == KinematicsType.FORWARD) {
+      transitionCommand = pose.asConfigurationSpaceCommand(elevator, intake, manipulator);
+    } else {
+      transitionCommand = pose.asTargetSpaceCommand(elevator, intake, manipulator);
+    }
+
     if (to.equals(V3_EpsilonSuperstructureStates.BARGE_SCORE)) {
       return Commands.sequence(
-          pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
+          transitionCommand,
           Commands.waitUntil(() -> manipulator.armInTolerance(Rotation2d.fromDegrees(6))));
     }
 
-    return Commands.sequence(
-        pose.asConfigurationSpaceCommand(elevator, intake, manipulator),
-        pose.wait(elevator, intake, manipulator));
+    return Commands.sequence(transitionCommand, pose.wait(elevator, intake, manipulator));
   }
 
   /**
