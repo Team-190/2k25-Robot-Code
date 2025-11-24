@@ -148,7 +148,10 @@ public class V3_PootSuperstructureEdges {
       V3_PootIntake intake,
       V3_PootManipulator manipulator) {
     loadEdgesFromDot(
-        Filesystem.getDeployDirectory().toPath().resolve("Superstructure.dot").toString(),
+        Filesystem.getDeployDirectory()
+            .toPath()
+            .resolve("v3_poot/" + "Superstructure.dot")
+            .toString(),
         graph,
         elevator,
         intake,

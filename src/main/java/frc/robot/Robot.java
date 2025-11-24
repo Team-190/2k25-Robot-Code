@@ -1,14 +1,11 @@
 package frc.robot;
 
+import choreo.Choreo;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathShared;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +24,9 @@ import frc.robot.util.CanivoreReader;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
+import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -200,6 +199,17 @@ public class Robot extends LoggedRobot {
           }
         });
 
+    try {
+      var m = Choreo.class.getDeclaredMethod("setChoreoDir", File.class);
+      m.setAccessible(true);
+      m.invoke(
+          null,
+          new File(
+              Filesystem.getDeployDirectory(),
+              Constants.ROBOT.name().toLowerCase().replaceFirst("_sim", "") + "/choreo"));
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
     // Log active commands
     Map<String, Integer> commandCounts = new HashMap<>();
     BiConsumer<Command, Boolean> logCommandFunction =
