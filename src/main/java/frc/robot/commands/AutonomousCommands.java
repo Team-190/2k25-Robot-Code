@@ -161,6 +161,8 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_5");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
+<<<<<<< Updated upstream
+=======
 
     drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_1");
     drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_2");
@@ -173,6 +175,7 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_3");
     drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_2");
     drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_1");
+>>>>>>> Stashed changes
   }
 
   public static final Command autoALeft(
@@ -2175,216 +2178,6 @@ public class AutonomousCommands {
                     drive, superstructure, ReefState.L4, cameras),
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 superstructure.waitUntilAtGoal(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine fuckAroundAutoFast(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("fuckAroundAutoFast");
-    LoggedAutoTrajectory fuckAroundPath1 = routine.trajectory("F_BENCHMARK_PATH_5");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                fuckAroundPath1.resetOdometry(),
-                fuckAroundPath1.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine fuckAroundAutoFour(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("fuckAroundAutoFour");
-    LoggedAutoTrajectory fuckAroundPath1 = routine.trajectory("F_BENCHMARK_PATH_4");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                fuckAroundPath1.resetOdometry(),
-                fuckAroundPath1.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine fuckAroundAutoThree(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("fuckAroundAutoThree");
-    LoggedAutoTrajectory fuckAroundPath1 = routine.trajectory("F_BENCHMARK_PATH_3");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                fuckAroundPath1.resetOdometry(),
-                fuckAroundPath1.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine fuckAroundAutoTwo(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("fuckAroundAutoTwo");
-    LoggedAutoTrajectory fuckAroundPath1 = routine.trajectory("F_BENCHMARK_PATH_2");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                fuckAroundPath1.resetOdometry(),
-                fuckAroundPath1.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine fuckAroundAutoSlow(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("fuckAroundAutoSlow");
-    LoggedAutoTrajectory fuckAroundPath1 = routine.trajectory("F_BENCHMARK_PATH_1");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                fuckAroundPath1.resetOdometry(),
-                fuckAroundPath1.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine pathRangeTestFast(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("pathRangeTestFast");
-    LoggedAutoTrajectory pathRangeTest = routine.trajectory("F_BENCHMARK_RANGE_PATH_5");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                pathRangeTest.resetOdometry(),
-                pathRangeTest.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine pathRangeTestFour(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("pathRangeTestFour");
-    LoggedAutoTrajectory pathRangeTest = routine.trajectory("F_BENCHMARK_RANGE_PATH_4");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                pathRangeTest.resetOdometry(),
-                pathRangeTest.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine pathRangeTestThree(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("pathRangeTestThree");
-    LoggedAutoTrajectory pathRangeTest = routine.trajectory("F_BENCHMARK_RANGE_PATH_3");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                pathRangeTest.resetOdometry(),
-                pathRangeTest.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine pathRangeTestTwo(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("pathRangeTestTwo");
-    LoggedAutoTrajectory pathRangeTest = routine.trajectory("F_BENCHMARK_RANGE_PATH_2");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                pathRangeTest.resetOdometry(),
-                pathRangeTest.cmd(),
-                Commands.runOnce(() -> drive.stop())));
-
-    return routine;
-  }
-
-  public static final LoggedAutoRoutine pathRangeTestSlow(
-      Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
-      Camera... cameras) {
-
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("pathRangeTestSlow");
-    LoggedAutoTrajectory pathRangeTest = routine.trajectory("F_BENCHMARK_RANGE_PATH_1");
-
-    routine
-        .active()
-        .onTrue(
-            Commands.sequence(
-                pathRangeTest.resetOdometry(),
-                pathRangeTest.cmd(),
                 Commands.runOnce(() -> drive.stop())));
 
     return routine;

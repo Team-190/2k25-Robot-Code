@@ -366,6 +366,10 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
+<<<<<<< Updated upstream
+    return autoChooser.selectedCommand();
+=======
     return AutonomousCommands.pathRangeTestFast(drive, superstructure, intake, manipulator).cmd();
+>>>>>>> Stashed changes
   }
 }
