@@ -161,6 +161,10 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_5");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
+
+    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_1");
+    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_2");
+    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_3");
   }
 
   public static final Command autoALeft(
@@ -2164,6 +2168,63 @@ public class AutonomousCommands {
                 superstructure.runGoal(V3_EpsilonSuperstructureStates.L4_SCORE),
                 superstructure.waitUntilAtGoal(),
                 Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine speedBenchOne(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_1"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine speedBenchTwo(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_2"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine speedBenchThree(
+      Drive drive,
+      V3_EpsilonSuperstructure superstructure,
+      V3_EpsilonIntake intake,
+      V3_EpsilonManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_3"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
 
     return routine;
   }
