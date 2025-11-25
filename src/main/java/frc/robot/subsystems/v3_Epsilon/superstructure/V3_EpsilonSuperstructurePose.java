@@ -141,7 +141,7 @@ public class V3_EpsilonSuperstructurePose {
       this.intake = intake;
       this.manipulator = manipulator;
       timer = new Timer();
-      maximumVelocityMetersPerSecond = 0.067;
+      maximumVelocityMetersPerSecond = 5;
     }
 
     @Override
@@ -157,7 +157,11 @@ public class V3_EpsilonSuperstructurePose {
     @Override
     public void execute() {
       Pose2d interpolatedPose = lerp(currentPose, targetPose, timer.get() / time);
-      KinematicsResult kinematics = inverseKinematics(interpolatedPose.getTranslation());
+      KinematicsResult kinematics =
+          inverseKinematicsFinal(
+              elevator,
+              manipulator,
+              inverseKinematicsPossibilities(interpolatedPose.getTranslation()));
       elevator.setPosition(kinematics.elevatorHeightMeters);
       manipulator.setArmGoal(kinematics.manipulatorAngle);
       intake.setPivotGoal(intakeState);
@@ -267,19 +271,100 @@ public class V3_EpsilonSuperstructurePose {
    * @param translation The translation from the robot's base to compute the inverse kinematics for.
    * @return The computed inverse kinematics of the robot as a KineticsResult object.
    */
-  public static KinematicsResult inverseKinematics(Translation2d translation) {
-    return new KinematicsResult(
-        translation.getY()
-            - ElevatorConstants.ELEVATOR_OFFSET_METERS
-            - Math.sqrt(
-                Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                    - Math.pow(translation.getX(), 2)),
-        new Rotation2d(
-                translation.getX(),
-                Math.sqrt(
+  public static KinematicsResult[] inverseKinematicsPossibilities(Translation2d translation) {
+    KinematicsResult kinematics1 =
+        new KinematicsResult(
+            translation.getY()
+                - ElevatorConstants.ELEVATOR_OFFSET_METERS
+                - Math.sqrt(
                     Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                        - Math.pow(translation.getX(), 2)))
-            .minus(new Rotation2d(Math.PI / 2)));
+                        - Math.pow(translation.getX(), 2)),
+            new Rotation2d(
+                    translation.getX(),
+                    Math.sqrt(
+                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                            - Math.pow(translation.getX(), 2)))
+                .minus(new Rotation2d(Math.PI / 2)));
+
+    KinematicsResult kinematics2 =
+        new KinematicsResult(
+            translation.getY()
+                - ElevatorConstants.ELEVATOR_OFFSET_METERS
+                + Math.sqrt(
+                    Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                        - Math.pow(translation.getX(), 2)),
+            new Rotation2d(
+                    translation.getX(),
+                    -Math.sqrt(
+                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                            - Math.pow(translation.getX(), 2)))
+                .minus(new Rotation2d(Math.PI / 2)));
+
+    return new KinematicsResult[] {kinematics1, kinematics2};
+  }
+
+  public static KinematicsResult inverseKinematicsFinal(
+      ElevatorFSM elevator,
+      V3_EpsilonManipulator manipulator,
+      KinematicsResult[] kinematicsOptions) {
+    boolean option1 =
+        (kinematicsOptions[0].elevatorHeightMeters
+                < ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
+            // + ElevatorConstants.ELEVATOR_OFFSET_METERS
+            && kinematicsOptions[0].elevatorHeightMeters
+                > ElevatorConstants.ElevatorPositions.STOW.getPosition());
+    // + ElevatorConstants.ELEVATOR_OFFSET_METERS);
+    boolean option2 =
+        (kinematicsOptions[1].elevatorHeightMeters
+                < ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
+            // + ElevatorConstants.ELEVATOR_OFFSET_METERS
+            && kinematicsOptions[1].elevatorHeightMeters + ElevatorConstants.ELEVATOR_OFFSET_METERS
+                > ElevatorConstants.ElevatorPositions.STOW
+                    .getPosition()); /////////////////////////////////////////////////////////////
+    // + ElevatorConstants.ELEVATOR_OFFSET_METERS);
+
+    double time1 =
+        Math.max(
+            Math.abs(kinematicsOptions[0].elevatorHeightMeters - elevator.getPositionMeters())
+                / ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
+            Math.abs(
+                    manipulator
+                        .getArmAngle()
+                        .minus(kinematicsOptions[0].manipulatorAngle)
+                        .getRotations())
+                / V3_EpsilonManipulatorConstants.CONSTRAINTS
+                    .cruisingVelocityRotationsPerSecond()
+                    .get());
+    double time2 =
+        Math.max(
+            Math.abs(kinematicsOptions[1].elevatorHeightMeters - elevator.getPositionMeters())
+                / ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond().get(),
+            Math.abs(
+                    manipulator
+                        .getArmAngle()
+                        .minus(kinematicsOptions[1].manipulatorAngle)
+                        .getRotations())
+                / V3_EpsilonManipulatorConstants.CONSTRAINTS
+                    .cruisingVelocityRotationsPerSecond()
+                    .get());
+
+    // if (!(option1 || option2)) {
+    //   return new KinematicsResult(elevator.getPositionMeters(), manipulator.getArmAngle());
+    // }
+
+    // if (!(option1)) {
+    //   return kinematicsOptions[1];
+    // }
+
+    // if (!(option2)) {
+      return kinematicsOptions[0];
+    // }
+
+    // if (time1 < time2) {
+    //   return kinematicsOptions[0];
+    // } else {
+    //   return kinematicsOptions[1];
+    // }
   }
 
   public record KinematicsResult(double elevatorHeightMeters, Rotation2d manipulatorAngle) {}
