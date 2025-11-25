@@ -50,14 +50,14 @@ public class FieldConstants {
   public static class Reef {
     public static final double coralWidth = Units.inchesToMeters(2.0); // ffudge
 
-    public static enum ReefPose {
+    public enum ReefPose {
       RIGHT,
       LEFT,
       ALGAE,
       CENTER
     }
 
-    public static enum ReefState {
+    public enum ReefState {
       STOW,
       POST_PROCESSOR,
       HIGH_STOW,
@@ -79,7 +79,7 @@ public class FieldConstants {
       STOW_DOWN
     }
 
-    public static record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae, Pose2d center) {
+    public record FaceSetpoints(Pose2d right, Pose2d left, Pose2d algae, Pose2d center) {
       public Pose2d getPostSetpoint(ReefPose post) {
         return post == ReefPose.LEFT ? left : post == ReefPose.RIGHT ? right : center;
       }
@@ -140,7 +140,6 @@ public class FieldConstants {
               ? (DriveConstants.DRIVE_CONFIG.bumperWidth() / 2.0)
                   + FieldConstants.Reef
                       .coralWidth // Offset X setpoint by center of robot to bumper + coral width
-              // sigma
               : DriveConstants.DRIVE_CONFIG.bumperWidth()
                   / 2.0; // Offset X setpoint by center of robot to bumper
 
