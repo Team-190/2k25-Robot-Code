@@ -327,6 +327,16 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
     autoChooser.addRoutine(
         "1 piece do nothing",
         () -> AutonomousCommands.autoFLeftMinimal(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "Range Benchmark 1", () -> AutonomousCommands.rangeBenchOne(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "Range Benchmark 2", () -> AutonomousCommands.rangeBenchTwo(drive, superstructure, intake, manipulator));    
+    autoChooser.addRoutine(
+        "Range Benchmark 3", () -> AutonomousCommands.rangeBenchThree(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "Range Benchmark 4", () -> AutonomousCommands.rangeBenchFour(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine(
+        "Range Benchmark 5", () -> AutonomousCommands.rangeBenchFive(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
@@ -366,8 +376,6 @@ public class V3_EpsilonRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.rangeBenchFive(
-            drive, superstructure, intake, manipulator, RobotCameras.V3_EPSILON_CAMS)
-        .cmd();
+    return autoChooser.selectedCommand();
   }
 }

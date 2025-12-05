@@ -162,11 +162,17 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
 
-    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_1");
-    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_2");
-    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_3");
-    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_4");
-    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_5");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_1");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_2");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_3");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_4");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_5");
+
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_5");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_4");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_3");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_2");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_RANGE_PATH_1");
   }
 
   public static final Command autoALeft(
