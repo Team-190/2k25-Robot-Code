@@ -39,7 +39,6 @@ import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
 import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeConstants.IntakePivotState;
 import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeIO;
 import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeIOSim;
-import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeIOTalonFX;
 import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
 import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorConstants.ManipulatorRollerState;
 import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorIO;
@@ -82,15 +81,15 @@ public class V3_PootRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           elevator = new Elevator(new ElevatorIOTalonFX()).getFSM();
-          intake = new V3_PootIntake(new V3_PootIntakeIOTalonFX());
+          //   intake = new V3_PootIntake(new V3_PootIntakeIOTalonFX());
           manipulator = new V3_PootManipulator(new V3_PootManipulatorIOTalonFX());
           climber = new V3_PootClimber(new V3_PootClimberIOTalonFX());
-          superstructure = new V3_PootSuperstructure(elevator, intake, manipulator);
+          //   superstructure = new V3_PootSuperstructure(elevator, intake, manipulator);
           leds = new V3_PootLEDs();
           vision =
               new Vision(
                   () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-                  RobotCameras.V3_POOT_CAMS);
+                  RobotCameras.V3_LL_TEST);
           break;
         case V3_POOT_SIM:
           drive =

@@ -2174,9 +2174,9 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine speedBenchOne(
       Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
@@ -2193,9 +2193,9 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine speedBenchTwo(
       Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
@@ -2212,9 +2212,9 @@ public class AutonomousCommands {
 
   public static final LoggedAutoRoutine speedBenchThree(
       Drive drive,
-      V3_EpsilonSuperstructure superstructure,
-      V3_EpsilonIntake intake,
-      V3_EpsilonManipulator manipulator,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
