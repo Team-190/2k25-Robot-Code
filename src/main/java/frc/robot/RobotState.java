@@ -66,8 +66,8 @@ public class RobotState {
       case V2_REDUNDANCY:
       case V2_REDUNDANCY_SIM:
         break;
-      case V3_EPSILON:
-      case V3_EPSILON_SIM:
+      case V3_POOT:
+      case V3_POOT_SIM:
         break;
     }
 

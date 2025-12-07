@@ -37,10 +37,10 @@ deploy {
 
                     // The options below may improve performance, but should only be enabled on the RIO 2
 
-                    // final MAX_JAVA_HEAP_SIZE_MB = 100;
-                    // jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    // jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    // jvmArgs.add("-XX:+AlwaysPreTouch")
+                    final MAX_JAVA_HEAP_SIZE_MB = 100;
+                    jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    jvmArgs.add("-XX:+AlwaysPreTouch")
 
                     // Enable VisualVM connection
                     // jvmArgs.add("-Dcom.sun.management.jmxremote=true")
@@ -69,7 +69,7 @@ import com.jcraft.jsch.*
 
 ext {
     // RoboRIO SSH details
-    roboRIOHost = 'roboRIO-9991-FRC.local' // Replace with your team number
+    roboRIOHost = 'roboRIO-190-FRC.local' // Replace with your team number
     roboRIOUser = 'admin'                 // Default user
     roboRIOPassword = ''                  // Default password
     machineInfoFile = '/etc/machine-info' // Path to the file to read
