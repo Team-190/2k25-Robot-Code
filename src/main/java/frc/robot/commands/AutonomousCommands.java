@@ -162,9 +162,11 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
     drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
 
-    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_1");
-    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_2");
-    drive.getAutoFactory().cache().loadTrajectory("G_BENCHMARK_SPEED_3");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_1_NEW");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_2_NEW");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_3_NEW");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_4_NEW");
+    drive.getAutoFactory().cache().loadTrajectory("F_BENCHMARK_PATH_5");
   }
 
   public static final Command autoALeft(
@@ -2172,15 +2174,15 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine speedBenchOne(
+  public static final LoggedAutoRoutine accuracyBenchOne(
       Drive drive,
       V3_PootSuperstructure superstructure,
       V3_PootIntake intake,
       V3_PootManipulator manipulator,
       Camera... cameras) {
 
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
-    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_1"));
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("accuracyBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_PATH_1_NEW"));
 
     routine
         .active()
@@ -2191,15 +2193,15 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine speedBenchTwo(
+  public static final LoggedAutoRoutine accuracyBenchTwo(
       Drive drive,
       V3_PootSuperstructure superstructure,
       V3_PootIntake intake,
       V3_PootManipulator manipulator,
       Camera... cameras) {
 
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
-    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_2"));
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("accuracyBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_PATH_2_NEW"));
 
     routine
         .active()
@@ -2210,15 +2212,48 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine speedBenchThree(
+  public static final LoggedAutoRoutine accuracyBenchThree(
       Drive drive,
       V3_PootSuperstructure superstructure,
       V3_PootIntake intake,
       V3_PootManipulator manipulator,
       Camera... cameras) {
 
-    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("speedBench");
-    LoggedAutoTrajectory path1 = (routine.trajectory("G_BENCHMARK_SPEED_3"));
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("accuracyBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_PATH_3_NEW"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine accuracyBenchFour(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("accuracyBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_PATH_4_NEW"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(), path1.cmd(), Commands.runOnce(() -> drive.stop())));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine accuracyBenchFive(Drive drive, Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("accuracyBench");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_PATH_5"));
 
     routine
         .active()
