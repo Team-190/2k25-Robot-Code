@@ -329,15 +329,20 @@ public class V3_PootRobotContainer implements RobotContainer {
         "1 piece do nothing",
         () -> AutonomousCommands.autoFLeftMinimal(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "Range Benchmark 1", () -> AutonomousCommands.rangeBenchOne(drive, superstructure, intake, manipulator));
+        "Range Benchmark 1",
+        () -> AutonomousCommands.rangeBenchOne(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "Range Benchmark 2", () -> AutonomousCommands.rangeBenchTwo(drive, superstructure, intake, manipulator));    
+        "Range Benchmark 2",
+        () -> AutonomousCommands.rangeBenchTwo(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "Range Benchmark 3", () -> AutonomousCommands.rangeBenchThree(drive, superstructure, intake, manipulator));
+        "Range Benchmark 3",
+        () -> AutonomousCommands.rangeBenchThree(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "Range Benchmark 4", () -> AutonomousCommands.rangeBenchFour(drive, superstructure, intake, manipulator));
+        "Range Benchmark 4",
+        () -> AutonomousCommands.rangeBenchFour(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
-        "Range Benchmark 5", () -> AutonomousCommands.rangeBenchFive(drive, superstructure, intake, manipulator));
+        "Range Benchmark 5",
+        () -> AutonomousCommands.rangeBenchFive(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 

@@ -30,13 +30,13 @@ public final class Constants {
     }
   }
 
-  public static enum Mode {
+  public enum Mode {
     REAL,
     SIM,
     REPLAY
   }
 
-  public static enum RobotType {
+  public enum RobotType {
     V0_FUNKY,
     V0_FUNKY_SIM,
     V0_WHIPLASH,
@@ -47,13 +47,13 @@ public final class Constants {
     V1_STACKUP_SIM,
     V2_REDUNDANCY,
     V2_REDUNDANCY_SIM,
-    V3_EPSILON_SIM,
-    V3_EPSILON,
+    V3_POOT_SIM,
+    V3_POOT,
   }
 
   public static void main(String... args) {
     if (ROBOT == RobotType.V1_STACKUP_SIM) {
-      System.err.println("Cannot deploy, invalid mode selected: " + ROBOT.toString());
+      System.err.println("Cannot deploy, invalid mode selected: " + ROBOT);
       System.exit(1);
     }
   }
