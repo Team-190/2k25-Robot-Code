@@ -119,8 +119,8 @@ public class ElevatorConstants {
         }
         break;
 
-      case V3_EPSILON:
-      case V3_EPSILON_SIM:
+      case V3_POOT:
+      case V3_POOT_SIM:
         ELEVATOR_CAN_ID = 20;
         ELEVATOR_GEAR_RATIO = 4.0;
         DRUM_RADIUS = Units.inchesToMeters(2.211 / 2.0);
@@ -356,7 +356,7 @@ public class ElevatorConstants {
           return position.V1();
         case V2_REDUNDANCY, V2_REDUNDANCY_SIM:
           return position.V2();
-        case V3_EPSILON, V3_EPSILON_SIM:
+        case V3_POOT, V3_POOT_SIM:
           return position.V3();
         default:
           return position.V3();

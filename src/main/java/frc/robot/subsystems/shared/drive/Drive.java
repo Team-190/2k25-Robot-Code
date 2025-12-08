@@ -55,7 +55,7 @@ public class Drive extends SubsystemBase {
 
   private final SwerveDriveKinematics kinematics;
   @Getter private Rotation2d rawGyroRotation;
-  private SwerveModulePosition[] lastModulePositions;
+  private final SwerveModulePosition[] lastModulePositions;
   @Getter private ChassisSpeeds measuredChassisSpeeds;
 
   @Getter private final LoggedAutoFactory autoFactory;
@@ -118,8 +118,7 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       InternalLoggedTracer.reset();
       modules[i].updateInputs();
-      InternalLoggedTracer.record(
-          "Module" + Integer.toString(i) + "Update Inputs", "Drive/Periodic");
+      InternalLoggedTracer.record("Module" + i + "Update Inputs", "Drive/Periodic");
     }
 
     InternalLoggedTracer.reset();
@@ -133,8 +132,7 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       InternalLoggedTracer.reset();
       modules[i].periodic();
-      InternalLoggedTracer.record(
-          "Module" + Integer.toString(i) + "Periodic Total", "Drive/Periodic");
+      InternalLoggedTracer.record("Module" + i + "Periodic Total", "Drive/Periodic");
     }
 
     // Stop moving when disabled
@@ -331,6 +329,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the field relative velocity in X and Y. */
+  @AutoLogOutput(key = "FieldRelativeVelocity")
   public Translation2d getFieldRelativeVelocity() {
     return new Translation2d(filteredX, filteredY);
   }
