@@ -367,6 +367,6 @@ public class V3_PootRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.speedBenchThree(drive, superstructure, intake, manipulator).cmd();
+    return AutonomousCommands.accuracyBenchFive(drive).cmd();
   }
 }

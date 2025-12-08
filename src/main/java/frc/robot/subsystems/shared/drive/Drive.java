@@ -373,7 +373,15 @@ public class Drive extends SubsystemBase {
             rotationFF + rotationFeedback,
             Rotation2d.fromRadians(sample.heading));
 
+    double errorX = Math.abs(sample.x - pose.getX());
+    double errorY = Math.abs(sample.y - pose.getY());
+    double errorHeading =
+        Math.abs(sample.getPose().getRotation().getRadians() - pose.getRotation().getRadians());
+
     runVelocity(velocity);
     Logger.recordOutput("Auto/Setpoint", sample.getPose());
+    Logger.recordOutput("Auto/ErrorX", errorX);
+    Logger.recordOutput("Auto/ErrorY", errorY);
+    Logger.recordOutput("Auto/ErrorHeading", errorHeading);
   }
 }
