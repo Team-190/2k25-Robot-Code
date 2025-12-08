@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shared.vision;
 
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,6 +23,15 @@ public class CameraIOLimelight implements CameraIO {
             .getTable(this.name)
             .getDoubleArrayTopic("robot_orientation_set")
             .publish();
+
+    LimelightHelpers.setCameraPose_RobotSpace(
+        name,
+        this.config.robotToCameraTransform().getX(),
+        -this.config.robotToCameraTransform().getY(),
+        this.config.robotToCameraTransform().getZ(),
+        Units.radiansToDegrees(this.config.robotToCameraTransform().getRotation().getX()),
+        Units.radiansToDegrees(this.config.robotToCameraTransform().getRotation().getY()),
+        Units.radiansToDegrees(this.config.robotToCameraTransform().getRotation().getZ()));
   }
 
   @Override
@@ -79,17 +87,5 @@ public class CameraIOLimelight implements CameraIO {
   @Override
   public void setValidTags(int... validIds) {
     LimelightHelpers.SetFiducialIDFiltersOverride(name, validIds);
-  }
-
-  @Override
-  public void setCameraOffset(Transform3d cameraOffset) {
-    LimelightHelpers.setCameraPose_RobotSpace(
-        name,
-        cameraOffset.getX(),
-        cameraOffset.getY(),
-        cameraOffset.getZ(),
-        Units.radiansToDegrees(cameraOffset.getRotation().getX()),
-        Units.radiansToDegrees(cameraOffset.getRotation().getY()),
-        Units.radiansToDegrees(cameraOffset.getRotation().getZ()));
   }
 }

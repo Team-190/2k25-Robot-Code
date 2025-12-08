@@ -73,8 +73,6 @@ public class Camera {
         thetaStdev = Double.POSITIVE_INFINITY;
       }
 
-      thetaStdev = Double.POSITIVE_INFINITY;
-
       // Add observation to list
       double xyStdDev =
           xyStdevCoeff

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.V3_EPSILON_SIM;
+  public static final RobotType ROBOT = RobotType.V3_POOT;
 
   public static Mode getMode() {
     switch (ROBOT) {
@@ -14,7 +14,7 @@ public final class Constants {
       case V0_GOMPEIVISION_TEST:
       case V1_STACKUP:
       case V2_REDUNDANCY:
-      case V3_EPSILON:
+      case V3_POOT:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case V0_FUNKY_SIM:
@@ -22,7 +22,7 @@ public final class Constants {
       case V0_GOMPEIVISION_TEST_SIM:
       case V1_STACKUP_SIM:
       case V2_REDUNDANCY_SIM:
-      case V3_EPSILON_SIM:
+      case V3_POOT_SIM:
         return Mode.SIM;
 
       default:
@@ -47,8 +47,8 @@ public final class Constants {
     V1_STACKUP_SIM,
     V2_REDUNDANCY,
     V2_REDUNDANCY_SIM,
-    V3_EPSILON_SIM,
-    V3_EPSILON,
+    V3_POOT_SIM,
+    V3_POOT,
   }
 
   public static void main(String... args) {
