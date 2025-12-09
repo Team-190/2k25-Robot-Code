@@ -2264,12 +2264,7 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine rangeBenchOne(
-      Drive drive,
-      V3_PootSuperstructure superstructure,
-      V3_PootIntake intake,
-      V3_PootManipulator manipulator,
-      Camera... cameras) {
+  public static final LoggedAutoRoutine rangeBenchOne(Drive drive) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchOne");
     LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_1"));
@@ -2283,15 +2278,10 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine rangeBenchTwo(
-      Drive drive,
-      V3_PootSuperstructure superstructure,
-      V3_PootIntake intake,
-      V3_PootManipulator manipulator,
-      Camera... cameras) {
+  public static final LoggedAutoRoutine rangeBenchFive(Drive drive) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchTwo");
-    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_2"));
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_5"));
 
     routine
         .active()
@@ -2340,7 +2330,7 @@ public class AutonomousCommands {
     return routine;
   }
 
-  public static final LoggedAutoRoutine rangeBenchFive(
+  public static final LoggedAutoRoutine rangeBenchTwo(
       Drive drive,
       V3_PootSuperstructure superstructure,
       V3_PootIntake intake,
@@ -2348,7 +2338,7 @@ public class AutonomousCommands {
       Camera... cameras) {
 
     LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("rangeBenchFive");
-    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_5"));
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_BENCHMARK_RANGE_2"));
 
     routine
         .active()

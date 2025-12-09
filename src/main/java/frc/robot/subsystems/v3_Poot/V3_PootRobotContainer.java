@@ -328,12 +328,8 @@ public class V3_PootRobotContainer implements RobotContainer {
     autoChooser.addRoutine(
         "1 piece do nothing",
         () -> AutonomousCommands.autoFLeftMinimal(drive, superstructure, intake, manipulator));
-    autoChooser.addRoutine(
-        "Range Benchmark 1",
-        () -> AutonomousCommands.rangeBenchOne(drive, superstructure, intake, manipulator));
-    autoChooser.addRoutine(
-        "Range Benchmark 2",
-        () -> AutonomousCommands.rangeBenchTwo(drive, superstructure, intake, manipulator));
+    autoChooser.addRoutine("Range Benchmark 1", () -> AutonomousCommands.rangeBenchOne(drive));
+    autoChooser.addRoutine("Range Benchmark 2", () -> AutonomousCommands.rangeBenchFive(drive));
     autoChooser.addRoutine(
         "Range Benchmark 3",
         () -> AutonomousCommands.rangeBenchThree(drive, superstructure, intake, manipulator));
@@ -342,7 +338,7 @@ public class V3_PootRobotContainer implements RobotContainer {
         () -> AutonomousCommands.rangeBenchFour(drive, superstructure, intake, manipulator));
     autoChooser.addRoutine(
         "Range Benchmark 5",
-        () -> AutonomousCommands.rangeBenchFive(drive, superstructure, intake, manipulator));
+        () -> AutonomousCommands.rangeBenchTwo(drive, superstructure, intake, manipulator));
     SmartDashboard.putData("Autonomous Modes", autoChooser);
   }
 
@@ -382,6 +378,6 @@ public class V3_PootRobotContainer implements RobotContainer {
    */
   @Override
   public Command getAutonomousCommand() {
-    return AutonomousCommands.accuracyBenchFive(drive).cmd();
+    return AutonomousCommands.rangeBenchFive(drive).cmd();
   }
 }
