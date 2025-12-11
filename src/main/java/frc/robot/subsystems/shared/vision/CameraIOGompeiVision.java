@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
@@ -41,7 +42,7 @@ public class CameraIOGompeiVision implements CameraIO {
   // private final CameraType cameraType;
 
   private final DoubleArraySubscriber observationSubscriber;
-  // private final IntegerSubscriber fpsAprilTagSubscriber;
+  private final IntegerSubscriber fpsAprilTagSubscriber;
   private final BooleanSubscriber cameraConnectedSubscriber;
 
   private final Map<Integer, Double> lastTagDetectionTimes;
@@ -96,7 +97,7 @@ public class CameraIOGompeiVision implements CameraIO {
                 PubSubOption.sendAll(true),
                 PubSubOption.pollStorage(5),
                 PubSubOption.periodic(0.01));
-    // this.fpsAprilTagSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
+    this.fpsAprilTagSubscriber = outputTable.getIntegerTopic("fps_apriltags").subscribe(0);
     this.cameraConnectedSubscriber = outputTable.getBooleanTopic("connected").subscribe(false);
 
     lastTagDetectionTimes = new HashMap<>();

@@ -27,7 +27,7 @@ public class v0_GompeivisionTestRobotContainer implements RobotContainer {
           vision =
               new Vision(
                   () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-                  RobotCameras.V3_POOT_CAMS);
+                  RobotCameras.V3_EPSILON_CAMS);
           break;
         default:
           break;
@@ -38,7 +38,7 @@ public class v0_GompeivisionTestRobotContainer implements RobotContainer {
       vision =
           new Vision(
               () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
-              RobotCameras.V3_POOT_CAMS);
+              RobotCameras.V3_EPSILON_CAMS);
     }
 
     configureButtonBindings();

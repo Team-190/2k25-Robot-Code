@@ -374,27 +374,6 @@ public class VisionConstants {
                         0, Units.degreesToRadians(-20.0), Units.degreesToRadians(-115.0))))
             .build();
 
-    private static final LimelightConfig LL_TEST =
-        LimelightConfig.builder()
-            .key("gvtest")
-            .cameraType(CameraType.LIMELIGHT_4)
-            .horizontalFOV(Limelight4Constants.HORIZONTAL_FOV)
-            .verticalFOV(Limelight4Constants.VERTICAL_FOV)
-            .megatagXYStdev(Limelight4Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT)
-            .metatagThetaStdev(Limelight4Constants.MEGATAG_THETA_STANDARD_DEVIATION_COEFFICIENT)
-            .megatag2XYStdev(Limelight4Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT)
-            .cameraDuties(List.of(CameraDuty.FIELD_LOCALIZATION, CameraDuty.REEF_LOCALIZATION))
-            .robotToCameraTransform(
-                new Transform3d(
-                    Units.inchesToMeters(11.351558),
-                    Units.inchesToMeters(-11.180280),
-                    Units.inchesToMeters(8.760913),
-                    new Rotation3d(
-                        Units.degreesToRadians(180.0),
-                        Units.degreesToRadians(-20.0),
-                        Units.degreesToRadians(-115.0))))
-            .build();
-
     public static final Camera[] V0_FUNKY_CAMS = {
       new Camera(new CameraIOLimelight(V0_FUNKY_CENTER)),
       new Camera(new CameraIOLimelight(V0_FUNKY_LEFT)),
@@ -410,8 +389,7 @@ public class VisionConstants {
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_LEFT)),
       new Camera(new CameraIOLimelight(V2_REDUNDANCY_RIGHT))
     };
-
-    public static final Camera[] V3_POOT_CAMS = {
+    public static final Camera[] V3_EPSILON_CAMS = {
       new Camera(
           new CameraIOGompeiVision(
               BACK_BOTTOM_LEFT,
@@ -429,15 +407,6 @@ public class VisionConstants {
               FRONT_LEFT,
               () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
     };
-
-    public static final Camera[] V3_GV_TEST = {
-      new Camera(
-          new CameraIOGompeiVision(
-              FRONT_LEFT,
-              () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark)))
-    };
-
-    public static final Camera[] V3_LL_TEST = {new Camera(new CameraIOLimelight(LL_TEST))};
   }
 
   @Builder

@@ -3,6 +3,7 @@ package frc.robot.subsystems.shared.vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.subsystems.shared.vision.VisionConstants.GompeiVisionConfig;
 import frc.robot.subsystems.shared.vision.VisionConstants.LimelightConfig;
 import java.util.List;
@@ -50,6 +51,8 @@ public interface CameraIO {
   public default void setPipeline(int pipeline) {}
 
   public default void setValidTags(int... validIds) {}
+
+  public default void setCameraOffset(Transform3d cameraOffset) {}
 
   public default Supplier<AprilTagFieldLayout> getFieldLayoutSupplier() {
     return () -> null;
