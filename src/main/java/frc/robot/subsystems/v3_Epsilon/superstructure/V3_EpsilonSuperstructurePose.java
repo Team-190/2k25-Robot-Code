@@ -309,19 +309,16 @@ public class V3_EpsilonSuperstructurePose {
       KinematicsResult[] kinematicsOptions) {
     boolean option1 =
         (kinematicsOptions[0].elevatorHeightMeters
-                < ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
-            // + ElevatorConstants.ELEVATOR_OFFSET_METERS
+                <= ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
             && kinematicsOptions[0].elevatorHeightMeters
-                > ElevatorConstants.ElevatorPositions.STOW.getPosition());
-    // + ElevatorConstants.ELEVATOR_OFFSET_METERS);
+                >= ElevatorConstants.ElevatorPositions.STOW.getPosition());
     boolean option2 =
         (kinematicsOptions[1].elevatorHeightMeters
-                < ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
+                <= ElevatorConstants.ElevatorPositions.ALGAE_SCORE.getPosition()
             // + ElevatorConstants.ELEVATOR_OFFSET_METERS
             && kinematicsOptions[1].elevatorHeightMeters + ElevatorConstants.ELEVATOR_OFFSET_METERS
-                > ElevatorConstants.ElevatorPositions.STOW
-                    .getPosition()); /////////////////////////////////////////////////////////////
-    // + ElevatorConstants.ELEVATOR_OFFSET_METERS);
+                >= ElevatorConstants.ElevatorPositions.STOW
+                    .getPosition()); // + ElevatorConstants.ELEVATOR_OFFSET_METERS);
 
     double time1 =
         Math.max(
@@ -348,23 +345,19 @@ public class V3_EpsilonSuperstructurePose {
                     .cruisingVelocityRotationsPerSecond()
                     .get());
 
-    // if (!(option1 || option2)) {
-    //   return new KinematicsResult(elevator.getPositionMeters(), manipulator.getArmAngle());
-    // }
+    if (!(option1)) {
+      return kinematicsOptions[1];
+    }
 
-    // if (!(option1)) {
-    //   return kinematicsOptions[1];
-    // }
-
-    // if (!(option2)) {
+    if (!(option2)) {
       return kinematicsOptions[0];
-    // }
+    }
 
-    // if (time1 < time2) {
-    //   return kinematicsOptions[0];
-    // } else {
-    //   return kinematicsOptions[1];
-    // }
+    if (time1 < time2) {
+      return kinematicsOptions[0];
+    } else {
+      return kinematicsOptions[1];
+    }
   }
 
   public record KinematicsResult(double elevatorHeightMeters, Rotation2d manipulatorAngle) {}

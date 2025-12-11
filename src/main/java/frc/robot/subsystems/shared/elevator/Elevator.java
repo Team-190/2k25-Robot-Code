@@ -236,7 +236,7 @@ public class Elevator {
     isClosedLoop = true;
     this.positionGoalMeters = newPositionMeters;
     // When a raw double is commanded, there's no corresponding enum state.
-    this.lastKnownPositionEnum = null;
+    // this.lastKnownPositionEnum = null;
   }
 
   public class ElevatorCSB extends SubsystemBase {
