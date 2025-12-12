@@ -652,12 +652,32 @@ public class V3_EpsilonSuperstructure extends SubsystemBase {
     return elevator.atGoal();
   }
 
+  /**
+   * Returns true if the superstructure is currently transitioning between states, false otherwise.
+   *
+   * <p>Transitioning is defined as the edge command being non-null and its inner command being
+   * scheduled.
+   *
+   * @return True if the superstructure is transitioning, false otherwise.
+   */
   @AutoLogOutput(key = NTPrefixes.SUPERSTRUCTURE + "IsTransitioning")
   public boolean isTransitioning() {
     return edgeCommand != null && edgeCommand.getCommand().isScheduled();
   }
-
-  public Command allTransition() {
+  /**
+   * Generates a command sequence to transition through all valid superstructure states.
+   *
+   * <p>This command will transition through all valid states, recording the current objective at
+   * each transition. The command will not repeat any transitions (i.e. if the command is asked to
+   * transition from state A to state B, and then from state B to state A, the command will not
+   * repeat the transition from state B to state A).
+   *
+   * <p>The command will also not transition through any invalid states (i.e. states that are not
+   * reachable from the current state).
+   *
+   * @return A command sequence to transition through all valid superstructure states.
+   */
+  public Command allTransitions() {
     Command all = runGoal(V3_EpsilonSuperstructureStates.STOW_DOWN);
     for (var source : V3_EpsilonSuperstructureStates.values()) {
       for (var sink : V3_EpsilonSuperstructureStates.values()) {

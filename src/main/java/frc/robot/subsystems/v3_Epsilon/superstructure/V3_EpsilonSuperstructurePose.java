@@ -18,6 +18,7 @@ import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonMani
 import frc.robot.subsystems.v3_Epsilon.superstructure.manipulator.V3_EpsilonManipulatorConstants.ManipulatorArmState;
 import java.util.Optional;
 import lombok.Getter;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Represents a specific pose (configuration) of the superstructure, defining the states of the
@@ -277,13 +278,19 @@ public class V3_EpsilonSuperstructurePose {
             translation.getY()
                 - ElevatorConstants.ELEVATOR_OFFSET_METERS
                 - Math.sqrt(
-                    Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                        - Math.pow(translation.getX(), 2)),
+                    Math.max(
+                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                            - Math.pow(translation.getX(), 2),
+                        0)),
             new Rotation2d(
                     translation.getX(),
                     Math.sqrt(
-                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                            - Math.pow(translation.getX(), 2)))
+                        Math.max(
+                            Math.pow(
+                                    V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(),
+                                    2)
+                                - Math.pow(translation.getX(), 2),
+                            0)))
                 .minus(new Rotation2d(Math.PI / 2)));
 
     KinematicsResult kinematics2 =
@@ -291,14 +298,27 @@ public class V3_EpsilonSuperstructurePose {
             translation.getY()
                 - ElevatorConstants.ELEVATOR_OFFSET_METERS
                 + Math.sqrt(
-                    Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                        - Math.pow(translation.getX(), 2)),
+                    Math.max(
+                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                            - Math.pow(translation.getX(), 2),
+                        0)),
             new Rotation2d(
                     translation.getX(),
                     -Math.sqrt(
-                        Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
-                            - Math.pow(translation.getX(), 2)))
+                        Math.max(
+                            Math.pow(
+                                    V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(),
+                                    2)
+                                - Math.pow(translation.getX(), 2),
+                            0)))
                 .minus(new Rotation2d(Math.PI / 2)));
+
+    Logger.recordOutput("Elevator/TranslationX", translation);
+    Logger.recordOutput(
+        "Elevator/SqrtThingy",
+        Math.sqrt(
+            Math.pow(V3_EpsilonManipulatorConstants.ARM_PARAMETERS.LENGTH_METERS(), 2)
+                - Math.pow(translation.getX(), 2)));
 
     return new KinematicsResult[] {kinematics1, kinematics2};
   }

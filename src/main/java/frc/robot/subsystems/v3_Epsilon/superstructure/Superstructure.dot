@@ -1,3 +1,4 @@
+#Idk what this file does, but it it isnt the real superstructure. TURST ME WE KNOW
 digraph Superstructure {
   START -> STOW_DOWN [type=UNCONSTRAINED, kinematics=FORWARD]
 
@@ -126,15 +127,15 @@ digraph Superstructure {
   STOW_UP -> BARGE [type=UNCONSTRAINED, kinematics=FORWARD]
   STOW_UP -> GROUND_AQUISITION_ALGAE [type=UNCONSTRAINED, kinematics=FORWARD]
 
-  L2_ALGAE -> STOW_DOWN [type = NO_ALGAE kinematics=FORWARD]
-  L2_ALGAE -> FLIP_DOWN [type = NO_ALGAE kinematics=FORWARD]
+  L2_ALGAE -> STOW_DOWN [type = NO_ALGAE, kinematics=FORWARD]
+  L2_ALGAE -> FLIP_DOWN [type = NO_ALGAE, kinematics=FORWARD]
   L2_ALGAE -> L2 [type=UNCONSTRAINED, kinematics=INVERSE] 
   L2_ALGAE -> L3 [type=UNCONSTRAINED, kinematics=INVERSE]
   L2_ALGAE -> L4 [type=UNCONSTRAINED, kinematics=INVERSE]
-  L2_ALGAE -> HANDOFF [type = NO_ALGAE kinematics=FORWARD]
+  L2_ALGAE -> HANDOFF [type = NO_ALGAE, kinematics=FORWARD]
   L2_ALGAE -> STOW_UP [type=UNCONSTRAINED, kinematics=FORWARD]
   L2_ALGAE -> L2_ALGAE_INTAKE [type=UNCONSTRAINED, kinematics=FORWARD]
-  L2_ALGAE -> L3_ALGAE [type = NO_ALGAE kinematics=INVERSE]
+  L2_ALGAE -> L3_ALGAE [type = NO_ALGAE, kinematics=INVERSE]
   L2_ALGAE -> PROCESSOR [type=UNCONSTRAINED, kinematics=FORWARD]
   L2_ALGAE -> BARGE [type=UNCONSTRAINED, kinematics=FORWARD]
   L2_ALGAE -> L2_ALGAE_DROP
@@ -147,15 +148,15 @@ digraph Superstructure {
     L2_ALGAE_INTAKE -> L2_ALGAE_DROP [type=UNCONSTRAINED, kinematics=FORWARD]
 
 
-  L3_ALGAE -> STOW_DOWN [type = NO_ALGAE kinematics=FORWARD]
-  L3_ALGAE -> GROUND_ACQUISITION [type = NO_ALGAE kinematics=FORWARD]
-  L3_ALGAE -> L1 [type = NO_ALGAE kinematics=INVERSE]
+  L3_ALGAE -> STOW_DOWN [type = NO_ALGAE, kinematics=FORWARD]
+  L3_ALGAE -> GROUND_ACQUISITION [type = NO_ALGAE, kinematics=FORWARD]
+  L3_ALGAE -> L1 [type = NO_ALGAE, kinematics=INVERSE]
   L3_ALGAE -> L2 [type=UNCONSTRAINED, kinematics=INVERSE]
   L3_ALGAE -> L3 [type=UNCONSTRAINED, kinematics=INVERSE]
   L3_ALGAE -> L4 [type=UNCONSTRAINED, kinematics=INVERSE]
-  L3_ALGAE -> HANDOFF [type = NO_ALGAE kinematics=FORWARD]
+  L3_ALGAE -> HANDOFF [type = NO_ALGAE, kinematics=FORWARD]
   L3_ALGAE -> STOW_UP [type=UNCONSTRAINED, kinematics=FORWARD]
-  L3_ALGAE -> L2_ALGAE [type = NO_ALGAE kinematics=INVERSE]
+  L3_ALGAE -> L2_ALGAE [type = NO_ALGAE, kinematics=INVERSE]
   L3_ALGAE -> L3_ALGAE_INTAKE [type=UNCONSTRAINED, kinematics=FORWARD]
   L3_ALGAE -> PROCESSOR [type=UNCONSTRAINED, kinematics=FORWARD]
   L3_ALGAE -> BARGE [type=UNCONSTRAINED, kinematics=FORWARD]
@@ -169,7 +170,7 @@ digraph Superstructure {
       L3_ALGAE_INTAKE -> L3_ALGAE_DROP [type=UNCONSTRAINED, kinematics=FORWARD]
 
 
-  PROCESSOR -> POST_PROCESSOR [type = NO_ALGAE kinematics=FORWARD]
+  PROCESSOR -> POST_PROCESSOR [type = NO_ALGAE, kinematics=FORWARD]
   PROCESSOR -> PROCESSOR_SCORE [type=UNCONSTRAINED, kinematics=FORWARD]
   PROCESSOR -> GROUND_AQUISITION_ALGAE [type=UNCONSTRAINED, kinematics=FORWARD]
 
@@ -211,7 +212,7 @@ digraph Superstructure {
   FLIP_UP -> L3 [type=UNCONSTRAINED, kinematics=INVERSE]
   FLIP_UP -> PROCESSOR [type=UNCONSTRAINED, kinematics=FORWARD]
 
-  POST_PROCESSOR -> FLIP_DOWN [type = NO_ALGAE kinematics=FORWARD]
+  POST_PROCESSOR -> FLIP_DOWN [type = NO_ALGAE, kinematics=FORWARD]
   POST_PROCESSOR -> STOW_UP [type = UNCONSTRAINED, kinematics=FORWARD]
   POST_PROCESSOR -> L2_ALGAE [type = UNCONSTRAINED, kinematics=INVERSE]
   POST_PROCESSOR -> L3_ALGAE [type = UNCONSTRAINED, kinematics=INVERSE]

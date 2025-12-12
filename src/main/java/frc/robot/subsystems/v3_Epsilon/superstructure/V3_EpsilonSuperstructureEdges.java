@@ -160,7 +160,11 @@ public class V3_EpsilonSuperstructureEdges {
           Commands.waitUntil(() -> manipulator.armInTolerance(Rotation2d.fromDegrees(6))));
     }
 
-    return Commands.sequence(transitionCommand, pose.wait(elevator, intake, manipulator));
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> Logger.recordOutput("Superstructure/KinematicType", kinematicsType.toString())),
+        transitionCommand,
+        pose.wait(elevator, intake, manipulator));
   }
 
   /**
