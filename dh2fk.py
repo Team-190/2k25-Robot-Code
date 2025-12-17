@@ -2,12 +2,7 @@ from readline import redisplay
 from numpy import disp
 import sympy as sp
 
-# Use this in a Jupyter Notebook or similar for nicely formatted math output
 sp.init_printing(use_unicode=True)
-
-# -------------------------------------------------------------------
-# Part 1: Symbolic Derivation
-# -------------------------------------------------------------------
 
 # 1. Define the symbolic variables
 l1, l3, d3, l5, theta5, l7 = sp.symbols('l1 l3 d3 l5 theta5 l7')
@@ -25,7 +20,6 @@ dh_table = [
 ]
 
 def create_symbolic_transform(dh_row):
-    """Creates a 4x4 symbolic transformation matrix from a DH table row."""
     theta, d, a, alpha = dh_row
     
     return sp.Matrix([
