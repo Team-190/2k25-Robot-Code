@@ -271,47 +271,6 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
     InternalLoggedTracer.record("Check Battery Alert", "Robot");
-
-    // Check CAN status
-    // LoggedTracer.reset();
-    // var canStatus = RobotController.getCANStatus();
-    // if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-    // canErrorTimer.restart();
-    // }
-    // canErrorAlert.set(
-    // !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-    // && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-
-    // // Log CANivore status
-    // if (Constants.getMode() == Constants.Mode.REAL) {
-    // var canivoreStatus = canivoreReader.getStatus();
-    // if (canivoreStatus.isPresent()) {
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "Status",
-    // canivoreStatus.get().Status.getName());
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "Utilization",
-    // canivoreStatus.get().BusUtilization);
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "TxFullCount",
-    // canivoreStatus.get().TxFullCount);
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
-    // Logger.recordOutput(
-    // NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
-    // if (!canivoreStatus.get().Status.isOK()
-    // || canStatus.transmitErrorCount > 0
-    // || canStatus.receiveErrorCount > 0) {
-    // canivoreErrorTimer.restart();
-    // }
-    // }
-    // canivoreErrorAlert.set(
-    // !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
-    // && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-    // }
-    // LoggedTracer.record("Check CANivore Status", "Robot");
   }
 
   /** This function is called once when the robot is disabled. */
