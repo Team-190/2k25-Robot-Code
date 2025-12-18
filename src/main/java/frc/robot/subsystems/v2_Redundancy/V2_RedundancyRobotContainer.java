@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v2_Redundancy;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,8 +40,8 @@ import frc.robot.subsystems.shared.funnel.Funnel.FunnelFSM;
 import frc.robot.subsystems.shared.funnel.FunnelIO;
 import frc.robot.subsystems.shared.funnel.FunnelIOSim;
 import frc.robot.subsystems.shared.funnel.FunnelIOTalonFX;
-import frc.robot.subsystems.shared.visionlimelight.CameraConstants.RobotCameras;
-import frc.robot.subsystems.shared.visionlimelight.Vision;
+import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.vision.VisionConstants.RobotCameras;
 import frc.robot.subsystems.v2_Redundancy.leds.V2_RedundancyLEDs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
@@ -55,6 +57,7 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_Redundan
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorIOTalonFX;
 import frc.robot.util.LTNUpdater;
 import frc.robot.util.LoggedChoreo.ChoreoChooser;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class V2_RedundancyRobotContainer implements RobotContainer {
@@ -95,7 +98,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           leds = new V2_RedundancyLEDs();
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOTalonFX());
           superstructure = new V2_RedundancySuperstructure(elevator, funnel, intake, manipulator);
-          vision = new Vision(RobotCameras.V2_REDUNDANCY_CAMS);
+          vision =
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  RobotCameras.V2_REDUNDANCY_CAMS);
           break;
         case V2_REDUNDANCY_SIM:
           climber = new Climber(new ClimberIOSim());
@@ -110,7 +116,8 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
           funnel = new Funnel(new FunnelIOSim()).getFSM();
           intake = new V2_RedundancyIntake(new V2_RedundancyIntakeIOSim());
           manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIOSim());
-          vision = new Vision();
+          vision =
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         default:
           break;
@@ -145,9 +152,11 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
       manipulator = new V2_RedundancyManipulator(new V2_RedundancyManipulatorIO() {});
     }
     if (vision == null) {
-      vision = new Vision();
+      vision = new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
     }
     superstructure = new V2_RedundancySuperstructure(elevator, funnel, intake, manipulator);
+
+    LTNUpdater.registerAll(drive, elevator, funnel, intake, manipulator);
 
     configureButtonBindings();
     configureAutos();
@@ -419,18 +428,10 @@ public class V2_RedundancyRobotContainer implements RobotContainer {
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),
-        drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
-        intake.getExtension(),
-        manipulator.getArmAngle(),
-        elevator.getPositionMeters(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
-    LTNUpdater.updateElevator(elevator);
-    LTNUpdater.updateFunnel(funnel);
-    LTNUpdater.updateAlgaeArm(manipulator);
-    LTNUpdater.updateIntake(intake);
+    LoggedTunableNumber.updateAll();
 
     Logger.recordOutput(
         "Component Poses",

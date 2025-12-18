@@ -33,7 +33,7 @@ import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.drive.Drive;
 import frc.robot.subsystems.shared.drive.DriveConstants;
-import frc.robot.subsystems.shared.visionlimelight.Camera;
+import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
@@ -430,6 +430,35 @@ public final class DriveCommands {
                                             .coralSetpoint()
                                             .getRotation()
                                             .getRadians());
+
+                        ChassisSpeeds measuredSpeeds = drive.getMeasuredChassisSpeeds();
+                        double vx_prime =
+                            measuredSpeeds.vxMetersPerSecond
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + measuredSpeeds.vyMetersPerSecond
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        double vy_prime =
+                            -measuredSpeeds.vxMetersPerSecond
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + measuredSpeeds.vyMetersPerSecond
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
                         InternalLoggedTracer.record(
                             "Create Rotated Errors",
                             "Command Scheduler/Drive Commands/Auto Align Coral");
@@ -441,7 +470,7 @@ public final class DriveCommands {
                               "Create XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         } else {
                           InternalLoggedTracer.reset();
-                          alignXController.reset(ex_prime);
+                          alignXController.reset(ex_prime, vx_prime);
                           InternalLoggedTracer.record(
                               "Reset XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         }
@@ -453,7 +482,7 @@ public final class DriveCommands {
 
                         } else {
                           InternalLoggedTracer.reset();
-                          alignYController.reset(ey_prime);
+                          alignYController.reset(ey_prime, vy_prime);
                           InternalLoggedTracer.record(
                               "Reset YSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         }
@@ -603,6 +632,36 @@ public final class DriveCommands {
                                             .algaeSetpoint()
                                             .getRotation()
                                             .getRadians());
+
+                        ChassisSpeeds measuredSpeeds = drive.getMeasuredChassisSpeeds();
+                        double vx_prime =
+                            measuredSpeeds.vxMetersPerSecond
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + measuredSpeeds.vyMetersPerSecond
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+
+                        double vy_prime =
+                            -measuredSpeeds.vxMetersPerSecond
+                                    * Math.sin(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians())
+                                + measuredSpeeds.vyMetersPerSecond
+                                    * Math.cos(
+                                        RobotState.getReefAlignData()
+                                            .algaeSetpoint()
+                                            .getRotation()
+                                            .getRadians());
+
                         InternalLoggedTracer.record(
                             "Create Rotated Errors",
                             "Command Scheduler/Drive Commands/Auto Align Algae");
@@ -614,7 +673,7 @@ public final class DriveCommands {
                               "Create XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         } else {
                           InternalLoggedTracer.reset();
-                          alignXController.reset(ex_prime);
+                          alignXController.reset(ex_prime, vx_prime);
                           InternalLoggedTracer.record(
                               "Reset XSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         }
@@ -626,7 +685,7 @@ public final class DriveCommands {
 
                         } else {
                           InternalLoggedTracer.reset();
-                          alignYController.reset(ey_prime);
+                          alignYController.reset(ey_prime, vy_prime);
                           InternalLoggedTracer.record(
                               "Reset YSpeed", "Command Scheduler/Drive Commands/Auto Align Algae");
                         }

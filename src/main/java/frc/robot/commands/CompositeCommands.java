@@ -16,13 +16,19 @@ import frc.robot.subsystems.shared.elevator.Elevator.ElevatorFSM;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.funnel.Funnel.FunnelCSB;
 import frc.robot.subsystems.shared.funnel.FunnelConstants.FunnelState;
-import frc.robot.subsystems.shared.visionlimelight.Camera;
+import frc.robot.subsystems.shared.vision.Camera;
 import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructure;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructureStates;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorConstants.ManipulatorRollerState;
 import frc.robot.util.AllianceFlipUtil;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -647,5 +653,298 @@ public class CompositeCommands {
         manipulator.homingSequence(),
         intake.homingSequence(),
         Commands.runOnce(() -> elevator.setPosition()));
+  }
+
+  public static final class V3_PootCompositeCommands {
+
+    public static final Command intakeCoralDriverSequence(
+        V3_PootSuperstructure superstructure,
+        V3_PootIntake intake,
+        V3_PootManipulator manipulator) {
+      return Commands.sequence(
+          Commands.runOnce(() -> RobotState.setHasAlgae(false)),
+          superstructure.runGoalUntil(V3_PootSuperstructureStates.GROUND_INTAKE, () -> false),
+          superstructure.runGoalUntil(V3_PootSuperstructureStates.HANDOFF, () -> false));
+    }
+
+    public static final Command postIntakeCoralSequence(
+        V3_PootSuperstructure superstructure,
+        V3_PootIntake intake,
+        V3_PootManipulator manipulator) {
+      return Commands.either(
+          Commands.either(
+              Commands.sequence(
+                  superstructure.runGoalUntil(
+                      V3_PootSuperstructureStates.HANDOFF_SPIN, () -> manipulator.hasCoral()),
+                  superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP)),
+              Commands.none(),
+              () ->
+                  !superstructure.getTargetState().equals(V3_PootSuperstructureStates.STOW_UP)
+                      && !superstructure
+                          .getCurrentState()
+                          .equals(V3_PootSuperstructureStates.STOW_UP)),
+          superstructure.runGoal(V3_PootSuperstructureStates.L1),
+          () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
+    }
+
+    /**
+     * Creates a command to automatically align the robot to the optimal side of the coral based on
+     * the current reef height and the robot's orientation. This command sets the score side in the
+     * RobotState and then runs the auto-alignment command. After the command ends, it resets the
+     * score side to center.
+     *
+     * @param drive The drive subsystem.
+     * @return A command to auto-align to the optimal side of the coral.
+     */
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+      return Commands.either(
+          Commands.sequence(
+              superstructure.setPosition(),
+              DriveCommands.autoAlignReefCoral(drive, cameras)
+                  .until(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+              superstructure.runReefScoreGoal(() -> RobotState.getOIData().currentReefHeight())),
+          superstructure.runGoalUntil(V3_PootSuperstructureStates.L1_SCORE, () -> false),
+          () -> !RobotState.getOIData().currentReefHeight().equals(ReefState.L1));
+    }
+
+    public static final Command optimalAutoScoreCoralSequence(
+        Drive drive, V3_PootSuperstructure superstructure, ReefState height, Camera... cameras) {
+      return Commands.sequence(
+          superstructure.runReefGoal(() -> height),
+          DriveCommands.autoAlignReefCoral(drive, cameras),
+          Commands.waitUntil(() -> RobotState.getReefAlignData().atCoralSetpoint()),
+          superstructure
+              .runReefScoreGoal(() -> height)
+              .until(
+                  () -> {
+                    if (height.equals(ReefState.L4)) return superstructure.armBelowThreshold();
+                    else return false;
+                  }));
+    }
+
+    public static final Command optimalAutoAlignReefAlgae(
+        Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_PootSuperstructureStates.STOW_DOWN),
+          DriveCommands.autoAlignReefAlgae(drive, cameras));
+    }
+
+    public static final Command optimalScoreBarge(V3_PootSuperstructure superstructure) {
+      return superstructure
+          .runGoal(V3_PootSuperstructureStates.BARGE_SCORE)
+          .andThen(superstructure.runActionWithTimeout(V3_PootSuperstructureStates.BARGE_SCORE, 1));
+    }
+
+    /**
+     * Creates a command to score coral.
+     *
+     * @param superstructure The superstructure subsystem.
+     * @param goal This is the goal.
+     * @return A command to score coral.
+     */
+    public static final Command scoreCoral(
+        V3_PootSuperstructure superstructure, Supplier<ReefState> goal) {
+      return superstructure.runReefScoreGoal(goal);
+    }
+
+    /**
+     * public static final Command intakeAlgaeReef(V3_PootSuperstructure superstructure,
+     * V3_PootSuperstructureStates goal, V3_PootSuperstructureAction action, V3_PootIntake intake,
+     * V3_PootSuperstructure hasalgae) { return Commands.sequence( superstructure.runGoal(),
+     * Commands.run(() -> action.runIntake(intake)), superstructure.isHasAlgae() ==
+     * (edge.getGamePieceEdge() != (GamePieceEdge.NO_ALGAE) ); ); }
+     */
+
+    /**
+     * drive to reef go to algae level (L2 or L3) turn intake on go until it has algae then stow up
+     */
+    public static final Command dropAlgae(
+        Drive drive,
+        ElevatorFSM elevator,
+        V3_PootManipulator manipulator,
+        V3_PootIntake intake,
+        V3_PootSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+      return Commands.sequence(
+              Commands.parallel(
+                  superstructure.runGoalUntil(
+                      () -> {
+                        switch (level.get()) {
+                          case ALGAE_INTAKE_TOP:
+                            return V3_PootSuperstructureStates.L3_ALGAE_INTAKE;
+                          case ALGAE_INTAKE_BOTTOM:
+                            return V3_PootSuperstructureStates.L2_ALGAE_INTAKE;
+                          default:
+                            return V3_PootSuperstructureStates.STOW_DOWN;
+                        }
+                      },
+                      () -> RobotState.isHasAlgae()),
+                  DriveCommands.autoAlignReefAlgae(drive, cameras)),
+              Commands.runEnd(
+                      () -> drive.runVelocity(new ChassisSpeeds(0.0, 2.0, 0.0)), () -> drive.stop())
+                  .withTimeout(0.5),
+              superstructure.runActionWithTimeout(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_PootSuperstructureStates.L3_ALGAE_DROP;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_PootSuperstructureStates.L2_ALGAE_DROP;
+                      default:
+                        return V3_PootSuperstructureStates.L2_ALGAE_DROP;
+                    }
+                  },
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_PootSuperstructureStates.L3_ALGAE_DROP;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_PootSuperstructureStates.L2_ALGAE_DROP;
+                      default:
+                        return V3_PootSuperstructureStates.L2_ALGAE_DROP;
+                    }
+                  },
+                  () -> 2))
+          .finallyDo(
+              () -> {
+                RobotState.setHasAlgae(false);
+              });
+    }
+
+    public static final Command intakeAlgaeFromReef(
+        Drive drive,
+        V3_PootSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+
+      return Commands.sequence(
+          Commands.sequence(
+              superstructure.runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_PootSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_PootSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_PootSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae()),
+              DriveCommands.autoAlignReefAlgae(drive, cameras)),
+          Commands.runEnd(
+                  () -> drive.runVelocity(new ChassisSpeeds(0.0, 2.0, 0.0)), () -> drive.stop())
+              .withTimeout(0.5),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive,
+        V3_PootSuperstructure superstructure,
+        Supplier<ReefState> level,
+        Camera... cameras) {
+
+      return Commands.sequence(
+          Commands.parallel(
+              superstructure.runGoalUntil(
+                  () -> {
+                    switch (level.get()) {
+                      case ALGAE_INTAKE_TOP:
+                        return V3_PootSuperstructureStates.L3_ALGAE_INTAKE;
+                      case ALGAE_INTAKE_BOTTOM:
+                        return V3_PootSuperstructureStates.L2_ALGAE_INTAKE;
+                      default:
+                        return V3_PootSuperstructureStates.STOW_DOWN;
+                    }
+                  },
+                  () -> RobotState.isHasAlgae()),
+              DriveCommands.autoAlignReefAlgae(drive, cameras)),
+          postIntakeAlgaeFromReef(drive, superstructure, cameras));
+    }
+
+    public static final Command postIntakeAlgaeFromReef(
+        Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+      return superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP);
+    }
+
+    public static final Command intakeAlgaeFromReef(
+        Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+      return intakeAlgaeFromReef(
+          drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
+    }
+
+    public static final Command intakeAlgaeFromReefAuto(
+        Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+      return intakeAlgaeFromReefAuto(
+          drive, superstructure, () -> RobotState.getReefAlignData().algaeIntakeHeight(), cameras);
+    }
+
+    public static final Command emergencyEject(
+        V3_PootManipulator manipulator, V3_PootSuperstructure superstructure) {
+      return Commands.sequence(
+          superstructure.override(
+              () -> {
+                manipulator.setArmGoal(
+                    frc.robot
+                        .subsystems
+                        .v3_Poot
+                        .superstructure
+                        .manipulator
+                        .V3_PootManipulatorConstants
+                        .ManipulatorArmState
+                        .EMERGENCY_EJECT_ANGLE);
+                manipulator.setRollerGoal(
+                    frc.robot
+                        .subsystems
+                        .v3_Poot
+                        .superstructure
+                        .manipulator
+                        .V3_PootManipulatorConstants
+                        .ManipulatorRollerState
+                        .L4_SCORE);
+              }));
+    }
+
+    public static final Command intakeAlgaeFloor(
+        V3_PootSuperstructure superstructure, V3_PootManipulator manipulator) {
+      return superstructure
+          .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_ALGAE)
+          .until(() -> manipulator.hasAlgae()); // add intake for algae after
+    }
+
+    public static final Command handoffCoral(
+        V3_PootSuperstructure superstructure,
+        V3_PootIntake intake,
+        V3_PootManipulator manipulator) {
+      return Commands.sequence(
+          superstructure.runGoal(V3_PootSuperstructureStates.HANDOFF),
+          Commands.waitUntil(() -> manipulator.hasCoral()),
+          superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP));
+    }
+
+    public static final Command manipulatorGroundIntake(
+        V3_PootManipulator manipulator, V3_PootSuperstructure superstructure) {
+      return Commands.sequence(
+          Commands.runOnce(
+              () -> superstructure.runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_ALGAE)),
+          Commands.runOnce(() -> manipulator.setRollerGoal(ManipulatorRollerState.CORAL_INTAKE)));
+    }
+
+    public static final Command setDynamicReefHeight(
+        ReefState height, V3_PootSuperstructure superstructure) {
+      return Commands.either(
+          Commands.sequence(
+              Commands.runOnce(() -> RobotState.setReefHeight(height)),
+              superstructure.setPosition()),
+          Commands.none(),
+          () ->
+              Set.of(
+                      V3_PootSuperstructureStates.L2,
+                      V3_PootSuperstructureStates.L3,
+                      V3_PootSuperstructureStates.L4)
+                  .contains(superstructure.getCurrentState()));
+    }
   }
 }

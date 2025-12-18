@@ -28,9 +28,12 @@ public class ElevatorConstants {
     REEF_STATE_ELEVATOR_POSITION_MAP =
         Map.ofEntries(
             Map.entry(ReefState.STOW, ElevatorPositions.STOW),
+            Map.entry(ReefState.POST_PROCESSOR, ElevatorPositions.POST_PROCESSOR),
+            Map.entry(ReefState.HIGH_STOW, ElevatorPositions.HIGH_STOW),
             Map.entry(ReefState.CORAL_INTAKE, ElevatorPositions.CORAL_INTAKE),
             Map.entry(ReefState.ALGAE_FLOOR_INTAKE, ElevatorPositions.ALGAE_INTAKE),
             Map.entry(ReefState.ALGAE_MID, ElevatorPositions.ALGAE_MID),
+            Map.entry(ReefState.HANDOFF, ElevatorPositions.HANDOFF),
             Map.entry(ReefState.ALGAE_INTAKE_TOP, ElevatorPositions.ALGAE_INTAKE_TOP),
             Map.entry(ReefState.ALGAE_INTAKE_BOTTOM, ElevatorPositions.ALGAE_INTAKE_BOT),
             Map.entry(ReefState.L1, ElevatorPositions.L1),
@@ -60,7 +63,7 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 67.000000),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
@@ -68,12 +71,12 @@ public class ElevatorConstants {
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 190.0),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 41.0),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 67.000000),
                     new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
@@ -115,6 +118,82 @@ public class ElevatorConstants {
             break;
         }
         break;
+
+      case V3_POOT:
+      case V3_POOT_SIM:
+        ELEVATOR_CAN_ID = 20;
+        ELEVATOR_GEAR_RATIO = 4.0;
+        DRUM_RADIUS = Units.inchesToMeters(2.211 / 2.0);
+
+        ELEVATOR_SUPPLY_CURRENT_LIMIT = 40;
+        ELEVATOR_STATOR_CURRENT_LIMIT = 80;
+
+        ELEVATOR_PARAMETERS =
+            new ElevatorParameters(
+                DCMotor.getKrakenX60Foc(2), 6.803886, 0.0, Units.inchesToMeters(53), 2);
+
+        switch (Constants.getMode()) {
+          case REAL:
+          case REPLAY:
+          default:
+            GAINS =
+                new Gains(
+                    new LoggedTunableNumber("Elevator/Gains/kP", 5),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0),
+                    new LoggedTunableNumber("Elevator/Gains/kS", 0.070776),
+                    new LoggedTunableNumber("Elevator/Gains/kG", 0.35521),
+                    new LoggedTunableNumber("Elevator/Gains/kV", 0),
+                    new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
+            CONSTRAINTS =
+                new Constraints(
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 11),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 5),
+                    new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
+            STOW_GAINS =
+                new Gains(
+                    new LoggedTunableNumber("Elevator/Stow Gains/kP", 5),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kD", 0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kS", 0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kG", 0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kV", 0.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kA", 0.0));
+            STOW_CONSTRAINTS =
+                new Constraints(
+                    new LoggedTunableNumber("Elevator/Stow Max Acceleration", 11),
+                    new LoggedTunableNumber("Elevator/Stow Cruising Velocity", 5),
+                    new LoggedTunableNumber("Elevator/Stow Goal Tolerance", 0.02));
+            break;
+          case SIM:
+            GAINS =
+                new Gains(
+                    new LoggedTunableNumber("Elevator/Gains/kP", 50.0),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
+                    new LoggedTunableNumber("Elevator/Gains/kS", 0.0),
+                    new LoggedTunableNumber("Elevator/Gains/kG", 0.0),
+                    new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
+                    new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
+            CONSTRAINTS =
+                new Constraints(
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 201.078594),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 21.329982),
+                    new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
+            STOW_GAINS =
+                new Gains(
+                    new LoggedTunableNumber("Elevator/Stow Gains/kP", 20.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kD", 0.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kS", 0.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kG", 0.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kV", 0.0),
+                    new LoggedTunableNumber("Elevator/Stow Gains/kA", 0.0));
+            STOW_CONSTRAINTS =
+                new Constraints(
+                    new LoggedTunableNumber("Elevator/Stow Max Acceleration", 101.078594),
+                    new LoggedTunableNumber("Elevator/Stow Cruising Velocity", 11.329982),
+                    new LoggedTunableNumber("Elevator/Stow Goal Tolerance", 0.02));
+            break;
+        }
+        break;
+
       case V2_REDUNDANCY:
       case V2_REDUNDANCY_SIM:
       default:
@@ -135,16 +214,16 @@ public class ElevatorConstants {
           default:
             GAINS =
                 new Gains(
-                    new LoggedTunableNumber("Elevator/Gains/kP", 2.0),
-                    new LoggedTunableNumber("Elevator/Gains/kD", 0.1),
+                    new LoggedTunableNumber("Elevator/Gains/kP", 1),
+                    new LoggedTunableNumber("Elevator/Gains/kD", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kS", 0.225),
                     new LoggedTunableNumber("Elevator/Gains/kG", 0.075),
                     new LoggedTunableNumber("Elevator/Gains/kV", 0.0),
                     new LoggedTunableNumber("Elevator/Gains/kA", 0.0));
             CONSTRAINTS =
                 new Constraints(
-                    new LoggedTunableNumber("Elevator/Max Acceleration", 16.0),
-                    new LoggedTunableNumber("Elevator/Cruising Velocity", 16.0),
+                    new LoggedTunableNumber("Elevator/Max Acceleration", 1),
+                    new LoggedTunableNumber("Elevator/Cruising Velocity", 1),
                     new LoggedTunableNumber("Elevator/Goal Tolerance", 0.02));
             STOW_GAINS =
                 new Gains(
@@ -213,27 +292,84 @@ public class ElevatorConstants {
       double MAX_HEIGHT_METERS,
       int NUM_MOTORS) {}
 
+  public static record PositionConstants(double V1, double V2, double V3) {}
+
   @RequiredArgsConstructor
   public static enum ElevatorPositions {
-    STOW(0.0),
-    CORAL_INTAKE(0.0),
-    ALGAE_INTAKE(0.2161583093038944 + Units.inchesToMeters(1)),
-    ALGAE_MID(0.7073684509805078),
-    ALGAE_INTAKE_TOP(1.17 - Units.inchesToMeters(8)),
-    ALGAE_INTAKE_BOT(0.79 - Units.inchesToMeters(8)),
-    ASS_TOP(1.2),
-    ASS_BOT(0.82),
-    L1(0.11295250319916351),
-    L2(0.37296301250898894),
-    L3(0.7606347556550676 + Units.inchesToMeters(1.0)),
-    L4(1.3864590139769697 + Units.inchesToMeters(0.5)),
-    L4_PLUS(1.3864590139769697 + Units.inchesToMeters(2.0)),
-    ALGAE_SCORE(1.3864590139769697 + Units.inchesToMeters(0.5));
+    STOW(new PositionConstants(0.0, 0.0, 0.0)),
+    POST_PROCESSOR(new PositionConstants(0.5, 0.5, 0.5)),
+    CORAL_INTAKE(new PositionConstants(0.0, 0.0, Units.inchesToMeters(34.85))),
+    ALGAE_INTAKE(
+        new PositionConstants(
+            0.2161583093038944 + Units.inchesToMeters(1),
+            0.2161583093038944 + Units.inchesToMeters(1),
+            0.1819)),
+    ALGAE_MID(
+        new PositionConstants(
+            0.7073684509805078, 0.7073684509805078, 1.2)), // USED AS PRE-HANDOFF FOR V3
+    ALGAE_INTAKE_TOP(
+        new PositionConstants(
+            1.17 - Units.inchesToMeters(8),
+            1.17 - Units.inchesToMeters(8),
+            Units.inchesToMeters(40))),
+    ALGAE_INTAKE_BOT(
+        new PositionConstants(
+            0.79 - Units.inchesToMeters(8),
+            0.79 - Units.inchesToMeters(8),
+            Units.inchesToMeters(24))),
+    ASS_TOP(new PositionConstants(1.2, 0.0, 0.0)),
+    ASS_BOT(new PositionConstants(0.82, 0.0, 0.0)),
+    L1(
+        new PositionConstants(
+            0.11295250319916351, 0.11295250319916351, Units.inchesToMeters(34.75))),
+    L2(new PositionConstants(0.37296301250898894, 0.37296301250898894, Units.inchesToMeters(12.5))),
+    L3(
+        new PositionConstants(
+            0.7606347556550676 + Units.inchesToMeters(1.0),
+            0.7606347556550676 + Units.inchesToMeters(1.0),
+            Units.inchesToMeters(12.5 + 15.87))),
+    L4(
+        new PositionConstants(
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            Units.inchesToMeters(50))),
+    L4_PLUS(
+        new PositionConstants(
+            0.0,
+            1.3864590139769697 + Units.inchesToMeters(2.0),
+            0.0)), // DOES NOT EXIST FOR V3 AND V1
+    ALGAE_SCORE(
+        new PositionConstants(
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            1.3864590139769697 + Units.inchesToMeters(0.5),
+            Units.inchesToMeters(53))),
 
-    private final double position;
+    HIGH_STOW(new PositionConstants(0, 0, 0.5)),
+    HANDOFF(new PositionConstants(0, 0, Units.inchesToMeters(33.25))),
+    ;
+
+    private final PositionConstants position;
 
     public double getPosition() {
-      return position;
+      switch (Constants.ROBOT) {
+        case V1_STACKUP, V1_STACKUP_SIM:
+          return position.V1();
+        case V2_REDUNDANCY, V2_REDUNDANCY_SIM:
+          return position.V2();
+        case V3_POOT, V3_POOT_SIM:
+          return position.V3();
+        default:
+          return position.V3();
+      }
+    }
+
+    public static ElevatorPositions getPosition(ReefState state) {
+      for (ElevatorPositions pos : values()) {
+        if (REEF_STATE_ELEVATOR_POSITION_MAP.get(state) == pos) {
+          return pos;
+        }
+      }
+      return null;
     }
   }
 }

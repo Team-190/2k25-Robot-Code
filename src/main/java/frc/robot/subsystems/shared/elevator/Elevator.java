@@ -1,8 +1,7 @@
 package frc.robot.subsystems.shared.elevator;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions.L4;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,12 +10,16 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.FieldConstants.Reef.ReefState;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shared.elevator.ElevatorConstants.ElevatorPositions;
 import frc.robot.subsystems.shared.elevator.ElevatorIO.ElevatorIOInputs;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructure;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructureStates;
 import frc.robot.util.ExternalLoggedTracer;
 import frc.robot.util.InternalLoggedTracer;
 import java.util.function.BooleanSupplier;
@@ -28,14 +31,18 @@ public class Elevator {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs;
 
-  private ElevatorPositions position;
+  // --- MODIFIED: Store the goal primarily as a double for flexibility ---
+  private double positionGoalMeters;
+  private ElevatorPositions lastKnownPositionEnum; // Keep track of the last named position
   private boolean isClosedLoop;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
     this.inputs = new ElevatorIOInputsAutoLogged();
 
-    position = ElevatorPositions.STOW;
+    // Initialize to STOW position
+    this.lastKnownPositionEnum = ElevatorPositions.STOW;
+    this.positionGoalMeters = lastKnownPositionEnum.getPosition();
     isClosedLoop = true;
   }
 
@@ -48,11 +55,14 @@ public class Elevator {
     Logger.processInputs("Elevator", inputs);
     InternalLoggedTracer.record("Process Inputs", "Elevator/Periodic");
 
-    Logger.recordOutput("Elevator/Position", position.name());
+    Logger.recordOutput(
+        "Elevator/Position",
+        lastKnownPositionEnum != null ? lastKnownPositionEnum.name() : "CUSTOM");
 
     InternalLoggedTracer.reset();
     if (isClosedLoop) {
-      io.setPositionGoal(position.getPosition());
+      // Always use the double goal for the IO layer
+      io.setPositionGoal(positionGoalMeters);
     }
     InternalLoggedTracer.record("Set Position Goal", "Elevator/Periodic");
   }
@@ -130,7 +140,18 @@ public class Elevator {
    */
   @AutoLogOutput(key = "Elevator/At Goal")
   private boolean atGoal() {
-    return Math.abs(inputs.positionGoalMeters - inputs.positionMeters)
+    return Math.abs(positionGoalMeters - inputs.positionMeters)
+        <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
+  }
+
+  /**
+   * Checks if the elevator is at the goal position.
+   *
+   * @return True if the elevator is at the goal position, false otherwise.
+   */
+  @AutoLogOutput(key = "Elevator/At Goal")
+  private boolean atGoal(ElevatorPositions position) {
+    return Math.abs(position.getPosition() - inputs.positionMeters)
         <= ElevatorConstants.CONSTRAINTS.goalToleranceMeters().get();
   }
 
@@ -150,7 +171,7 @@ public class Elevator {
    *     tolerance, false otherwise.
    */
   private BooleanSupplier inFastScoringTolerance() {
-    return () -> Math.abs(inputs.positionMeters - inputs.positionGoalMeters) <= 0.03;
+    return () -> Math.abs(inputs.positionMeters - positionGoalMeters) <= 0.03;
   }
 
   /**
@@ -165,18 +186,19 @@ public class Elevator {
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 Volts.of(1).per(Second),
-                Volts.of(6),
-                Seconds.of(10),
+                Volts.of(3),
+                Seconds.of(3),
                 (state) -> Logger.recordOutput("Elevator/SysID State", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, subsystem));
 
     return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              isClosedLoop = false;
+            }),
         characterizationRoutine
             .quasistatic(Direction.kForward)
-            .until(
-                () ->
-                    Elevator.this.atGoal(
-                        ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(() -> Elevator.this.atGoal(L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .quasistatic(Direction.kReverse)
             .until(
@@ -185,38 +207,36 @@ public class Elevator {
                         ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kForward)
-            .until(
-                () ->
-                    Elevator.this.atGoal(
-                        ElevatorPositions.L4.getPosition() - Units.inchesToMeters(12.0))),
+            .until(() -> Elevator.this.atGoal(L4.getPosition() - Units.inchesToMeters(12.0))),
         characterizationRoutine
             .dynamic(Direction.kReverse)
             .until(
                 () ->
                     Elevator.this.atGoal(
                         ElevatorPositions.STOW.getPosition() + Units.inchesToMeters(12.0))),
-        subsystem.runOnce(() -> setPosition(() -> ReefState.STOW)));
+        subsystem.runOnce(() -> setPositionFromReef(() -> ReefState.STOW)));
   }
 
-  /**
-   * Sets the position of the elevator.
-   *
-   * @return A command that sets the elevator position.
-   */
-  private void setPosition() {
-    setPosition(() -> RobotState.getOIData().currentReefHeight());
-  }
-
-  /**
-   * Sets the position of the elevator.
-   *
-   * @param positionRadians The desired elevator position.
-   * @return A command that sets the elevator position.
-   */
-  private void setPosition(Supplier<ReefState> newPosition) {
+  /** Private method to set position based on ReefState. */
+  private void setPositionFromReef(Supplier<ReefState> newPosition) {
     isClosedLoop = true;
-    Elevator.this.position = Elevator.this.getPosition(newPosition.get());
-    io.setPositionGoal(Elevator.this.position.getPosition());
+    this.lastKnownPositionEnum = getPosition(newPosition.get());
+    this.positionGoalMeters = this.lastKnownPositionEnum.getPosition();
+  }
+
+  /** Private method to set position based on ElevatorPositions enum. */
+  private void setPositionFromEnum(ElevatorPositions newPosition) {
+    isClosedLoop = true;
+    this.lastKnownPositionEnum = newPosition;
+    this.positionGoalMeters = this.lastKnownPositionEnum.getPosition();
+  }
+
+  /** Private method to set position based on a double value. */
+  private void setPositionFromDouble(double newPositionMeters) {
+    isClosedLoop = true;
+    this.positionGoalMeters = newPositionMeters;
+    // When a raw double is commanded, there's no corresponding enum state.
+    this.lastKnownPositionEnum = null;
   }
 
   public class ElevatorCSB extends SubsystemBase {
@@ -228,16 +248,38 @@ public class Elevator {
       ExternalLoggedTracer.record("Elevator Total", "Elevator/Periodic");
     }
 
-    public Command setPosition() {
-      return this.runOnce(() -> Elevator.this.setPosition());
+    public ElevatorPositions getPosition() {
+      return Elevator.this.lastKnownPositionEnum;
     }
 
-    public ElevatorPositions getPosition() {
-      return Elevator.this.position;
+    /**
+     * Creates a command to set the elevator to a pre-defined position.
+     *
+     * @param newPosition The target ElevatorPositions enum.
+     * @return A command that sets the elevator position.
+     */
+    public Command setPosition(ElevatorPositions newPosition) {
+      return this.runOnce(() -> Elevator.this.setPositionFromEnum(newPosition));
+    }
+
+    /**
+     * Creates a command to set the elevator to a specific height in meters.
+     *
+     * @param newPositionMeters The target height in meters.
+     * @return A command that sets the elevator position.
+     */
+    public Command setPosition(double newPositionMeters) {
+      return this.runOnce(() -> Elevator.this.setPositionFromDouble(newPositionMeters));
     }
 
     public Command setPosition(Supplier<ReefState> newPosition) {
-      return this.runOnce(() -> Elevator.this.setPosition(newPosition));
+      return this.runOnce(() -> Elevator.this.setPositionFromReef(newPosition));
+    }
+
+    public Command setPosition() {
+      return Commands.runOnce(
+          () ->
+              Elevator.this.setPositionFromReef(() -> RobotState.getOIData().currentReefHeight()));
     }
 
     public Command setVoltage(double volts) {
@@ -250,7 +292,7 @@ public class Elevator {
     }
 
     public Command resetPosition() {
-      return runOnce(() -> Elevator.this.position = ElevatorPositions.STOW)
+      return runOnce(() -> Elevator.this.lastKnownPositionEnum = ElevatorPositions.STOW)
           .andThen(
               runOnce(
                   () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
@@ -289,7 +331,15 @@ public class Elevator {
     }
   }
 
+  // FSM for the Elevator
   public class ElevatorFSM {
+    @AutoLogOutput(key = "Elevator/Past Barge Threshold")
+    public boolean pastBargeThresholdgetPositionMeters() {
+      if (Constants.getMode() == Mode.REAL) return inputs.positionMeters >= L4.getPosition();
+      else {
+        return inputs.positionMeters > .95;
+      }
+    }
 
     public void periodic() {
       ExternalLoggedTracer.reset();
@@ -298,19 +348,37 @@ public class Elevator {
     }
 
     public ElevatorPositions getPosition() {
-      return Elevator.this.position;
+      return Elevator.this.lastKnownPositionEnum;
     }
 
-    public void setPosition() {
-      Elevator.this.setPosition();
+    /**
+     * Sets the elevator to a pre-defined position.
+     *
+     * @param newPosition The target ElevatorPositions enum.
+     */
+    public void setPosition(ElevatorPositions newPosition) {
+      Elevator.this.setPositionFromEnum(newPosition);
+    }
+
+    /**
+     * Sets the elevator to a specific height in meters.
+     *
+     * @param newPositionMeters The target height in meters.
+     */
+    public void setPosition(double newPositionMeters) {
+      Elevator.this.setPositionFromDouble(newPositionMeters);
     }
 
     public void setPosition(Supplier<ReefState> newPosition) {
-      Elevator.this.setPosition(newPosition);
+      Elevator.this.setPositionFromReef(newPosition);
+    }
+
+    public void setPosition() {
+      Elevator.this.setPositionFromReef(() -> RobotState.getOIData().currentReefHeight());
     }
 
     public Command resetPosition() {
-      return Commands.runOnce(() -> Elevator.this.position = ElevatorPositions.STOW)
+      return Commands.runOnce(() -> Elevator.this.lastKnownPositionEnum = ElevatorPositions.STOW)
           .andThen(
               Commands.runOnce(
                   () -> io.setPosition(ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS())));
@@ -320,6 +388,13 @@ public class Elevator {
 
       return Commands.sequence(
           superstructure.runGoal(V2_RedundancySuperstructureStates.OVERRIDE),
+          Elevator.this.sysIdRoutine(superstructure));
+    }
+
+    public Command sysIdRoutine(V3_PootSuperstructure superstructure) {
+
+      return Commands.sequence(
+          superstructure.runGoal(V3_PootSuperstructureStates.OVERRIDE),
           Elevator.this.sysIdRoutine(superstructure));
     }
 
@@ -343,12 +418,24 @@ public class Elevator {
       return Elevator.this.atGoal();
     }
 
+    public boolean atGoal(ReefState position) {
+      return Elevator.this.atGoal(Elevator.this.getPosition(position));
+    }
+
+    public boolean inTolerance(double toleranceMeters) {
+      return Math.abs(positionGoalMeters - inputs.positionMeters) <= toleranceMeters;
+    }
+
     public Command waitUntilAtGoal() {
       return Elevator.this.waitUntilAtGoal();
     }
 
     public BooleanSupplier inFastScoringTolerance() {
       return Elevator.this.inFastScoringTolerance();
+    }
+
+    public double getVelocityMetersPerSecond() {
+      return inputs.velocityMetersPerSecond;
     }
   }
 

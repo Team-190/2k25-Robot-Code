@@ -1,5 +1,7 @@
 package frc.robot.subsystems.v0_Funky;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,12 +19,13 @@ import frc.robot.subsystems.shared.drive.GyroIO;
 import frc.robot.subsystems.shared.drive.GyroIOPigeon2;
 import frc.robot.subsystems.shared.drive.ModuleIOSim;
 import frc.robot.subsystems.shared.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.shared.visionlimelight.CameraConstants;
-import frc.robot.subsystems.shared.visionlimelight.Vision;
+import frc.robot.subsystems.shared.vision.Vision;
+import frc.robot.subsystems.shared.vision.VisionConstants;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRoller;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIO;
 import frc.robot.subsystems.v0_Funky.kitbot_roller.V0_FunkyRollerIOTalonFX;
 import frc.robot.util.LTNUpdater;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class V0_FunkyRobotContainer implements RobotContainer {
@@ -52,7 +55,10 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOTalonFX(2, DriveConstants.BACK_LEFT),
                   new ModuleIOTalonFX(3, DriveConstants.BACK_RIGHT));
           roller = new V0_FunkyRoller(new V0_FunkyRollerIOTalonFX());
-          vision = new Vision(CameraConstants.RobotCameras.V0_FUNKY_CAMS);
+          vision =
+              new Vision(
+                  () -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
+                  VisionConstants.RobotCameras.V0_FUNKY_CAMS);
           break;
         case V0_FUNKY_SIM:
           drive =
@@ -63,12 +69,15 @@ public class V0_FunkyRobotContainer implements RobotContainer {
                   new ModuleIOSim(DriveConstants.BACK_LEFT),
                   new ModuleIOSim(DriveConstants.BACK_RIGHT));
           roller = new V0_FunkyRoller(new V0_FunkyRollerIO() {});
-          vision = new Vision();
+          vision =
+              new Vision(() -> AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded));
           break;
         default:
           break;
       }
     }
+
+    LTNUpdater.registerDrive(drive);
   }
 
   public void configureButtonBindings() {
@@ -103,11 +112,10 @@ public class V0_FunkyRobotContainer implements RobotContainer {
         drive.getRawGyroRotation(),
         NetworkTablesJNI.now(),
         drive.getYawVelocity(),
-        drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
         vision.getCameras());
 
-    LTNUpdater.updateDrive(drive);
+    LoggedTunableNumber.updateAll();
   }
 
   @Override
