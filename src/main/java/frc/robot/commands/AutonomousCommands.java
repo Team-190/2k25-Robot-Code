@@ -19,7 +19,12 @@ import frc.robot.subsystems.v1_StackUp.manipulator.V1_StackUpManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructure;
 import frc.robot.subsystems.v2_Redundancy.superstructure.V2_RedundancySuperstructureStates;
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructure;
+import frc.robot.subsystems.v3_Poot.superstructure.V3_PootSuperstructureStates;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.GeometryUtil;
 import frc.robot.util.LoggedChoreo.LoggedAutoRoutine;
 import frc.robot.util.LoggedChoreo.LoggedAutoTrajectory;
 import java.util.Optional;
@@ -148,6 +153,14 @@ public class AutonomousCommands {
     drive.getAutoFactory().cache().loadTrajectory("C_RIGHT_PATH3");
 
     drive.getAutoFactory().cache().loadTrajectory("D_CENTER_PATH");
+
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_1");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_2");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_3");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_4");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_5");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_6");
+    drive.getAutoFactory().cache().loadTrajectory("E_LEFT_PATH_7");
   }
 
   public static final Command autoALeft(
@@ -1075,6 +1088,1083 @@ public class AutonomousCommands {
                     superstructure.runGoal(V2_RedundancySuperstructureStates.L4)),
                 superstructure.runActionWithTimeout(
                     V2_RedundancySuperstructureStates.SCORE_L4, 0.5)));
+    return routine;
+  }
+
+  // V3
+
+  //     public static final LoggedAutoRoutine autoALeft(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeft");
+
+  //       LoggedAutoTrajectory path1 = routine.trajectory("A_LEFT_PATH1");
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path4 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH4")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path4.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoALeftNashoba(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftNashoba");
+
+  //       LoggedAutoTrajectory path1 = routine.trajectory("A_LEFT_PATH1");
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH_ALT3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path4 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH_ALT4")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path4.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoALeftDAVE(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoALeftD.A.V.E.");
+
+  //       LoggedAutoTrajectory path1 = routine.trajectory("A_LEFT_PATH1");
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path4 =
+  //           routine
+  //               .trajectory("A_LEFT_PATH4_ALT_ALT")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path4.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoARight(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoARight");
+
+  //       LoggedAutoTrajectory path1 = routine.trajectory("A_RIGHT_PATH1");
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("A_RIGHT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("A_RIGHT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path4 =
+  //           routine
+  //               .trajectory("A_RIGHT_PATH4")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.25),
+  //                   Commands.deadline(
+  //                       path4.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoBLeft(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoBLeft");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("B_LEFT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("B_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   path1.cmd(),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       superstructure.runGoal(V3_PootSuperstructureStates.L4)),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.STOW_DOWN)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoCLeft(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCLeft");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoCLeftPush(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCLeft");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("C_LEFT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runEnd(
+  //                           () -> drive.runVelocity(new ChassisSpeeds(0.0, -1.0, 0.0)),
+  //                           () -> drive.stop())
+  //                       .withTimeout(0.5),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoCRight(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCRight");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoCRightPush(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoCRight");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path3 =
+  //           routine
+  //               .trajectory("C_RIGHT_PATH3")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   Commands.runEnd(
+  //                           () -> drive.runVelocity(new ChassisSpeeds(0.0, 1.0, 0.0)),
+  //                           () -> drive.stop())
+  //                       .withTimeout(0.5),
+  //                   path1.cmd(),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path3.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.runOnce(() -> RobotState.setAutoClapOverride(false)),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       Commands.waitUntil(() -> superstructure.atGoal())),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoBRight(
+  //         Drive drive,
+  //         V3_PootIntake intake,
+  //         V3_PootSuperstructure superstructure,
+  //         V3_PootManipulator manipulator,
+  //         Camera... cameras) {
+
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoBRight");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("B_RIGHT_PATH1")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+  //       LoggedAutoTrajectory path2 =
+  //           routine
+  //               .trajectory("B_RIGHT_PATH2")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+  //                   path1.cmd(),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       superstructure.runGoal(V3_PootSuperstructureStates.L4)),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   Commands.deadline(
+  //                       path2.cmd(),
+  //                       CompositeCommands.V3_PootCompositeCommands.intakeCoralDriverSequence(
+  //                           superstructure, intake, manipulator),
+  //                       Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT))),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5),
+  //                   superstructure.runGoal(V3_PootSuperstructureStates.STOW_DOWN)));
+
+  //       return routine;
+  //     }
+
+  //     public static final LoggedAutoRoutine autoDCenter(
+  //         Drive drive, V3_PootSuperstructure superstructure, Camera... cameras) {
+  //       LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoDCenter");
+  //       LoggedAutoTrajectory path1 =
+  //           routine
+  //               .trajectory("D_CENTER_PATH")
+  //               .bindEvent("Funnel", Commands.runOnce(() ->
+  // RobotState.setAutoClapOverride(true)));
+
+  //       routine
+  //           .active()
+  //           .onTrue(
+  //               Commands.sequence(
+  //                   path1.resetOdometry(),
+  //                   Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+  //                   path1.cmd(),
+  //                   Commands.parallel(
+  //                       DriveCommands.autoAlignReefCoral(drive, cameras),
+  //                       superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)),
+  //                   superstructure.runActionWithTimeout(
+  //                       V3_PootSuperstructureStates.STOW_DOWN,
+  //                       V3_PootSuperstructureStates.L4_SCORE,
+  //                       0.5)));
+  //       return routine;
+  //    }
+
+  public static final LoggedAutoRoutine autoERight(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoERight");
+    LoggedAutoTrajectory path1 = routine.trajectory("E_RIGHT_PATH_1");
+    LoggedAutoTrajectory path2 = routine.trajectory("E_RIGHT_PATH_2");
+    LoggedAutoTrajectory path3 = routine.trajectory("E_RIGHT_PATH_3");
+    LoggedAutoTrajectory path4 = routine.trajectory("E_RIGHT_PATH_4");
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                Commands.parallel(
+                    path1.cmd(), superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP)),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                    path2.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.5)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L4))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                    path3.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.5)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L4))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                    path4.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.5)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L4))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoELeft(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoELeft");
+    LoggedAutoTrajectory path1 =
+        routine.trajectory(GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_1")));
+    LoggedAutoTrajectory path2 =
+        routine.trajectory(GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_2")));
+    LoggedAutoTrajectory path3 =
+        routine.trajectory(GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_3")));
+    LoggedAutoTrajectory path4 =
+        routine.trajectory(GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_4")));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                path1.cmd(),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                    path2.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((2.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                    path3.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.5)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                    path4.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.5)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoERightBack(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoERightBack");
+    LoggedAutoTrajectory path1 = routine.trajectory("E_RIGHT_PATH_1_BACK");
+    LoggedAutoTrajectory path2 = routine.trajectory("E_RIGHT_PATH_2_BACK");
+    LoggedAutoTrajectory path3 = routine.trajectory("E_RIGHT_PATH_3_BACK");
+    LoggedAutoTrajectory path4 = routine.trajectory("E_RIGHT_PATH_4_BACK");
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                path1.cmd(),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    path2.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L2))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L2, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L2_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                    path3.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L2))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L2, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L2_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    path4.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L4))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoELeftBack(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoELeftBack");
+    LoggedAutoTrajectory path1 =
+        routine.trajectory(
+            GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_1_BACK")));
+    LoggedAutoTrajectory path2 =
+        routine.trajectory(
+            GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_2_BACK")));
+    LoggedAutoTrajectory path3 =
+        routine.trajectory(
+            GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_3_BACK")));
+    LoggedAutoTrajectory path4 =
+        routine.trajectory(
+            GeometryUtil.mirrorTrajectory(routine.trajectory("E_RIGHT_PATH_4_BACK")));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.LEFT)),
+                path1.cmd(),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    path2.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L2))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L2, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L2_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                    path3.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L2))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L2, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L2_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    path4.cmd(),
+                    superstructure
+                        .runGoal(V3_PootSuperstructureStates.GROUND_INTAKE_CORAL)
+                        .andThen(Commands.waitSeconds((1.0)))
+                        .andThen(superstructure.runGoal(V3_PootSuperstructureStates.L4))),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoFLeft(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoFLeft");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_PATH_1"));
+    LoggedAutoTrajectory path2 = (routine.trajectory("F_PATH_2"));
+    LoggedAutoTrajectory path3 = (routine.trajectory("F_PATH_3"));
+    LoggedAutoTrajectory path4 = (routine.trajectory("F_PATH_4"));
+    LoggedAutoTrajectory path5 = (routine.trajectory("F_PATH_5"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.parallel(
+                    path2.cmd(),
+                    superstructure.runGoal(V3_PootSuperstructureStates.L3_ALGAE_INTAKE)),
+                Commands.parallel(
+                    path3.cmd(), superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP)),
+                Commands.runOnce(() -> drive.stop()),
+                CompositeCommands.V3_PootCompositeCommands.optimalScoreBarge(superstructure),
+                Commands.parallel(
+                    path4.cmd(),
+                    superstructure.runGoal(V3_PootSuperstructureStates.L2_ALGAE_INTAKE)),
+                Commands.parallel(
+                    path5.cmd(), superstructure.runGoal(V3_PootSuperstructureStates.STOW_UP)),
+                Commands.runOnce(() -> drive.stop()),
+                CompositeCommands.V3_PootCompositeCommands.optimalScoreBarge(superstructure)));
+
+    return routine;
+  }
+
+  public static final LoggedAutoRoutine autoFLeftMinimal(
+      Drive drive,
+      V3_PootSuperstructure superstructure,
+      V3_PootIntake intake,
+      V3_PootManipulator manipulator,
+      Camera... cameras) {
+
+    LoggedAutoRoutine routine = drive.getAutoFactory().newRoutine("autoFLeftMinimal");
+    LoggedAutoTrajectory path1 = (routine.trajectory("F_PATH_1"));
+
+    routine
+        .active()
+        .onTrue(
+            Commands.sequence(
+                path1.resetOdometry(),
+                Commands.runOnce(() -> RobotState.setReefPost(ReefPose.RIGHT)),
+                CompositeCommands.V3_PootCompositeCommands.optimalAutoScoreCoralSequence(
+                    drive, superstructure, ReefState.L4, cameras),
+                superstructure.runGoal(V3_PootSuperstructureStates.L4_SCORE),
+                superstructure.waitUntilAtGoal(),
+                Commands.runOnce(() -> drive.stop())));
+
     return routine;
   }
 }

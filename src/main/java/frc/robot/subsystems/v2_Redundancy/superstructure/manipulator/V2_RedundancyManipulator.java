@@ -77,8 +77,7 @@ public class V2_RedundancyManipulator {
     return inputs.armPosition;
   }
 
-  public void setRollerGoal(ManipulatorRollerState goal) {
-    rollerGoal = goal;
+  public void setRollerGoal(ManipulatorRollerState rollerGoal) {
     if (RobotState.isHasAlgae()
         && Set.of(
                 ManipulatorRollerState.STOP,

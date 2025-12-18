@@ -6,12 +6,52 @@ plugins {
     id "com.diffplug.spotless" version "6.12.0"
 }
 
+ext {
+    deploySrcDir = "src/main/deploy"
+    deployRobotDir = "/home/lvuser/deploy"
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+gradle.projectsEvaluated {
+    def buildDir = new File("${project.buildDir}/classes/java/main")
+    if (!buildDir.exists()) {
+        println "⚠️ Warning: compiled classes not found. Make sure compileJava runs first."
+        project.ext.deploySrcDir = "src/main/deploy"
+        return
+    }
+
+    try {
+        def loader = new URLClassLoader([buildDir.toURI().toURL()] as URL[], this.class.classLoader)
+        def constantsClass = loader.loadClass("frc.robot.Constants")
+        def robotField = constantsClass.getDeclaredField("ROBOT")
+        robotField.setAccessible(true)
+        def robotEnumValue = robotField.get(null)  // static field
+
+        println "Detected RobotType: ${robotEnumValue}"
+
+        def baseName = robotEnumValue.toString().toLowerCase().replaceAll(/_sim$/, "")
+        def candidateDir = "src/main/deploy/${baseName}"
+
+        if (file(candidateDir).exists()) {
+            project.ext.deploySrcDir = candidateDir
+            project.ext.deployRobotDir = "/home/lvuser/deploy/${baseName}"
+        } else {
+            println "Folder '${candidateDir}' does not exist. Using default deploy folder."
+        }
+
+        println "deploySrcDir set to: ${project.ext.deploySrcDir}"
+
+    } catch (Throwable e) {
+        println "Could not read RobotType: ${e.message}"
+        project.ext.deploySrcDir = "src/main/deploy"
+    }
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -37,10 +77,10 @@ deploy {
 
                     // The options below may improve performance, but should only be enabled on the RIO 2
 
-                    // final MAX_JAVA_HEAP_SIZE_MB = 100;
-                    // jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    // jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    // jvmArgs.add("-XX:+AlwaysPreTouch")
+                    final MAX_JAVA_HEAP_SIZE_MB = 100
+                    jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
+                    jvmArgs.add("-XX:+AlwaysPreTouch")
 
                     // Enable VisualVM connection
                     // jvmArgs.add("-Dcom.sun.management.jmxremote=true")
@@ -53,8 +93,8 @@ deploy {
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
-                    files = project.fileTree('src/main/deploy')
-                    directory = '/home/lvuser/deploy'
+                    files = project.fileTree(project.ext.deploySrcDir)
+                    directory = deployRobotDir
                     // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory on roboRIO
                     deleteOldFiles = false
@@ -65,7 +105,8 @@ deploy {
 }
 
 // Grab the roboRIO comment via SSH
-import com.jcraft.jsch.*
+
+import com.jcraft.jsch.JSch
 
 ext {
     // RoboRIO SSH details
@@ -222,7 +263,7 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
     implementation 'org.jgrapht:jgrapht-core:1.5.1'
-
+    implementation 'org.jgrapht:jgrapht-io:1.5.1'
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -282,12 +323,12 @@ tasks.withType(JavaCompile) {
 // Create version file
 project.compileJava.dependsOn(createVersionFile)
 gversion {
-    srcDir       = "src/main/java/"
+    srcDir = "src/main/java/"
     classPackage = "frc.robot"
-    className    = "BuildConstants"
-    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-    timeZone     = "America/New_York"
-    indent       = "  "
+    className = "BuildConstants"
+    dateFormat = "yyyy-MM-dd HH:mm:ss z"
+    timeZone = "America/New_York"
+    indent = "  "
 }
 
 // Create commit with working changes on event branches

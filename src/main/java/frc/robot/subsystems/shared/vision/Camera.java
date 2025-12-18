@@ -4,11 +4,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.RobotState.VisionObservation;
@@ -27,7 +24,7 @@ public class Camera {
   private final CameraIOInputsAutoLogged inputs;
 
   private final CameraIO io;
-  private final String name;
+  @Getter private final String name;
 
   @Getter int[] validIds;
   private final Map<Integer, Pose2d> tagPoses2d = new HashMap<>();
@@ -89,73 +86,74 @@ public class Camera {
               VecBuilder.fill(xyStdDev, xyStdDev, thetaStdev)));
 
       // ONLY DO THIS IF WE ARE RUNNING GOMPEIVISION
-      if (io instanceof CameraIOGompeiVision) {
-        for (int i = 0; i < frame.preciseTagIds().length; i++) {
-          final int tagIdIndex = i;
-          // Check if tag is valid
-          if (java.util.Arrays.stream(validIds)
-              .noneMatch(id -> id == frame.preciseTagIds()[tagIdIndex])) {
-            continue;
-          }
-          // Get rotation at timestamp
-          var sample = RobotState.getBufferedPose(frame.timestamp());
-          if (sample.isEmpty()) {
-            // exit if not there
-            return;
-          }
-          Rotation2d robotRotation =
-              RobotState.getRobotPoseField()
-                  .transformBy(new Transform2d(RobotState.getRobotPoseOdometry(), sample.get()))
-                  .getRotation();
+      // ONLY do this if using GompeiVision
+      // Loop over each processed frame
+      // Only do this if we are running GompeiVision
+      if (!(io instanceof CameraIOGompeiVision)) continue;
 
-          // Average tx's and ty's
-          double tx = 0.0;
-          double ty = 0.0;
-          for (int j = 0; j < 4; j++) {
-            tx += frame.preciseTx()[i][j];
-            ty += frame.preciseTy()[i][j];
-          }
-          tx /= 4.0;
-          ty /= 4.0;
+      for (int i = 0; i < frame.preciseTagIds().length; i++) {
+        int tagId = frame.preciseTagIds()[i];
 
-          Pose3d cameraPose =
-              new Pose3d(
-                  io.getGompeiVisionConfig().robotToCameraTransform().getTranslation(),
-                  io.getGompeiVisionConfig().robotToCameraTransform().getRotation());
+        // Skip invalid tags
+        if (java.util.Arrays.stream(validIds).noneMatch(id -> id == tagId)) continue;
 
-          // Use 3D distance and tag angles to find robot pose
-          Translation2d camToTagTranslation =
-              new Pose3d(Translation3d.kZero, new Rotation3d(0, ty, -tx))
-                  .transformBy(
-                      new Transform3d(
-                          new Translation3d(frame.preciseDistance()[i], 0, 0), Rotation3d.kZero))
-                  .getTranslation()
-                  .rotateBy(new Rotation3d(0, cameraPose.getRotation().getY(), 0))
-                  .toTranslation2d();
-          Rotation2d camToTagRotation =
-              robotRotation.plus(
-                  cameraPose.toPose2d().getRotation().plus(camToTagTranslation.getAngle()));
-          var tagPose2d = tagPoses2d.get(frame.preciseTagIds()[i]);
-          if (tagPose2d == null) return;
-          Translation2d fieldToCameraTranslation =
-              new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
-                  .transformBy(GeometryUtil.toTransform2d(camToTagTranslation.getNorm(), 0.0))
-                  .getTranslation();
-          robotPose =
-              new Pose2d(
-                      fieldToCameraTranslation,
-                      robotRotation.plus(cameraPose.toPose2d().getRotation()))
-                  .transformBy(new Transform2d(cameraPose.toPose2d(), Pose2d.kZero));
-          // Use gyro angle at time for robot rotation
-          robotPose = new Pose2d(robotPose.getTranslation(), robotRotation);
+        // Get odometry-based pose at the timestamp
+        var sample = RobotState.getBufferedPose(frame.timestamp());
+        if (sample.isEmpty()) continue;
 
-          // Add transform to current odometry based pose for latency correction
-          txTyObservations.add(
-              new VisionObservation(
-                  robotPose,
-                  frame.timestamp(),
-                  VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY)));
+        // Average tx and ty over four corners
+        double tx = 0.0;
+        double ty = 0.0;
+        for (int j = 0; j < 4; j++) {
+          tx += frame.preciseTx()[i][j];
+          ty += frame.preciseTy()[i][j];
         }
+        tx /= 4.0;
+        ty /= 4.0;
+
+        Pose3d cameraPose = io.getGompeiVisionConfig().robotRelativePose();
+
+        // Project 3D distance onto horizontal plane
+        double distance2d =
+            frame.preciseDistance()[i]
+                * Math.cos(-cameraPose.getRotation().getY() - ty); // pitch + tag vertical angle
+
+        // Compute rotation from camera to tag
+        Rotation2d camToTagRotation =
+            sample
+                .get()
+                .getRotation()
+                .plus(cameraPose.toPose2d().getRotation().plus(Rotation2d.fromRadians(-tx)));
+
+        Pose2d tagPose2d = tagPoses2d.get(tagId);
+        if (tagPose2d == null) continue;
+
+        // Compute camera position in field frame
+        Translation2d fieldToCameraTranslation =
+            new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
+                .transformBy(GeometryUtil.toTransform2d(distance2d, 0.0))
+                .getTranslation();
+
+        // Compute robot pose
+        Pose2d robotPose =
+            new Pose2d(
+                    fieldToCameraTranslation,
+                    sample.get().getRotation().plus(cameraPose.toPose2d().getRotation()))
+                .transformBy(new Transform2d(cameraPose.toPose2d(), Pose2d.kZero));
+
+        // Use odometry rotation only
+        robotPose = new Pose2d(robotPose.getTranslation(), sample.get().getRotation());
+
+        // Store observation for fusion
+        xyStdDev =
+            io.getPrimaryXYStandardDeviationCoefficient()
+                * Math.pow(frame.averageDistance(), 1.2)
+                / Math.pow(frame.totalTargets(), 2.0);
+        txTyObservations.add(
+            new VisionObservation(
+                robotPose,
+                frame.timestamp(),
+                VecBuilder.fill(xyStdDev, xyStdDev, Double.POSITIVE_INFINITY)));
       }
     }
 
@@ -163,16 +161,35 @@ public class Camera {
     poseObservations.stream()
         .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
         .forEach(RobotState::addFieldLocalizerVisionMeasurement);
-    poseObservations.stream()
-        .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
-        .forEach(RobotState::addReefLocalizerVisionMeasurement);
-    // txTyObservations.stream()
+    // poseObservations.stream()
     //     .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
     //     .forEach(RobotState::addReefLocalizerVisionMeasurement);
+    txTyObservations.stream()
+        .sorted(Comparator.comparingDouble(VisionObservation::timestamp))
+        .forEach(RobotState::addReefLocalizerVisionMeasurement);
+
+    List<Pose2d> imprecisePoses = new ArrayList<>();
+    for (VisionObservation obs : poseObservations) {
+      imprecisePoses.add(obs.pose());
+    }
+
+    List<Pose2d> precisePoses = new ArrayList<>();
+    for (VisionObservation obs : txTyObservations) {
+      precisePoses.add(obs.pose());
+    }
+
+    Logger.recordOutput(
+        "Vision/Camera/" + name + "/Imprecise Poses", imprecisePoses.toArray(Pose2d[]::new));
+    Logger.recordOutput(
+        "Vision/Camera/" + name + "/Precise Poses", precisePoses.toArray(Pose2d[]::new));
   }
 
   public void setValidTags(int... validIds) {
     this.validIds = validIds;
     io.setValidTags(validIds);
+  }
+
+  public Pose3d getTransform() {
+    return io.getGompeiVisionConfig().robotRelativePose();
   }
 }

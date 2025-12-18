@@ -56,6 +56,7 @@ public class Drive extends SubsystemBase {
   private final SwerveDriveKinematics kinematics;
   @Getter private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
+  @Getter private ChassisSpeeds measuredChassisSpeeds;
 
   @Getter private final LoggedAutoFactory autoFactory;
 
@@ -178,6 +179,7 @@ public class Drive extends SubsystemBase {
       }
 
       ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+      measuredChassisSpeeds = chassisSpeeds;
       Translation2d rawFieldRelativeVelocity =
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
               .rotateBy(getRawGyroRotation());
@@ -354,7 +356,7 @@ public class Drive extends SubsystemBase {
 
   /** Runs a choreo path from swerve samples */
   public void choreoDrive(SwerveSample sample) {
-    Pose2d pose = RobotState.getRobotPoseField();
+    Pose2d pose = RobotState.getRobotPoseReef();
     double xFF = sample.vx;
     double yFF = sample.vy;
     double rotationFF = sample.omega;

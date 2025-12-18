@@ -1,14 +1,11 @@
 package frc.robot;
 
+import choreo.Choreo;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathShared;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,16 +17,20 @@ import frc.robot.subsystems.v0_GompeivisionTest.v0_GompeivisionTestRobotContaine
 import frc.robot.subsystems.v0_Whiplash.V0_WhiplashRobotContainer;
 import frc.robot.subsystems.v1_StackUp.V1_StackUpRobotContainer;
 import frc.robot.subsystems.v2_Redundancy.V2_RedundancyRobotContainer;
+import frc.robot.subsystems.v3_Poot.V3_PootRobotContainer;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.CanivoreReader;
 import frc.robot.util.InternalLoggedTracer;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.VirtualSubsystem;
+import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -122,7 +123,10 @@ public class Robot extends LoggedRobot {
 
       case SIM:
         // Running a physics simulator, log to NT
+        // setUseTiming(false);
         Logger.addDataReceiver(new NT4Publisher());
+        // setting up maple sim field
+        SimulatedArena.getInstance();
         break;
 
       case REPLAY:
@@ -155,6 +159,7 @@ public class Robot extends LoggedRobot {
               V0_GOMPEIVISION_TEST_SIM -> new v0_GompeivisionTestRobotContainer();
           case V1_STACKUP, V1_STACKUP_SIM -> new V1_StackUpRobotContainer();
           case V2_REDUNDANCY, V2_REDUNDANCY_SIM -> new V2_RedundancyRobotContainer();
+          case V3_POOT, V3_POOT_SIM -> new V3_PootRobotContainer();
           default -> new RobotContainer() {};
         };
 
@@ -194,6 +199,17 @@ public class Robot extends LoggedRobot {
           }
         });
 
+    try {
+      var m = Choreo.class.getDeclaredMethod("setChoreoDir", File.class);
+      m.setAccessible(true);
+      m.invoke(
+          null,
+          new File(
+              Filesystem.getDeployDirectory(),
+              Constants.ROBOT.name().toLowerCase().replaceFirst("_sim", "") + "/choreo"));
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
     // Log active commands
     Map<String, Integer> commandCounts = new HashMap<>();
     BiConsumer<Command, Boolean> logCommandFunction =
@@ -255,44 +271,6 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
     InternalLoggedTracer.record("Check Battery Alert", "Robot");
-
-    // Check CAN status
-    // LoggedTracer.reset();
-    // var canStatus = RobotController.getCANStatus();
-    // if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
-    //   canErrorTimer.restart();
-    // }
-    // canErrorAlert.set(
-    //     !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-    //         && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-
-    // // Log CANivore status
-    // if (Constants.getMode() == Constants.Mode.REAL) {
-    //   var canivoreStatus = canivoreReader.getStatus();
-    //   if (canivoreStatus.isPresent()) {
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "Status", canivoreStatus.get().Status.getName());
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "Utilization", canivoreStatus.get().BusUtilization);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "OffCount", canivoreStatus.get().BusOffCount);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "TxFullCount", canivoreStatus.get().TxFullCount);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "ReceiveErrorCount", canivoreStatus.get().REC);
-    //     Logger.recordOutput(
-    //         NTPrefixes.CANIVORE_STATUS + "TransmitErrorCount", canivoreStatus.get().TEC);
-    //     if (!canivoreStatus.get().Status.isOK()
-    //         || canStatus.transmitErrorCount > 0
-    //         || canStatus.receiveErrorCount > 0) {
-    //       canivoreErrorTimer.restart();
-    //     }
-    //   }
-    //   canivoreErrorAlert.set(
-    //       !canivoreErrorTimer.hasElapsed(canivoreErrorTimeThreshold)
-    //           && !canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-    // }
-    // LoggedTracer.record("Check CANivore Status", "Robot");
   }
 
   /** This function is called once when the robot is disabled. */

@@ -13,11 +13,15 @@ import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyInt
 import frc.robot.subsystems.v2_Redundancy.superstructure.intake.V2_RedundancyIntakeConstants;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulator;
 import frc.robot.subsystems.v2_Redundancy.superstructure.manipulator.V2_RedundancyManipulatorConstants;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntake;
+import frc.robot.subsystems.v3_Poot.superstructure.intake.V3_PootIntakeConstants;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulator;
+import frc.robot.subsystems.v3_Poot.superstructure.manipulator.V3_PootManipulatorConstants;
 
 public class LTNUpdater {
-  public static final void updateDrive(Drive drive) {
-    LoggedTunableNumber.ifChanged(
-        drive.hashCode(),
+
+  public static void registerDrive(Drive drive) {
+    LoggedTunableNumber.createGroup(
         () -> {
           drive.setPIDGains(
               DriveConstants.GAINS.drive_Kp().get(),
@@ -34,8 +38,7 @@ public class LTNUpdater {
         DriveConstants.GAINS.turn_Kp(),
         DriveConstants.GAINS.turn_Kd());
 
-    LoggedTunableNumber.ifChanged(
-        drive.hashCode(),
+    LoggedTunableNumber.createGroup(
         () -> {
           DriveCommands.setRotationPID(
               DriveConstants.AUTO_ALIGN_GAINS.rotation_Kp().get(),
@@ -50,9 +53,8 @@ public class LTNUpdater {
         DriveConstants.AUTO_ALIGN_GAINS.translation_Kd());
   }
 
-  public static final void updateElevator(ElevatorCSB elevator) {
-    LoggedTunableNumber.ifChanged(
-        elevator.hashCode(),
+  public static void registerElevator(ElevatorCSB elevator) {
+    LoggedTunableNumber.createGroup(
         () -> {
           elevator.setGains(
               ElevatorConstants.GAINS.kP().get(),
@@ -75,9 +77,8 @@ public class LTNUpdater {
         ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
   }
 
-  public static final void updateElevator(ElevatorFSM elevator) {
-    LoggedTunableNumber.ifChanged(
-        elevator.hashCode(),
+  public static void registerElevator(ElevatorFSM elevator) {
+    LoggedTunableNumber.createGroup(
         () -> {
           elevator.setGains(
               ElevatorConstants.GAINS.kP().get(),
@@ -100,9 +101,8 @@ public class LTNUpdater {
         ElevatorConstants.CONSTRAINTS.cruisingVelocityMetersPerSecond());
   }
 
-  public static final void updateFunnel(FunnelCSB funnel) {
-    LoggedTunableNumber.ifChanged(
-        funnel.hashCode(),
+  public static void registerFunnel(FunnelCSB funnel) {
+    LoggedTunableNumber.createGroup(
         () -> {
           funnel.updateGains(
               FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
@@ -123,9 +123,8 @@ public class LTNUpdater {
         FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
-  public static final void updateFunnel(FunnelFSM funnel) {
-    LoggedTunableNumber.ifChanged(
-        funnel.hashCode(),
+  public static void registerFunnel(FunnelFSM funnel) {
+    LoggedTunableNumber.createGroup(
         () -> {
           funnel.updateGains(
               FunnelConstants.CLAP_DADDY_MOTOR_GAINS.kP().get(),
@@ -146,9 +145,8 @@ public class LTNUpdater {
         FunnelConstants.CLAP_DADDY_MOTOR_CONSTRAINTS.MAX_VELOCITY());
   }
 
-  public static final void updateAlgaeArm(V2_RedundancyManipulator manipulator) {
-    LoggedTunableNumber.ifChanged(
-        manipulator.hashCode(),
+  public static void registerAlgaeArm(V2_RedundancyManipulator manipulator) {
+    LoggedTunableNumber.createGroup(
         () -> {
           manipulator.updateArmGains(
               V2_RedundancyManipulatorConstants.WITHOUT_ALGAE_GAINS.kP().get(),
@@ -189,9 +187,8 @@ public class LTNUpdater {
             .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED());
   }
 
-  public static final void updateIntake(V2_RedundancyIntake intake) {
-    LoggedTunableNumber.ifChanged(
-        intake.hashCode(),
+  public static void registerIntake(V2_RedundancyIntake intake) {
+    LoggedTunableNumber.createGroup(
         () -> {
           intake.updateGains(
               V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kP().get(),
@@ -210,5 +207,115 @@ public class LTNUpdater {
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_GAINS.kA(),
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_ACCELERATION(),
         V2_RedundancyIntakeConstants.EXTENSION_MOTOR_CONSTRAINTS.MAX_VELOCITY());
+  }
+
+  public static void registerIntake(V3_PootIntake intake) {
+    LoggedTunableNumber.createGroup(
+        () -> {
+          intake.updateIntakeGains(
+              V3_PootIntakeConstants.PIVOT_GAINS.kP().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kD().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kS().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kV().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kA().get(),
+              V3_PootIntakeConstants.PIVOT_GAINS.kG().get());
+          intake.updateIntakeConstraints(
+              V3_PootIntakeConstants.PIVOT_CONSTRAINTS
+                  .MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED()
+                  .get(),
+              V3_PootIntakeConstants.PIVOT_CONSTRAINTS
+                  .CRUISING_VELOCITY_RADIANS_PER_SECOND()
+                  .get());
+        },
+        V3_PootIntakeConstants.PIVOT_GAINS.kP(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kD(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kS(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kV(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kA(),
+        V3_PootIntakeConstants.PIVOT_GAINS.kG(),
+        V3_PootIntakeConstants.PIVOT_CONSTRAINTS.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED(),
+        V3_PootIntakeConstants.PIVOT_CONSTRAINTS.CRUISING_VELOCITY_RADIANS_PER_SECOND());
+  }
+
+  public static void registerManipulatorArm(V3_PootManipulator manipulator) {
+    LoggedTunableNumber.createGroup(
+        () -> {
+          manipulator.updateArmGains(
+              V3_PootManipulatorConstants.EMPTY_GAINS.kP().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kD().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kS().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kV().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kA().get(),
+              V3_PootManipulatorConstants.EMPTY_GAINS.kG().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kP().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kD().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kS().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kV().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kA().get(),
+              V3_PootManipulatorConstants.CORAL_GAINS.kG().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kP().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kD().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kS().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kV().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kA().get(),
+              V3_PootManipulatorConstants.ALGAE_GAINS.kG().get());
+          manipulator.updateArmConstraints(
+              V3_PootManipulatorConstants.CONSTRAINTS
+                  .maxAccelerationRotationsPerSecondSquared()
+                  .get(),
+              V3_PootManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond().get());
+        },
+        V3_PootManipulatorConstants.ALGAE_GAINS.kP(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kD(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kS(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kV(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kA(),
+        V3_PootManipulatorConstants.ALGAE_GAINS.kG(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kP(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kD(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kS(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kV(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kA(),
+        V3_PootManipulatorConstants.EMPTY_GAINS.kG(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kP(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kD(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kS(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kV(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kA(),
+        V3_PootManipulatorConstants.CORAL_GAINS.kG(),
+        V3_PootManipulatorConstants.CONSTRAINTS.maxAccelerationRotationsPerSecondSquared(),
+        V3_PootManipulatorConstants.CONSTRAINTS.cruisingVelocityRotationsPerSecond(),
+        V3_PootManipulatorConstants.CONSTRAINTS.goalToleranceRadians());
+  }
+
+  /**
+   * Register all subsystem auto-updates. Call this once during robot initialization. Then call
+   * LoggedTunableNumber.updateAll() periodically in robotPeriodic().
+   */
+  public static void registerAll(Drive drive, ElevatorCSB elevator, FunnelCSB funnel) {
+    registerDrive(drive);
+    registerElevator(elevator);
+    registerFunnel(funnel);
+  }
+
+  public static void registerAll(
+      Drive drive,
+      ElevatorFSM elevator,
+      FunnelFSM funnel,
+      V2_RedundancyIntake intake,
+      V2_RedundancyManipulator manipulator) {
+    registerDrive(drive);
+    registerElevator(elevator);
+    registerFunnel(funnel);
+    registerIntake(intake);
+    registerAlgaeArm(manipulator);
+  }
+
+  public static void registerAll(
+      Drive drive, ElevatorFSM elevator, V3_PootIntake intake, V3_PootManipulator manipulator) {
+    registerDrive(drive);
+    registerElevator(elevator);
+    registerIntake(intake);
+    registerManipulatorArm(manipulator);
   }
 }

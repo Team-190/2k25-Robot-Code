@@ -1,9 +1,15 @@
 package frc.robot.util;
 
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.FieldConstants;
+import frc.robot.util.LoggedChoreo.LoggedAutoTrajectory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeometryUtil {
   /**
@@ -66,5 +72,49 @@ public class GeometryUtil {
 
   public static final boolean isZero(Rotation2d rotation) {
     return rotation.getDegrees() == 0.0;
+  }
+
+  public static final Trajectory<SwerveSample> mirrorTrajectory(
+      LoggedAutoTrajectory inputAutoPath) {
+    List<SwerveSample> mirroredSamples = new ArrayList<>();
+    Trajectory<SwerveSample> trajectory = inputAutoPath.getRawTrajectory();
+    trajectory
+        .samples()
+        .forEach(
+            sample -> {
+              mirroredSamples.add(
+                  new SwerveSample(
+                      sample.t,
+                      sample.x,
+                      FieldConstants.fieldWidth - (sample.y),
+                      -sample.heading,
+                      sample.vx,
+                      -sample.vy,
+                      -sample.omega,
+                      sample.ax,
+                      -sample.ay,
+                      -sample.alpha,
+                      // TODO: VERIFY THIS
+                      // FL, FR, BL, BR
+                      // Mirrored
+                      // FR, FL, BR, BL
+                      new double[] {
+                        sample.moduleForcesX()[1],
+                        sample.moduleForcesX()[0],
+                        sample.moduleForcesX()[3],
+                        sample.moduleForcesX()[2]
+                      },
+                      // FL, FR, BL, BR
+                      // Mirrored
+                      // -FR, -FL, -BR, -BL
+                      new double[] {
+                        -sample.moduleForcesY()[1],
+                        -sample.moduleForcesY()[0],
+                        -sample.moduleForcesY()[3],
+                        -sample.moduleForcesY()[2]
+                      }));
+            });
+    return new Trajectory<SwerveSample>(
+        trajectory.name(), mirroredSamples, trajectory.splits(), trajectory.events());
   }
 }

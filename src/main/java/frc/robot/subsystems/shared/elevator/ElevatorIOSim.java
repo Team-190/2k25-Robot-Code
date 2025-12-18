@@ -30,7 +30,6 @@ public class ElevatorIOSim implements ElevatorIO {
             ElevatorConstants.ELEVATOR_PARAMETERS.MAX_HEIGHT_METERS(),
             true,
             ElevatorConstants.ELEVATOR_PARAMETERS.MIN_HEIGHT_METERS());
-
     feedback =
         new ProfiledPIDController(
             ElevatorConstants.GAINS.kP().get(),
@@ -64,6 +63,7 @@ public class ElevatorIOSim implements ElevatorIO {
     // Position and velocity
     inputs.positionMeters = sim.getPositionMeters();
     inputs.velocityMetersPerSecond = sim.getVelocityMetersPerSecond();
+    inputs.accelerationMetersPerSecondSquared = 0;
 
     for (int i = 0; i < ElevatorConstants.ELEVATOR_PARAMETERS.NUM_MOTORS(); i++) {
       inputs.appliedVolts[i] = appliedVolts;
@@ -103,5 +103,9 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void updateConstraints(double maxAcceleration, double cruisingVelocity) {
     feedback.setConstraints(new Constraints(cruisingVelocity, maxAcceleration));
+  }
+
+  public double getAcceleration(double previousVelocity, double currentVelocity) {
+    return (currentVelocity - previousVelocity) / 0.02;
   }
 }
